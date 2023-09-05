@@ -8,4 +8,7 @@ test_that("dummy tests", {
   expect_error(postShape())
   expect_error(BayesMCPMod())
   expect_error(estimateModel())
+  expect_error(BMCPMod())
+  expect_error(doFit())
+  expect_error(getGenAICs())
 })
