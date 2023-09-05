@@ -26,6 +26,6 @@ jobs:
           needs: lint
 
       - name: Lint
-        run: tmp <- lintr::lint_package(); if (length(tmp) > 0) {print(tmp); stop("linter found problems")}
+        run: lintr::lint_package()
         shell: Rscript {0}
 

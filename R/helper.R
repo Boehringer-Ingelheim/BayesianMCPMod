@@ -19,9 +19,9 @@ BayesMCPMod <- function(
   sign <- 0
 
   for (j in 1:m) {
-    conttheta <- sapply(1:nrow(ancova[["est."]]), function(x) t(contMat[, j]) %*% ancova[["est."]][x, ])
-    contvar <- sapply(1:nrow(ancova[["est."]]), function(x) t(contMat[, j]^2) %*% ancova[["cov."]][x, ]^2)
-    p_ij <- sapply(1:nrow(ancova[["est."]]), function(x) stats::pnorm(conttheta[x] / sqrt(contvar[x])))
+    conttheta <- sapply(seq_len(nrow(ancova[["est."]])), function(x) t(contMat[, j]) %*% ancova[["est."]][x, ])
+    contvar <- sapply(seq_len(nrow(ancova[["est."]])), function(x) t(contMat[, j]^2) %*% ancova[["cov."]][x, ]^2)
+    p_ij <- sapply(seq_len(nrow(ancova[["est."]])), function(x) stats::pnorm(conttheta[x] / sqrt(contvar[x])))
 
 
     probs[j] <- sum(ancova[["obs."]] * p_ij)

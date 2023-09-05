@@ -230,7 +230,7 @@ getGenAICs <- function(
   exp_values <- exp(-0.5 * avgAIC_values)
   denominator <- sum(exp_values)
 
-  for (i in 1:length(results)) {
+  for (i in seq_along(results)) {
     results[[i]]$weightedAIC <- exp_values[i] / denominator
   }
 
