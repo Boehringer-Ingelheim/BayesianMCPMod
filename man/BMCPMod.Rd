@@ -4,16 +4,14 @@
 \alias{BMCPMod}
 \title{BMCPMod}
 \usage{
-BMCPMod(ancova1, cont_Mat1, crit_prob, n_simulations)
+BMCPMod(posteriors_list, contr_mat, crit_prob)
 }
 \arguments{
-\item{ancova1}{tbd}
+\item{posteriors_list}{tbd}
 
-\item{cont_Mat1}{tbd}
+\item{contr_mat}{tbd}
 
 \item{crit_prob}{tbd}
-
-\item{n_simulations}{tbd}
 }
 \description{
 BMCPMod
