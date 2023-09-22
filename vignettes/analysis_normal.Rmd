@@ -1,0 +1,25 @@
+---
+title: "Analysis Example of Bayesian MCPMod for Continuous Data"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Analysis Example of Bayesian MCPMod for Continuous Data}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(BayesianMCPMod)
+```
+This vignette shows how to apply the BayesianMCPMod package
+```{r}
+##Create MAP Prior
+```
+
+
