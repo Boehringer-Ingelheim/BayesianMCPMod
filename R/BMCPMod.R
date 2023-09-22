@@ -52,7 +52,7 @@ BayesMCPMod <- function (
   post_probs   <- apply(contr_mat$contMat, 2, getPostProb, post_combs_i)
   
   res_list <- list(
-    sign       = ifelse(max_prob > crit_prob, 1, 0),
+    sign       = ifelse(max(post_probs) > crit_prob, 1, 0),
     p_val      = max(post_probs),
     post_probs = post_probs)
   
