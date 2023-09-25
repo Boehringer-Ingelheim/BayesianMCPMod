@@ -9,7 +9,7 @@ getPosterior(data, prior_list)
 \arguments{
 \item{data}{tbd}
 
-\item{prior}{prior_list}
+\item{prior_list}{prior_list}
 }
 \description{
 getPosterior

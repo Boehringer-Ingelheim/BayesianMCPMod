@@ -1,7 +1,7 @@
 #' @title getPosterior
 #' 
 #' @param data tbd
-#' @param prior prior_list
+#' @param prior_list prior_list
 #'
 #' @export
 getPosterior <- function(
