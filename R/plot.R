@@ -43,16 +43,16 @@ plot.modelFits <- function (
     
     if (avg_fit) {
       
-      ## replace with pipe once native pipe => becomes available 
-      paste_names <- names(model_fits) |>
+      mod_weigts  <- sort(mod_weigts, decreasing = TRUE)
+      paste_names <- names(mod_weigts) |>
         gsub("exponential", "exp", x = _) |>
         gsub("quadratic",  "quad", x = _) |>
         gsub("linear",      "lin", x = _) |>
         gsub("logistic",    "log", x = _) |>
         gsub("sigEmax",    "sigE", x = _)
       
-      label_avg <- paste0(paste_names, "=", round(mod_weigts, 1),
-                          collapse = ", ")
+      label_avg  <- paste0(paste_names, "=", round(mod_weigts, 1),
+                           collapse = ", ")
       label_gAUC <- c(label_gAUC, label_avg)
       
     }
