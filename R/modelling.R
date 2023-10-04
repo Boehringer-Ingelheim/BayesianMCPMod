@@ -17,11 +17,11 @@ getModelFits <- function (
   
   if (simple) {
     
-    model_fits <- lapply(models, getModelFitSimple, dose_levels, posterior[[1]])
+    model_fits <- lapply(models, getModelFitSimple, dose_levels, posterior)
     
   } else {
     
-    model_fits <- lapply(models, getModelFitOpt, dose_levels, posterior[[1]])
+    model_fits <- lapply(models, getModelFitOpt, dose_levels, posterior)
     
   }
   

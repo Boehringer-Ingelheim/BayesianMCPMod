@@ -68,16 +68,20 @@ plot.modelFits <- function (
                    panel.grid.minor = ggplot2::element_blank()) +
     ## gAIC
     {if (gAIC) {
+      
       ggplot2::geom_text(
         data    = data.frame(
           models = unique(gg_data$models),
           label  = label_gAUC),
         mapping = ggplot2::aes(label = label_gAUC),
         x = -Inf, y = Inf, hjust = "inward", vjust = "inward",
-        size = 3)}
+        size = 3)
+      
+      }
     } + 
     ## Posterior Credible Intervals
     {if (CrI) {
+      
       ggplot2::geom_errorbar(
         data    = data.frame(x    = dose_levels,
                              ymin = post_summary[, 3],
@@ -85,7 +89,9 @@ plot.modelFits <- function (
         mapping = ggplot2::aes(x    = x,
                                ymin = ymin,
                                ymax = ymax),
-        width = 0, alpha = 0.5)}
+        width = 0, alpha = 0.5)
+      
+      }
     } + 
     ## Posterior Medians
     ggplot2::geom_point(

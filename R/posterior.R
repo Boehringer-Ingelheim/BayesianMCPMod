@@ -13,10 +13,18 @@ getPosterior <- function(
   
 ) {
   
-  lapply(split(data, data$simulation), getPosteriorI,
-         prior_list = prior_list,
-         mu_hat     = mu_hat,
-         sd_hat     = sd_hat)
+  posterior_list <- lapply(split(data, data$simulation), getPosteriorI,
+                           prior_list = prior_list,
+                           mu_hat     = mu_hat,
+                           sd_hat     = sd_hat)
+  
+  if (length(posterior_list) == 1) {
+    
+    posterior_list <- posterior_list[[1]]
+    
+  }
+  
+  return (posterior_list)
   
 }
 
