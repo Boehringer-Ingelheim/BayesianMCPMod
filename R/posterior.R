@@ -55,11 +55,12 @@ getPostCombsI <- function (
 
 summary.postList <- function (
     
-  post_list
+  post_list,
+  ...
   
 ) {
   
-  summary_list        <- lapply(post_list, summary)
+  summary_list        <- lapply(post_list, summary, ...)
   names(summary_list) <- names(post_list)
   summary_tab         <- do.call(rbind, summary_list)
   

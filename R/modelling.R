@@ -49,7 +49,7 @@ getModelFitSimple <- function (
     resp  = summary.postList(posterior)[, 1],
     S     = diag(summary.postList(posterior)[, 2]^2),
     model = model,
-    type  = doFit_ID$VALUES$FIT_TYPE,
+    type  = "general",
     bnds  = DoseFinding::defBnds(mD = max(dose_levels))[[model]])
   
   pred_vals  <- stats::predict(fit, predType = "ls-means")
@@ -190,31 +190,37 @@ predictModelFit <- function (
   
   pred_vals <- switch (
     model_fit$model,
-    "emax" = {DoseFinding::emax(doses,
-                                model_fit$coeffs["e0"],
-                                model_fit$coeffs["eMax"],
-                                model_fit$coeffs["ed50"])},
-    "sigEmax" = {DoseFinding::sigEmax(doses,
-                                      model_fit$coeffs["e0"],
-                                      model_fit$coeffs["eMax"],
-                                      model_fit$coeffs["ed50"],
-                                      model_fit$coeffs["h"])},
-    "exponential" = {DoseFinding::exponential(doses,
-                                              model_fit$coeffs["e0"],
-                                              model_fit$coeffs["e1"],
-                                              model_fit$coeffs["delta"])},
-    "quadratic" = {DoseFinding::quadratic(doses,
-                                          model_fit$coeffs["e0"],
-                                          model_fit$coeffs["b1"],
-                                          model_fit$coeffs["b2"])},
-    "linear" = {DoseFinding::linear(doses,
-                                    model_fit$coeffs["e0"],
-                                    model_fit$coeffs["delta"])},
-    "logistic" = {DoseFinding::logistic(doses,
-                                        model_fit$coeffs["e0"],
-                                        model_fit$coeffs["eMax"],
-                                        model_fit$coeffs["ed50"],
-                                        model_fit$coeffs["delta"])},
+    "emax" = {DoseFinding::emax(
+      doses,
+      model_fit$coeffs["e0"],
+      model_fit$coeffs["eMax"],
+      model_fit$coeffs["ed50"])},
+    "sigEmax" = {DoseFinding::sigEmax(
+      doses,
+      model_fit$coeffs["e0"],
+      model_fit$coeffs["eMax"],
+      model_fit$coeffs["ed50"],
+      model_fit$coeffs["h"])},
+    "exponential" = {DoseFinding::exponential(
+      doses,
+      model_fit$coeffs["e0"],
+      model_fit$coeffs["e1"],
+      model_fit$coeffs["delta"])},
+    "quadratic" = {DoseFinding::quadratic(
+      doses,
+      model_fit$coeffs["e0"],
+      model_fit$coeffs["b1"],
+      model_fit$coeffs["b2"])},
+    "linear" = {DoseFinding::linear(
+      doses,
+      model_fit$coeffs["e0"],
+      model_fit$coeffs["delta"])},
+    "logistic" = {DoseFinding::logistic(
+      doses,
+      model_fit$coeffs["e0"],
+      model_fit$coeffs["eMax"],
+      model_fit$coeffs["ed50"],
+      model_fit$coeffs["delta"])},
     {stop(GENERAL$ERROR$MODEL_OPTIONS)})
   
   return (pred_vals)
