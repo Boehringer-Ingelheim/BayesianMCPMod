@@ -7,7 +7,7 @@ plot.modelFits <- function (
   
 ) {
   
-  plot_resolution   <- 1e3
+  plot_resolution <- 1e3
   
   dose_levels  <- model_fits[[1]]$dose_levels
   post_summary <- summary.postList(attr(model_fits, "posterior"))
@@ -39,7 +39,7 @@ plot.modelFits <- function (
   if (gAIC) {
     
     g_AICs     <- sapply(model_fits, function (x) x$gAIC)
-    label_gAUC <- paste("AIC:", round(g_AICs), digits = 1)
+    label_gAUC <- paste("AIC:", round(g_AICs, digits = 1))
     
     if (avg_fit) {
       
