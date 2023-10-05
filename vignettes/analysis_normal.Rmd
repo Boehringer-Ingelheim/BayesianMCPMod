@@ -19,7 +19,10 @@ library(BayesianMCPMod)
 library(clinDR)
 library(dplyr)
 ```
-This vignette shows how to apply the BayesianMCPMod package
+This vignette shows how to apply the BayesianMCPMod package.
+
+# i) Calculation of a MAP prior
+In a first step a meta analytic prior will be calculated using historical data.
 ```{r}
 data("metaData")
 testdata <- as.data.frame(metaData)
@@ -64,7 +67,7 @@ dose_levels <- c(0, 50, 100, 200)
 ## combine priors in list
 prior_list <- c(list(prior_ctr), rep(list(prior_trt), times = length(dose_levels[-1])))
 ```
-
+# ii) Pre-Specification of candidate models 
 ```{r}
 #Pre-Specification (B)MCPMod 
 
@@ -87,7 +90,7 @@ mods <- DoseFinding::Mods(
   maxEff      = 10,
   placEff     = 1.4)
 ```
-
+# iii) Trial results
 ```{r}
 #Simulation of new trial 
 ##Note: This part will be simplified and direct results from one trial will be used
@@ -114,7 +117,7 @@ posterior_emax <- getPosterior(
 
 ```
 
-
+# iv) Execution of Bayesian MCPMod Test step
 ```{r}
 #Evaluation of Bayesian MCPMod
 
@@ -142,7 +145,8 @@ BMCP_result <- BMCPMod(
 BMCP_result
 ```
 
-
+# v) Model fitting and Plotting
+In the model fitting step the posterior distribution is used as basis. 
 ```{r}
 #Model fit
 #This part is currently not working
@@ -165,3 +169,8 @@ fit<- getModelFits(
   simple      = FALSE)
 ```
 
+```{r}
+plot(fit,CrI= TRUE)
+plot(fit_simple, CrI= TRUE)
+```
+For the plotting the credible intervals are shown as well.
