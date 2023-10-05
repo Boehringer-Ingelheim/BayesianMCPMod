@@ -146,25 +146,22 @@ BMCP_result
 ```{r}
 #Model fit
 #This part is currently not working
-#post_observed <- posterior_emax[[1]]
-#model_shapes  <- c("linear", "emax", "exponential")
+post_observed <- posterior_emax[[1]]
+model_shapes  <- c("linear", "emax", "exponential")
 
 
-## Option a) Simplified approach by using frequentist idea
-#fit_simple <- getModelFits(
-#  models      = model_shapes,
-#  dose_levels = dose_levels,
-#  posterior   = post_observed,
-#  simple      = TRUE)
+# Option a) Simplified approach by using frequentist idea
+fit_simple <- getModelFits(
+  models      = model_shapes,
+  dose_levels = dose_levels,
+  posterior   = post_observed,
+  simple      = TRUE)
 
-#fit1 <- DoseFinding::fitMod(
-#  dose  = dose_levels,
-#  resp  = fit_simple$linear$pred_values,
- # S     = diag(summary.postList(post_observed)[, 2]^2),
-#  model = "linear",
- # type  = "general")
-#plot(fit1,
- # plotData = "meansCI",
- # CI       = TRUE)
+# Option b) Making use of the complete posterior distribution
+fit<- getModelFits(
+  models      = model_shapes,
+  dose_levels = dose_levels,
+  posterior   = post_observed,
+  simple      = FALSE)
 ```
 
