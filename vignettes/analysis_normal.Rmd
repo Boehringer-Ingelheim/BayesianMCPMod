@@ -138,7 +138,7 @@ contr_mat_prior <- DoseFinding::optContr(
   w      = n_patients + ess_prior)
 
 BMCP_result <- BMCPMod(
-  posteriors_list = posterior_emax,
+  posteriors_list = list(posterior_emax),
   contr_mat       = contr_mat_prior, 
   crit_prob       = crit_pval)
 
@@ -150,7 +150,7 @@ In the model fitting step the posterior distribution is used as basis.
 ```{r}
 #Model fit
 #This part is currently not working
-post_observed <- posterior_emax[[1]]
+post_observed <- posterior_emax
 model_shapes  <- c("linear", "emax", "exponential")
 
 
@@ -170,7 +170,7 @@ fit<- getModelFits(
 ```
 
 ```{r}
-plot(fit,CrI= TRUE)
-plot(fit_simple, CrI= TRUE)
+plot.modelFits(fit,CrI= TRUE)
+plot.modelFits(fit_simple, CrI= TRUE)
 ```
 For the plotting the credible intervals are shown as well.
