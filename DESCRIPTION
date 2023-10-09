@@ -28,7 +28,8 @@ Imports:
     nloptr,
     clinDR,
     knitr,
-    rmarkdown
+    rmarkdown,
+    dplyr
 Suggests:
     testthat (>= 3.0.0)
 Depends:

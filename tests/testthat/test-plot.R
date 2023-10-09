@@ -1,11 +1,7 @@
-# Additional test cases for plot_modelFits function
-
 test_that("Test plot_modelFits with different model_fits input", {
-
   library(BayesianMCPMod)
   library(clinDR)
   library(dplyr)
-
   data("metaData")
   testdata <- as.data.frame(metaData)
   dataset <- filter(testdata, bname == "VIAGRA")
@@ -114,7 +110,7 @@ test_that("Test plot_modelFits with different model_fits input", {
   )
   ## Calculation of critical value can be done with critVal function
   crit_val_equal <- DoseFinding:::critVal(contr_mat$corMat, alpha = 0.05, df = 0, alternative = "one.sided")
-  crit_pval <- pnorm(crit_val_equal)
+  crit_pval <- stats::pnorm(crit_val_equal)
   
   ess_prior <- round(unlist(lapply(prior_list, RBesT::ess)))
   
