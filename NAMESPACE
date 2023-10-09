@@ -3,4 +3,5 @@
 export(BMCPMod)
 export(getModelFits)
 export(getPosterior)
+export(plot_modelFits)
 export(simulateData)

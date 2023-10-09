@@ -1,4 +1,13 @@
-plot.modelFits <- function (
+#' @title plot_modelFits
+#'
+#' @param model_fits tbd
+#' @param CrI tbd
+#' @param gAIC tbd
+#' @param avg_fit tbd
+#'
+#' @return tbd
+#' @export
+plot_modelFits <- function (
     
   model_fits,
   CrI     = FALSE,

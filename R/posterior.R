@@ -2,10 +2,11 @@
 #' 
 #' @param data tbd
 #' @param prior_list prior_list
+#' @param mu_hat tbd
+#' @param sd_hat tbd
 #'
 #' @export
 getPosterior <- function(
-    
   data,
   prior_list,
   mu_hat = NULL,
