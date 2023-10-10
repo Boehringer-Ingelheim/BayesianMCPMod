@@ -1,0 +1,26 @@
+url: https://boehringer-ingelheim.github.io/BayesianMCPMod/
+template:
+  bootstrap: 5
+
+navbar:
+  structure:
+    left:  [intro, articles, reference, news]
+    right: [search, github]
+
+articles:
+- title: Get started
+  navbar: ~
+  contents:
+  - analysis_normal
+
+reference:
+- title: "Package documentation"
+  contents:
+  - BayesianMCPMod
+- title: "All functions"
+  contents:
+  - BMCPMod
+  - getModelFits
+  - getPosterior
+  - plot_modelsFits
+  - simulateData
