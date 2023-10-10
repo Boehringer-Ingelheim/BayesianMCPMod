@@ -2,7 +2,6 @@
 [![Linux](https://github.com/Boehringer-Ingelheim/BayesianMCPMod/actions/workflows/linux.yml/badge.svg?branch=main)](https://github.com/Boehringer-Ingelheim/BayesianMCPMod/actions/workflows/linux.yml)
 [![Windows](https://github.com/Boehringer-Ingelheim/BayesianMCPMod/actions/workflows/windows.yml/badge.svg?branch=main)](https://github.com/Boehringer-Ingelheim/BayesianMCPMod/actions/workflows/windows.yml)
 [![Macos](https://github.com/Boehringer-Ingelheim/BayesianMCPMod/actions/workflows/macos.yml/badge.svg?branch=main)](https://github.com/Boehringer-Ingelheim/BayesianMCPMod/actions/workflows/macos.yml)
-[![R-CMD-check](https://github.com/Boehringer-Ingelheim/BayesianMCPMod/actions/workflows/check-package.yaml/badge.svg)](https://github.com/Boehringer-Ingelheim/BayesianMCPMod/actions/workflows/check-package.yaml)
 [![Codecov test coverage](https://codecov.io/gh/Boehringer-Ingelheim/BayesianMCPMod/branch/main/graph/badge.svg)](https://codecov.io/gh/Boehringer-Ingelheim/BayesianMCPMod?branch=main)
 <!-- badges: end -->
 
