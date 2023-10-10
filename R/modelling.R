@@ -15,15 +15,8 @@ getModelFits <- function (
   
 ) {
   
-  if (simple) {
-    
-    model_fits <- lapply(models, getModelFitSimple, dose_levels, posterior)
-    
-  } else {
-    
-    model_fits <- lapply(models, getModelFitOpt, dose_levels, posterior)
-    
-  }
+  getModelFit <- ifelse(simple, getModelFitSimple, getModelFitOpt)
+  model_fits  <- lapply(models, getModelFit, dose_levels, posterior)
   
   model_fits        <- addModelWeights(model_fits)
   names(model_fits) <- models

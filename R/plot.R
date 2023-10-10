@@ -1,16 +1,19 @@
 plot.modelFits <- function (
     
   model_fits,
-  CrI     = FALSE,
-  gAIC    = TRUE,
-  avg_fit = TRUE
+  gAIC      = TRUE,
+  avg_fit   = TRUE,
+  CrI       = FALSE,
+  alpha_CrI = 0.05
   
 ) {
   
   plot_resolution <- 1e3
   
   dose_levels  <- model_fits[[1]]$dose_levels
-  post_summary <- summary.postList(attr(model_fits, "posterior"))
+  post_summary <- summary.postList(
+    post_list = attr(model_fits, "posterior"),
+    probs     = c(alpha_CrI / 2, 0.5, 1 - alpha_CrI / 2))
   doses        <- seq(from = min(dose_levels),
                       to   = max(dose_levels), length.out = plot_resolution)
   
@@ -19,15 +22,15 @@ plot.modelFits <- function (
   
   if (avg_fit) {
     
-    mod_weigts <- sapply(model_fits, function (x) x$model_weight)
-    avg_mod    <- preds_models %*% mod_weigts
+    mod_weights <- sapply(model_fits, function (x) x$model_weight)
+    avg_mod     <- preds_models %*% mod_weights
     
     preds_models <- cbind(preds_models, avg_mod)
     model_names  <- c(model_names, "averageModel")
     
   }
   
-  gg_data      <- data.frame(
+  gg_data <- data.frame(
     dose_levels = rep(doses, length(model_names)),
     fits        = as.vector(preds_models),
     models      = rep(factor(model_names,
@@ -43,15 +46,15 @@ plot.modelFits <- function (
     
     if (avg_fit) {
       
-      mod_weigts  <- sort(mod_weigts, decreasing = TRUE)
-      paste_names <- names(mod_weigts) |>
+      mod_weights  <- sort(mod_weights, decreasing = TRUE)
+      paste_names <- names(mod_weights) |>
         gsub("exponential", "exp", x = _) |>
         gsub("quadratic",  "quad", x = _) |>
         gsub("linear",      "lin", x = _) |>
         gsub("logistic",    "log", x = _) |>
         gsub("sigEmax",    "sigE", x = _)
       
-      label_avg  <- paste0(paste_names, "=", round(mod_weigts, 1),
+      label_avg  <- paste0(paste_names, "=", round(mod_weights, 1),
                            collapse = ", ")
       label_gAUC <- c(label_gAUC, label_avg)
       

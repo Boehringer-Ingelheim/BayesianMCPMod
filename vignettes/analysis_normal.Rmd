@@ -25,13 +25,13 @@ This vignette shows how to apply the BayesianMCPMod package.
 In a first step a meta analytic prior will be calculated using historical data.
 ```{r}
 data("metaData")
-testdata <- as.data.frame(metaData)
-dataset<-filter(testdata, bname == "VIAGRA")
-histcontrol<-filter(dataset, dose==0, primtime==12,indication=="ERECTILE DYSFUNCTION")
+testdata    <- as.data.frame(metaData)
+dataset     <- filter(testdata, bname == "VIAGRA")
+histcontrol <- filter(dataset, dose == 0, primtime == 12, indication == "ERECTILE DYSFUNCTION")
 
 ##Create MAP Prior
 hist_data <- data.frame(
-  trial=c(1,2,3,4),
+  trial = c(1, 2, 3, 4),
   est   = histcontrol$rslt,
   se    = histcontrol$se,
   sd    = histcontrol$sd,
@@ -49,7 +49,7 @@ gmap <- RBesT::gMAP(
   tau.dist   = "HalfNormal",
   tau.prior  = cbind(0, sd_tot / 4))
 
-prior_ctr    <- RBesT::robustify(
+prior_ctr <- RBesT::robustify(
   priormix = RBesT::automixfit(gmap),
   weight   = 0.5,
   mean     = 1.4,
@@ -73,13 +73,13 @@ prior_list <- c(list(prior_ctr), rep(list(prior_trt), times = length(dose_levels
 
 ## candidate models for MCPMod
 # linear function - no guestimates needed
-exp     <- DoseFinding::guesst(d     = 50,
-                               p     = c(0.2),
-                               model = "exponential",
-                               Maxd  = max(dose_levels))
-emax    <- DoseFinding::guesst(d     = 100,
-                               p     = c(0.9),
-                               model = "emax")
+exp <- DoseFinding::guesst(d     = 50,
+                           p     = c(0.2),
+                           model = "exponential",
+                           Maxd  = max(dose_levels))
+emax <- DoseFinding::guesst(d     = 100,
+                            p     = c(0.9),
+                            model = "emax")
 
 
 mods <- DoseFinding::Mods(
@@ -100,7 +100,7 @@ mods_sim <- DoseFinding::Mods(
   maxEff      = 12,
   placEff     = 1.4)
 
-n_patients<-c(50,50,50,50)
+n_patients <- c(50, 50, 50, 50)
 data <- simulateData(
   n_patients  = n_patients,
   dose_levels = dose_levels,
@@ -126,8 +126,8 @@ contr_mat <- DoseFinding::optContr(
   doses  = dose_levels,
   w      = n_patients)
 ##Calculation of critical value can be done with critVal function
-crit_val_equal<-DoseFinding:::critVal(contr_mat$corMat, alpha=0.05, df=0,alternative = "one.sided")
-crit_pval <-pnorm(crit_val_equal)
+crit_val_equal <- DoseFinding:::critVal(contr_mat$corMat, alpha = 0.05, df = 0, alternative = "one.sided")
+crit_pval      <- pnorm(crit_val_equal)
 
 ess_prior <- round(unlist(lapply(prior_list, RBesT::ess)))
 
@@ -138,7 +138,7 @@ contr_mat_prior <- DoseFinding::optContr(
   w      = n_patients + ess_prior)
 
 BMCP_result <- BMCPMod(
-  posteriors_list = posterior_emax,
+  posteriors_list = list(posterior_emax),
   contr_mat       = contr_mat_prior, 
   crit_prob       = crit_pval)
 
@@ -150,7 +150,7 @@ In the model fitting step the posterior distribution is used as basis.
 ```{r}
 #Model fit
 #This part is currently not working
-post_observed <- posterior_emax[[1]]
+post_observed <- posterior_emax
 model_shapes  <- c("linear", "emax", "exponential")
 
 
@@ -170,7 +170,7 @@ fit<- getModelFits(
 ```
 
 ```{r}
-plot(fit,CrI= TRUE)
-plot(fit_simple, CrI= TRUE)
+plot.modelFits(fit, CrI = TRUE)
+plot.modelFits(fit_simple, CrI = TRUE)
 ```
 For the plotting the credible intervals are shown as well.

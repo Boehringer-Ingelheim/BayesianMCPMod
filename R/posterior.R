@@ -52,7 +52,7 @@ getPosteriorI <- function(
     
   } else {
     
-    stop ("Both mu_hat and S_hat must be provided.")
+    stop ("Both mu_hat and sd_hat must be provided.")
     
   }
   
