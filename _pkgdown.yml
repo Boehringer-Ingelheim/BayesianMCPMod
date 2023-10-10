@@ -14,9 +14,6 @@ articles:
   - analysis_normal
 
 reference:
-- title: "Package documentation"
-  contents:
-  - BayesianMCPMod
 - title: "All functions"
   contents:
   - BMCPMod
