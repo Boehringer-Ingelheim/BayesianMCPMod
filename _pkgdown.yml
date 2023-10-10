@@ -12,12 +12,3 @@ articles:
   navbar: ~
   contents:
   - analysis_normal
-
-reference:
-- title: "All functions"
-  contents:
-  - BMCPMod
-  - getModelFits
-  - getPosterior
-  - plot_modelsFits
-  - simulateData
