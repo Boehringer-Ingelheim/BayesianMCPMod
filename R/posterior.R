@@ -40,7 +40,7 @@ getPosteriorI <- function(
   
   if (is.null(mu_hat) && is.null(sd_hat)) {
     
-    anova_res <- lm(data_i$response ~ factor(data_i$dose) - 1)
+    anova_res <- stats::lm(data_i$response ~ factor(data_i$dose) - 1)
     mu_hat    <- summary(anova_res)$coefficients[, 1]
     sd_hat    <- summary(anova_res)$coefficients[, 2]
     

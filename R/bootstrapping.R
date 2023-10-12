@@ -45,7 +45,7 @@ getBootsrapBands <- function (
         bnds  = DoseFinding::defBnds(
           mD = max(model_fits[[1]]$dose_levels))[[model]])
       
-      preds <- predict(fit, doseSeq = dose_seq, predType = "ls-means")
+      preds <- stats::predict(fit, doseSeq = dose_seq, predType = "ls-means")
       attr(preds, "gAIC") <- DoseFinding::gAIC(fit)
       
       return (preds)
@@ -74,7 +74,7 @@ getBootsrapBands <- function (
   sort_indx <- order(rep(seq_along(model_names), length(dose_seq)))
   quant_mat <- t(apply(X      = preds[sort_indx, ],
                        MARGIN = 1,
-                       FUN    = quantile,
+                       FUN    = stats::quantile,
                        probs  = quantile_probs))
   
   cr_bounds_data <- cbind(
