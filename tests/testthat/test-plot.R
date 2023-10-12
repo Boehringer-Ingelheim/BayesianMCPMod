@@ -153,8 +153,8 @@ test_that("Test plot_modelFits with different model_fits input", {
   plot6 <- plot_modelFits(fit)
   expect_is(plot6, "ggplot")
   
-  # Test with CrI = TRUE and more models
-  plot7 <- plot_modelFits(fit, CrI = TRUE)
+  # Test with cr_intv = TRUE and more models
+  plot7 <- plot_modelFits(fit, cr_intv = TRUE)
   expect_is(plot7, "ggplot")
   
   # Test with gAIC = FALSE and more models
@@ -166,6 +166,6 @@ test_that("Test plot_modelFits with different model_fits input", {
   expect_is(plot9, "ggplot")
   
   # Test with all non-default parameters and more models
-  plot10 <- plot_modelFits(fit, CrI = TRUE, gAIC = FALSE, avg_fit = FALSE)
+  plot10 <- plot_modelFits(fit, cr_intv = TRUE, gAIC = FALSE, avg_fit = FALSE)
   expect_is(plot10, "ggplot")
 })
