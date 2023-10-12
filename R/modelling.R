@@ -18,9 +18,9 @@ getModelFits <- function (
   getModelFit <- ifelse(simple, getModelFitSimple, getModelFitOpt)
   model_fits  <- lapply(models, getModelFit, dose_levels, posterior)
   
-  model_fits        <- addModelWeights(model_fits)
-  names(model_fits) <- models
+  model_fits  <- addModelWeights(model_fits)
   
+  names(model_fits)             <- models
   attr(model_fits, "posterior") <- posterior
   class(model_fits)             <- "modelFits"
   
@@ -33,14 +33,28 @@ getModelFitSimple <- function (
     
   model,
   dose_levels,
-  posterior
+  posterior,
+  mu_hat = NULL,
+  sd_hat = NULL
   
 ) {
   
+  if (is.null(mu_hat) && is.null(sd_hat)) {
+    
+    mu_hat <- summary.postList(posterior)[, 1]
+    sd_hat <- summary.postList(posterior)[, 2]
+    
+  } else {
+    
+    stopifnot(length(mu_hat) == length(sd_hat),
+              length(mu_hat) == length(dose_levels))
+    
+  }
+  
   fit <- DoseFinding::fitMod(
     dose  = dose_levels,
-    resp  = summary.postList(posterior)[, 1],
-    S     = diag(summary.postList(posterior)[, 2]^2),
+    resp  = mu_hat,
+    S     = diag(sd_hat^2),
     model = model,
     type  = "general",
     bnds  = DoseFinding::defBnds(mD = max(dose_levels))[[model]])

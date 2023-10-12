@@ -1,11 +1,12 @@
 #' @title getPosterior
 #' 
 #' @param data tbd
-#' @param prior prior_list
+#' @param prior_list prior_list
+#' @param mu_hat tbd
+#' @param sd_hat tbd
 #'
 #' @export
 getPosterior <- function(
-    
   data,
   prior_list,
   mu_hat = NULL,
@@ -48,7 +49,7 @@ getPosteriorI <- function(
     stopifnot("m_hat length must match number of dose levels" = 
                 length(prior_list) == length(mu_hat),
               "sd_hat length must match number of dose levels" = 
-                length(prior_list) == nrow(sd_hat))
+                length(prior_list) == length(sd_hat))
     
   } else {
     

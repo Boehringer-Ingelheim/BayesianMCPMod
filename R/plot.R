@@ -1,21 +1,38 @@
-plot.modelFits <- function (
+#' @title plot_modelFits
+#'
+#' @param model_fits tbd
+#' @param gAIC tbd
+#' @param avg_fit tbd
+#' @param cr_intv tbd
+#' @param alpha_CrI tbd
+#' @param cr_bands tbd
+#' @param alpha_CrB tbd
+#' @param n_bs_smpl tbd
+#'
+#' @return tbd
+#' @export
+plot_modelFits <- function (
     
   model_fits,
   gAIC      = TRUE,
   avg_fit   = TRUE,
-  CrI       = FALSE,
-  alpha_CrI = 0.05
+  cr_intv   = FALSE,
+  alpha_CrI = 0.05,
+  cr_bands  = FALSE,
+  alpha_CrB = c(0.05, 0.5),
+  n_bs_smpl = 1e3
   
 ) {
   
-  plot_resolution <- 1e3
+  plot_resolution <- 1e2
   
   dose_levels  <- model_fits[[1]]$dose_levels
   post_summary <- summary.postList(
     post_list = attr(model_fits, "posterior"),
     probs     = c(alpha_CrI / 2, 0.5, 1 - alpha_CrI / 2))
-  doses        <- seq(from = min(dose_levels),
-                      to   = max(dose_levels), length.out = plot_resolution)
+  doses        <- seq(from       = min(dose_levels),
+                      to         = max(dose_levels),
+                      length.out = plot_resolution)
   
   preds_models <- sapply(model_fits, predictModelFit, doses = doses)
   model_names  <- names(model_fits)
@@ -26,18 +43,18 @@ plot.modelFits <- function (
     avg_mod     <- preds_models %*% mod_weights
     
     preds_models <- cbind(preds_models, avg_mod)
-    model_names  <- c(model_names, "averageModel")
+    model_names  <- c(model_names, "avgFit")
     
   }
   
   gg_data <- data.frame(
-    dose_levels = rep(doses, length(model_names)),
-    fits        = as.vector(preds_models),
-    models      = rep(factor(model_names,
-                             levels = c("linear", "emax", "exponential",
-                                        "sigEmax", "logistic", "quadratic",
-                                        "averageModel")),
-                      each = plot_resolution))
+    dose_seqs = rep(doses, length(model_names)),
+    fits      = as.vector(preds_models),
+    models    = rep(factor(model_names,
+                           levels = c("linear", "emax", "exponential",
+                                      "sigEmax", "logistic", "quadratic",
+                                      "avgFit")),
+                    each = plot_resolution))
   
   if (gAIC) {
     
@@ -46,7 +63,7 @@ plot.modelFits <- function (
     
     if (avg_fit) {
       
-      mod_weights  <- sort(mod_weights, decreasing = TRUE)
+      mod_weights <- sort(mod_weights, decreasing = TRUE)
       paste_names <- names(mod_weights) |>
         gsub("exponential", "exp", x = _) |>
         gsub("quadratic",  "quad", x = _) |>
@@ -58,6 +75,23 @@ plot.modelFits <- function (
                            collapse = ", ")
       label_gAUC <- c(label_gAUC, label_avg)
       
+    }
+    
+  }
+  
+  if (cr_bands) {
+    
+    crB_data <- getBootsrapBands(
+      model_fits = model_fits,
+      n_samples  = n_bs_smpl,
+      alpha      = alpha_CrB,
+      avg_fit    = avg_fit,
+      dose_seq   = doses)
+    
+    getInx <- function (alpha_CrB) {
+      n        <- length(alpha_CrB)
+      inx_list <- lapply(seq_len(n), function (i) c(i, 2 * n - i + 1) + 2)
+      return (inx_list)
     }
     
   }
@@ -83,7 +117,7 @@ plot.modelFits <- function (
       }
     } + 
     ## Posterior Credible Intervals
-    {if (CrI) {
+    {if (cr_intv) {
       
       ggplot2::geom_errorbar(
         data    = data.frame(x    = dose_levels,
@@ -92,22 +126,44 @@ plot.modelFits <- function (
         mapping = ggplot2::aes(x    = x,
                                ymin = ymin,
                                ymax = ymax),
-        width = 0, alpha = 0.5)
+        width   = 0,
+        alpha   = 0.5)
       
       }
     } + 
     ## Posterior Medians
     ggplot2::geom_point(
       data    = data.frame(dose_levels = dose_levels,
-                           fits        = post_summary[, 4]),
-      mapping = ggplot2::aes(dose_levels, fits),
+                           medians     = post_summary[, 4]),
+      mapping = ggplot2::aes(dose_levels, medians),
       size    = 2) +
     ## Fitted Models
     ggplot2::geom_line(
       data    = gg_data,
-      mapping = ggplot2::aes(dose_levels, fits)) + 
+      mapping = ggplot2::aes(dose_seqs, fits)) + 
     ## Faceting
     ggplot2::facet_wrap(~ models)
+  
+  ## Bootstrapped Credible Bands
+  if (cr_bands) {
+    
+    
+    for (inx in getInx(alpha_CrB)) {
+      
+      loop_txt <- paste0(
+        "ggplot2::geom_ribbon(
+        data = crB_data,
+        mapping = ggplot2::aes(x    = dose_seqs,
+                               ymin = crB_data[, ", inx[1], "],
+                               ymax = crB_data[, ", inx[2], "]),
+        alpha   = 0.2)")
+      
+      plts <- plts + eval(parse(text = loop_txt))
+      
+    }
+    rm(inx)
+    
+  }
   
   return (plts)
   
