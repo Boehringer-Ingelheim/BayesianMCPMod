@@ -177,7 +177,7 @@ predict.ModelFits <- function (
   
 ) {
   
-  lapply(x, predictModelFit, doses = doses, ...)
+  lapply(object, predictModelFit, doses = doses, ...)
   
 }
 
