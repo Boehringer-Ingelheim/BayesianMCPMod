@@ -171,7 +171,7 @@ fit<- getModelFits(
 ```
 
 ```{r}
-plot_modelFits(fit)
-plot_modelFits(fit_simple, cr_bands = TRUE)
+plot(fit)
+plot(fit_simple, cr_bands = TRUE)
 ```
 For the plotting the credible intervals are shown as well.

@@ -1,6 +1,6 @@
-#' @title plot_modelFits
+#' @title plot.modelFits
 #'
-#' @param model_fits tbd
+#' @param x tbd An object of type modelFits
 #' @param gAIC tbd
 #' @param avg_fit tbd
 #' @param cr_intv tbd
@@ -9,12 +9,13 @@
 #' @param alpha_CrB tbd
 #' @param n_bs_smpl tbd
 #' @param acc_color tbd
+#' @param ... tbd
 #' 
 #' @return tbd
 #' @export
-plot_modelFits <- function (
+plot.modelFits <- function (
     
-  model_fits,
+  x,
   gAIC      = TRUE,
   avg_fit   = TRUE,
   cr_intv   = TRUE,
@@ -22,16 +23,18 @@ plot_modelFits <- function (
   cr_bands  = FALSE,
   alpha_CrB = c(0.05, 0.5),
   n_bs_smpl = 1e3,
-  acc_color = "orange"
+  acc_color = "orange",
+  ...
   
 ) {
   
-  plot_res <- 1e2
+  plot_res   <- 1e2
+  model_fits <- x
   
   dose_levels  <- model_fits[[1]]$dose_levels
   post_summary <- summary.postList(
-    post_list = attr(model_fits, "posterior"),
-    probs     = c(alpha_CrI / 2, 0.5, 1 - alpha_CrI / 2))
+    object = attr(model_fits, "posterior"),
+    probs  = c(alpha_CrI / 2, 0.5, 1 - alpha_CrI / 2))
   doses        <- seq(from       = min(dose_levels),
                       to         = max(dose_levels),
                       length.out = plot_res)

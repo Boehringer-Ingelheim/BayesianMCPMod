@@ -84,26 +84,31 @@ getPostCombsI <- function (
   
 }
 
+#' @export
 summary.postList <- function (
     
-  post_list,
+  object,
   ...
   
 ) {
   
-  summary_list        <- lapply(post_list, summary, ...)
-  names(summary_list) <- names(post_list)
+  summary_list        <- lapply(object, summary, ...)
+  names(summary_list) <- names(object)
   summary_tab         <- do.call(rbind, summary_list)
   
   return (summary_tab)
   
 }
 
+#' @export
 print.postList <- function (
     
-  post_list
+  x,
+  ...
   
 ) {
+  
+  post_list <- x
   
   getMaxDiff <- function (
     
@@ -133,6 +138,6 @@ print.postList <- function (
                        "Maximum Difference to Control and Dose Group",
                        "Posterior Distributions")
   
-  print(list_out)
+  print(list_out, ...)
   
 }

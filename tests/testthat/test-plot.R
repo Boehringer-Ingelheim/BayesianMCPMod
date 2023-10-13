@@ -1,4 +1,4 @@
-test_that("Test plot_modelFits with different model_fits input", {
+test_that("Test plot.modelFits with different model_fits input", {
   library(BayesianMCPMod)
   library(clinDR)
   library(dplyr)
@@ -150,22 +150,22 @@ test_that("Test plot_modelFits with different model_fits input", {
   )
   
   # Test with default parameters and more models
-  plot1 <- plot_modelFits(fit)
+  plot1 <- plot.modelFits(fit)
   expect_s3_class(plot1, "ggplot")
   
   # Test with cr_intv = TRUE and more models
-  plot2 <- plot_modelFits(fit, cr_intv = TRUE)
+  plot2 <- plot.modelFits(fit, cr_intv = TRUE)
   expect_s3_class(plot2, "ggplot")
   
   # Test with gAIC = FALSE and more models
-  plot3 <- plot_modelFits(fit, gAIC = FALSE)
+  plot3 <- plot.modelFits(fit, gAIC = FALSE)
   expect_s3_class(plot3, "ggplot")
   
   # Test with avg_fit = FALSE and more models
-  plot4 <- plot_modelFits(fit, avg_fit = FALSE)
+  plot4 <- plot.modelFits(fit, avg_fit = FALSE)
   expect_s3_class(plot4, "ggplot")
   
   # Test with all non-default parameters and more models
-  plot5 <- plot_modelFits(fit, cr_intv = TRUE, gAIC = FALSE, avg_fit = FALSE)
+  plot5 <- plot.modelFits(fit, cr_intv = TRUE, gAIC = FALSE, avg_fit = FALSE)
   expect_s3_class(plot5, "ggplot")
 })
