@@ -9,7 +9,8 @@ test_that("getPosterior works correctly", {
   
   # Test getPosterior function
   posterior_list <- getPosterior(data, prior_list, mu_hat, sd_hat)
-  expect_is(posterior_list, "postList")
+  expect_type(posterior_list, "character")
+  expect_s3_class(posterior_list, "postList")
 })
 
 test_that("getPosteriorI works correctly", {
@@ -22,7 +23,8 @@ test_that("getPosteriorI works correctly", {
   
   # Test getPosteriorI function
   post_list <- getPosteriorI(data_i, prior_list, mu_hat, sd_hat)
-  expect_is(post_list, "postList")
+  expect_type(post_list, "character")
+  expect_s3_class(post_list, "postList")
 })
 
 test_that("summary.postList works correctly", {
@@ -37,5 +39,5 @@ test_that("summary.postList works correctly", {
   
   # Test summary.postList function
   summary_tab <- summary.postList(post_list)
-  expect_is(summary_tab, "matrix")
+  expect_type(summary_tab, "character")
 })

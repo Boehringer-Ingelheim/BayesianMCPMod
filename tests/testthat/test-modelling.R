@@ -23,5 +23,5 @@ test_that("predictModelFit works correctly", {
   )
   
   pred_vals <- predictModelFit(model_fit)
-  expect_is(pred_vals, "numeric")
+  expect_type(pred_vals, "double")
 })

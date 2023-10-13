@@ -9,7 +9,6 @@
 #' @return tbd
 #' @export
 getBootsrapBands <- function (
-
   model_fits,
   n_samples = 1e3,
   alpha     = c(0.05, 0.5),
@@ -17,10 +16,9 @@ getBootsrapBands <- function (
   dose_seq  = NULL
 
 ) {
-  
   mu_hat_samples <- sapply(attr(model_fits, "posterior"),
                            RBesT::rmix, n = n_samples)
-  sd_hat         <- summary.postList(post_observed)[, 2]
+  sd_hat         <- summary.postList(model_fits)[, 2]
   
   dose_levels    <- model_fits[[1]]$dose_levels
   model_names    <- names(model_fits)
