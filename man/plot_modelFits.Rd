@@ -8,11 +8,12 @@ plot_modelFits(
   model_fits,
   gAIC = TRUE,
   avg_fit = TRUE,
-  cr_intv = FALSE,
+  cr_intv = TRUE,
   alpha_CrI = 0.05,
   cr_bands = FALSE,
   alpha_CrB = c(0.05, 0.5),
-  n_bs_smpl = 1000
+  n_bs_smpl = 1000,
+  acc_color = "orange"
 )
 }
 \arguments{
@@ -31,6 +32,8 @@ plot_modelFits(
 \item{alpha_CrB}{tbd}
 
 \item{n_bs_smpl}{tbd}
+
+\item{acc_color}{tbd}
 }
 \value{
 tbd

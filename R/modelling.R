@@ -33,28 +33,14 @@ getModelFitSimple <- function (
     
   model,
   dose_levels,
-  posterior,
-  mu_hat = NULL,
-  sd_hat = NULL
+  posterior
   
 ) {
   
-  if (is.null(mu_hat) && is.null(sd_hat)) {
-    
-    mu_hat <- summary.postList(posterior)[, 1]
-    sd_hat <- summary.postList(posterior)[, 2]
-    
-  } else {
-    
-    stopifnot(length(mu_hat) == length(sd_hat),
-              length(mu_hat) == length(dose_levels))
-    
-  }
-  
   fit <- DoseFinding::fitMod(
     dose  = dose_levels,
-    resp  = mu_hat,
-    S     = diag(sd_hat^2),
+    resp  = summary.postList(posterior)[, 1],
+    S     = diag(summary.postList(posterior)[, 2]^2),
     model = model,
     type  = "general",
     bnds  = DoseFinding::defBnds(mD = max(dose_levels))[[model]])
@@ -179,6 +165,17 @@ getModelFitOpt <- function (
   model_fit$gAIC        <- getGenAIC(model_fit, post_combs)
   
   return (model_fit)
+  
+}
+
+predict.ModelFits <- function (
+    
+  model_fits,
+  doses = NULL
+  
+) {
+  
+  lapply(model_fits, predictModelFit, doses = doses)
   
 }
 

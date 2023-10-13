@@ -18,6 +18,7 @@ knitr::opts_chunk$set(
 library(BayesianMCPMod)
 library(clinDR)
 library(dplyr)
+set.seed(7015)
 ```
 This vignette shows how to apply the BayesianMCPMod package.
 
@@ -120,11 +121,11 @@ posterior_emax <- getPosterior(
 # iv) Execution of Bayesian MCPMod Test step
 ```{r}
 #Evaluation of Bayesian MCPMod
-
 contr_mat <- DoseFinding::optContr(
   models = mods,
   doses  = dose_levels,
   w      = n_patients)
+
 ##Calculation of critical value can be done with critVal function
 crit_val_equal <- DoseFinding:::critVal(contr_mat$corMat, alpha = 0.05, df = 0, alternative = "one.sided")
 crit_pval      <- pnorm(crit_val_equal)
@@ -171,6 +172,6 @@ fit<- getModelFits(
 
 ```{r}
 plot_modelFits(fit, cr_intv = TRUE)
-# plot_modelFits(fit_simple, cr_intv = TRUE, cr_bands = TRUE)
+plot_modelFits(fit_simple, cr_intv = TRUE, cr_bands = TRUE)
 ```
 For the plotting the credible intervals are shown as well.

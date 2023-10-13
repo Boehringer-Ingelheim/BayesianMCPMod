@@ -8,7 +8,8 @@
 #' @param cr_bands tbd
 #' @param alpha_CrB tbd
 #' @param n_bs_smpl tbd
-#'
+#' @param acc_color tbd
+#' 
 #' @return tbd
 #' @export
 plot_modelFits <- function (
@@ -16,15 +17,16 @@ plot_modelFits <- function (
   model_fits,
   gAIC      = TRUE,
   avg_fit   = TRUE,
-  cr_intv   = FALSE,
+  cr_intv   = TRUE,
   alpha_CrI = 0.05,
   cr_bands  = FALSE,
   alpha_CrB = c(0.05, 0.5),
-  n_bs_smpl = 1e3
+  n_bs_smpl = 1e3,
+  acc_color = "orange"
   
 ) {
   
-  plot_resolution <- 1e2
+  plot_res <- 1e2
   
   dose_levels  <- model_fits[[1]]$dose_levels
   post_summary <- summary.postList(
@@ -32,7 +34,7 @@ plot_modelFits <- function (
     probs     = c(alpha_CrI / 2, 0.5, 1 - alpha_CrI / 2))
   doses        <- seq(from       = min(dose_levels),
                       to         = max(dose_levels),
-                      length.out = plot_resolution)
+                      length.out = plot_res)
   
   preds_models <- sapply(model_fits, predictModelFit, doses = doses)
   model_names  <- names(model_fits)
@@ -54,7 +56,7 @@ plot_modelFits <- function (
                            levels = c("linear", "emax", "exponential",
                                       "sigEmax", "logistic", "quadratic",
                                       "avgFit")),
-                    each = plot_resolution))
+                    each = plot_res))
   
   if (gAIC) {
     
@@ -81,7 +83,7 @@ plot_modelFits <- function (
   
   if (cr_bands) {
     
-    crB_data <- getBootsrapBands(
+    crB_data <- getBootstrapBands(
       model_fits = model_fits,
       n_samples  = n_bs_smpl,
       alpha      = alpha_CrB,
@@ -90,9 +92,8 @@ plot_modelFits <- function (
     
     getInx <- function (alpha_CrB) {
       n        <- length(alpha_CrB)
-      inx_list <- lapply(seq_len(n), function (i) c(i, 2 * n - i + 1) + 2)
-      return (inx_list)
-    }
+      inx_list <- lapply(seq_len(n), function (i) c(i, 2 * n - i + 1) + 3)
+      return (inx_list)}
     
   }
   
@@ -115,7 +116,37 @@ plot_modelFits <- function (
         size = 3)
       
       }
-    } + 
+    }
+  
+  if (cr_bands) {
+    
+    ## Bootstrapped Credible Bands
+    for (inx in getInx(alpha_CrB)) {
+      
+      loop_txt <- paste0(
+        "ggplot2::geom_ribbon(
+          data    = crB_data,
+          mapping = ggplot2::aes(x    = dose_seqs,
+                                 ymin = crB_data[, ", inx[1], "],
+                                 ymax = crB_data[, ", inx[2], "]),
+          fill    = acc_color,                    
+          alpha   = 0.25)")
+      
+      plts <- plts + eval(parse(text = loop_txt))
+      
+    }
+    rm(inx)
+    
+    ## Bootstrapped Fit
+    plts <- plts +
+      ggplot2::geom_line(
+        data    = crB_data,
+        mapping = ggplot2::aes(dose_seqs, `50%`),
+        color   = acc_color)
+    
+  }
+  
+  plts <- plts +
     ## Posterior Credible Intervals
     {if (cr_intv) {
       
@@ -133,8 +164,9 @@ plot_modelFits <- function (
     } + 
     ## Posterior Medians
     ggplot2::geom_point(
-      data    = data.frame(dose_levels = dose_levels,
-                           medians     = post_summary[, 4]),
+      data    = data.frame(
+        dose_levels = dose_levels,
+        medians     = post_summary[, 4]),
       mapping = ggplot2::aes(dose_levels, medians),
       size    = 2) +
     ## Fitted Models
@@ -143,27 +175,6 @@ plot_modelFits <- function (
       mapping = ggplot2::aes(dose_seqs, fits)) + 
     ## Faceting
     ggplot2::facet_wrap(~ models)
-  
-  ## Bootstrapped Credible Bands
-  if (cr_bands) {
-    
-    
-    for (inx in getInx(alpha_CrB)) {
-      
-      loop_txt <- paste0(
-        "ggplot2::geom_ribbon(
-        data = crB_data,
-        mapping = ggplot2::aes(x    = dose_seqs,
-                               ymin = crB_data[, ", inx[1], "],
-                               ymax = crB_data[, ", inx[2], "]),
-        alpha   = 0.2)")
-      
-      plts <- plts + eval(parse(text = loop_txt))
-      
-    }
-    rm(inx)
-    
-  }
   
   return (plts)
   

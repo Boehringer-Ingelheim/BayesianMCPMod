@@ -1,4 +1,4 @@
-#' @title getBootsrapBands
+#' @title getBootstrapBands
 #'
 #' @param model_fits tbd
 #' @param n_samples tbd
@@ -8,7 +8,7 @@
 #'
 #' @return tbd
 #' @export
-getBootsrapBands <- function (
+getBootstrapBands <- function (
 
   model_fits,
   n_samples = 1e3,
@@ -24,7 +24,7 @@ getBootsrapBands <- function (
   
   dose_levels    <- model_fits[[1]]$dose_levels
   model_names    <- names(model_fits)
-  quantile_probs <- sort(unique(c(alpha / 2, 1 - alpha / 2)))
+  quantile_probs <- c(0.5, sort(unique(c(alpha / 2, 1 - alpha / 2))))
   
   if (is.null(dose_seq)) {
     
