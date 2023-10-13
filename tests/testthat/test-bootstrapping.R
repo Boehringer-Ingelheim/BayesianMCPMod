@@ -134,18 +134,18 @@ posterior   = post_observed,
     posterior   = post_observed,
     simple      = FALSE)
 
-  result_simple <- getBootsrapBands(fit_simple)
-  result <- getBootsrapBands(fit)
+  result_simple <- getBootstrapBands(fit_simple)
+  result <- getBootstrapBands(fit)
   expect_type(result_simple, "list")
   expect_type(result, "list")
 
-  result_2_simple <- getBootsrapBands(fit_simple, n_samples = 1e2, alpha = c(0.1, 0.9), avg_fit = FALSE, dose_seq = c(1, 2, 3))
-  result_2 <- getBootsrapBands(fit, n_samples = 1e2, alpha = c(0.1, 0.9), avg_fit = FALSE, dose_seq = c(1, 2, 3))
+  result_2_simple <- getBootstrapBands(fit_simple, n_samples = 1e2, alpha = c(0.1, 0.9), avg_fit = FALSE, dose_seq = c(1, 2, 3))
+  result_2 <- getBootstrapBands(fit, n_samples = 1e2, alpha = c(0.1, 0.9), avg_fit = FALSE, dose_seq = c(1, 2, 3))
   expect_type(result_2_simple, "list")
   expect_type(result_2, "list")
 
-  result_3_simple <- getBootsrapBands(fit_simple, dose_seq = NULL)
-  result_3 <- getBootsrapBands(fit, dose_seq = NULL)
+  result_3_simple <- getBootstrapBands(fit_simple, dose_seq = NULL)
+  result_3 <- getBootstrapBands(fit, dose_seq = NULL)
   expect_type(result_3_simple, "list")
   expect_type(result_3, "list")
 })
