@@ -5,6 +5,7 @@
 #' @param sd tbd
 #' @param mods tbd
 #' @param n_sim tbd
+#' @param true_model tbd
 #' 
 #' @export
 simulateData <- function(
@@ -13,9 +14,20 @@ simulateData <- function(
   dose_levels,
   sd,
   mods,
-  n_sim
+  n_sim = 1e3,
+  true_model = NULL
   
 ) {
+  
+  if (!is.null(true_model)) {
+    
+    n_sim            <- 1
+    mods_attr        <- attributes(mods)
+    mods_attr$names  <- true_model
+    mods             <- mods[true_model]
+    attributes(mods) <- mods_attr
+    
+  }
   
   sim_info <- data.frame(
     simulation = rep(seq_len(n_sim), each = sum(n_patients)),
@@ -26,6 +38,12 @@ simulateData <- function(
   random_noise    <- stats::rnorm(nrow(sim_info), mean = 0, sd = sd)
   
   sim_data <- cbind(sim_info, model_responses + random_noise)
+  
+  if (!is.null(true_model)) {
+    
+    sim_data <- getModelData(sim_data, true_model)
+    
+  }
   
   return (sim_data)
   
@@ -42,15 +60,5 @@ getModelData <- function (
   colnames(model_data)[3] <- "response"
   
   return (model_data)
-  
-}
-
-getTrialOutcome <- function (
-    
-  
-  
-) {
-  
-  
   
 }

@@ -6,8 +6,6 @@
 \usage{
 assessDesign(
   n_patients,
-  dose_levels,
-  sd,
   mods,
   prior_list,
   n_sim = 1000,
@@ -17,10 +15,6 @@ assessDesign(
 }
 \arguments{
 \item{n_patients}{tbd}
-
-\item{dose_levels}{tbd}
-
-\item{sd}{tbd}
 
 \item{mods}{tbd}
 

@@ -4,7 +4,14 @@
 \alias{simulateData}
 \title{simulateData}
 \usage{
-simulateData(n_patients, dose_levels, sd, mods, n_sim)
+simulateData(
+  n_patients,
+  dose_levels,
+  sd,
+  mods,
+  n_sim = 1000,
+  true_model = NULL
+)
 }
 \arguments{
 \item{n_patients}{tbd}
@@ -16,6 +23,8 @@ simulateData(n_patients, dose_levels, sd, mods, n_sim)
 \item{mods}{tbd}
 
 \item{n_sim}{tbd}
+
+\item{true_model}{tbd}
 }
 \description{
 simulateData
