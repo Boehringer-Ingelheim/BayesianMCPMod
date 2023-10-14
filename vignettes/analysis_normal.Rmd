@@ -138,8 +138,8 @@ contr_mat_prior <- DoseFinding::optContr(
   doses  = dose_levels,
   w      = n_patients + ess_prior)
 
-BMCP_result <- BMCPMod(
-  posteriors_list = list(posterior_emax),
+BMCP_result <- performBayesianMCP(
+  posteriors_list = posterior_emax,
   contr_mat       = contr_mat_prior, 
   crit_prob       = crit_pval)
 

@@ -1,11 +1,92 @@
-#' @title BMCPMod
+#' @title performBayesianMCPMod
+#' 
+#' @param posteriors_list tbd
+#' @param contr_mat tbd
+#' @param crit_prob tbd
+#' @param simple tbd
+#' 
+#' @export
+performBayesianMCPMod <- function (
+    
+  posteriors_list,
+  contr_mat,
+  crit_prob,
+  simple = FALSE
+  
+) {
+  
+  if (class(posteriors_list) == "postList") {
+    
+    posteriors_list <- list(posteriors_list)
+    
+  }
+  
+  b_mcp <- BayesianMCP(
+    posteriors_list = posteriors_list,
+    contr_mat       = contr_mat,
+    crit_prob       = crit_prob)
+  
+  model_shapes <- colnames(contr_mat$contMat)
+  dose_levels  <- as.numeric(rownames(contr_mat$contMat))
+  
+  fits_list <- lapply(seq_along(posteriors_list), function (i) {
+    
+    if (b_mcp[i, 1]) {
+      
+      sign_models <- b_mcp[i, -c(1, 2)] > attr(b_mcp, "crit_prob")
+      
+      model_fits  <- getModelFits(
+        models      = model_shapes,
+        dose_levels = dose_levels,
+        posterior   = posteriors_list[[i]],
+        simple      = simple)
+      
+      model_fits  <- addSignificance(model_fits, sign_models)
+      
+    } else {
+      
+      NULL
+      
+    }
+    
+  })
+  
+  bmcpmod        <- list(BayesianMCP = b_mcp, Mod = fits_list)
+  class(bmcpmod) <- "BayesianMCPMod"
+  
+  return (bmcpmod)
+  
+}
+
+addSignificance <- function (
+    
+  model_fits,
+  sign_models
+
+) {
+  
+  names(sign_models) <- NULL
+  
+  model_fits_out <- lapply(seq_along(model_fits), function (i) {
+    
+    c(model_fits[[i]], significant = sign_models[i])
+    
+  })
+  
+  attributes(model_fits_out) <- attributes(model_fits)
+  
+  return (model_fits_out)
+  
+}
+
+#' @title BayesianMCP
 #' 
 #' @param posteriors_list tbd
 #' @param contr_mat tbd
 #' @param crit_prob tbd
 #' 
 #' @export
-BMCPMod <- function(
+performBayesianMCP <- function(
     
   posteriors_list,
   contr_mat,
@@ -13,11 +94,22 @@ BMCPMod <- function(
   
 ) {
   
-  lapply(posteriors_list, BayesMCPMod, contr_mat, crit_prob)
+  if (class(posteriors_list) == "postList") {
+    
+    posteriors_list <- list(posteriors_list)
+    
+  }
+  
+  b_mcp <- t(sapply(posteriors_list, BayesMCPi, contr_mat, crit_prob))
+  
+  attr(b_mcp, "crit_prob") <- crit_prob
+  class(b_mcp)             <- "BayesianMCP"
+  
+  return (b_mcp)
   
 }
 
-BayesMCPMod <- function (
+BayesMCPi <- function (
     
   posterior_i,
   contr_mat,
@@ -51,11 +143,10 @@ BayesMCPMod <- function (
   post_combs_i <- getPostCombsI(posterior_i)
   post_probs   <- apply(contr_mat$contMat, 2, getPostProb, post_combs_i)
   
-  res_list <- list(
-    sign       = ifelse(max(post_probs) > crit_prob, 1, 0),
-    p_val      = max(post_probs),
-    post_probs = post_probs)
+  res <- c(sign       = ifelse(max(post_probs) > crit_prob, 1, 0),
+           p_val      = max(post_probs),
+           post_probs = post_probs)
   
-  return (res_list)
+  return (res)
   
 }

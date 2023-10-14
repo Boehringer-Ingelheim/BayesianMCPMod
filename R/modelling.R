@@ -168,19 +168,6 @@ getModelFitOpt <- function (
   
 }
 
-#' @export
-predict.ModelFits <- function (
-    
-  object,
-  doses = NULL,
-  ...
-  
-) {
-  
-  lapply(object, predictModelFit, doses = doses, ...)
-  
-}
-
 predictModelFit <- function (
     
   model_fit,

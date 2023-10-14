@@ -108,7 +108,7 @@ test_that("test getBootstrapBands", {
     doses  = dose_levels,
     w      = n_patients + ess_prior)
 
-  BMCP_result <- BMCPMod(
+  BMCP_result <- performBayesianMCP(
     posteriors_list = list(posterior_emax),
     contr_mat       = contr_mat_prior,
     crit_prob       = crit_pval)
