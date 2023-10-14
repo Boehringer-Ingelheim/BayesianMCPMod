@@ -1,3 +1,75 @@
+#' @title assessDesign
+#' 
+#' @param n_patients tbd
+#' @param dose_levels tbd
+#' @param sd tbd
+#' @param mods tbd
+#' @param prior_list tbd
+#' @param n_sim tbd
+#' @param alpha_crit_val tbd
+#' @param simple tbd
+#' 
+#' @export
+assessDesign <- function (
+    
+  n_patients,
+  dose_levels,
+  sd,
+  mods,
+  prior_list,
+  
+  n_sim          = 1e3,
+  alpha_crit_val = 0.05,
+  simple         = TRUE
+  
+) {
+  
+  data <- simulateData(
+    n_patients  = n_patients,
+    dose_levels = dose_levels,
+    sd          = sd,
+    mods        = mods,
+    n_sim       = n_sim)
+  
+  model_names <- names(mods)
+  
+  eval_design <- lapply(model_names, function (model_name) {
+    
+    posterior_list <- getPosterior(
+      data       = getModelData(data, model_name),
+      prior_list = prior_list)
+    
+    contr_mat <- DoseFinding::optContr(
+      models = mods,
+      doses  = dose_levels,
+      w      = n_patients)
+    
+    crit_pval <- pnorm(DoseFinding:::critVal(
+      corMat      = contr_mat$corMat,
+      alpha       = alpha_crit_val,
+      df          = 0,
+      alternative = "one.sided"))
+    
+    ess_prior <- suppressMessages(round(unlist(lapply(prior_list, RBesT::ess))))
+    contr_mat_prior <- DoseFinding::optContr(
+      models = mods,
+      doses  = dose_levels,
+      w      = n_patients + ess_prior)
+    
+    b_mcp_mod <- performBayesianMCPMod(
+      posteriors_list = posterior_list,
+      contr_mat       = contr_mat_prior,
+      crit_prob       = crit_pval,
+      simple          = simple)
+    
+  })
+  
+  names(eval_design) <- model_names
+  
+  return (eval_design)
+  
+}
+
 #' @title performBayesianMCPMod
 #' 
 #' @param posteriors_list tbd
@@ -21,7 +93,7 @@ performBayesianMCPMod <- function (
     
   }
   
-  b_mcp <- BayesianMCP(
+  b_mcp <- performBayesianMCP(
     posteriors_list = posteriors_list,
     contr_mat       = contr_mat,
     crit_prob       = crit_prob)

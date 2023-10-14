@@ -1,6 +1,7 @@
 ---
 title: "Analysis Example of Bayesian MCPMod for Continuous Data"
 output: rmarkdown::html_vignette
+number_sections: true
 vignette: >
   %\VignetteIndexEntry{Analysis Example of Bayesian MCPMod for Continuous Data}
   %\VignetteEngine{knitr::rmarkdown}
@@ -18,11 +19,12 @@ knitr::opts_chunk$set(
 library(BayesianMCPMod)
 library(clinDR)
 library(dplyr)
+
 set.seed(7015)
 ```
 This vignette shows how to apply the BayesianMCPMod package.
 
-# i) Calculation of a MAP prior
+# Calculation of a MAP prior
 In a first step a meta analytic prior will be calculated using historical data.
 ```{r}
 data("metaData")
@@ -68,7 +70,7 @@ dose_levels <- c(0, 50, 100, 200)
 ## combine priors in list
 prior_list <- c(list(prior_ctr), rep(list(prior_trt), times = length(dose_levels[-1])))
 ```
-# ii) Pre-Specification of candidate models 
+# Pre-Specification of candidate models 
 ```{r}
 #Pre-Specification (B)MCPMod 
 
@@ -82,7 +84,6 @@ emax <- DoseFinding::guesst(d     = 100,
                             p     = c(0.9),
                             model = "emax")
 
-
 mods <- DoseFinding::Mods(
   linear      = NULL,
   emax        = emax,
@@ -91,7 +92,19 @@ mods <- DoseFinding::Mods(
   maxEff      = 10,
   placEff     = 1.4)
 ```
-# iii) Trial results
+# Assessing the Trial Design
+```{r}
+n_patients <- c(50, 50, 50, 50)
+
+assessDesign(
+  n_patients  = n_patients,
+  dose_levels = dose_levels,
+  sd          = sd_tot,
+  mods        = mods,
+  prior_list  = prior_list,
+  n_sim       = 1e1)
+```
+# Trial results
 ```{r}
 #Simulation of new trial 
 ##Note: This part will be simplified and direct results from one trial will be used
@@ -101,7 +114,6 @@ mods_sim <- DoseFinding::Mods(
   maxEff      = 12,
   placEff     = 1.4)
 
-n_patients <- c(50, 50, 50, 50)
 data <- simulateData(
   n_patients  = n_patients,
   dose_levels = dose_levels,
@@ -118,7 +130,7 @@ posterior_emax <- getPosterior(
 
 ```
 
-# iv) Execution of Bayesian MCPMod Test step
+# Execution of Bayesian MCPMod Test step
 ```{r}
 #Evaluation of Bayesian MCPMod
 contr_mat <- DoseFinding::optContr(
@@ -146,7 +158,7 @@ BMCP_result <- performBayesianMCP(
 BMCP_result
 ```
 
-# v) Model fitting and Plotting
+# Model fitting and Plotting
 In the model fitting step the posterior distribution is used as basis. 
 ```{r}
 #Model fit

@@ -30,3 +30,27 @@ simulateData <- function(
   return (sim_data)
   
 }
+
+getModelData <- function (
+    
+  sim_data,
+  model_name
+  
+) {
+  
+  model_data              <- sim_data[, c("simulation", "dose", model_name)]
+  colnames(model_data)[3] <- "response"
+  
+  return (model_data)
+  
+}
+
+getTrialOutcome <- function (
+    
+  
+  
+) {
+  
+  
+  
+}

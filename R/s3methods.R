@@ -9,6 +9,8 @@ print.BayesianMCPMod <- function (
 ) {
   
   n_models      <- ncol(x$BayesianMCP) - 2L
+  model_names   <- colnames(x$BayesianMCP)[-c(1, 2)] |>
+    sub(pattern = "post_probs.", replacement = "", x = _)
   
   model_success <- colMeans(do.call(rbind, lapply(x$Mod, function (y) {
     
@@ -18,7 +20,10 @@ print.BayesianMCPMod <- function (
       
     } else {
       
-      rep(FALSE, n_models)
+      model_signs <- rep(FALSE, n_models)
+      names(model_signs) <- model_names
+      
+      return (model_signs)
       
     }
     
