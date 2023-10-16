@@ -22,69 +22,78 @@ library(dplyr)
 
 set.seed(7015)
 ```
-This vignette shows how to apply the BayesianMCPMod package.
+# Background and data
+
+In this vignette we will show the use of the Bayesian MCPMod package for continuous distributed data. 
+Hereby the focus is on the utilization of an informative prior.
+We will use data that is included in the clinDR package. 
+More specifically trial results for BRINTELLIX will be used to illustrate the specification of an informative prior and the usage of such a prior for the bayesian evaluation of a (hypothetical) new trial. 
+More information around BRINTELLIX to be added...
+
 
 # Calculation of a MAP prior
-In a first step a meta analytic prior will be calculated using historical data.
+In a first step a meta analytic prior will be calculated using historical data from 4 trials (with main endpoint CfB in MADRS score after 8 weeks).
+Please note that only information from the control group will be integrated (leading to an informative multicomponent prior for the control group), while for the active groups a non-informative prior will be specified.
 ```{r Calculation of a MAP prior}
 data("metaData")
 testdata    <- as.data.frame(metaData)
-dataset     <- filter(testdata, bname == "VIAGRA")
-histcontrol <- filter(dataset, dose == 0, primtime == 12, indication == "ERECTILE DYSFUNCTION")
+dataset     <- filter(testdata, bname == "BRINTELLIX")
+histcontrol <- filter(dataset, dose == 0, primtime == 8, indication == "MAJOR DEPRESSIVE DISORDER",protid!=6)
 
 ##Create MAP Prior
 hist_data <- data.frame(
-  trial = seq_len(4),
+  trial = histcontrol$nctno,
   est   = histcontrol$rslt,
   se    = histcontrol$se,
   sd    = histcontrol$sd,
   n     = histcontrol$sampsize)
 
-dose_levels <- c(0, 50, 100, 200)
+dose_levels <- c(0, 2.5, 5, 10)
 
 prior_list <- getPriorList(
   hist_data   = hist_data,
   dose_levels = dose_levels)
 
 ```
-# Pre-Specification of candidate models 
+
+# Specifications new trial 
+We will use the trial with ct.gov number NCT00635219 as exemplary new trial. 
+To be able to apply the bayesian MCPMod approach, candidate models need to be specified. Since there are only 3 active dose levels we will limit the set of candidate models to a linear, an exponential and an emax model.
+
 ```{r Pre-Specification of candidate models}
 #Pre-Specification (B)MCPMod 
 
 ## candidate models for MCPMod
 # linear function - no guestimates needed
-exp <- DoseFinding::guesst(
-  d     = 50,
-  p     = c(0.2),
-  model = "exponential",
-  Maxd  = max(dose_levels))
-emax <- DoseFinding::guesst(
-  d     = 100,
-  p     = c(0.9),
-  model = "emax")
+exp     <- DoseFinding::guesst(d     = 5,
+                               p     = c(0.2),
+                               model = "exponential",
+                               Maxd  = max(dose_levels))
+emax    <- DoseFinding::guesst(d     = 2.5,
+                               p     = c(0.9),
+                               model = "emax")
+
 
 mods <- DoseFinding::Mods(
   linear      = NULL,
   emax        = emax,
   exponential = exp,
   doses       = dose_levels,
-  maxEff      = 10,
-  placEff     = 1.4)
-```
-# Assessing the Trial Design
-```{r Assessing the Trial Design}
-n_patients <- c(50, 50, 50, 50)
+  maxEff      = -1,
+  placEff     = -12.8)
 
-assessDesign(
-  n_patients  = n_patients,
-  mods        = mods,
-  prior_list  = prior_list,
-  n_sim       = 1e2)
+new_trial <- filter(dataset, primtime == 8, indication == "MAJOR DEPRESSIVE DISORDER",protid==6)
+n_patients <- c(150, 142, 147, 149)
+
 ```
-# Trial results
+
+# Combination of prior information and trial results
+
+As outlined in citePaper, in a first step the posterior is calculated combining the prior information with the estimated results of the new trial.
+
 ```{r Trial results}
 #Simulation of new trial 
-##Note: This part will be simplified and direct results from one trial will be used
+##Note: This step should not be required, as we provide summary measures directly from the new trial
 data_emax <- simulateData(
   n_patients  = n_patients,
   dose_levels = dose_levels,
@@ -92,18 +101,22 @@ data_emax <- simulateData(
   mods        = mods,
   true_model  = "emax")
 
-posterior_emax <- getPosterior(
-  data       = data_emax,
-  prior_list = prior_list)
+posterior <- getPosterior(prior=prior_list,data=data_emax,
+                               mu_hat = new_trial$rslt,
+                               sd_hat = new_trial$se)
+
 ```
 
 # Execution of Bayesian MCPMod Test step
+For the execution of the testing step of bayesian MCPMod a critical value (on the probability scale) will be determined for a given alpha level. In addition a contrast matrix is created. Please note that there are different possibilities how to generate contrasts.
+This information is then used as input for the bayesian MCP testing function. 
+
 ```{r Execution of Bayesian MCPMod Test step}
 crit_pval <- getCritProb(
   mods           = mods,
   dose_levels    = dose_levels,
   dose_weights   = n_patients,
-  alpha_crit_val = 0.05)
+  alpha_crit_val = 0.1)
 
 contr_mat_prior <- getContrMat(
   mods           = mods,
@@ -111,19 +124,35 @@ contr_mat_prior <- getContrMat(
   dose_weights   = n_patients,
   prior_list     = prior_list)
 
+#This would be the most reasonable output, but since it is not exported it is currently not usable.
+#BMCP_result<-BayesMCPi(posterior_i = posterior,
+     #     contr_mat       = contr_mat_prior, 
+      #    crit_prob       = crit_pval)
+
 BMCP_result <- performBayesianMCP(
-  posteriors_list = posterior_emax,
+  posteriors_list = posterior,
   contr_mat       = contr_mat_prior, 
-  crit_prob       = crit_pval)
+ crit_prob       = crit_pval)
+
+#BMCP_result2 <- performBayesianMCPMod(
+#    posteriors_list = posterior_emax,
+#    contr_mat       = contr_mat_prior, 
+#    crit_prob       = crit_pval)
+
+#BMCP_result2
 
 BMCP_result
 ```
+The testing step is significant indicating a non-flat dose-response shape. In detail the p-values for the emax model is the most significant one.
 
-# Model fitting and Plotting
-In the model fitting step the posterior distribution is used as basis. 
+# Model fitting and visualization of results
+In the model fitting step the posterior distribution is used as basis. Both simplified and full fitting are performed.
+Please note that all models are fitted to the data even though they were not significant in the testing step.
+For the plotting bootstrap based credible intervals (for 50% and 95%) are shown as well.
+
 ```{r Model fitting}
 #Model fit
-post_observed <- posterior_emax
+post_observed <- posterior
 model_shapes  <- c("linear", "emax", "exponential")
 
 # Option a) Simplified approach by using frequentist idea
@@ -139,10 +168,12 @@ fit <- getModelFits(
   dose_levels = dose_levels,
   posterior   = post_observed,
   simple      = FALSE)
-```
 
-```{r Plotting}
-plot(fit)
+plot(fit,cr_bands=TRUE)
 plot(fit_simple, cr_bands = TRUE)
+
 ```
-For the plotting the credible intervals are shown as well.
+# Additional notes
+TBD, whether certain wrapper functions should be mentioned.
+
+
