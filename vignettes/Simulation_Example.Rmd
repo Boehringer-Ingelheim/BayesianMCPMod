@@ -1,0 +1,58 @@
+---
+title: "Simulation Example of Bayesian MCPMod for Continuous Data"
+output: rmarkdown::html_vignette
+number_sections: true
+vignette: >
+  %\VignetteIndexEntry{Simulation Example of Bayesian MCPMod for Continuous Data}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(BayesianMCPMod)
+library(clinDR)
+library(dplyr)
+
+set.seed(7015)
+```
+
+# Background and data
+
+In this vignette we will show the use of the Bayesian MCPMod package for trial planning for continuous distributed data. 
+As in [link other vignette] we focus on the indication MDD and make use of historical data that is included in the clinDR package. 
+More specifically trial results for BRINTELLIX will be utilized to establish an informative prior for the control group.
+
+# Calculation of a MAP prior
+In a first step a meta analytic prior will be calculated using historical data from 4 trials (with main endpoint CfB in MADRS score after 8 weeks).
+Please note that only information from the control group will be integrated (leading to an informative multicomponent prior for the control group), while for the active groups a non-informative prior will be specified.
+
+
+```{r Calculation of a MAP prior}
+data("metaData")
+testdata    <- as.data.frame(metaData)
+dataset     <- filter(testdata, bname == "BRINTELLIX")
+histcontrol <- filter(dataset, dose == 0, primtime == 8, indication == "MAJOR DEPRESSIVE DISORDER")
+
+##Create MAP Prior
+hist_data <- data.frame(
+  trial = histcontrol$nctno,
+  est   = histcontrol$rslt,
+  se    = histcontrol$se,
+  sd    = histcontrol$sd,
+  n     = histcontrol$sampsize)
+
+dose_levels <- c(0, 2.5, 5, 10, 20)
+
+prior_list <- getPriorList(
+  hist_data   = hist_data,
+  dose_levels = dose_levels)
+
+```
+
