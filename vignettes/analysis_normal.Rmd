@@ -25,7 +25,7 @@ set.seed(7015)
 # Background and data
 
 In this vignette we will show the use of the Bayesian MCPMod package for continuous distributed data. 
-Hereby the focus is on the utilization of an informative prior.
+Hereby the focus is on the utilization of an informative prior and the BayesianMCPMod evaluation of a single trial.
 We will use data that is included in the clinDR package. 
 More specifically trial results for BRINTELLIX will be used to illustrate the specification of an informative prior and the usage of such a prior for the bayesian evaluation of a (hypothetical) new trial. 
 More information around BRINTELLIX to be added...
