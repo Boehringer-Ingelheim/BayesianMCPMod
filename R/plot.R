@@ -1,0 +1,184 @@
+#' @title plot.modelFits
+#'
+#' @param x tbd An object of type modelFits
+#' @param gAIC tbd
+#' @param avg_fit tbd
+#' @param cr_intv tbd
+#' @param alpha_CrI tbd
+#' @param cr_bands tbd
+#' @param alpha_CrB tbd
+#' @param n_bs_smpl tbd
+#' @param acc_color tbd
+#' @param ... tbd
+#' 
+#' @return tbd
+#' @export
+plot.modelFits <- function (
+    
+  x,
+  gAIC      = TRUE,
+  avg_fit   = TRUE,
+  cr_intv   = TRUE,
+  alpha_CrI = 0.05,
+  cr_bands  = FALSE,
+  alpha_CrB = c(0.05, 0.5),
+  n_bs_smpl = 1e3,
+  acc_color = "orange",
+  ...
+  
+) {
+  
+  plot_res   <- 1e2
+  model_fits <- x
+  
+  dose_levels  <- model_fits[[1]]$dose_levels
+  post_summary <- summary.postList(
+    object = attr(model_fits, "posterior"),
+    probs  = c(alpha_CrI / 2, 0.5, 1 - alpha_CrI / 2))
+  doses        <- seq(from       = min(dose_levels),
+                      to         = max(dose_levels),
+                      length.out = plot_res)
+  
+  preds_models <- sapply(model_fits, predictModelFit, doses = doses)
+  model_names  <- names(model_fits)
+  
+  if (avg_fit) {
+    
+    mod_weights <- sapply(model_fits, function (x) x$model_weight)
+    avg_mod     <- preds_models %*% mod_weights
+    
+    preds_models <- cbind(preds_models, avg_mod)
+    model_names  <- c(model_names, "avgFit")
+    
+  }
+  
+  gg_data <- data.frame(
+    dose_seqs = rep(doses, length(model_names)),
+    fits      = as.vector(preds_models),
+    models    = rep(factor(model_names,
+                           levels = c("linear", "emax", "exponential",
+                                      "sigEmax", "logistic", "quadratic",
+                                      "avgFit")),
+                    each = plot_res))
+  
+  if (gAIC) {
+    
+    g_AICs     <- sapply(model_fits, function (x) x$gAIC)
+    label_gAUC <- paste("AIC:", round(g_AICs, digits = 1))
+    
+    if (avg_fit) {
+      
+      mod_weights <- sort(mod_weights, decreasing = TRUE)
+      paste_names <- names(mod_weights) |>
+        gsub("exponential", "exp", x = _) |>
+        gsub("quadratic",  "quad", x = _) |>
+        gsub("linear",      "lin", x = _) |>
+        gsub("logistic",    "log", x = _) |>
+        gsub("sigEmax",    "sigE", x = _)
+      
+      label_avg  <- paste0(paste_names, "=", round(mod_weights, 1),
+                           collapse = ", ")
+      label_gAUC <- c(label_gAUC, label_avg)
+      
+    }
+    
+  }
+  
+  if (cr_bands) {
+    
+    crB_data <- getBootstrapBands(
+      model_fits = model_fits,
+      n_samples  = n_bs_smpl,
+      alpha      = alpha_CrB,
+      avg_fit    = avg_fit,
+      dose_seq   = doses)
+    
+    getInx <- function (alpha_CrB) {
+      n        <- length(alpha_CrB)
+      inx_list <- lapply(seq_len(n), function (i) c(i, 2 * n - i + 1) + 3)
+      return (inx_list)}
+    
+  }
+  
+  plts <- ggplot2::ggplot() + 
+    ## Layout etc.
+    ggplot2::theme_bw() + 
+    ggplot2::labs(x = "Dose",
+                  y = "Model Fits") +
+    ggplot2::theme(panel.grid.major = ggplot2::element_blank(),
+                   panel.grid.minor = ggplot2::element_blank()) +
+    ## gAIC
+    {if (gAIC) {
+      
+      ggplot2::geom_text(
+        data    = data.frame(
+          models = unique(gg_data$models),
+          label  = label_gAUC),
+        mapping = ggplot2::aes(label = label_gAUC),
+        x = -Inf, y = Inf, hjust = "inward", vjust = "inward",
+        size = 3)
+      
+      }
+    }
+  
+  if (cr_bands) {
+    
+    ## Bootstrapped Credible Bands
+    for (inx in getInx(alpha_CrB)) {
+      
+      loop_txt <- paste0(
+        "ggplot2::geom_ribbon(
+          data    = crB_data,
+          mapping = ggplot2::aes(x    = dose_seqs,
+                                 ymin = crB_data[, ", inx[1], "],
+                                 ymax = crB_data[, ", inx[2], "]),
+          fill    = acc_color,                    
+          alpha   = 0.25)")
+      
+      plts <- plts + eval(parse(text = loop_txt))
+      
+    }
+    rm(inx)
+    
+    ## Bootstrapped Fit
+    plts <- plts +
+      ggplot2::geom_line(
+        data    = crB_data,
+        mapping = ggplot2::aes(dose_seqs, `50%`),
+        color   = acc_color)
+    
+  }
+  
+  plts <- plts +
+    ## Posterior Credible Intervals
+    {if (cr_intv) {
+      
+      ggplot2::geom_errorbar(
+        data    = data.frame(x    = dose_levels,
+                             ymin = post_summary[, 3],
+                             ymax = post_summary[, 5]),
+        mapping = ggplot2::aes(x    = x,
+                               ymin = ymin,
+                               ymax = ymax),
+        width   = 0,
+        alpha   = 0.5)
+      
+      }
+    } + 
+    ## Posterior Medians
+    ggplot2::geom_point(
+      data    = data.frame(
+        dose_levels = dose_levels,
+        medians     = post_summary[, 4]),
+      mapping = ggplot2::aes(dose_levels, medians),
+      size    = 2) +
+    ## Fitted Models
+    ggplot2::geom_line(
+      data    = gg_data,
+      mapping = ggplot2::aes(dose_seqs, fits)) + 
+    ## Faceting
+    ggplot2::facet_wrap(~ models)
+  
+  return (plts)
+  
+}
