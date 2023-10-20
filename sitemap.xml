@@ -1,42 +1,60 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>/404.html</loc>
+    <loc>https://boehringer-ingelheim.github.io/BayesianMCPMod/404.html</loc>
   </url>
   <url>
-    <loc>/LICENSE-text.html</loc>
+    <loc>https://boehringer-ingelheim.github.io/BayesianMCPMod/LICENSE-text.html</loc>
   </url>
   <url>
-    <loc>/authors.html</loc>
+    <loc>https://boehringer-ingelheim.github.io/BayesianMCPMod/articles/Simulation_Example.html</loc>
   </url>
   <url>
-    <loc>/index.html</loc>
+    <loc>https://boehringer-ingelheim.github.io/BayesianMCPMod/articles/analysis_normal.html</loc>
   </url>
   <url>
-    <loc>/reference/BMCPMod.html</loc>
+    <loc>https://boehringer-ingelheim.github.io/BayesianMCPMod/articles/index.html</loc>
   </url>
   <url>
-    <loc>/reference/BayesMCPMod.html</loc>
+    <loc>https://boehringer-ingelheim.github.io/BayesianMCPMod/authors.html</loc>
   </url>
   <url>
-    <loc>/reference/doAncova.html</loc>
+    <loc>https://boehringer-ingelheim.github.io/BayesianMCPMod/index.html</loc>
   </url>
   <url>
-    <loc>/reference/doFit.html</loc>
+    <loc>https://boehringer-ingelheim.github.io/BayesianMCPMod/reference/assessDesign.html</loc>
   </url>
   <url>
-    <loc>/reference/estimateModels.html</loc>
+    <loc>https://boehringer-ingelheim.github.io/BayesianMCPMod/reference/getBootstrapBands.html</loc>
   </url>
   <url>
-    <loc>/reference/getGenAICs.html</loc>
+    <loc>https://boehringer-ingelheim.github.io/BayesianMCPMod/reference/getContrMat.html</loc>
   </url>
   <url>
-    <loc>/reference/index.html</loc>
+    <loc>https://boehringer-ingelheim.github.io/BayesianMCPMod/reference/getCritProb.html</loc>
   </url>
   <url>
-    <loc>/reference/postShape.html</loc>
+    <loc>https://boehringer-ingelheim.github.io/BayesianMCPMod/reference/getModelFits.html</loc>
   </url>
   <url>
-    <loc>/reference/simulateData.html</loc>
+    <loc>https://boehringer-ingelheim.github.io/BayesianMCPMod/reference/getPosterior.html</loc>
+  </url>
+  <url>
+    <loc>https://boehringer-ingelheim.github.io/BayesianMCPMod/reference/getPriorList.html</loc>
+  </url>
+  <url>
+    <loc>https://boehringer-ingelheim.github.io/BayesianMCPMod/reference/index.html</loc>
+  </url>
+  <url>
+    <loc>https://boehringer-ingelheim.github.io/BayesianMCPMod/reference/performBayesianMCP.html</loc>
+  </url>
+  <url>
+    <loc>https://boehringer-ingelheim.github.io/BayesianMCPMod/reference/performBayesianMCPMod.html</loc>
+  </url>
+  <url>
+    <loc>https://boehringer-ingelheim.github.io/BayesianMCPMod/reference/plot.modelFits.html</loc>
+  </url>
+  <url>
+    <loc>https://boehringer-ingelheim.github.io/BayesianMCPMod/reference/simulateData.html</loc>
   </url>
 </urlset>
