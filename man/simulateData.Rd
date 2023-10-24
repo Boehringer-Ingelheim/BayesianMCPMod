@@ -14,17 +14,25 @@ simulateData(
 )
 }
 \arguments{
-\item{n_patients}{tbd}
+\item{n_patients}{vector containing number of patients as a numerical
+value per dose-group.}
 
-\item{dose_levels}{tbd}
+\item{dose_levels}{vector containing the different doseage levels.}
 
-\item{sd}{tbd}
+\item{sd}{standard deviation on patient level.}
 
-\item{mods}{tbd}
+\item{mods}{An object of class "Mods" as specified in the Dosefinding package.}
 
-\item{n_sim}{tbd}
+\item{n_sim}{number of simulations to be performed,
+Default is 1000}
 
-\item{true_model}{tbd}
+\item{true_model}{Default value is NULL.
+Assumed true underlying model. Provided via a String. e.g. "emax".
+In case of NULL, all dose-response models, included in the mods input parameter will be used.}
+}
+\value{
+sim_data one list object, containing patient level simulated data for all assumed true models.
+Also providing information about simulation iteration, patient number as well as dosage levels.
 }
 \description{
 simulateData

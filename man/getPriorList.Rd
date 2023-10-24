@@ -4,16 +4,26 @@
 \alias{getPriorList}
 \title{getPriorList}
 \usage{
-getPriorList(hist_data, dose_levels, dose_names = NULL, robustify_weight = 0.5)
+getPriorList(
+  hist_data,
+  dose_levels,
+  dose_names = NULL,
+  robustify_weight = NULL
+)
 }
 \arguments{
-\item{hist_data}{tbd}
+\item{hist_data}{historical trial summary level data,
+needs to be provided as a dataframe. Including information of the
+estimates and variability.}
 
-\item{dose_levels}{tbd}
+\item{dose_levels}{vector of the different doseage levels}
 
-\item{dose_names}{prior_list}
+\item{dose_names}{character vector of dose levels,
+default NULL and will be automatically created
+based on the dose levels parameter.}
 
-\item{robustify_weight}{tbd}
+\item{robustify_weight}{Null needs to be provided as a numeric
+value for the weight of the robustification component}
 }
 \description{
 getPriorList

@@ -7,14 +7,17 @@
 performBayesianMCPMod(posteriors_list, contr_mat, crit_prob, simple = FALSE)
 }
 \arguments{
-\item{posteriors_list}{tbd}
+\item{posteriors_list}{a getPosterior object}
 
-\item{contr_mat}{tbd}
+\item{contr_mat}{a getContrMat object, contrast matrix to be used for the testing step.}
 
-\item{crit_prob}{tbd}
+\item{crit_prob}{a getCritProb object}
 
-\item{simple}{tbd}
+\item{simple}{boolean variable, defining whether simplified fit will be applied. Passed to the getModelFits function. Default FALSE.}
+}
+\value{
+bmcpmod test result as well as modelling result.
 }
 \description{
-performBayesianMCPMod
+performs bayesian MCP Test step and modelling.
 }
