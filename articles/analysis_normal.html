@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">BayesianMCPMod</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.3-2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.3-3</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -143,7 +143,7 @@ will be specified.</p>
 <span></span>
 <span><span class="va">prior_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getPriorList.html">getPriorList</a></span><span class="op">(</span></span>
 <span>  hist_data   <span class="op">=</span> <span class="va">hist_data</span>,</span>
-<span>  dose_levels <span class="op">=</span> <span class="va">dose_levels</span><span class="op">)</span></span></code></pre></div>
+<span>  dose_levels <span class="op">=</span> <span class="va">dose_levels</span>,robustify_weight <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="specifications-new-trial">Specifications new trial<a class="anchor" aria-label="anchor" href="#specifications-new-trial"></a>
@@ -185,16 +185,7 @@ and an emax model.</p>
 combining the prior information with the estimated results of the new
 trial.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#Simulation of new trial </span></span>
-<span><span class="co">##Note: This step should not be required, as we provide summary measures directly from the new trial</span></span>
-<span><span class="va">data_emax</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulateData.html">simulateData</a></span><span class="op">(</span></span>
-<span>  n_patients  <span class="op">=</span> <span class="va">n_patients</span>,</span>
-<span>  dose_levels <span class="op">=</span> <span class="va">dose_levels</span>,</span>
-<span>  sd          <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">prior_list</span>, <span class="st">"sd_tot"</span><span class="op">)</span>,</span>
-<span>  mods        <span class="op">=</span> <span class="va">mods</span>,</span>
-<span>  true_model  <span class="op">=</span> <span class="st">"emax"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">posterior</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getPosterior.html">getPosterior</a></span><span class="op">(</span>prior<span class="op">=</span><span class="va">prior_list</span>,data<span class="op">=</span><span class="va">data_emax</span>,</span>
+<code class="sourceCode R"><span><span class="va">posterior</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getPosterior.html">getPosterior</a></span><span class="op">(</span>prior<span class="op">=</span><span class="va">prior_list</span>,</span>
 <span>                               mu_hat <span class="op">=</span> <span class="va">new_trial</span><span class="op">$</span><span class="va">rslt</span>,</span>
 <span>                               sd_hat <span class="op">=</span> <span class="va">new_trial</span><span class="op">$</span><span class="va">se</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -236,10 +227,11 @@ is then used as input for the bayesian MCP testing function.</p>
 <span></span>
 <span><span class="co">#BMCP_result2</span></span>
 <span></span>
-<span><span class="va">BMCP_result</span></span>
-<span><span class="co">#&gt; Bayesian Multiple Comparison Procedure</span></span>
-<span><span class="co">#&gt;   Estimated Success Rate:  1 </span></span>
-<span><span class="co">#&gt;   N Simulations:           1</span></span></code></pre></div>
+<span><span class="va">BMCP_result</span><span class="op">[</span><span class="fl">1</span>,<span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span></span>
+<span><span class="co">#&gt;                   sign                  p_val      post_probs.linear </span></span>
+<span><span class="co">#&gt;              1.0000000              0.9692346              0.9182047 </span></span>
+<span><span class="co">#&gt;        post_probs.emax post_probs.exponential </span></span>
+<span><span class="co">#&gt;              0.9692346              0.8254516</span></span></code></pre></div>
 <p>The testing step is significant indicating a non-flat dose-response
 shape. In detail the p-values for the emax model is the most significant
 one.</p>

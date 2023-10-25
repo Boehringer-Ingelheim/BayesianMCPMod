@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">BayesianMCPMod</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.3-2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.3-3</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -68,29 +68,40 @@
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>n_patients</dt>
-<dd><p>tbd</p></dd>
+<dd><p>vector containing number of patients as a numerical
+value per dose-group.</p></dd>
 
 
 <dt>dose_levels</dt>
-<dd><p>tbd</p></dd>
+<dd><p>vector containing the different doseage levels.</p></dd>
 
 
 <dt>sd</dt>
-<dd><p>tbd</p></dd>
+<dd><p>standard deviation on patient level.</p></dd>
 
 
 <dt>mods</dt>
-<dd><p>tbd</p></dd>
+<dd><p>An object of class "Mods" as specified in the Dosefinding package.</p></dd>
 
 
 <dt>n_sim</dt>
-<dd><p>tbd</p></dd>
+<dd><p>number of simulations to be performed,
+Default is 1000</p></dd>
 
 
 <dt>true_model</dt>
-<dd><p>tbd</p></dd>
+<dd><p>Default value is NULL.
+Assumed true underlying model. Provided via a String. e.g. "emax".
+In case of NULL, all dose-response models, included in the mods input parameter will be used.</p></dd>
 
 </dl></div>
+    <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
+    
+
+<p>sim_data one list object, containing patient level simulated data for all assumed true models.
+Also providing information about simulation iteration, patient number as well as dosage levels.</p>
+    </div>
 
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside></div>
