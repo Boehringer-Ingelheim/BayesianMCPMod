@@ -1,17 +1,19 @@
 #' @title plot.modelFits
-#'
-#' @param x tbd An object of type modelFits
-#' @param gAIC tbd
-#' @param avg_fit tbd
-#' @param cr_intv tbd
-#' @param alpha_CrI tbd
-#' @param cr_bands tbd
-#' @param alpha_CrB tbd
-#' @param n_bs_smpl tbd
-#' @param acc_color tbd
-#' @param ... tbd
 #' 
-#' @return tbd
+#' @description plot function based on the ggplot2 package. Providing visualizations for each model and a average Fit.
+#' More details to be added, as well as references.
+#' @param x an object of type getModelFits
+#' @param gAIC logical value indicating whether gAIC values are shown in the plot. Default TRUE
+#' @param avg_fit logical value indicating whether average fit is presented in the plot. Default TRUE
+#' @param cr_intv logical value indicating whether credible intervals are included in the plot. Default TRUE
+#' @param alpha_CrI numerical value of the width of the credible intervals. Default is set to 0.05 (i.e 95% CI are shown).
+#' @param cr_bands logical value indicating whether bootstrapped based credible bands are shown in the plot. Default FALSE
+#' @param alpha_CrB numerical vector of the width of the credible bands. Default is set to 0.05 and 0.5 (i.e 95% CB and median are shown).
+#' @param n_bs_smpl number of bootstrap samples being used. Default set to 1000.
+#' @param acc_color color of the credible bands. Default set to "orange"
+#' @param ... optional parameter to be passed.
+#' 
+#' @return plts returns a ggplot2 object
 #' @export
 plot.modelFits <- function (
     

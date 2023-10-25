@@ -7,14 +7,17 @@
 getContrMat(mods, dose_levels, dose_weights, prior_list)
 }
 \arguments{
-\item{mods}{tbd}
+\item{mods}{An object of class "Mods" as specified in the Dosefinding package.}
 
-\item{dose_levels}{tbd}
+\item{dose_levels}{vector containing the different doseage levels.}
 
-\item{dose_weights}{tbd}
+\item{dose_weights}{Vector specifying weights for the different doses}
 
-\item{prior_list}{tbd}
+\item{prior_list}{a prior_list object}
+}
+\value{
+contr_mat Object of class ‘⁠optContr⁠’. A list containing entries contMat and muMat, and CorrMat. Specified in the Dosefinding package.
 }
 \description{
-getContrMat
+This function calculates contrast vectors that are optimal for detecting certain alternatives. More information and link to publication will be added.
 }

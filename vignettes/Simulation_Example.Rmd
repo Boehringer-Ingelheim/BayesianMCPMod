@@ -52,7 +52,8 @@ dose_levels <- c(0, 2.5, 5, 10, 20)
 
 prior_list <- getPriorList(
   hist_data   = hist_data,
-  dose_levels = dose_levels)
+  dose_levels = dose_levels,
+  robustify_weight = 0.5)
 
 ```
 
