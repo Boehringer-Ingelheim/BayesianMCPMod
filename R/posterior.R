@@ -82,17 +82,22 @@ getPriorList <- function (
 #'
 #' @export
 getPosterior <- function(
-  data,
+  data = NULL,
   prior_list,
   mu_hat = NULL,
   sd_hat = NULL
   
 ) {
-  
+  if (is.null(data)){
+    posterior_list <-getPosteriorI(data_i=NULL, prior_list = prior_list,
+                                   mu_hat     = mu_hat,
+                                   sd_hat     = sd_hat)
+  }else{
   posterior_list <- lapply(split(data, data$simulation), getPosteriorI,
                            prior_list = prior_list,
                            mu_hat     = mu_hat,
                            sd_hat     = sd_hat)
+  }
   
   if (length(posterior_list) == 1) {
     
