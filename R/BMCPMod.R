@@ -7,7 +7,7 @@
 #' @param prior_list a prior_list object specifying the utilized prior for the different dose groups 
 #' @param n_sim number of simulations to be performed
 #' @param alpha_crit_val critical value to be used for the testing (on the probability scale)
-#' @param simple boolean variable, defining whether simplified fit will be applied. Passed to the getModelFits function. Default FALSE.
+#' @param simple boolean variable, defining whether simplified fit will be applied. Passed to the getModelFits function. Default TRUE
 #' 
 #' @export
 assessDesign <- function (
@@ -21,6 +21,13 @@ assessDesign <- function (
   simple         = TRUE
   
 ) {
+  
+  checkmate::check_vector(n_patients, len = length(attr(prior_list, "dose_levels")), any.missing = FALSE)
+  checkmate::check_class(mods, classes = "Mods")
+  checkmate::check_list(prior_list, names = "named", len = length(attr(prior_list, "dose_levels")), any.missing = FALSE)
+  checkmate::check_double(n_sim, lower = 1, upper = Inf)
+  checkmate::check_double(alpha_crit_val, lower = 0, upper = 1)
+  checkmate::check_logical(simple)
   
   dose_levels <- attr(prior_list, "dose_levels")
   
@@ -86,6 +93,13 @@ getContrMat <- function (
   
 ) {
   
+  checkmate::check_class(mods, classes = "Mods")
+  checkmate::check_double(dose_levels, lower = 0, any.missing = FALSE, len = length(attr(prior_list, "dose_levels")))
+  checkmate::check_double(dose_weights, any.missing = FALSE, len = length(attr(prior_list, "dose_levels")))
+  checkmate::check_list(prior_list, names = "named", len = length(attr(prior_list, "dose_levels")), any.missing = FALSE)
+
+  
+  
   ess_prior <- suppressMessages(round(unlist(lapply(prior_list, RBesT::ess))))
   
   contr_mat <- DoseFinding::optContr(
@@ -115,6 +129,11 @@ getCritProb <- function (
   alpha_crit_val = 0.025
   
 ) {
+  
+  checkmate::check_class(mods, classes = "Mods")
+  checkmate::check_double(dose_levels, lower = 0, any.missing = FALSE, len = length(dose_weights))
+  checkmate::check_double(dose_weights, any.missing = FALSE, len = length(dose_levels))
+  checkmate::check_double(alpha_crit_val, lower = 0, upper = 1)
   
   contr_mat <- DoseFinding::optContr(
     models = mods,
@@ -151,6 +170,11 @@ performBayesianMCPMod <- function (
   simple = FALSE
   
 ) {
+  
+  checkmate::check_class(posteriors_list, "postList")
+  checkmate::check_class(contr_mat, "optContr")
+  checkmate::check_class(crit_prob, "numeric")
+  checkmate::check_logical(simple)
   
   if (class(posteriors_list) == "postList") {
     
@@ -234,6 +258,11 @@ performBayesianMCP <- function(
   crit_prob
   
 ) {
+  
+  checkmate::check_class(posteriors_list, "postList")
+  checkmate::check_class(contr_mat, "optContr")
+  checkmate::check_class(crit_prob, "numeric")
+  checkmate::check_numeric(crit_prob, lower = 0, upper = Inf)
   
   if (class(posteriors_list) == "postList") {
     

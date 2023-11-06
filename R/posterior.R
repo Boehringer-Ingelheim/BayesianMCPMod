@@ -19,6 +19,7 @@ getPriorList <- function (
   robustify_weight = NULL
   
 ) {
+  stopifnot(all(sapply(dose_levels, is.numeric)))
   
   sd_tot <- with(hist_data, sum(sd * n) / sum(n))
   

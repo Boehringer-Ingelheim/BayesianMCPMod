@@ -125,12 +125,12 @@ BMCP_result <- performBayesianMCP(
   contr_mat       = contr_mat_prior, 
  crit_prob       = crit_pval)
 
-#BMCP_result2 <- performBayesianMCPMod(
-#    posteriors_list = posterior_emax,
-#    contr_mat       = contr_mat_prior, 
-#    crit_prob       = crit_pval)
-
-#BMCP_result2
+# BMCP_result2 <- performBayesianMCPMod(
+#     posteriors_list = posterior_emax,
+#     contr_mat       = contr_mat_prior,
+#     crit_prob       = crit_pval)
+# 
+# BMCP_result2
 
 BMCP_result[1,1:5]
 ```

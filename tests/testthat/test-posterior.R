@@ -13,6 +13,51 @@ test_that("getPosterior works correctly", {
   expect_s3_class(posterior_list, "postList")
 })
 
+test_that("getPriorList input parameters do work as intented", {
+  # setup
+  library(clinDR)
+  library(dplyr)
+  set.seed(8080)
+  data("metaData")
+  testdata    <- as.data.frame(metaData)
+  dataset     <- filter(testdata, bname == "BRINTELLIX")
+  histcontrol <- filter(dataset, dose == 0, primtime == 8, indication == "MAJOR DEPRESSIVE DISORDER",protid!=6)
+  
+  ##Create MAP Prior
+  hist_data <- data.frame(
+    trial = histcontrol$nctno,
+    est   = histcontrol$rslt,
+    se    = histcontrol$se,
+    sd    = histcontrol$sd,
+    n     = histcontrol$sampsize)
+  
+  dose_levels <- c(0, 2.5, 5, 10)
+  
+  # call without parameter
+  expect_error(getPriorList())
+  # only passing the historical data
+  expect_error(getPriorList(hist_data = hist_data))
+  # passing both needed parameters
+  expect_type(getPriorList(
+    hist_data = hist_data,
+    dose_levels = dose_levels,
+    robustify_weight = 0.5
+  ), "list")
+  # passing wrong format for hist_data
+  expect_error(getPriorList(
+    hist_data = testdata,
+    dose_levels = dose_levels,
+    robustify_weight = 0.5
+    ))
+  # passing wrong format for dose_levels
+  expect_error(getPriorList(
+    hist_data = hist_data,
+    dose_levels = c("hello", "world"),
+    robustify_weight = 0.5
+    ))
+  
+})
+
 test_that("getPosteriorI works correctly", {
   # Prepare test data and parameters
   data_i <- data.frame(dose = c(0, 1, 2, 3),

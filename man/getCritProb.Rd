@@ -9,7 +9,7 @@ getCritProb(mods, dose_levels, dose_weights, alpha_crit_val = 0.025)
 \arguments{
 \item{mods}{An object of class "Mods" as specified in the Dosefinding package.}
 
-\item{dose_levels}{vector containing the different doseage levels.}
+\item{dose_levels}{vector containing the different dosage levels.}
 
 \item{dose_weights}{Vector specifying weights for the different doses}
 
