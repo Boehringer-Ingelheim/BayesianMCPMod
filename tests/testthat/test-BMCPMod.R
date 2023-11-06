@@ -1,38 +1,58 @@
+# Import functions to test 
+source("R/BMCPMod.R")
+
+# Import testthat for unit testing
 library(testthat) 
-library(mockery)
 
-test_that("simulateData returns expected output", {
-
-  # Set up
-  n_patients <- c(5, 10, 15)
-  dose_levels <- c(1, 5, 10) 
-  sd <- 2
-  mods <- getTestMods() # Function to generate test mods object
-
-  # Exercise  
-  result <- simulateData(n_patients, dose_levels, sd, mods)
-
-  # Verify
-  expect_s3_class(result, "data.frame")
-  expect_named(result, c("simulation", "ptno", "dose", "response")) 
-  expect_equal(nrow(result), sum(n_patients))
-  expect_true(all(result$dose %in% dose_levels))
-
+# Tests for assessDesign
+test_that("assessDesign returns correct class", {
+  expect_s3_class(assessDesign(n_patients, mods, prior_list), "BayesianMCPMod") 
 })
 
-test_that("getModelData returns expected model data", {
+test_that("assessDesign handles errors", {
+  expect_error(assessDesign(n_patients, mods, prior_list, n_sim = "string"))
+  expect_error(assessDesign(n_patients, mods, prior_list, alpha_crit_val = -1))
+})
 
-  # Set up
-  sim_data <- getSimData() # Function to generate test data
-  model_name <- "linear"
+# Tests for getContrMat
+test_that("getContrMat returns correct class", {
+  expect_s3_class(getContrMat(mods, dose_levels, dose_weights, prior_list), "optContr")
+})
 
-  # Exercise
-  result <- getModelData(sim_data, model_name)
+test_that("getContrMat handles errors", {
+  expect_error(getContrMat(mods, dose_levels, dose_weights, prior_list = 1))
+})
 
-  # Verify
-  expect_s3_class(result, "data.frame")
-  expect_named(result, c("simulation", "dose", "response"))
-  expect_equal(ncol(result), 3)
-  expect_true(all(result$response == sim_data[[model_name]]))
+# Tests for getCritProb
+test_that("getCritProb returns a probability", {
+  expect_gte(getCritProb(mods, dose_levels, dose_weights), 0)
+  expect_lte(getCritProb(mods, dose_levels, dose_weights), 1)  
+})
 
+test_that("getCritProb handles errors", {
+  expect_error(getCritProb(mods, dose_levels, dose_weights, alpha_crit_val = -1))
+})
+
+# Tests for performBayesianMCPMod
+test_that("performBayesianMCPMod returns correct class", {
+  expect_s3_class(performBayesianMCPMod(posteriors_list, contr_mat, crit_prob), "BayesianMCPMod")
+})
+
+test_that("performBayesianMCPMod handles errors", {
+  expect_error(performBayesianMCPMod(posteriors_list, contr_mat, crit_prob = -1))
+})
+
+# Tests for addSignificance
+test_that("addSignificance adds significant attribute", {
+  model_fits <- list(a = 1, b = 2)
+  expect_named(addSignificance(model_fits, c(TRUE, FALSE)), "significant") 
+})
+
+# Tests for performBayesianMCP
+test_that("performBayesianMCP returns correct class", {
+  expect_s3_class(performBayesianMCP(posteriors_list, contr_mat, crit_prob), "BayesianMCP")  
+})
+
+test_that("performBayesianMCP handles errors", {
+  expect_error(performBayesianMCP(posteriors_list, contr_mat, crit_prob = -1))
 })
