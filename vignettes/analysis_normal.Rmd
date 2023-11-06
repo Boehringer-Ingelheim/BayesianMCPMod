@@ -92,10 +92,9 @@ n_patients <- c(150, 142, 147, 149)
 As outlined in citePaper, in a first step the posterior is calculated combining the prior information with the estimated results of the new trial.
 
 ```{r Trial results}
-posterior <- getPosterior(prior=prior_list,
+posterior <- getPosterior(prior = prior_list,
                                mu_hat = new_trial$rslt,
                                sd_hat = new_trial$se)
-
 ```
 
 # Execution of Bayesian MCPMod Test step
