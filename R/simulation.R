@@ -26,6 +26,13 @@ simulateData <- function(
   
 ) {
   
+  checkmate::check_vector(n_patients, any.missing = FALSE, len = length(dose_levels))
+  checkmate::check_double(dose_levels, lower = 0, any.missing = FALSE, len = length(n_patients))
+  checkmate::check_double(sd, len = 1, null.ok = FALSE, lower = 0, upper = Inf)
+  checkmate::check_class(mods, classes = "Mods")
+  checkmate::check_numeric(n_sim, lower = 0, upper = Inf, len = 1)
+  checkmate::check_string(true_model, null.ok = TRUE)
+  
   if (!is.null(true_model)) {
     
     n_sim            <- 1

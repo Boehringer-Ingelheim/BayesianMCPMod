@@ -49,5 +49,5 @@ test_that("assessDesign validates mods parameter input and give appropriate erro
   # mods should not be NULL
   # mods should be of class "Mods" from {DoseFinding}
   # length(n_patients) == length(attributes(mods)$doses) is commutative, so testing here is redundant
-  
+ 
 })

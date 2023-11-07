@@ -20,6 +20,12 @@ getPriorList <- function (
   
 ) {
   
+  checkmate::check_data_frame(hist_data)
+  checkmate::assert_double(dose_levels, lower = 0, any.missing = FALSE)
+  checkmate::check_string(dose_names, null.ok = TRUE)
+  checkmate::check_vector(dose_names, null.ok = TRUE, len = length(dose_levels))
+  checkmate::check_numeric(robustify_weight, len = 1, null.ok = FALSE)
+  
   sd_tot <- with(hist_data, sum(sd * n) / sum(n))
   
   gmap <- RBesT::gMAP(
@@ -32,19 +38,12 @@ getPriorList <- function (
     tau.prior  = cbind(0, sd_tot / 4))
   
   prior_ctr <- RBesT::automixfit(gmap)
-  
-  if(is.null(robustify_weight) | !is.numeric(robustify_weight)) {
-    stop("robustify_weight needs to be provided and must be numeric")
-  }
-  
-  if (!is.null(robustify_weight)) {
     
     prior_ctr <- suppressMessages(RBesT::robustify(
       priormix = prior_ctr,
       weight   = robustify_weight,
       sigma    = sd_tot))
-    
-  }
+
   
   prior_trt <- RBesT::mixnorm(
     comp1 = c(w = 1, m = summary(prior_ctr)[1], n = 1),
@@ -56,9 +55,7 @@ getPriorList <- function (
                       times = length(dose_levels[-1])))
   
   if (is.null(dose_names)) {
-    
     dose_names <- c("Ctr", paste0("DG_", seq_along(dose_levels[-1])))
-    
   }
   
   names(prior_list) <- dose_names
@@ -88,11 +85,18 @@ getPosterior <- function(
   sd_hat = NULL
   
 ) {
-  if (is.null(data)){
-    posterior_list <-getPosteriorI(data_i=NULL, prior_list = prior_list,
+  checkmate::check_data_frame(data, null.ok = TRUE)
+  checkmate::check_list(prior_list, names = "named", any.missing = FALSE)
+  checkmate::check_vector(mu_hat, any.missing = FALSE, null.ok = TRUE)
+  checkmate::check_double(mu_hat, null.ok = TRUE, lower = -Inf, upper = Inf)
+  checkmate::check_vector(sd_hat, any.missing = FALSE, null.ok = TRUE)
+  checkmate::check_double(sd_hat, null.ok = TRUE, lower = 0, upper = Inf)
+  
+  if (is.null(data)) {
+    posterior_list <- getPosteriorI(data_i = NULL, prior_list = prior_list,
                                    mu_hat     = mu_hat,
                                    sd_hat     = sd_hat)
-  }else{
+  } else {
   posterior_list <- lapply(split(data, data$simulation), getPosteriorI,
                            prior_list = prior_list,
                            mu_hat     = mu_hat,
@@ -117,23 +121,25 @@ getPosteriorI <- function(
   sd_hat = NULL
   
 ) {
+
+  checkmate::check_data_frame(data_i, null.ok = TRUE)
+  checkmate::check_list(prior_list, names = "named", any.missing = FALSE)
+  checkmate::check_vector(mu_hat, any.missing = FALSE, null.ok = TRUE)
+  checkmate::check_double(mu_hat, null.ok = TRUE, lower = -Inf, upper = Inf, len = length(prior_list))
+  checkmate::check_vector(sd_hat, any.missing = FALSE, null.ok = TRUE)
+  checkmate::check_double(sd_hat, null.ok = TRUE, lower = 0, upper = Inf, len = length(prior_list))
   
   if (is.null(mu_hat) && is.null(sd_hat)) {
+    checkmate::check_data_frame(data_i, null.ok = FALSE)
+    # checkmate::assert_names(names(data_i), must.include = "reponse")
+    # needs fixing! the reponse field is not available after using simulateData
+    # posterior <- getPosterior(data = simulateData(4, dose_levels, new_trial$sd, mods), prior = prior_list,
+    #                           mu_hat = NULL,
+    #                           sd_hat = NULL)
     
     anova_res <- stats::lm(data_i$response ~ factor(data_i$dose) - 1)
     mu_hat    <- summary(anova_res)$coefficients[, 1]
     sd_hat    <- summary(anova_res)$coefficients[, 2]
-    
-  } else if (!is.null(mu_hat) && !is.null(sd_hat)) {
-    
-    stopifnot("m_hat length must match number of dose levels" = 
-                length(prior_list) == length(mu_hat),
-              "sd_hat length must match number of dose levels" = 
-                length(prior_list) == length(sd_hat))
-    
-  } else {
-    
-    stop ("Both mu_hat and sd_hat must be provided.")
     
   }
   

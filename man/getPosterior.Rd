@@ -4,7 +4,7 @@
 \alias{getPosterior}
 \title{getPosterior}
 \usage{
-getPosterior(data, prior_list, mu_hat = NULL, sd_hat = NULL)
+getPosterior(data = NULL, prior_list, mu_hat = NULL, sd_hat = NULL)
 }
 \arguments{
 \item{data}{dataframe containing the information of dose and response.
