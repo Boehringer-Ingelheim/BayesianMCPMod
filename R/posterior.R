@@ -7,7 +7,7 @@
 #' @param dose_names character vector of dose levels,
 #' default NULL and will be automatically created
 #' based on the dose levels parameter.
-#' @param robustify_weight Null needs to be provided as a numeric
+#' @param robustify_weight needs to be provided as a numeric
 #' value for the weight of the robustification component
 #'
 #' @export
@@ -16,7 +16,7 @@ getPriorList <- function (
   hist_data,
   dose_levels,
   dose_names       = NULL,
-  robustify_weight = NULL
+  robustify_weight
   
 ) {
   

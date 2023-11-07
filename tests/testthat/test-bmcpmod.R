@@ -1,64 +1,53 @@
-library(clinDR)
-library(dplyr)
+##########################
+# Tests for assessDesign #
+##########################
 
-set.seed(2023)
-data("metaData")
-testdata    <- as.data.frame(metaData)
-dataset     <- filter(testdata, bname == "BRINTELLIX")
-histcontrol <- filter(dataset, dose == 0, primtime == 8, indication == "MAJOR DEPRESSIVE DISORDER")
+test_that("base case input throws no error", {
+  expect_no_error(
+    assessDesign(
+      n_patients = n_patients, 
+      mods = mods, 
+      prior_list = prior_list
+    )
+  )
+})
 
-##Create MAP Prior
-hist_data <- data.frame(
-  trial = histcontrol$nctno,
-  est   = histcontrol$rslt,
-  se    = histcontrol$se,
-  sd    = histcontrol$sd,
-  n     = histcontrol$sampsize)
 
-dose_levels <- c(0, 2.5, 5, 10, 20)
-
-prior_list <- getPriorList(
-  hist_data   = hist_data,
-  dose_levels = dose_levels,
-  robustify_weight = 0.5)
-#Pre-Specification (B)MCPMod 
-
-## candidate models for MCPMod
-# linear function - no guestimates needed
-exp     <- DoseFinding::guesst(d     = 5,
-                               p     = c(0.2),
-                               model = "exponential",
-                               Maxd  = max(dose_levels))
-emax    <- DoseFinding::guesst(d     = 2.5,
-                               p     = c(0.9),
-                               model = "emax")
-sigemax<-  DoseFinding::guesst(d     = c(2.5,5),
-                               p     = c(0.1,0.6),
-                               model = "sigEmax")
-#beta <- DoseFinding::guesst(d=5, p=0.8, model="betaMod", dMax=1, scal=1.2, Maxd=20)
-
-mods <- DoseFinding::Mods(
-  linear      = NULL,
-  emax        = emax,
-  exponential = exp,
-  sigEmax     = sigemax,
-  #betaMod     = beta,
-  doses       = dose_levels,
-  maxEff      = -3,
-  placEff     = -12.8)
-
-n_patients = c(60, 80, 80, 80, 80)
-
-test_that("assessDesign works as intented", {
-  success_probabilities <- assessDesign(
-    n_patients = n_patients,
-    mods = mods,
-    prior_list = prior_list)
-  success_probabilities_uneq <- assessDesign(
-    n_patients = c(80, 60, 60, 60, 120),
-    mods = mods,
-    prior_list = prior_list)
+### n_patients parameter ###
+test_that("assessDesign validates n_patients parameter input and give appropriate error messages", {
   
-  expect_type(success_probabilities, "list")
-  expect_type(success_probabilities_uneq, "list")
+  expect_error(
+    assessDesign(n_patients = NULL, mods = mods, prior_list = prior_list),
+    "n_patients should not be NULL", ignore.case = T
+  )
+  
+  expect_error(
+    assessDesign(n_patients = list(), mods = mods, prior_list = prior_list),
+    "n_patients should be a vector", ignore.case = T
+  )
+  
+  expect_error(
+    assessDesign(n_patients = c("2", "2"), mods = mods, prior_list = prior_list),
+    "n_patients should be numeric", ignore.case = T
+  )
+  
+  expect_error(
+    assessDesign(n_patients = n_patients[-1], mods = mods, prior_list = prior_list),
+    "length of n_patients should equal number of dose groups", ignore.case = T
+  )
+  
+  expect_error(
+    assessDesign(n_patients = rep(1, length(n_patients)), mods = mods, prior_list = prior_list),
+    "at least one element in n_patients needs to be > 1", ignore.case = T
+  )
+})
+
+### mods parameter ###
+test_that("assessDesign validates mods parameter input and give appropriate error messages", {
+  
+  # assertions that aren't tested here for sake of brevity
+  # mods should not be NULL
+  # mods should be of class "Mods" from {DoseFinding}
+  # length(n_patients) == length(attributes(mods)$doses) is commutative, so testing here is redundant
+ 
 })
