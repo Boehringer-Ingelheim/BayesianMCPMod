@@ -15,7 +15,7 @@ test_that("base case input throws no error", {
 
 ### n_patients parameter ###
 test_that("assessDesign validates n_patients parameter input and give appropriate error messages", {
-
+  
   expect_error(
     assessDesign(n_patients = NULL, mods = mods, prior_list = prior_list),
     "n_patients should not be NULL", ignore.case = T
@@ -46,8 +46,8 @@ test_that("assessDesign validates n_patients parameter input and give appropriat
 test_that("assessDesign validates mods parameter input and give appropriate error messages", {
   
   # assertions that aren't tested here for sake of brevity
-    # mods should not be NULL
-    # mods should be of class "Mods" from {DoseFinding}
-    # length(n_patients) == length(attributes(mods)$doses) is commutative, so testing here is redundant
+  # mods should not be NULL
+  # mods should be of class "Mods" from {DoseFinding}
+  # length(n_patients) == length(attributes(mods)$doses) is commutative, so testing here is redundant
   
 })
