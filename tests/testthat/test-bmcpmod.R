@@ -57,6 +57,7 @@ test_that("assessDesign validates mods parameter input and give appropriate erro
   # assertions that aren't tested here for sake of brevity
     # mods should be non-NULL object of class "Mods" from {DoseFinding}
   
+  
   # checking that DOseFinding didn't change how they named their 'doses' attribute
   expect_true(
     "doses" %in% names(attributes(mods))
