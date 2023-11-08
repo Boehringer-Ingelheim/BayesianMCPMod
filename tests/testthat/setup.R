@@ -23,3 +23,7 @@ prior_list <- getPriorList(
   dose_levels = dose_levels,
   robustify_weight = 0.5
 )
+
+n_sim = 1
+alpha_crit_val = 0.05
+simple = TRUE
