@@ -70,7 +70,7 @@ getModelData <- function (
   
 ) {
   
-  model_data              <- sim_data[, c("simulation", "dose", model_name)]
+  model_data <- sim_data[, c("simulation", "dose", model_name)]
   colnames(model_data)[3] <- "response"
   
   return (model_data)

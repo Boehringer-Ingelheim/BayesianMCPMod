@@ -90,3 +90,140 @@ test_that("assessDesign validates prior_list parameter input and give appropriat
   )
   
 })
+
+#########################
+# Tests for getCritProb #
+#########################
+
+# getCritProb relies on DoseFinding, which we assumes works correctly, so the tests here are minimal
+
+test_that("getCritProb returns the right type of value under normal case", {
+  
+  crit_pval = getCritProb(
+    mods = mods, 
+    dose_levels = dose_levels, 
+    dose_weights = n_patients, 
+    alpha_crit_val = alpha_crit_val
+  )
+
+  expect_type(
+    crit_pval, "double"
+  )
+
+  expect_true(
+    crit_pval >= 0 & crit_pval <= 1
+  )
+
+})
+
+#########################
+# Tests for getContrMat #
+#########################
+
+# getContrMat relies on DoseFinding, which we assumes works correctly, so the tests here are minimal
+
+test_that("getContrMat returns the right type of object under normal case", {
+  
+  contr_mat = getContrMat(
+    mods = mods, 
+    dose_levels = dose_levels, 
+    dose_weights = n_patients,
+    prior_list = prior_list
+  )
+
+  expect_s3_class(
+    contr_mat, "optContr"
+  )
+
+})
+
+################################
+# Tests for performBayesianMCP #
+################################
+
+test_that("performBayesianMCP returns the right type of object under normal case", {
+  
+  data <- simulateData(
+    n_patients  = n_patients,
+    dose_levels = dose_levels,
+    sd          = attr(prior_list, "sd_tot"),
+    mods        = mods,
+    n_sim       = n_sim
+  )
+
+  posteriors_list <- getPosterior(
+    data = getModelData(data, names(mods)[1]),
+    prior_list = prior_list
+  )
+
+  b_mcp <- performBayesianMCP(
+    posteriors_list = posteriors_list,
+    contr_mat = contr_mat,
+    crit_prob = crit_pval
+  )
+
+  expect_s3_class(
+    b_mcp,
+    "BayesianMCP"
+  )
+
+  expect_true(
+    attr(b_mcp, "crit_prob") == crit_pval
+  )
+  
+})
+
+###################################
+# Tests for performBayesianMCPMod #
+###################################
+
+test_that("performBayesianMCPMod returns the right type of object under normal case", {
+  
+  b_mcp_mod <- performBayesianMCPMod(
+    posteriors_list = posterior_list,
+    contr_mat = contr_mat,
+    crit_prob = crit_pval
+  )
+
+  expect_s3_class(
+    b_mcp_mod,
+    "BayesianMCPMod"
+  )
+
+  expect_true(
+    all(names(b_mcp_mod) == c("BayesianMCP", "Mod"))
+  )
+  
+})
+
+
+#############################
+# Tests for addSignificance #
+#############################
+
+test_that("addSignificance works as intended", {
+  model_fits  <- getModelFits(
+    models      = colnames(contr_mat$contMat),
+    dose_levels = dose_levels,
+    posterior   = posteriors_list,
+    simple      = TRUE
+  )
+
+  model_fits_with_sign = addSignificance(model_fits, TRUE)
+  expect_true(
+    model_fits_with_sign[[1]]$significant
+  )
+
+  model_fits_with_sign = addSignificance(model_fits, FALSE)
+  expect_false(
+    model_fits_with_sign[[1]]$significant
+  )
+})
+
+#######################
+# Tests for BayesMCPi #
+#######################
+
+#########################
+# Tests for getPostProb #
+#########################

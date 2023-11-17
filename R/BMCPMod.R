@@ -30,6 +30,7 @@ assessDesign <- function (
   checkmate::check_double(n_sim, lower = 1, upper = Inf)
   checkmate::check_double(alpha_crit_val, lower = 0, upper = 1)
   checkmate::check_logical(simple)
+  # TODO: check that prior_list has 'sd_tot' attribute, and that it's numeric
   
   dose_levels <- attr(prior_list, "dose_levels")
   
@@ -176,12 +177,6 @@ performBayesianMCPMod <- function (
   checkmate::check_class(crit_prob, "numeric")
   checkmate::check_logical(simple)
   
-  if (class(posteriors_list) == "postList") {
-    
-    posteriors_list <- list(posteriors_list)
-    
-  }
-  
   b_mcp <- performBayesianMCP(
     posteriors_list = posteriors_list,
     contr_mat       = contr_mat,
@@ -189,7 +184,9 @@ performBayesianMCPMod <- function (
   
   model_shapes <- colnames(contr_mat$contMat)
   dose_levels  <- as.numeric(rownames(contr_mat$contMat))
-  
+
+  posteriors_list <- list(posteriors_list)  # so that the lapply call works below
+
   fits_list <- lapply(seq_along(posteriors_list), function (i) {
     
     if (b_mcp[i, 1]) {
@@ -219,27 +216,6 @@ performBayesianMCPMod <- function (
   
 }
 
-addSignificance <- function (
-    
-  model_fits,
-  sign_models
-
-) {
-  
-  names(sign_models) <- NULL
-  
-  model_fits_out <- lapply(seq_along(model_fits), function (i) {
-    
-    c(model_fits[[i]], significant = sign_models[i])
-    
-  })
-  
-  attributes(model_fits_out) <- attributes(model_fits)
-  
-  return (model_fits_out)
-  
-}
-
 #' @title performBayesianMCP
 #' 
 #' @description performs Bayesian MCP Test step.
@@ -264,12 +240,8 @@ performBayesianMCP <- function(
   checkmate::check_class(crit_prob, "numeric")
   checkmate::check_numeric(crit_prob, lower = 0, upper = Inf)
   
-  if (class(posteriors_list) == "postList") {
-    
-    posteriors_list <- list(posteriors_list)
-    
-  }
-  
+  posteriors_list <- list(posteriors_list) # so that the sapply call works below
+
   b_mcp <- t(sapply(posteriors_list, BayesMCPi, contr_mat, crit_prob))
   
   attr(b_mcp, "crit_prob") <- crit_prob
@@ -279,6 +251,86 @@ performBayesianMCP <- function(
   
 }
 
+##########################
+# NON-EXPORTED FUNCTIONS #
+##########################
+
+#TODO: documentation
+
+#' @title addSignificance
+#' 
+#' @description adds significance information to the model fits.
+#' 
+#' @param model_fits a "modelFits" object
+#' @param sign_models a vector of logicals, specifying which models are significant.
+#' 
+#' @return model_fits a getModelFits object with added significance information.
+
+addSignificance <- function (
+    
+  model_fits,
+  sign_models
+
+) {
+  
+  names(sign_models) <- NULL
+  
+  model_fits_out <- lapply(seq_along(model_fits), function (i) {
+    
+    c(model_fits[[i]], significant = sign_models[i])
+    
+  })
+  
+  attributes(model_fits_out) <- attributes(model_fits)
+  
+  return (model_fits_out)
+  
+}
+
+#' @title getPostProb
+#' 
+#' @description calculates posterior probabilities for the models.
+#' This is a helper function to BayesMCPi
+#' 
+#' @param contr_j # the j-th row of the contrast matrix
+#' @param post_combs_i # simulation outcome for the i-th combination of models 
+#' 
+#' @return post_probs a matrix of posterior probabilities for the models.
+
+getPostProb <- function (
+  
+  contr_j,     # j: dose level
+  post_combs_i # i: simulation outcome
+  
+) {
+  
+  ## Test statistic = sum over all components of
+  ## posterior weight * normal probability distribution of
+  ## critical values for doses * estimated mean / sqrt(product of critical values for doses)
+  
+  ## Calculation for each component of the posterior
+  contr_theta   <- apply(post_combs_i$means, 1, `%*%`, contr_j)
+  contr_var     <- apply(post_combs_i$vars, 1, `%*%`, contr_j^2)
+  contr_weights <- post_combs_i$weights
+  
+  ## P(c_m * theta > 0 | Y = y) for a shape m (and dose j)
+  post_probs <- sum(contr_weights * stats::pnorm(contr_theta / sqrt(contr_var)))
+  
+  return (post_probs)
+  
+}
+
+#' @title BayesMCPi
+#' 
+#' @description performs Bayesian MCP Test step for a single simulation outcome.
+#' 
+#' @param posterior_i a getPosterior object
+#' @param contr_mat a getContrMat object, contrast matrix to be used for the testing step.
+#' @param crit_prob a getCritProb object, specifying the critical value to be used for the testing (on the probability scale)
+#' 
+#' @return res test result
+#' 
+
 BayesMCPi <- function (
     
   posterior_i,
@@ -286,29 +338,6 @@ BayesMCPi <- function (
   crit_prob
   
 ) {
-  
-  getPostProb <- function (
-    
-    contr_j,     # j: dose level
-    post_combs_i # i: simulation outcome
-    
-  ) {
-    
-    ## Test statistic = sum over all components of
-    ## posterior weight * normal probability distribution of
-    ## critical values for doses * estimated mean / sqrt(product of critical values for doses)
-    
-    ## Calculation for each component of the posterior
-    contr_theta   <- apply(post_combs_i$means, 1, `%*%`, contr_j)
-    contr_var     <- apply(post_combs_i$vars, 1, `%*%`, contr_j^2)
-    contr_weights <- post_combs_i$weights
-    
-    ## P(c_m * theta > 0 | Y = y) for a shape m (and dose j)
-    post_probs <- sum(contr_weights * stats::pnorm(contr_theta / sqrt(contr_var)))
-    
-    return (post_probs)
-    
-  }
   
   post_combs_i <- getPostCombsI(posterior_i)
   post_probs   <- apply(contr_mat$contMat, 2, getPostProb, post_combs_i)
