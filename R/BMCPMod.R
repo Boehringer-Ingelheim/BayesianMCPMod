@@ -99,8 +99,6 @@ getContrMat <- function (
   checkmate::check_double(dose_levels, lower = 0, any.missing = FALSE, len = length(attr(prior_list, "dose_levels")))
   checkmate::check_double(dose_weights, any.missing = FALSE, len = length(attr(prior_list, "dose_levels")))
   checkmate::check_list(prior_list, names = "named", len = length(attr(prior_list, "dose_levels")), any.missing = FALSE)
-
-  
   
   ess_prior <- suppressMessages(round(unlist(lapply(prior_list, RBesT::ess))))
   
@@ -242,9 +240,9 @@ addSignificance <- function (
   
 }
 
-#' @title BayesianMCP
+#' @title performBayesianMCP
 #' 
-#' @description performs bayesian MCP Test step.
+#' @description performs Bayesian MCP Test step.
 #' 
 #' @param posteriors_list a getPosterior object
 #' @param contr_mat a getContrMat object, contrast matrix to be used for the testing step.

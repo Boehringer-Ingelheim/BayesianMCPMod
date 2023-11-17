@@ -2,7 +2,7 @@
 # Tests for assessDesign #
 ##########################
 
-test_that("base case input throws no error", {
+test_that("base case input throws no error and has correct properties", {
   
   expect_no_error(
     eval_design <- assessDesign(
@@ -15,15 +15,18 @@ test_that("base case input throws no error", {
     )
   )
   
+  # assessDesign should give results for each model in mods
   expect_equal(
     names(eval_design), names(mods)
   )
   
+  # assessDesign result should have rows = n_sim
   expect_equal(
     attr(eval_design$linear$BayesianMCP, "dim")[1],
     n_sim
   )
   
+  # assessDesign result (in this base case) should have crit_prob = 1 - alpha_crit_val
   expect_equal(
     attr(eval_design$linear$BayesianMCP, "crit_prob"),
     1 - alpha_crit_val
