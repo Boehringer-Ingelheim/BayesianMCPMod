@@ -224,12 +224,53 @@ test_that("addSignificance works as intended", {
 # Tests for BayesMCPi #
 #######################
 
+test_that("BayesMCPi function works correctly in a simple case", {
+
+  # BayesMCPi should return a list of length 3 named with "sign", "p_val", and "post_probs"
+  # The logic being tested here is: 
+    # BayesMCPi returns 1 if the posterior probability is strictly greater than the critical value, and 0 otherwise
+  
+  # Define a mock function for getPostCombsI
+  getPostCombsI <- function(posterior_i) {
+    return(0)
+  }
+  
+  # Define a mock function for getPostProb
+  getPostProb <- function(x, post_combs_i) {
+    return(x)
+  }
+  
+  # Define inputs
+  posterior_i = 0
+  contr_mat = list(contMat = matrix(c(0, 1), nrow = 1))
+  crit_prob = 0.5
+  
+  # Call the function
+  result = BayesMCPi(posterior_i, contr_mat, crit_prob)
+  # Check the results
+  expect_equal(result[["sign"]], 1)
+  
+  # Define inputs
+  contr_mat = list(contMat = matrix(c(0, 0), nrow = 1))
+  # Call the function
+  result = BayesMCPi(posterior_i, contr_mat, crit_prob)
+  # Check the results
+  expect_equal(result[["sign"]], 0)
+
+  # Define inputs
+  contr_mat = list(contMat = matrix(c(0, 0.5), nrow = 1))
+  # Call the function
+  result = BayesMCPi(posterior_i, contr_mat, crit_prob)
+  # Check the results
+  expect_equal(result[["sign"]], 0)
+})
+
 #########################
 # Tests for getPostProb #
 #########################
 
 # Test for getPostProb
-test_that("getPostProb works correctly", {
+test_that("getPostProb works correctly in a simple case", {
   # Create a test case
   contr_j <- c(1, 1)
   post_combs_i <- list(
