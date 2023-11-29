@@ -227,3 +227,21 @@ test_that("addSignificance works as intended", {
 #########################
 # Tests for getPostProb #
 #########################
+
+# Test for getPostProb
+test_that("getPostProb works correctly", {
+  # Create a test case
+  contr_j <- c(1, 1)
+  post_combs_i <- list(
+    means = matrix(c(0, 0, 1, 1), nrow = 2),
+    vars = matrix(c(0, 0, 1, 1), nrow = 2),
+    weights = c(0.5, 0.5)
+  )
+  # Call the function with the test case
+  result <- getPostProb(
+    contr_j, 
+    post_combs_i
+  )
+  # Assert the expected behavior
+  expect_equal(result, stats::pnorm(1))
+})
