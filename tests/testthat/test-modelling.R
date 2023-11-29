@@ -62,3 +62,24 @@ test_that("addModelWeights works correctly in a simple case", {
   result <- addModelWeights(model_fits = test_model_fits2)
   expect_equal(result, expected_output2, tolerance = 1e-10)
 })
+
+
+# Test for getGenAIC
+test_that("getGenAIC calculates AIC correctly using snapshot test and a simple example", {
+  # Create a test case
+  test_model_fit <- list(
+    pred_values = rep(1, 3),
+    coeffs = rep(1, 3)
+  )
+  test_post_combs <- list(
+    means = matrix(rep(1, 6), nrow = 2),
+    vars = matrix(rep(1, 6), nrow = 2),
+    weights = c(1, 1)
+  )
+  
+  result <- getGenAIC(model_fit = test_model_fit, post_combs = test_post_combs)
+  # expected result determined with snapshot of behavior prior to first release on CRAN
+  expected_result <- 6 
+  # Assert the expected behavior
+  expect_equal(result, expected_result)
+})
