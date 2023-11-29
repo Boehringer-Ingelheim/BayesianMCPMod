@@ -349,8 +349,3 @@ BayesMCPi <- function (
   return (res)
   
 }
-
-# write a unit test for BayesMCPMi function
-
-#' @title BayesMCPMi_unit_test
-#' 
