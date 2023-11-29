@@ -224,6 +224,34 @@ test_that("addSignificance works as intended", {
 # Tests for BayesMCPi #
 #######################
 
+test_that("BayesMCPi function works correctly", {
+  
+  # Define a mock function for getPostCombsI
+  getPostCombsI <- function(posterior_i) {
+    return(0)
+  }
+  
+  # Define a mock function for getPostProb
+  getPostProb <- function(x, post_combs_i) {
+    return(0)
+  }
+  
+  # Define inputs
+  posterior_i = 0
+  contr_mat = list(contMat = matrix(c(0), nrow = 1))
+  crit_prob = 1
+  
+  # Call the function
+  result = BayesMCPi(posterior_i, contr_mat, crit_prob)
+  
+  # Check the results
+  expect_equal(result[["sign"]], 0)
+  expect_equal(result[["p_val"]], 0)
+  expect_equal(result[["post_probs"]], 0)
+  
+})
+
 #########################
 # Tests for getPostProb #
 #########################
+
