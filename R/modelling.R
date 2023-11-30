@@ -21,10 +21,10 @@ getModelFits <- function (
   
 ) {
   
-  checkmate::assert_list(models, any.missing = FALSE)
-  checkmate::assert_double(dose_levels, lower = 0, any.missing = FALSE, len = length(models))
-  checkmate::assert_class(posterior, "postList")
-  checkmate::assert_logical(simple)
+  checkmate::check_list(models, any.missing = FALSE)
+  checkmate::check_double(dose_levels, lower = 0, any.missing = FALSE, len = length(models))
+  checkmate::check_class(posterior, "postList")
+  checkmate::check_logical(simple)
   
   getModelFit <- ifelse(simple, getModelFitSimple, getModelFitOpt)
   model_fits  <- lapply(models, getModelFit, dose_levels, posterior)
