@@ -44,7 +44,7 @@ test_that("addModelWeights works correctly in a simple case", {
   result <- addModelWeights(model_fits = test_model_fits1)
   # Assert the expected behavior
   expect_true(is.list(result))
-  expect_equal(length(result), length(test_model_fits))
+  expect_equal(length(result), length(test_model_fits1))
   expect_true(all(sapply(result, function(x) "model_weight" %in% names(x))))
   expect_equal(result, expected_output1)
 
