@@ -125,9 +125,9 @@ getPosteriorI <- function(
   checkmate::check_data_frame(data_i, null.ok = TRUE)
   checkmate::check_list(prior_list, names = "named", any.missing = FALSE)
   checkmate::check_vector(mu_hat, any.missing = FALSE, null.ok = TRUE)
-  checkmate::check_double(mu_hat, null.ok = TRUE, lower = -Inf, upper = Inf, len = length(prior_list))
+  checkmate::check_double(mu_hat, null.ok = TRUE, lower = -Inf, upper = Inf)
   checkmate::check_vector(sd_hat, any.missing = FALSE, null.ok = TRUE)
-  checkmate::check_double(sd_hat, null.ok = TRUE, lower = 0, upper = Inf, len = length(prior_list))
+  checkmate::check_double(sd_hat, null.ok = TRUE, lower = 0, upper = Inf)
   
   if (is.null(mu_hat) && is.null(sd_hat)) {
     checkmate::check_data_frame(data_i, null.ok = FALSE)
