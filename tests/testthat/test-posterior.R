@@ -60,14 +60,22 @@ test_that("getPriorList input parameters do work as intented", {
 
 test_that("getPosteriorI works correctly", {
   # Prepare test data and parameters
-  data_i <- data.frame(dose = c(0, 1, 2, 3),
-                       response = c(10, 20, 30, 40))
+  data_i <- data.frame(
+    dose = c(0, 1, 2, 3),
+    response = c(10, 20, 30, 40)
+  )
+  
   prior_list <- list(1, 2, 3, 4)
   mu_hat <- c(10, 20, 30, 40)
   sd_hat <- matrix(c(1, 2, 3, 4), nrow = 4, ncol = 1)
   
   # Test getPosteriorI function
   post_list <- getPosteriorI(data_i, prior_list, mu_hat, sd_hat)
+  expect_type(post_list, "character")
+  expect_s3_class(post_list, "postList")
+  
+  # Test mu_hat and sd_hat both null branch
+  post_list <- getPosteriorI(data_i, prior_list, NULL, NULL)
   expect_type(post_list, "character")
   expect_s3_class(post_list, "postList")
 })
@@ -85,4 +93,18 @@ test_that("summary.postList works correctly", {
   # Test summary.postList function
   summary_tab <- summary.postList(post_list)
   expect_type(summary_tab, "character")
+})
+
+test_that("getPostCombsI returns an object with correct attributes", {
+  posterior_i <- list(
+    matrix(c(2, 1, 2), nrow = 3),
+    matrix(c(2, 1, 2), nrow = 3)
+  )
+  result <- getPostCombsI(posterior_i)
+  
+  expect_true(is.list(result))
+  expect_equal(length(result), 3)
+  expect_equal(names(result), c("weights", "means", "vars"))
+  expect_equal(result$weights, 4)
+  expect_true(all(result$vars == c(4, 4)))
 })
