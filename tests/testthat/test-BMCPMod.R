@@ -202,19 +202,14 @@ test_that("performBayesianMCPMod returns the right type of object under normal c
 #############################
 
 test_that("addSignificance works as intended", {
-  model_fits  <- getModelFits(
-    models      = colnames(contr_mat$contMat),
-    dose_levels = dose_levels,
-    posterior   = posteriors_list,
-    simple      = TRUE
-  )
+  model_fits  <- list(linear = 1)
 
-  model_fits_with_sign = addSignificance(model_fits, TRUE)
+  model_fits_with_sign = addSignificance(model_fits, list(TRUE))
   expect_true(
-    model_fits_with_sign[[1]]$significant
+    model_fits_with_sign[[1]][["significant"]]
   )
 
-  model_fits_with_sign = addSignificance(model_fits, FALSE)
+  model_fits_with_sign = addSignificance(model_fits, list(FALSE))
   expect_false(
     model_fits_with_sign[[1]]$significant
   )
@@ -231,14 +226,14 @@ test_that("BayesMCPi function works correctly in a simple case", {
     # BayesMCPi returns 1 if the posterior probability is strictly greater than the critical value, and 0 otherwise
   
   # Define a mock function for getPostCombsI
-  getPostCombsI <- function(posterior_i) {
+  mockr::local_mock(getPostCombsI = function(posterior_i) {
     return(0)
-  }
+  })
   
   # Define a mock function for getPostProb
-  getPostProb <- function(x, post_combs_i) {
+  mockr::local_mock(getPostProb = function(x, post_combs_i) {
     return(x)
-  }
+  })
   
   # Define inputs
   posterior_i = 0
