@@ -24,7 +24,6 @@ prior_list <- getPriorList(
   robustify_weight = 0.5
 )
 
-
 n_sim = 1
 alpha_crit_val = 0.05
 simple = TRUE
