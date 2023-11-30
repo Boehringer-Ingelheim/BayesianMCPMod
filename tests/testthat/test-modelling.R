@@ -1,22 +1,21 @@
+# Test data
+test_data <- data.frame(
+  simulation = rep(1, 6),
+  dose = c(0, 1, 2, 3, 4, 5),
+  response = c(0, 1, 2, 3, 4, 5)
+)
+
+# Mock getPosterior function
+getPosterior <- function(data, prior_list, mu_hat, sd_hat) {
+  list(
+    means = c(0, 1, 2, 3, 4, 5),
+    vars = c(1, 1, 1, 1, 1, 1),
+    weights = c(1, 1, 1, 1, 1, 1)
+  )
+}
+
 # Test predictModelFit function
 test_that("predictModelFit works correctly", {
-
-  # Test data
-  test_data <- data.frame(
-    simulation = rep(1, 6),
-    dose = c(0, 1, 2, 3, 4, 5),
-    response = c(0, 1, 2, 3, 4, 5)
-  )
-
-  # Mock getPosterior function
-  getPosterior <- function(data, prior_list, mu_hat, sd_hat) {
-    list(
-      means = c(0, 1, 2, 3, 4, 5),
-      vars = c(1, 1, 1, 1, 1, 1),
-      weights = c(1, 1, 1, 1, 1, 1)
-    )
-  }
-  
   model_fit <- list(
     model = "emax",
     coeffs = c(e0 = 0, eMax = 1, ed50 = 2),
@@ -62,7 +61,6 @@ test_that("addModelWeights works correctly in a simple case", {
   result <- addModelWeights(model_fits = test_model_fits2)
   expect_equal(result, expected_output2, tolerance = 1e-10)
 })
-
 
 # Test for getGenAIC
 test_that("getGenAIC calculates AIC correctly using snapshot test and a simple example", {
