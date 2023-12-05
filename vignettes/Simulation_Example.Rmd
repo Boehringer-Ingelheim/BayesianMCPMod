@@ -26,7 +26,7 @@ set.seed(7015)
 # Background and data
 
 In this vignette we will show the use of the Bayesian MCPMod package for trial planning for continuous distributed data. 
-As in [link other vignette] we focus on the indication MDD and make use of historical data that is included in the clinDR package. 
+As in [link to other vignette] we focus on the indication MDD and make use of historical data that is included in the clinDR package. 
 More specifically trial results for BRINTELLIX will be utilized to establish an informative prior for the control group.
 
 # Calculation of a MAP prior
