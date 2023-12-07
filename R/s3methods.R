@@ -53,6 +53,12 @@ print.BayesianMCP <- function (
   cat("  Estimated Success Rate: ", power, "\n")
   cat("  N Simulations:          ", n_sim)
   
+  ## TODO if n_nim == 1
+  # c(sign       = ifelse(max(post_probs) > crit_prob, 1, 0),
+  #   p_val      = max(post_probs),
+  #   post_probs = post_probs,
+  #   crit_prob  = crit_prob)
+  
 }
 
 ## ModelFits ----------------------------------------------

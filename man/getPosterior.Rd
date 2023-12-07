@@ -4,16 +4,16 @@
 \alias{getPosterior}
 \title{getPosterior}
 \usage{
-getPosterior(data, prior_list, mu_hat = NULL, sd_hat = NULL)
+getPosterior(prior_list, data = NULL, mu_hat = NULL, se_hat = NULL)
 }
 \arguments{
-\item{data}{tbd}
-
 \item{prior_list}{prior_list}
+
+\item{data}{tbd}
 
 \item{mu_hat}{tbd}
 
-\item{sd_hat}{tbd}
+\item{se_hat}{tbd}
 }
 \description{
 getPosterior

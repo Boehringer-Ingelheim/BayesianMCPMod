@@ -123,7 +123,7 @@ crit_pval <- getCritProb(
   dose_weights   = n_patients,
   alpha_crit_val = 0.1)
 
-contr_mat_prior <- getContrMat(
+contr_mat_prior <- getContr(
   mods           = mods,
   dose_levels    = dose_levels,
   dose_weights   = n_patients,

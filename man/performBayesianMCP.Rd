@@ -2,7 +2,7 @@
 % Please edit documentation in R/BMCPMod.R
 \name{performBayesianMCP}
 \alias{performBayesianMCP}
-\title{BayesianMCP}
+\title{performBayesianMCP}
 \usage{
 performBayesianMCP(posteriors_list, contr_mat, crit_prob)
 }
@@ -14,5 +14,5 @@ performBayesianMCP(posteriors_list, contr_mat, crit_prob)
 \item{crit_prob}{tbd}
 }
 \description{
-BayesianMCP
+performBayesianMCP
 }
