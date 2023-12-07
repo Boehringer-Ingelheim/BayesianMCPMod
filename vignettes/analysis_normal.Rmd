@@ -101,9 +101,14 @@ data_emax <- simulateData(
   mods        = mods,
   true_model  = "emax")
 
-posterior <- getPosterior(prior=prior_list,data=data_emax,
-                               mu_hat = new_trial$rslt,
-                               sd_hat = new_trial$se)
+posterior <- getPosterior(prior  = prior_list,
+                          data   = data_emax)
+
+posterior <- getPosterior(prior  = prior_list,
+                          mu_hat = new_trial$rslt,
+                          se_hat = new_trial$se)
+
+summary(posterior)
 
 ```
 
