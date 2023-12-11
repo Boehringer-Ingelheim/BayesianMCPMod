@@ -1,20 +1,20 @@
-#' @title getBootstrapBands
+#' @title getBootstrapQuantiles
 #'
 #' @param model_fits tbd
 #' @param n_samples tbd
 #' @param alpha tbd
 #' @param avg_fit tbd
-#' @param dose_seq tbd
+#' @param doses tbd
 #'
 #' @return tbd
 #' @export
-getBootstrapBands <- function (
+getBootstrapQuantiles <- function (
 
   model_fits,
+  quantiles,
   n_samples = 1e3,
-  alpha     = c(0.05, 0.5),
-  avg_fit   = TRUE,
-  dose_seq  = NULL
+  doses     = NULL,
+  avg_fit   = TRUE
 
 ) {
   
@@ -24,11 +24,11 @@ getBootstrapBands <- function (
   
   dose_levels    <- model_fits[[1]]$dose_levels
   model_names    <- names(model_fits)
-  quantile_probs <- c(0.5, sort(unique(c(alpha / 2, 1 - alpha / 2))))
+  quantile_probs <- sort(unique(quantiles))
   
-  if (is.null(dose_seq)) {
+  if (is.null(doses)) {
     
-    dose_seq <- seq(min(dose_levels), max(dose_levels), length.out = 100L)
+    doses <- seq(min(dose_levels), max(dose_levels), length.out = 100L)
     
   }
   
@@ -45,7 +45,7 @@ getBootstrapBands <- function (
         bnds  = DoseFinding::defBnds(
           mD = max(model_fits[[1]]$dose_levels))[[model]])
       
-      preds <- stats::predict(fit, doseSeq = dose_seq, predType = "ls-means")
+      preds <- stats::predict(fit, doseSeq = doses, predType = "ls-means")
       attr(preds, "gAIC") <- DoseFinding::gAIC(fit)
       
       return (preds)
@@ -71,20 +71,20 @@ getBootstrapBands <- function (
     
   }
   
-  sort_indx <- order(rep(seq_along(model_names), length(dose_seq)))
+  sort_indx <- order(rep(seq_along(model_names), length(doses)))
   quant_mat <- t(apply(X      = preds[sort_indx, ],
                        MARGIN = 1,
                        FUN    = stats::quantile,
                        probs  = quantile_probs))
   
   cr_bounds_data <- cbind(
-    dose_seqs = dose_seq,
-    models    = rep(
+    doses  = doses,
+    models = rep(
       x    = factor(model_names,
                     levels = c("linear", "emax", "exponential",
                                "sigEmax", "logistic", "quadratic",
                                "avgFit")),
-      each = length(dose_seq)),
+      each = length(doses)),
     as.data.frame(quant_mat))
 
   return (cr_bounds_data)

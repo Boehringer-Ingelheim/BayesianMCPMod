@@ -1,65 +1,3 @@
-#' @title getPriorList
-#' 
-#' @param hist_data tbd
-#' @param dose_levels tbd
-#' @param dose_names prior_list
-#' @param robustify_weight tbd
-#'
-getPriorList <- function (
-  
-  hist_data,
-  dose_levels,
-  dose_names       = NULL,
-  robustify_weight = 0.5
-  
-) {
-  
-  sd_tot <- with(hist_data, sum(sd * n) / sum(n))
-  
-  gmap <- RBesT::gMAP(
-    formula    = cbind(est, se) ~ 1 | trial,
-    weights    = hist_data$n,
-    data       = hist_data,
-    family     = gaussian,
-    beta.prior = cbind(0, 100 * sd_tot),
-    tau.dist   = "HalfNormal",
-    tau.prior  = cbind(0, sd_tot / 4))
-  
-  prior_ctr <- RBesT::automixfit(gmap)
-  
-  if (!is.null(robustify_weight)) {
-    
-    prior_ctr <- suppressMessages(RBesT::robustify(
-      priormix = prior_ctr,
-      weight   = robustify_weight,
-      sigma    = sd_tot))
-    
-  }
-  
-  prior_trt <- RBesT::mixnorm(
-    comp1 = c(w = 1, m = summary(prior_ctr)[1], n = 1),
-    sigma = sd_tot,
-    param = "mn")
-  
-  prior_list <- c(list(prior_ctr),
-                  rep(x     = list(prior_trt),
-                      times = length(dose_levels[-1])))
-  
-  if (is.null(dose_names)) {
-    
-    dose_names <- c("Ctr", paste0("DG_", seq_along(dose_levels[-1])))
-    
-  }
-  
-  names(prior_list) <- dose_names
-  
-  attr(prior_list, "dose_levels") <- dose_levels
-  attr(prior_list, "sd_tot")      <- sd_tot
-  
-  return (prior_list)
-  
-}
-
 #' @title getPosterior
 #' 
 #' @param data tbd
@@ -80,17 +18,18 @@ getPosterior <- function(
   if (!is.null(mu_hat) && !is.null(se_hat) && is.null(data)) {
     
     posterior_list <- getPosteriorI(
-      data_i     = NULL,
       prior_list = prior_list,
       mu_hat     = mu_hat,
       se_hat     = se_hat)
     
-  } else {
+  } else if (is.null(mu_hat) && is.null(se_hat) && !is.null(data)) {
     
     posterior_list <- lapply(split(data, data$simulation), getPosteriorI,
-                             prior_list = prior_list,
-                             mu_hat     = mu_hat,
-                             se_hat     = se_hat)
+                             prior_list = prior_list)
+    
+  } else {
+    
+    stop ("Either 'data' or 'mu_hat' and 'se_hat' must not be NULL.")
     
   }
   

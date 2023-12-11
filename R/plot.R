@@ -35,11 +35,11 @@ plot.modelFits <- function (
   post_summary <- summary.postList(
     object = attr(model_fits, "posterior"),
     probs  = c(alpha_CrI / 2, 0.5, 1 - alpha_CrI / 2))
-  doses        <- seq(from       = min(dose_levels),
-                      to         = max(dose_levels),
-                      length.out = plot_res)
+  dose_seq <- seq(from       = min(dose_levels),
+                  to         = max(dose_levels),
+                  length.out = plot_res)
   
-  preds_models <- sapply(model_fits, predictModelFit, doses = doses)
+  preds_models <- sapply(model_fits, predictModelFit, doses = dose_seq)
   model_names  <- names(model_fits)
   
   if (avg_fit) {
@@ -53,9 +53,9 @@ plot.modelFits <- function (
   }
   
   gg_data <- data.frame(
-    dose_seqs = rep(doses, length(model_names)),
-    fits      = as.vector(preds_models),
-    models    = rep(factor(model_names,
+    doses  = rep(dose_seq, length(model_names)),
+    fits   = as.vector(preds_models),
+    models = rep(factor(model_names,
                            levels = c("linear", "emax", "exponential",
                                       "sigEmax", "logistic", "quadratic",
                                       "avgFit")),
@@ -86,12 +86,12 @@ plot.modelFits <- function (
   
   if (cr_bands) {
     
-    crB_data <- getBootstrapBands(
+    crB_data <- getBootstrapQuantiles(
       model_fits = model_fits,
       n_samples  = n_bs_smpl,
-      alpha      = alpha_CrB,
+      quantiles  = c(0.5, sort(unique(c(alpha_CrB / 2, 1 - alpha_CrB / 2)))),
       avg_fit    = avg_fit,
-      dose_seq   = doses)
+      doses      = dose_seq)
     
     getInx <- function (alpha_CrB) {
       n        <- length(alpha_CrB)
@@ -129,7 +129,7 @@ plot.modelFits <- function (
       loop_txt <- paste0(
         "ggplot2::geom_ribbon(
           data    = crB_data,
-          mapping = ggplot2::aes(x    = dose_seqs,
+          mapping = ggplot2::aes(x    = doses,
                                  ymin = crB_data[, ", inx[1], "],
                                  ymax = crB_data[, ", inx[2], "]),
           fill    = acc_color,                    
@@ -144,7 +144,7 @@ plot.modelFits <- function (
     plts <- plts +
       ggplot2::geom_line(
         data    = crB_data,
-        mapping = ggplot2::aes(dose_seqs, `50%`),
+        mapping = ggplot2::aes(doses, `50%`),
         color   = acc_color)
     
   }
@@ -175,7 +175,7 @@ plot.modelFits <- function (
     ## Fitted Models
     ggplot2::geom_line(
       data    = gg_data,
-      mapping = ggplot2::aes(dose_seqs, fits)) + 
+      mapping = ggplot2::aes(doses, fits)) + 
     ## Faceting
     ggplot2::facet_wrap(~ models)
   

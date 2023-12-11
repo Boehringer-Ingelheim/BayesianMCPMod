@@ -50,29 +50,38 @@ print.BayesianMCP <- function (
   n_sim <- nrow(x)
   
   cat("Bayesian Multiple Comparison Procedure\n")
-  cat("  Estimated Success Rate: ", power, "\n")
-  cat("  N Simulations:          ", n_sim)
   
-  ## TODO if n_nim == 1
-  # c(sign       = ifelse(max(post_probs) > crit_prob, 1, 0),
-  #   p_val      = max(post_probs),
-  #   post_probs = post_probs,
-  #   crit_prob  = crit_prob)
+  if (n_sim == 1L) {
+    
+    attr(x, "crit_prob_adj") <- NULL
+    class(x) <- NULL
+    
+    print.default(x, ...)
+    
+  } else {
+    
+    cat("  Estimated Success Rate: ", power, "\n")
+    cat("  N Simulations:          ", n_sim)
+    
+  }
   
 }
 
 ## ModelFits ----------------------------------------------
 
 #' @export
-predict.ModelFits <- function (
+predict.modelFits <- function (
     
   object,
   doses = NULL,
   ...
   
 ) {
+
+  predictions <- lapply(object, predictModelFit, doses = doses)
+  attr(predictions, "doses") <- doses
   
-  lapply(object, predictModelFit, doses = doses, ...)
+  return (predictions)
   
 }
 
@@ -94,7 +103,8 @@ print.modelFits <- function (
   
   out_table <- data.frame(predictions,
                           mEff = sapply(x, function (y) y$max_effect),
-                          gAIC = sapply(x, function (y) y$gAIC))
+                          gAIC = sapply(x, function (y) y$gAIC),
+                          w    = sapply(x, function (y) y$model_weight))
   out_table <- apply(as.matrix(out_table), 2, round, digits = n_digits)
   
   if (!is.null(x[[1]]$significant)) {

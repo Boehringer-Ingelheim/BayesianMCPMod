@@ -44,7 +44,7 @@ assessDesign <- function (
       data       = getModelData(data, model_name),
       prior_list = prior_list)
     
-    crit_pval <- getCritProb(
+    crit_prob_adj <- getCritProb(
       mods           = mods,
       dose_levels    = dose_levels,
       dose_weights   = n_patients,
@@ -59,7 +59,7 @@ assessDesign <- function (
     b_mcp_mod <- performBayesianMCPMod(
       posteriors_list = posterior_list,
       contr_mat       = contr_mat_prior,
-      crit_prob       = crit_pval,
+      crit_prob_adj   = crit_prob_adj,
       simple          = simple)
     
   })
@@ -91,34 +91,40 @@ getContr <- function (
   
 ) {
   
-  if (is.null(prior_list)) { # frequentist
+  # frequentist & re-estimation
+  if (!is.null(se_new_trial) & 
+      is.null(dose_weights) & is.null(prior_list) & is.null(sd_posterior)) {
     
-    if (!is.null(se_new_trial)) { # re-estimate, se_new_trial
-      
-      w <- NULL
-      S <- diag((se_new_trial)^2)
-      
-    } else { # do not re-estimate, dose_weights
-      
-      w <- dose_weights
-      S <- NULL
-      
-    }
+    w <- NULL
+    S <- diag((se_new_trial)^2)
     
-  } else { # Bayes
+  # frequentist & no re-estimation
+  } else if (!is.null(dose_weights) & 
+             is.null(se_new_trial) & is.null(prior_list) & is.null(sd_posterior)) {
     
-    if (!is.null(sd_posterior)) { # re-estimate, sd_posterior
-      
-      w <- NULL
-      S <- diag((sd_posterior)^2)
-      
-    } else { # do not re-estimate, dose_weights + prior_list
-      
-      w <- dose_weights +
-        suppressMessages(round(unlist(lapply(prior_list, RBesT::ess))))
-      S <- NULL
-      
-    }
+    w <- dose_weights
+    S <- NULL
+    
+  # Bayesian & re-estimation
+  } else if (!is.null(sd_posterior) & 
+             is.null(se_new_trial) & is.null(prior_list) & is.null(dose_weights)) {
+    
+    w <- NULL
+    S <- diag((sd_posterior)^2)
+    
+  # Bayesian & no re-estimation
+  } else if (!is.null(dose_weights) & !is.null(prior_list) & 
+             is.null(se_new_trial) & is.null(sd_posterior)) {
+    
+    w <- dose_weights +
+      suppressMessages(round(unlist(lapply(prior_list, RBesT::ess))))
+    S <- NULL
+    
+  } else {
+    
+    stop (paste("Provided combiations of 'se_new_trial',",
+                 "'dose_weights', 'prior_list', 'sd_posterior' not allowed.",
+                 "See ?getContr for allowed combinations."))
     
   }
   
@@ -164,13 +170,13 @@ getCritProb <- function (
     doses  = dose_levels,
     w      = dose_weights)
   
-  crit_pval <- pnorm(DoseFinding:::critVal(
+  crit_prob <- pnorm(DoseFinding:::critVal(
     corMat      = contr_mat$corMat,
     alpha       = alpha_crit_val,
     df          = 0,
     alternative = "one.sided"))
   
-  return (crit_pval)
+  return (crit_prob)
   
 }
 
@@ -178,7 +184,7 @@ getCritProb <- function (
 #' 
 #' @param posteriors_list tbd
 #' @param contr_mat tbd
-#' @param crit_prob tbd
+#' @param crit_prob_adj tbd
 #' @param simple tbd
 #' 
 #' @export
@@ -186,7 +192,7 @@ performBayesianMCPMod <- function (
     
   posteriors_list,
   contr_mat,
-  crit_prob,
+  crit_prob_adj,
   simple = FALSE
   
 ) {
@@ -200,7 +206,7 @@ performBayesianMCPMod <- function (
   b_mcp <- performBayesianMCP(
     posteriors_list = posteriors_list,
     contr_mat       = contr_mat,
-    crit_prob       = crit_prob)
+    crit_prob_adj       = crit_prob_adj)
   
   model_shapes <- colnames(contr_mat$contMat)
   dose_levels  <- as.numeric(rownames(contr_mat$contMat))
@@ -209,7 +215,7 @@ performBayesianMCPMod <- function (
     
     if (b_mcp[i, 1]) {
       
-      sign_models <- b_mcp[i, -c(1, 2)] > attr(b_mcp, "crit_prob")
+      sign_models <- b_mcp[i, -c(1, 2)] > attr(b_mcp, "crit_prob_adj")
       
       model_fits  <- getModelFits(
         models      = model_shapes,
@@ -259,14 +265,14 @@ addSignificance <- function (
 #' 
 #' @param posteriors_list tbd
 #' @param contr_mat tbd
-#' @param crit_prob tbd
+#' @param crit_prob_adj tbd
 #' 
 #' @export
 performBayesianMCP <- function(
     
   posteriors_list,
   contr_mat,
-  crit_prob
+  crit_prob_adj
   
 ) {
   
@@ -276,10 +282,10 @@ performBayesianMCP <- function(
     
   }
   
-  b_mcp <- t(sapply(posteriors_list, BayesMCPi, contr_mat, crit_prob))
+  b_mcp <- t(sapply(posteriors_list, BayesMCPi, contr_mat, crit_prob_adj))
   
-  attr(b_mcp, "crit_prob") <- crit_prob
-  class(b_mcp)             <- "BayesianMCP"
+  attr(b_mcp, "crit_prob_adj") <- crit_prob_adj
+  class(b_mcp) <- "BayesianMCP"
   
   return (b_mcp)
   
@@ -289,7 +295,7 @@ BayesMCPi <- function (
     
   posterior_i,
   contr_mat,
-  crit_prob
+  crit_prob_adj
   
 ) {
   
@@ -319,10 +325,10 @@ BayesMCPi <- function (
   post_combs_i <- getPostCombsI(posterior_i)
   post_probs   <- apply(contr_mat$contMat, 2, getPostProb, post_combs_i)
   
-  res <- c(sign       = ifelse(max(post_probs) > crit_prob, 1, 0),
-           p_val      = max(post_probs),
-           post_probs = post_probs,
-           crit_prob  = crit_prob) # TODO  attr crit_prob??
+  res <- c(sign          = ifelse(max(post_probs) > crit_prob_adj, 1, 0),
+           crit_prob_adj = crit_prob_adj,
+           max_post_prob = max(post_probs),
+           post_probs    = post_probs)
   
   return (res)
   

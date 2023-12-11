@@ -4,14 +4,19 @@
 \alias{performBayesianMCPMod}
 \title{performBayesianMCPMod}
 \usage{
-performBayesianMCPMod(posteriors_list, contr_mat, crit_prob, simple = FALSE)
+performBayesianMCPMod(
+  posteriors_list,
+  contr_mat,
+  crit_prob_adj,
+  simple = FALSE
+)
 }
 \arguments{
 \item{posteriors_list}{tbd}
 
 \item{contr_mat}{tbd}
 
-\item{crit_prob}{tbd}
+\item{crit_prob_adj}{tbd}
 
 \item{simple}{tbd}
 }

@@ -4,14 +4,14 @@
 \alias{performBayesianMCP}
 \title{performBayesianMCP}
 \usage{
-performBayesianMCP(posteriors_list, contr_mat, crit_prob)
+performBayesianMCP(posteriors_list, contr_mat, crit_prob_adj)
 }
 \arguments{
 \item{posteriors_list}{tbd}
 
 \item{contr_mat}{tbd}
 
-\item{crit_prob}{tbd}
+\item{crit_prob_adj}{tbd}
 }
 \description{
 performBayesianMCP
