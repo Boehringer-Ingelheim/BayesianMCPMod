@@ -55,7 +55,6 @@ Here, we suggest a function to construct a list of prior distributions for the d
 This function is adapted to the needs of this example.
 Other applications may need a different way to construct prior distributions.
 ```{r Defining MAP prior function}
-
 getPriorList <- function (
   
   hist_data,
@@ -114,12 +113,8 @@ dose_levels <- c(0, 2.5, 5, 10)
 
 prior_list <- getPriorList(
   hist_data   = hist_data,
-<<<<<<< HEAD
   dose_levels = dose_levels)
-=======
-  dose_levels = dose_levels,robustify_weight = 0.5)
 
->>>>>>> 3df7e3809383180120cd61e9cc4f1428f597fd94
 ```
 # Specifications new trial 
 We will use the trial with ct.gov number NCT00635219 as exemplary new trial. 
