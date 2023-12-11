@@ -4,6 +4,7 @@
 \alias{getPosterior}
 \title{getPosterior}
 \usage{
+<<<<<<< HEAD
 getPosterior(data = NULL, prior_list, mu_hat = NULL, sd_hat = NULL)
 }
 \arguments{
@@ -15,6 +16,18 @@ Also a simulateData object can be provided.}
 \item{mu_hat}{vector of estimated mean values}
 
 \item{sd_hat}{vector of estimated standard deviations.}
+=======
+getPosterior(prior_list, data = NULL, mu_hat = NULL, se_hat = NULL)
+}
+\arguments{
+\item{prior_list}{prior_list}
+
+\item{data}{tbd}
+
+\item{mu_hat}{tbd}
+
+\item{se_hat}{tbd}
+>>>>>>> ff9a940b072d43dcf445d6c6944d4b8bcbc07a8b
 }
 \description{
 Either the patient level data or both the mu_hat as well as the sd_hat must to be provided.

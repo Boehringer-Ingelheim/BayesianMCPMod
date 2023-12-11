@@ -28,7 +28,7 @@ In this vignette we will show the use of the Bayesian MCPMod package for continu
 Hereby the focus is on the utilization of an informative prior and the BayesianMCPMod evaluation of a single trial.
 We will use data that is included in the clinDR package. 
 More specifically trial results for BRINTELLIX will be used to illustrate the specification of an informative prior and the usage of such a prior for the bayesian evaluation of a (hypothetical) new trial. 
-More information around BRINTELLIX to be added...
+More information around BRINTELLIX will be added...
 
 
 # Calculation of a MAP prior
@@ -92,9 +92,30 @@ n_patients <- c(150, 142, 147, 149)
 As outlined in citePaper, in a first step the posterior is calculated combining the prior information with the estimated results of the new trial.
 
 ```{r Trial results}
+<<<<<<< HEAD
 posterior <- getPosterior(prior = prior_list,
                                mu_hat = new_trial$rslt,
                                sd_hat = new_trial$se)
+=======
+#Simulation of new trial 
+##Note: This step should not be required, as we provide summary measures directly from the new trial
+data_emax <- simulateData(
+  n_patients  = n_patients,
+  dose_levels = dose_levels,
+  sd          = attr(prior_list, "sd_tot"),
+  mods        = mods,
+  true_model  = "emax")
+
+posterior <- getPosterior(prior  = prior_list,
+                          data   = data_emax)
+
+posterior <- getPosterior(prior  = prior_list,
+                          mu_hat = new_trial$rslt,
+                          se_hat = new_trial$se)
+
+summary(posterior)
+
+>>>>>>> ff9a940b072d43dcf445d6c6944d4b8bcbc07a8b
 ```
 
 # Execution of Bayesian MCPMod Test step
@@ -108,7 +129,7 @@ crit_pval <- getCritProb(
   dose_weights   = n_patients,
   alpha_crit_val = 0.1)
 
-contr_mat_prior <- getContrMat(
+contr_mat_prior <- getContr(
   mods           = mods,
   dose_levels    = dose_levels,
   dose_weights   = n_patients,

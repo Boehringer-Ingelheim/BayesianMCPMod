@@ -2,7 +2,7 @@
 % Please edit documentation in R/BMCPMod.R
 \name{performBayesianMCP}
 \alias{performBayesianMCP}
-\title{BayesianMCP}
+\title{performBayesianMCP}
 \usage{
 performBayesianMCP(posteriors_list, contr_mat, crit_prob)
 }
@@ -17,5 +17,9 @@ performBayesianMCP(posteriors_list, contr_mat, crit_prob)
 b_mcp test result
 }
 \description{
+<<<<<<< HEAD
 performs bayesian MCP Test step.
+=======
+performBayesianMCP
+>>>>>>> ff9a940b072d43dcf445d6c6944d4b8bcbc07a8b
 }

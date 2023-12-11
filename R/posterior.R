@@ -10,9 +10,8 @@
 #' @param robustify_weight needs to be provided as a numeric
 #' value for the weight of the robustification component
 #'
-#' @export
 getPriorList <- function (
-    
+  
   hist_data,
   dose_levels,
   dose_names       = NULL,
@@ -81,8 +80,9 @@ getPriorList <- function (
 getPosterior <- function(
   data = NULL,
   prior_list,
+  data   = NULL,
   mu_hat = NULL,
-  sd_hat = NULL
+  se_hat = NULL
   
 ) {
   checkmate::check_data_frame(data, null.ok = TRUE)
@@ -101,8 +101,8 @@ getPosterior <- function(
                            prior_list = prior_list,
                            mu_hat     = mu_hat,
                            sd_hat     = sd_hat)
+
   }
-  
   if (length(posterior_list) == 1) {
     
     posterior_list <- posterior_list[[1]]
@@ -115,10 +115,10 @@ getPosterior <- function(
 
 getPosteriorI <- function(
     
-  data_i,
+  data_i = NULL,
   prior_list,
   mu_hat = NULL,
-  sd_hat = NULL
+  se_hat = NULL
   
 ) {
 
@@ -136,14 +136,23 @@ getPosteriorI <- function(
     # posterior <- getPosterior(data = simulateData(4, dose_levels, new_trial$sd, mods), prior = prior_list,
     #                           mu_hat = NULL,
     #                           sd_hat = NULL)
-    
     anova_res <- stats::lm(data_i$response ~ factor(data_i$dose) - 1)
     mu_hat    <- summary(anova_res)$coefficients[, 1]
-    sd_hat    <- summary(anova_res)$coefficients[, 2]
+    se_hat    <- summary(anova_res)$coefficients[, 2]
     
+  } else if (!is.null(mu_hat) && !is.null(se_hat)) {
+    
+    stopifnot("m_hat length must match number of dose levels" = 
+                length(prior_list) == length(mu_hat),
+              "se_hat length must match number of dose levels" = 
+                length(prior_list) == length(se_hat))
+    
+  } else {
+    
+    stop ("Both mu_hat and se_hat must be provided.")
   }
   
-  post_list <- mapply(RBesT::postmix, prior_list, m = mu_hat, se = sd_hat)
+  post_list <- mapply(RBesT::postmix, prior_list, m = mu_hat, se = se_hat)
   
   if (is.null(names(prior_list))) {
     

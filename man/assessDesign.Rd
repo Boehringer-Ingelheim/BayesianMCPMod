@@ -9,6 +9,7 @@ assessDesign(
   n_patients,
   mods,
   prior_list,
+  sd = NULL,
   n_sim = 1000,
   alpha_crit_val = 0.05,
   simple = TRUE

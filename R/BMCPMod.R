@@ -16,6 +16,8 @@ assessDesign <- function (
   mods,
   prior_list,
   
+  sd             = NULL,
+  
   n_sim          = 1e3,
   alpha_crit_val = 0.05,
   simple         = TRUE
@@ -33,11 +35,16 @@ assessDesign <- function (
   # TODO: check that prior_list has 'sd_tot' attribute, and that it's numeric
   
   dose_levels <- attr(prior_list, "dose_levels")
+  sd          <- ifelse(is.null(sd), attr(prior_list, "sd_tot"), sd)
+  
+  stopifnot(
+    "sd length must coincide with number of dose levels" =
+      length(sd) == length(dose_levels))
   
   data <- simulateData(
     n_patients  = n_patients,
     dose_levels = dose_levels,
-    sd          = attr(prior_list, "sd_tot"),
+    sd          = sd,
     mods        = mods,
     n_sim       = n_sim)
   
@@ -55,7 +62,7 @@ assessDesign <- function (
       dose_weights   = n_patients,
       alpha_crit_val = alpha_crit_val)
     
-    contr_mat_prior <- getContrMat(
+    contr_mat_prior <- getContr(
       mods           = mods,
       dose_levels    = dose_levels,
       dose_weights   = n_patients,
@@ -75,7 +82,7 @@ assessDesign <- function (
   
 }
 
-#' @title getContrMat
+#' @title getContr
 #' 
 #' @description This function calculates contrast vectors that are optimal for detecting certain alternatives. More information and link to publication will be added.
 #' 
@@ -88,11 +95,12 @@ assessDesign <- function (
 #' 
 #' @export
 getContrMat <- function (
-  
   mods,
   dose_levels,
-  dose_weights,
-  prior_list
+  dose_weights = NULL,
+  prior_list   = NULL,
+  se_new_trial = NULL,
+  sd_posterior = NULL
   
 ) {
   
@@ -102,13 +110,55 @@ getContrMat <- function (
   checkmate::check_list(prior_list, names = "named", len = length(attr(prior_list, "dose_levels")), any.missing = FALSE)
   
   ess_prior <- suppressMessages(round(unlist(lapply(prior_list, RBesT::ess))))
+
+  if (is.null(prior_list)) { # frequentist
+    
+    if (!is.null(se_new_trial)) { # re-estimate, se_new_trial
+      
+      w <- NULL
+      S <- diag((se_new_trial)^2)
+      
+    } else { # do not re-estimate, dose_weights
+      
+      w <- dose_weights
+      S <- NULL
+      
+    }
+    
+  } else { # Bayes
+    
+    if (!is.null(sd_posterior)) { # re-estimate, sd_posterior
+      
+      w <- NULL
+      S <- diag((sd_posterior)^2)
+      
+    } else { # do not re-estimate, dose_weights + prior_list
+      
+      w <- dose_weights +
+        suppressMessages(round(unlist(lapply(prior_list, RBesT::ess))))
+      S <- NULL
+      
+    }
+    
+  }
   
-  contr_mat <- DoseFinding::optContr(
-    models = mods,
-    doses  = dose_levels,
-    w      = dose_weights + ess_prior)
+  if (is.null(w)) {
+    
+    contr <- DoseFinding::optContr(
+      models = mods,
+      doses  = dose_levels,
+      S      = S)
+    
+  } else {
+    
+    contr <- DoseFinding::optContr(
+      models = mods,
+      doses  = dose_levels,
+      w      = w)
+    
+  }
   
-  return (contr_mat)
+  return (contr)
   
 }
 
@@ -287,6 +337,7 @@ addSignificance <- function (
   
 }
 
+
 #' @title getPostProb
 #' 
 #' @description calculates posterior probabilities for the models.
@@ -344,7 +395,8 @@ BayesMCPi <- function (
   
   res <- c(sign       = ifelse(max(post_probs) > crit_prob, 1, 0),
            p_val      = max(post_probs),
-           post_probs = post_probs)
+           post_probs = post_probs,
+           crit_prob  = crit_prob) # TODO  attr crit_prob??
   
   return (res)
   
