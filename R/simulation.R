@@ -1,11 +1,18 @@
 #' @title simulateData
 #' 
-#' @param n_patients tbd
-#' @param dose_levels tbd
-#' @param sd tbd
-#' @param mods tbd
-#' @param n_sim tbd
-#' @param true_model tbd
+#' @param n_patients vector containing number of patients as a numerical
+#' value per dose-group.
+#' @param dose_levels vector containing the different doseage levels.
+#' @param sd standard deviation on patient level.
+#' @param mods An object of class "Mods" as specified in the Dosefinding package.
+#' @param n_sim number of simulations to be performed,
+#' Default is 1000
+#' @param true_model Default value is NULL.
+#' Assumed true underlying model. Provided via a String. e.g. "emax".
+#' In case of NULL, all dose-response models, included in the mods input parameter will be used.
+#' 
+#' @return sim_data one list object, containing patient level simulated data for all assumed true models.
+#' Also providing information about simulation iteration, patient number as well as dosage levels.
 #' 
 #' @export
 simulateData <- function(

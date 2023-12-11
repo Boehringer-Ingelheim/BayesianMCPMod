@@ -2,7 +2,8 @@
 % Please edit documentation in R/BMCPMod.R
 \name{assessDesign}
 \alias{assessDesign}
-\title{assessDesign}
+\title{assessDesign
+.}
 \usage{
 assessDesign(
   n_patients,
@@ -15,18 +16,18 @@ assessDesign(
 )
 }
 \arguments{
-\item{n_patients}{tbd}
+\item{n_patients}{Vector specifying the planned number of patients per dose group}
 
-\item{mods}{tbd}
+\item{mods}{An object of class "Mods" as specified in the Dosefinding package.}
 
-\item{prior_list}{tbd}
+\item{prior_list}{a prior_list object specifying the utilized prior for the different dose groups}
 
-\item{n_sim}{tbd}
+\item{n_sim}{number of simulations to be performed}
 
-\item{alpha_crit_val}{tbd}
+\item{alpha_crit_val}{critical value to be used for the testing (on the probability scale)}
 
-\item{simple}{tbd}
+\item{simple}{boolean variable, defining whether simplified fit will be applied. Passed to the getModelFits function. Default FALSE.}
 }
 \description{
-assessDesign
+This function performs simulation based trial design evaluations for a set of specified dose-response models
 }

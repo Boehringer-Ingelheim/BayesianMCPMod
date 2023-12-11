@@ -114,7 +114,12 @@ dose_levels <- c(0, 2.5, 5, 10)
 
 prior_list <- getPriorList(
   hist_data   = hist_data,
+<<<<<<< HEAD
   dose_levels = dose_levels)
+=======
+  dose_levels = dose_levels,robustify_weight = 0.5)
+
+>>>>>>> 3df7e3809383180120cd61e9cc4f1428f597fd94
 ```
 # Specifications new trial 
 We will use the trial with ct.gov number NCT00635219 as exemplary new trial. 
@@ -174,6 +179,7 @@ posterior <- getPosterior(prior  = prior_list,
 
 summary(posterior)
 
+
 ```
 
 # Execution of Bayesian MCPMod Test step
@@ -210,7 +216,7 @@ BMCP_result <- performBayesianMCP(
 
 #BMCP_result2
 
-BMCP_result
+BMCP_result[1,1:5]
 ```
 The testing step is significant indicating a non-flat dose-response shape. In detail the p-values for the emax model is the most significant one.
 

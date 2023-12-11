@@ -7,14 +7,15 @@
 getPosterior(prior_list, data = NULL, mu_hat = NULL, se_hat = NULL)
 }
 \arguments{
-\item{prior_list}{prior_list}
+\item{prior_list}{prior_list object}
 
-\item{data}{tbd}
+\item{data}{dataframe containing the information of dose and response.
+Also a simulateData object can be provided.}
 
-\item{mu_hat}{tbd}
+\item{mu_hat}{vector of estimated mean values}
 
-\item{se_hat}{tbd}
+\item{sd_hat}{vector of estimated standard deviations.}
 }
 \description{
-getPosterior
+Either the patient level data or both the mu_hat as well as the sd_hat must to be provided.
 }

@@ -7,14 +7,19 @@
 getModelFits(models, dose_levels, posterior, simple = FALSE)
 }
 \arguments{
-\item{models}{tbd}
+\item{models}{list of model names for which a fit will be performed.}
 
-\item{dose_levels}{tbd}
+\item{dose_levels}{a vector containing the different dosage levels.}
 
-\item{posterior}{tbd}
+\item{posterior}{a getPosterior object, containing the (multivariate) posterior distribution per dosage level.}
 
-\item{simple}{tbd}
+\item{simple}{boolean variable, defining whether simplified fit will be applied. Default FALSE.}
+}
+\value{
+model_fits returns a list, containing information about the fitted model coefficients, the prediction per dose group as well as maximum effect and generalized AIC per model.
 }
 \description{
-getModelFits
+Fits dose-response curves for the specified dose-repsonse models, based on the posterior distributions.
+For the simplified fit, multivariate normal distributions will be approximated and reduced by one-dimensional normal distributions.
+For the default case, the Nelder-Mead algorithm is used. Will be further updated and links to publication as well as references will be added.
 }

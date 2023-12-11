@@ -22,7 +22,7 @@ remotes::install_github("https://github.com/Boehringer-Ingelheim/BayesianMCPmod"
 
 ## Documentation
 
-The package documentation is hosted [here](https://boehringer-ingelheim.github.io/BayesianMCPmod/).
+The package documentation is hosted [here](https://boehringer-ingelheim.github.io/BayesianMCPMod/).
 
 
 ## Contributing

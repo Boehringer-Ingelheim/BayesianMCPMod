@@ -4,16 +4,19 @@
 \alias{getCritProb}
 \title{getCritProb}
 \usage{
-getCritProb(mods, dose_levels, dose_weights, alpha_crit_val)
+getCritProb(mods, dose_levels, dose_weights, alpha_crit_val = 0.025)
 }
 \arguments{
-\item{mods}{tbd}
+\item{mods}{An object of class "Mods" as specified in the Dosefinding package.}
 
-\item{dose_levels}{tbd}
+\item{dose_levels}{vector containing the different doseage levels.}
 
-\item{dose_weights}{tbd}
+\item{dose_weights}{Vector specifying weights for the different doses}
 
-\item{alpha_crit_val}{tbd}
+\item{alpha_crit_val}{significance level. Default set to 0.025.}
+}
+\value{
+crit_pval multiplicity adjusted critical value on the probability scale.
 }
 \description{
 getCritProb

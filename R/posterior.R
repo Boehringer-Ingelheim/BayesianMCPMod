@@ -1,13 +1,16 @@
+
 #' @title getPosterior
 #' 
-#' @param data tbd
-#' @param prior_list prior_list
-#' @param mu_hat tbd
-#' @param se_hat tbd
+#' @description Either the patient level data or both the mu_hat as well as the sd_hat must to be provided.
+#' 
+#' @param data dataframe containing the information of dose and response.
+#' Also a simulateData object can be provided.
+#' @param prior_list prior_list object
+#' @param mu_hat vector of estimated mean values
+#' @param sd_hat vector of estimated standard deviations.
 #'
 #' @export
 getPosterior <- function(
-    
   prior_list,
   data   = NULL,
   mu_hat = NULL,
@@ -32,7 +35,7 @@ getPosterior <- function(
     stop ("Either 'data' or 'mu_hat' and 'se_hat' must not be NULL.")
     
   }
-  
+ 
   if (length(posterior_list) == 1) {
     
     posterior_list <- posterior_list[[1]]

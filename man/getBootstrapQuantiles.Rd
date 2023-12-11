@@ -6,10 +6,10 @@
 \usage{
 getBootstrapQuantiles(
   model_fits,
+  quantiles,
   n_samples = 1000,
-  alpha = c(0.05, 0.5),
-  avg_fit = TRUE,
-  dose_seq = NULL
+  doses = NULL,
+  avg_fit = TRUE
 )
 }
 \arguments{
@@ -17,11 +17,11 @@ getBootstrapQuantiles(
 
 \item{n_samples}{tbd}
 
-\item{alpha}{tbd}
+\item{doses}{tbd}
 
 \item{avg_fit}{tbd}
 
-\item{dose_seq}{tbd}
+\item{alpha}{tbd}
 }
 \value{
 tbd

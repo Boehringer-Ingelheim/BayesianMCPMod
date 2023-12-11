@@ -1,11 +1,13 @@
 #' @title assessDesign
-#' 
-#' @param n_patients tbd
-#' @param mods tbd
-#' @param prior_list tbd
-#' @param n_sim tbd
-#' @param alpha_crit_val tbd
-#' @param simple tbd
+#'.
+#' @description This function performs simulation based trial design evaluations for a set of specified dose-response models
+#'
+#' @param n_patients Vector specifying the planned number of patients per dose group
+#' @param mods An object of class "Mods" as specified in the Dosefinding package.
+#' @param prior_list a prior_list object specifying the utilized prior for the different dose groups 
+#' @param n_sim number of simulations to be performed
+#' @param alpha_crit_val critical value to be used for the testing (on the probability scale)
+#' @param simple boolean variable, defining whether simplified fit will be applied. Passed to the getModelFits function. Default FALSE.
 #' 
 #' @export
 assessDesign <- function (
@@ -72,16 +74,17 @@ assessDesign <- function (
 
 #' @title getContr
 #' 
-#' @param mods tbd
-#' @param dose_levels tbd
-#' @param dose_weights tbd
-#' @param prior_list tbd
-#' @param se_new_trial tbd
-#' @param sd_posterior tbd
+#' @description This function calculates contrast vectors that are optimal for detecting certain alternatives. More information and link to publication will be added.
+#' 
+#' @param mods An object of class "Mods" as specified in the Dosefinding package.
+#' @param dose_levels vector containing the different doseage levels.
+#' @param dose_weights Vector specifying weights for the different doses
+#' @param prior_list a prior_list object
+#' 
+#' @return contr_mat Object of class ‘⁠optContr⁠’. A list containing entries contMat and muMat, and CorrMat. Specified in the Dosefinding package.
 #' 
 #' @export
-getContr <- function (
-    
+getContrMat <- function (
   mods,
   dose_levels,
   dose_weights = NULL,
@@ -150,10 +153,12 @@ getContr <- function (
 
 #' @title getCritProb
 #' 
-#' @param mods tbd
-#' @param dose_levels tbd
-#' @param dose_weights tbd
-#' @param alpha_crit_val tbd
+#' @param mods An object of class "Mods" as specified in the Dosefinding package.
+#' @param dose_levels vector containing the different dosage levels.
+#' @param dose_weights Vector specifying weights for the different doses
+#' @param alpha_crit_val significance level. Default set to 0.025.
+#' 
+#' @return crit_pval multiplicity adjusted critical value on the probability scale.
 #' 
 #' @export
 getCritProb <- function (
@@ -161,7 +166,7 @@ getCritProb <- function (
   mods,
   dose_levels,
   dose_weights,
-  alpha_crit_val
+  alpha_crit_val = 0.025
   
 ) {
   
@@ -182,10 +187,14 @@ getCritProb <- function (
 
 #' @title performBayesianMCPMod
 #' 
-#' @param posteriors_list tbd
-#' @param contr_mat tbd
-#' @param crit_prob_adj tbd
-#' @param simple tbd
+#' @description performs bayesian MCP Test step and modelling.
+#' 
+#' @param posteriors_list a getPosterior object
+#' @param contr_mat a getContrMat object, contrast matrix to be used for the testing step.
+#' @param crit_prob a getCritProb object
+#' @param simple boolean variable, defining whether simplified fit will be applied. Passed to the getModelFits function. Default FALSE.
+#' 
+#' @return bmcpmod test result as well as modelling result.
 #' 
 #' @export
 performBayesianMCPMod <- function (
@@ -263,9 +272,13 @@ addSignificance <- function (
 
 #' @title performBayesianMCP
 #' 
-#' @param posteriors_list tbd
-#' @param contr_mat tbd
-#' @param crit_prob_adj tbd
+#' @description performs bayesian MCP Test step.
+#' 
+#' @param posteriors_list a getPosterior object
+#' @param contr_mat a getContrMat object, contrast matrix to be used for the testing step.
+#' @param crit_prob a getCritProb object, specifying the critical value to be used for the testing (on the probability scale)
+#' 
+#' @return b_mcp test result 
 #' 
 #' @export
 performBayesianMCP <- function(
