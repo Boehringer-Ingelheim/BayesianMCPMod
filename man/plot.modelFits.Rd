@@ -18,29 +18,30 @@
 )
 }
 \arguments{
-\item{x}{tbd An object of type modelFits}
+\item{x}{an object of type getModelFits}
 
-\item{gAIC}{tbd}
+\item{gAIC}{logical value indicating whether gAIC values are shown in the plot. Default TRUE}
 
-\item{avg_fit}{tbd}
+\item{avg_fit}{logical value indicating whether average fit is presented in the plot. Default TRUE}
 
-\item{cr_intv}{tbd}
+\item{cr_intv}{logical value indicating whether credible intervals are included in the plot. Default TRUE}
 
-\item{alpha_CrI}{tbd}
+\item{alpha_CrI}{numerical value of the width of the credible intervals. Default is set to 0.05 (i.e 95\% CI are shown).}
 
-\item{cr_bands}{tbd}
+\item{cr_bands}{logical value indicating whether bootstrapped based credible bands are shown in the plot. Default FALSE}
 
-\item{alpha_CrB}{tbd}
+\item{alpha_CrB}{numerical vector of the width of the credible bands. Default is set to 0.05 and 0.5 (i.e 95\% CB and median are shown).}
 
-\item{n_bs_smpl}{tbd}
+\item{n_bs_smpl}{number of bootstrap samples being used. Default set to 1000.}
 
-\item{acc_color}{tbd}
+\item{acc_color}{color of the credible bands. Default set to "orange"}
 
-\item{...}{tbd}
+\item{...}{optional parameter to be passed.}
 }
 \value{
-tbd
+plts returns a ggplot2 object
 }
 \description{
-plot.modelFits
+plot function based on the ggplot2 package. Providing visualizations for each model and a average Fit.
+More details to be added, as well as references.
 }

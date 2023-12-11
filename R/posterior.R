@@ -1,16 +1,21 @@
 #' @title getPriorList
 #' 
-#' @param hist_data tbd
-#' @param dose_levels tbd
-#' @param dose_names prior_list
-#' @param robustify_weight tbd
+#' @param hist_data historical trial summary level data,
+#' needs to be provided as a dataframe. Including information of the
+#' estimates and variability.
+#' @param dose_levels vector of the different doseage levels
+#' @param dose_names character vector of dose levels,
+#' default NULL and will be automatically created
+#' based on the dose levels parameter.
+#' @param robustify_weight Null needs to be provided as a numeric
+#' value for the weight of the robustification component
 #'
 getPriorList <- function (
   
   hist_data,
   dose_levels,
   dose_names       = NULL,
-  robustify_weight = 0.5
+  robustify_weight = NULL
   
 ) {
   
@@ -26,6 +31,10 @@ getPriorList <- function (
     tau.prior  = cbind(0, sd_tot / 4))
   
   prior_ctr <- RBesT::automixfit(gmap)
+  
+  if(is.null(robustify_weight) | !is.numeric(robustify_weight)) {
+    stop("robustify_weight needs to be provided and must be numeric")
+  }
   
   if (!is.null(robustify_weight)) {
     
@@ -62,14 +71,16 @@ getPriorList <- function (
 
 #' @title getPosterior
 #' 
-#' @param data tbd
-#' @param prior_list prior_list
-#' @param mu_hat tbd
-#' @param se_hat tbd
+#' @description Either the patient level data or both the mu_hat as well as the sd_hat must to be provided.
+#' 
+#' @param data dataframe containing the information of dose and response.
+#' Also a simulateData object can be provided.
+#' @param prior_list prior_list object
+#' @param mu_hat vector of estimated mean values
+#' @param sd_hat vector of estimated standard deviations.
 #'
 #' @export
 getPosterior <- function(
-    
   prior_list,
   data   = NULL,
   mu_hat = NULL,
@@ -91,9 +102,9 @@ getPosterior <- function(
                              prior_list = prior_list,
                              mu_hat     = mu_hat,
                              se_hat     = se_hat)
-    
   }
-  
+    
+ 
   if (length(posterior_list) == 1) {
     
     posterior_list <- posterior_list[[1]]
