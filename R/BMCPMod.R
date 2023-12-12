@@ -5,9 +5,13 @@
 #' @param n_patients Vector specifying the planned number of patients per dose group
 #' @param mods An object of class "Mods" as specified in the Dosefinding package.
 #' @param prior_list a prior_list object specifying the utilized prior for the different dose groups 
+#' @param sd tbd
 #' @param n_sim number of simulations to be performed
 #' @param alpha_crit_val critical value to be used for the testing (on the probability scale)
 #' @param simple boolean variable, defining whether simplified fit will be applied. Passed to the getModelFits function. Default FALSE.
+#' @param reestimate tbd Default FALSE
+#' @param contr tbd Default NULL
+#' @param dr_means tbd Default NULL
 #' 
 #' @export
 assessDesign <- function (
@@ -98,8 +102,10 @@ assessDesign <- function (
 #' 
 #' @param mods An object of class "Mods" as specified in the Dosefinding package.
 #' @param dose_levels vector containing the different doseage levels.
-#' @param dose_weights Vector specifying weights for the different doses
-#' @param prior_list a prior_list object
+#' @param dose_weights Vector specifying weights for the different doses. Default NULL
+#' @param prior_list a prior_list object. Default NULL
+#' @param sd_posterior tbd. Default NULL
+#' @param se_new_trial tbd. Default NULL
 #' 
 #' @return contr Object of class ‘⁠optContr⁠’. A list containing entries contMat and muMat, and CorrMat. Specified in the Dosefinding package.
 #' 
@@ -196,7 +202,7 @@ getCritProb <- function (
     doses  = dose_levels,
     w      = dose_weights)
   
-  crit_prob <- pnorm(DoseFinding:::critVal(
+  crit_prob <- stats::pnorm(DoseFinding::critVal(
     corMat      = contr$corMat,
     alpha       = alpha_crit_val,
     df          = 0,
@@ -212,7 +218,7 @@ getCritProb <- function (
 #' 
 #' @param posterior_list a getPosterior object
 #' @param contr a getContrMat object, contrast matrix to be used for the testing step.
-#' @param crit_prob a getCritProb object
+#' @param crit_prob_adj a getCritProb object
 #' @param simple boolean variable, defining whether simplified fit will be applied. Passed to the getModelFits function. Default FALSE.
 #' 
 #' @return bmcpmod test result as well as modelling result.
@@ -227,7 +233,7 @@ performBayesianMCPMod <- function (
   
 ) {
   
-  if (class(posterior_list) == "postList") {
+  if (inherits(posterior_list,  "postList")) {
     
     posterior_list <- list(posterior_list)
     
@@ -310,7 +316,7 @@ addSignificance <- function (
 #' 
 #' @param posterior_list a getPosterior object
 #' @param contr a getContrMat object, contrast matrix to be used for the testing step.
-#' @param crit_prob a getCritProb object, specifying the critical value to be used for the testing (on the probability scale)
+#' @param crit_prob_adj a getCritProb object, specifying the critical value to be used for the testing (on the probability scale)
 #' 
 #' @return b_mcp test result 
 #' 
@@ -323,7 +329,7 @@ performBayesianMCP <- function(
   
 ) {
   
-  if (class(posterior_list) == "postList") {
+  if (inherits(posterior_list,  "postList")) {
     
     posterior_list <- list(posterior_list)
     

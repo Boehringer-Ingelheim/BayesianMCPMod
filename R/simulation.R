@@ -10,6 +10,7 @@
 #' @param true_model Default value is NULL.
 #' Assumed true underlying model. Provided via a String. e.g. "emax".
 #' In case of NULL, all dose-response models, included in the mods input parameter will be used.
+#' @param dr_means tbd. Default NULL.
 #' 
 #' @return sim_data one list object, containing patient level simulated data for all assumed true models.
 #' Also providing information about simulation iteration, patient number as well as dosage levels.

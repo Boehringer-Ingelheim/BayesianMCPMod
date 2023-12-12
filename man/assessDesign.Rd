@@ -25,11 +25,19 @@ assessDesign(
 
 \item{prior_list}{a prior_list object specifying the utilized prior for the different dose groups}
 
+\item{sd}{tbd}
+
 \item{n_sim}{number of simulations to be performed}
 
 \item{alpha_crit_val}{critical value to be used for the testing (on the probability scale)}
 
 \item{simple}{boolean variable, defining whether simplified fit will be applied. Passed to the getModelFits function. Default FALSE.}
+
+\item{reestimate}{tbd Default FALSE}
+
+\item{contr}{tbd Default NULL}
+
+\item{dr_means}{tbd Default NULL}
 }
 \description{
 This function performs simulation based trial design evaluations for a set of specified dose-response models

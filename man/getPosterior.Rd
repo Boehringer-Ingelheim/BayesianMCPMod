@@ -15,12 +15,14 @@ getPosterior(
 \arguments{
 \item{prior_list}{prior_list object}
 
-\item{data}{dataframe containing the information of dose and response.
+\item{data}{dataframe containing the information of dose and response. Default NULL
 Also a simulateData object can be provided.}
 
 \item{mu_hat}{vector of estimated mean values}
 
-\item{sd_hat}{vector of estimated standard deviations.}
+\item{se_hat}{vector of estimated standard deviations.}
+
+\item{calc_ess}{tbd. Default NULL}
 }
 \description{
 Either the patient level data or both the mu_hat as well as the sd_hat must to be provided.

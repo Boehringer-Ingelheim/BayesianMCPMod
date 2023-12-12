@@ -18,9 +18,13 @@ getContr(
 
 \item{dose_levels}{vector containing the different doseage levels.}
 
-\item{dose_weights}{Vector specifying weights for the different doses}
+\item{dose_weights}{Vector specifying weights for the different doses. Default NULL}
 
-\item{prior_list}{a prior_list object}
+\item{prior_list}{a prior_list object. Default NULL}
+
+\item{sd_posterior}{tbd. Default NULL}
+
+\item{se_new_trial}{tbd. Default NULL}
 }
 \value{
 contr Object of class ‘⁠optContr⁠’. A list containing entries contMat and muMat, and CorrMat. Specified in the Dosefinding package.

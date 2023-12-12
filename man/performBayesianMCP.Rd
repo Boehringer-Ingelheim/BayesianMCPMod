@@ -11,7 +11,7 @@ performBayesianMCP(posterior_list, contr, crit_prob_adj)
 
 \item{contr}{a getContrMat object, contrast matrix to be used for the testing step.}
 
-\item{crit_prob}{a getCritProb object, specifying the critical value to be used for the testing (on the probability scale)}
+\item{crit_prob_adj}{a getCritProb object, specifying the critical value to be used for the testing (on the probability scale)}
 }
 \value{
 b_mcp test result

@@ -30,6 +30,8 @@ Default is 1000}
 \item{true_model}{Default value is NULL.
 Assumed true underlying model. Provided via a String. e.g. "emax".
 In case of NULL, all dose-response models, included in the mods input parameter will be used.}
+
+\item{dr_means}{tbd. Default NULL.}
 }
 \value{
 sim_data one list object, containing patient level simulated data for all assumed true models.

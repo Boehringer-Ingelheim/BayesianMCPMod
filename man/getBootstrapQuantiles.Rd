@@ -15,13 +15,13 @@ getBootstrapQuantiles(
 \arguments{
 \item{model_fits}{tbd}
 
+\item{quantiles}{tbd}
+
 \item{n_samples}{tbd}
 
 \item{doses}{tbd}
 
 \item{avg_fit}{tbd}
-
-\item{alpha}{tbd}
 }
 \value{
 tbd

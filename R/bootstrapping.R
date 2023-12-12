@@ -1,10 +1,10 @@
 #' @title getBootstrapQuantiles
 #'
 #' @param model_fits tbd
+#' @param quantiles tbd
 #' @param n_samples tbd
-#' @param alpha tbd
-#' @param avg_fit tbd
 #' @param doses tbd
+#' @param avg_fit tbd
 #'
 #' @return tbd
 #' @export

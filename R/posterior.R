@@ -3,11 +3,12 @@
 #' 
 #' @description Either the patient level data or both the mu_hat as well as the sd_hat must to be provided.
 #' 
-#' @param data dataframe containing the information of dose and response.
-#' Also a simulateData object can be provided.
 #' @param prior_list prior_list object
+#' @param data dataframe containing the information of dose and response. Default NULL
+#' Also a simulateData object can be provided.
 #' @param mu_hat vector of estimated mean values
-#' @param sd_hat vector of estimated standard deviations.
+#' @param se_hat vector of estimated standard deviations.
+#' @param calc_ess tbd. Default NULL
 #'
 #' @export
 getPosterior <- function(
