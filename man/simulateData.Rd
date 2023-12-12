@@ -10,7 +10,8 @@ simulateData(
   sd,
   mods,
   n_sim = 1000,
-  true_model = NULL
+  true_model = NULL,
+  dr_means = NULL
 )
 }
 \arguments{

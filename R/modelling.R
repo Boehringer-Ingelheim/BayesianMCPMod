@@ -21,6 +21,8 @@ getModelFits <- function (
   
 ) {
   
+  models      <- unique(gsub("\\d", "", models))
+  
   getModelFit <- ifelse(simple, getModelFitSimple, getModelFitOpt)
   model_fits  <- lapply(models, getModelFit, dose_levels, posterior)
   

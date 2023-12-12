@@ -8,8 +8,8 @@ print.BayesianMCPMod <- function (
   
 ) {
   
-  n_models      <- ncol(x$BayesianMCP) - 2L
-  model_names   <- colnames(x$BayesianMCP)[-c(1, 2)] |>
+  model_names <- colnames(x$BayesianMCP)[
+    grepl("post_probs.", colnames(x$BayesianMCP))] |>
     sub(pattern = "post_probs.", replacement = "", x = _)
   
   model_success <- colMeans(do.call(rbind, lapply(x$Mod, function (y) {
@@ -20,7 +20,7 @@ print.BayesianMCPMod <- function (
       
     } else {
       
-      model_signs <- rep(FALSE, n_models)
+      model_signs        <- rep(FALSE, length(model_names))
       names(model_signs) <- model_names
       
       return (model_signs)
@@ -32,7 +32,14 @@ print.BayesianMCPMod <- function (
   print(x$BayesianMCP)
   cat("\n")
   cat("Model Significance Frequencies\n")
-  print(model_success, ...)
+  print(c(avg = mean(model_success), model_success), ...)
+  
+  if (!is.na(attr(x$BayesianMCP, "ess_avg"))) {
+    
+    cat("Average Posterior ESS\n")
+    print(attr(x$BayesianMCP, "ess_avg"), ...)
+    
+  }
   
 }
 
@@ -138,7 +145,7 @@ print.modelFits <- function (
   cat("Dose Levels\n",
       paste(dose_names, round(dose_levels, n_digits), sep = " = "), "\n")
   cat("\n")
-  cat("Predictions, Maximum Effect, gAIC & Significance\n")
+  cat("Predictions, Maximum Effect, gAIC, Model Weights & Significance\n")
   print(out_table, ...)
   
 }

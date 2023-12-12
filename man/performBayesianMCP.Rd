@@ -4,12 +4,12 @@
 \alias{performBayesianMCP}
 \title{performBayesianMCP}
 \usage{
-performBayesianMCP(posteriors_list, contr_mat, crit_prob_adj)
+performBayesianMCP(posterior_list, contr, crit_prob_adj)
 }
 \arguments{
-\item{posteriors_list}{a getPosterior object}
+\item{posterior_list}{a getPosterior object}
 
-\item{contr_mat}{a getContrMat object, contrast matrix to be used for the testing step.}
+\item{contr}{a getContrMat object, contrast matrix to be used for the testing step.}
 
 \item{crit_prob}{a getCritProb object, specifying the critical value to be used for the testing (on the probability scale)}
 }

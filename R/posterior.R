@@ -12,9 +12,10 @@
 #' @export
 getPosterior <- function(
   prior_list,
-  data   = NULL,
-  mu_hat = NULL,
-  se_hat = NULL
+  data     = NULL,
+  mu_hat   = NULL,
+  se_hat   = NULL,
+  calc_ess = FALSE
   
 ) {
   
@@ -23,12 +24,13 @@ getPosterior <- function(
     posterior_list <- getPosteriorI(
       prior_list = prior_list,
       mu_hat     = mu_hat,
-      se_hat     = se_hat)
+      se_hat     = se_hat,
+      calc_ess   = calc_ess)
     
   } else if (is.null(mu_hat) && is.null(se_hat) && !is.null(data)) {
     
     posterior_list <- lapply(split(data, data$simulation), getPosteriorI,
-                             prior_list = prior_list)
+                             prior_list = prior_list, calc_ess = calc_ess)
     
   } else {
     
@@ -48,10 +50,11 @@ getPosterior <- function(
 
 getPosteriorI <- function(
     
-  data_i = NULL,
+  data_i   = NULL,
   prior_list,
-  mu_hat = NULL,
-  se_hat = NULL
+  mu_hat   = NULL,
+  se_hat   = NULL,
+  calc_ess = FALSE
   
 ) {
   
@@ -82,10 +85,31 @@ getPosteriorI <- function(
     
   }
   
-  names(post_list) <- names(prior_list)
-  class(post_list) <- "postList"
+  names(post_list)       <- names(prior_list)
+  class(post_list)       <- "postList"
+  attr(post_list, "ess") <- ifelse(
+    test = calc_ess,
+    yes  = getESS(post_list),
+    no   = numeric(0))
   
   return (post_list)
+  
+}
+
+#' @title getESS
+#' 
+#' @description blubber
+#' 
+#' @param post_list blubb
+#'
+#' @export
+getESS <- function (
+    
+  post_list
+  
+) {
+  
+  suppressMessages(sapply(post_list, RBesT::ess))
   
 }
 

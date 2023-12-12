@@ -9,10 +9,13 @@ assessDesign(
   n_patients,
   mods,
   prior_list,
-  sd = NULL,
+  sd,
   n_sim = 1000,
   alpha_crit_val = 0.05,
-  simple = TRUE
+  simple = TRUE,
+  reestimate = FALSE,
+  contr = NULL,
+  dr_means = NULL
 )
 }
 \arguments{

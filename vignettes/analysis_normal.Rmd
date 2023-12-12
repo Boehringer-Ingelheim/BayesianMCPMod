@@ -59,8 +59,8 @@ getPriorList <- function (
   
   hist_data,
   dose_levels,
-  dose_names       = NULL,
-  robustify_weight = 0.5
+  dose_names    = NULL,
+  robust_weight = 0.5
   
 ) {
   
@@ -77,11 +77,11 @@ getPriorList <- function (
   
   prior_ctr <- RBesT::automixfit(gmap)
   
-  if (!is.null(robustify_weight)) {
+  if (!is.null(robust_weight)) {
     
     prior_ctr <- suppressMessages(RBesT::robustify(
       priormix = prior_ctr,
-      weight   = robustify_weight,
+      weight   = robust_weight,
       sigma    = sd_tot))
     
   }
@@ -114,7 +114,6 @@ dose_levels <- c(0, 2.5, 5, 10)
 prior_list <- getPriorList(
   hist_data   = hist_data,
   dose_levels = dose_levels)
-
 ```
 # Specifications new trial 
 We will use the trial with ct.gov number NCT00635219 as exemplary new trial. 
@@ -200,9 +199,11 @@ contr_mat_prior <- getContr(
       #    crit_prob       = crit_pval)
 
 BMCP_result <- performBayesianMCP(
-  posteriors_list = posterior,
-  contr_mat       = contr_mat_prior, 
- crit_prob       = crit_pval)
+  posterior_list = posterior,
+  contr          = contr_mat_prior, 
+  crit_prob_adj  = crit_pval)
+
+BMCP_result
 
 #BMCP_result2 <- performBayesianMCPMod(
 #    posteriors_list = posterior_emax,
@@ -210,8 +211,6 @@ BMCP_result <- performBayesianMCP(
 #    crit_prob       = crit_pval)
 
 #BMCP_result2
-
-BMCP_result[1,1:5]
 ```
 The testing step is significant indicating a non-flat dose-response shape. In detail the p-values for the emax model is the most significant one.
 

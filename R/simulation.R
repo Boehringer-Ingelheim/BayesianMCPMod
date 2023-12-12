@@ -21,8 +21,9 @@ simulateData <- function(
   dose_levels,
   sd,
   mods,
-  n_sim = 1e3,
-  true_model = NULL
+  n_sim      = 1e3,
+  true_model = NULL,
+  dr_means   = NULL
   
 ) {
   
@@ -41,10 +42,24 @@ simulateData <- function(
     ptno       = rep(seq_len(sum(n_patients)), times = n_sim),
     dose       = rep(rep(dose_levels, times = n_patients), times = n_sim))
   
-  model_responses <- DoseFinding::getResp(mods, sim_info$dose)
-  random_noise    <- stats::rnorm(nrow(sim_info), mean = 0, sd = sd)
+  if (is.null(dr_means)) {
+    
+    model_responses <- DoseFinding::getResp(mods, sim_info$dose)
+    
+  } else {
+    
+    stopifnot(identical(length(dose_levels), length(dr_means)))
+    
+    model_responses <- matrix(
+      data     = rep(unlist(mapply(rep, dr_means, n_patients)),
+                     n_sim * length(mods)),
+      ncol     = length(mods),
+      dimnames = list(NULL, names(mods)))
+    
+  }
   
-  sim_data <- cbind(sim_info, model_responses + random_noise)
+  random_noise <- stats::rnorm(nrow(sim_info), mean = 0, sd = sd)
+  sim_data     <- cbind(sim_info, model_responses + random_noise)
   
   if (!is.null(true_model)) {
     

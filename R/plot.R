@@ -47,9 +47,9 @@ plot.modelFits <- function (
   if (avg_fit) {
     
     mod_weights <- sapply(model_fits, function (x) x$model_weight)
-    avg_mod     <- preds_models %*% mod_weights
+    avg_preds   <- preds_models %*% mod_weights
     
-    preds_models <- cbind(preds_models, avg_mod)
+    preds_models <- cbind(preds_models, avg_preds)
     model_names  <- c(model_names, "avgFit")
     
   }

@@ -16,29 +16,45 @@ assessDesign <- function (
   mods,
   prior_list,
   
-  sd             = NULL,
+  sd,
   
   n_sim          = 1e3,
   alpha_crit_val = 0.05,
-  simple         = TRUE
+  simple         = TRUE,
+  reestimate     = FALSE,
+  
+  contr          = NULL,
+  dr_means       = NULL
   
 ) {
   
-  dose_levels <- attr(prior_list, "dose_levels")
-  sd          <- ifelse(is.null(sd), attr(prior_list, "sd_tot"), sd)
-  
-  stopifnot(
-    "sd length must coincide with number of dose levels" =
-      length(sd) == length(dose_levels))
+  dose_levels <- attr(mods, "doses")
   
   data <- simulateData(
     n_patients  = n_patients,
     dose_levels = dose_levels,
     sd          = sd,
     mods        = mods,
-    n_sim       = n_sim)
+    n_sim       = n_sim, 
+    dr_means    = dr_means)
   
-  model_names <- names(mods)
+  model_names <- colnames(data)[-c(1:3)]
+  
+  crit_prob_adj <- getCritProb(
+    mods           = mods,
+    dose_levels    = dose_levels,
+    dose_weights   = n_patients,
+    alpha_crit_val = alpha_crit_val)
+  
+  if (!reestimate & is.null(contr)) {
+    
+    contr <- getContr(
+      mods           = mods,
+      dose_levels    = dose_levels,
+      dose_weights   = n_patients,
+      prior_list     = prior_list)
+    
+  }
   
   eval_design <- lapply(model_names, function (model_name) {
     
@@ -46,27 +62,31 @@ assessDesign <- function (
       data       = getModelData(data, model_name),
       prior_list = prior_list)
     
-    crit_prob_adj <- getCritProb(
-      mods           = mods,
-      dose_levels    = dose_levels,
-      dose_weights   = n_patients,
-      alpha_crit_val = alpha_crit_val)
-    
-    contr_mat_prior <- getContr(
-      mods           = mods,
-      dose_levels    = dose_levels,
-      dose_weights   = n_patients,
-      prior_list     = prior_list)
+    if (reestimate & is.null(contr)) {
+      
+      post_sds <- sapply(posterior_list, function (post) summary(post)[, 2])
+      
+      contr <- apply(post_sds, 2, function (post_sd) getContr(
+          mods           = mods,
+          dose_levels    = dose_levels,
+          sd_posterior   = post_sd))
+      
+    } 
     
     b_mcp_mod <- performBayesianMCPMod(
-      posteriors_list = posterior_list,
-      contr_mat       = contr_mat_prior,
-      crit_prob_adj   = crit_prob_adj,
-      simple          = simple)
+      posterior_list = posterior_list,
+      contr          = contr,
+      crit_prob_adj  = crit_prob_adj,
+      simple         = simple)
     
   })
   
   names(eval_design) <- model_names
+  
+  attr(eval_design, "placEff")    <- attr(mods, "placEff")
+  attr(eval_design, "maxEff")     <- attr(mods, "maxEff")
+  attr(eval_design, "sampleSize") <- n_patients
+  attr(eval_design, "priorESS")   <- getESS(prior_list)
   
   return (eval_design)
   
@@ -81,16 +101,17 @@ assessDesign <- function (
 #' @param dose_weights Vector specifying weights for the different doses
 #' @param prior_list a prior_list object
 #' 
-#' @return contr_mat Object of class ‘⁠optContr⁠’. A list containing entries contMat and muMat, and CorrMat. Specified in the Dosefinding package.
+#' @return contr Object of class ‘⁠optContr⁠’. A list containing entries contMat and muMat, and CorrMat. Specified in the Dosefinding package.
 #' 
 #' @export
-getContrMat <- function (
+getContr <- function (
+    
   mods,
   dose_levels,
   dose_weights = NULL,
   prior_list   = NULL,
-  se_new_trial = NULL,
-  sd_posterior = NULL
+  sd_posterior = NULL,
+  se_new_trial = NULL
   
 ) {
   
@@ -170,13 +191,13 @@ getCritProb <- function (
   
 ) {
   
-  contr_mat <- DoseFinding::optContr(
+  contr <- DoseFinding::optContr(
     models = mods,
     doses  = dose_levels,
     w      = dose_weights)
   
   crit_prob <- pnorm(DoseFinding:::critVal(
-    corMat      = contr_mat$corMat,
+    corMat      = contr$corMat,
     alpha       = alpha_crit_val,
     df          = 0,
     alternative = "one.sided"))
@@ -189,8 +210,8 @@ getCritProb <- function (
 #' 
 #' @description performs bayesian MCP Test step and modelling.
 #' 
-#' @param posteriors_list a getPosterior object
-#' @param contr_mat a getContrMat object, contrast matrix to be used for the testing step.
+#' @param posterior_list a getPosterior object
+#' @param contr a getContrMat object, contrast matrix to be used for the testing step.
 #' @param crit_prob a getCritProb object
 #' @param simple boolean variable, defining whether simplified fit will be applied. Passed to the getModelFits function. Default FALSE.
 #' 
@@ -199,28 +220,41 @@ getCritProb <- function (
 #' @export
 performBayesianMCPMod <- function (
     
-  posteriors_list,
-  contr_mat,
+  posterior_list,
+  contr,
   crit_prob_adj,
   simple = FALSE
   
 ) {
   
-  if (class(posteriors_list) == "postList") {
+  if (class(posterior_list) == "postList") {
     
-    posteriors_list <- list(posteriors_list)
+    posterior_list <- list(posterior_list)
+    
+  }
+  
+  if (inherits(contr, "optContr")) {
+    
+    model_shapes <- colnames(contr$contMat)
+    dose_levels  <- as.numeric(rownames(contr$contMat))
+    
+  } else if (length(contr) == length(posterior_list)) {
+    
+    model_shapes <- colnames(contr[[1]]$contMat)
+    dose_levels  <- as.numeric(rownames(contr[[1]]$contMat))
+    
+  } else {
+    
+    stop ("Argument 'contr' must be of type 'optContr'")
     
   }
   
   b_mcp <- performBayesianMCP(
-    posteriors_list = posteriors_list,
-    contr_mat       = contr_mat,
-    crit_prob_adj       = crit_prob_adj)
+    posterior_list = posterior_list,
+    contr          = contr,
+    crit_prob_adj  = crit_prob_adj)
   
-  model_shapes <- colnames(contr_mat$contMat)
-  dose_levels  <- as.numeric(rownames(contr_mat$contMat))
-  
-  fits_list <- lapply(seq_along(posteriors_list), function (i) {
+  fits_list <- lapply(seq_along(posterior_list), function (i) {
     
     if (b_mcp[i, 1]) {
       
@@ -229,7 +263,7 @@ performBayesianMCPMod <- function (
       model_fits  <- getModelFits(
         models      = model_shapes,
         dose_levels = dose_levels,
-        posterior   = posteriors_list[[i]],
+        posterior   = posterior_list[[i]],
         simple      = simple)
       
       model_fits  <- addSignificance(model_fits, sign_models)
@@ -274,8 +308,8 @@ addSignificance <- function (
 #' 
 #' @description performs bayesian MCP Test step.
 #' 
-#' @param posteriors_list a getPosterior object
-#' @param contr_mat a getContrMat object, contrast matrix to be used for the testing step.
+#' @param posterior_list a getPosterior object
+#' @param contr a getContrMat object, contrast matrix to be used for the testing step.
 #' @param crit_prob a getCritProb object, specifying the critical value to be used for the testing (on the probability scale)
 #' 
 #' @return b_mcp test result 
@@ -283,22 +317,39 @@ addSignificance <- function (
 #' @export
 performBayesianMCP <- function(
     
-  posteriors_list,
-  contr_mat,
+  posterior_list,
+  contr,
   crit_prob_adj
   
 ) {
   
-  if (class(posteriors_list) == "postList") {
+  if (class(posterior_list) == "postList") {
     
-    posteriors_list <- list(posteriors_list)
+    posterior_list <- list(posterior_list)
     
   }
   
-  b_mcp <- t(sapply(posteriors_list, BayesMCPi, contr_mat, crit_prob_adj))
+  if (inherits(contr, "optContr")) {
+    
+    b_mcp <- t(sapply(posterior_list, BayesMCPi, contr, crit_prob_adj))
+    
+  } else {
+    
+    b_mcp <- t(mapply(BayesMCPi, posterior_list, contr, crit_prob_adj))
+    
+  }
   
+  class(b_mcp)                 <- "BayesianMCP"
   attr(b_mcp, "crit_prob_adj") <- crit_prob_adj
-  class(b_mcp) <- "BayesianMCP"
+  attr(b_mcp, "ess_avg")       <- ifelse(
+    test = is.na(attr(posterior_list[[1]], "ess")),
+    yes  = numeric(0),
+    no   = rowMeans(sapply(posterior_list, function (posteriors) {
+      
+      attr(posteriors, "ess")
+      
+    })))
+  
   
   return (b_mcp)
   
@@ -307,7 +358,7 @@ performBayesianMCP <- function(
 BayesMCPi <- function (
     
   posterior_i,
-  contr_mat,
+  contr,
   crit_prob_adj
   
 ) {
@@ -336,7 +387,7 @@ BayesMCPi <- function (
   }
   
   post_combs_i <- getPostCombsI(posterior_i)
-  post_probs   <- apply(contr_mat$contMat, 2, getPostProb, post_combs_i)
+  post_probs   <- apply(contr$contMat, 2, getPostProb, post_combs_i)
   
   res <- c(sign          = ifelse(max(post_probs) > crit_prob_adj, 1, 0),
            crit_prob_adj = crit_prob_adj,

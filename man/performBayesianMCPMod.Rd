@@ -4,17 +4,12 @@
 \alias{performBayesianMCPMod}
 \title{performBayesianMCPMod}
 \usage{
-performBayesianMCPMod(
-  posteriors_list,
-  contr_mat,
-  crit_prob_adj,
-  simple = FALSE
-)
+performBayesianMCPMod(posterior_list, contr, crit_prob_adj, simple = FALSE)
 }
 \arguments{
-\item{posteriors_list}{a getPosterior object}
+\item{posterior_list}{a getPosterior object}
 
-\item{contr_mat}{a getContrMat object, contrast matrix to be used for the testing step.}
+\item{contr}{a getContrMat object, contrast matrix to be used for the testing step.}
 
 \item{simple}{boolean variable, defining whether simplified fit will be applied. Passed to the getModelFits function. Default FALSE.}
 

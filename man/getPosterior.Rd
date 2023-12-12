@@ -4,7 +4,13 @@
 \alias{getPosterior}
 \title{getPosterior}
 \usage{
-getPosterior(prior_list, data = NULL, mu_hat = NULL, se_hat = NULL)
+getPosterior(
+  prior_list,
+  data = NULL,
+  mu_hat = NULL,
+  se_hat = NULL,
+  calc_ess = FALSE
+)
 }
 \arguments{
 \item{prior_list}{prior_list object}
