@@ -85,12 +85,17 @@ assessDesign <- function (
     
   })
   
+  avg_success_rate <- mean(sapply(eval_design, function (bmcpmod) {
+    attr(bmcpmod$BayesianMCP, "successRate")
+  }))
+  
   names(eval_design) <- model_names
   
-  attr(eval_design, "placEff")    <- attr(mods, "placEff")
-  attr(eval_design, "maxEff")     <- attr(mods, "maxEff")
-  attr(eval_design, "sampleSize") <- n_patients
-  attr(eval_design, "priorESS")   <- getESS(prior_list)
+  attr(eval_design, "avgSuccessRate") <- avg_success_rate
+  attr(eval_design, "placEff")        <- attr(mods, "placEff")
+  attr(eval_design, "maxEff")         <- attr(mods, "maxEff")
+  attr(eval_design, "sampleSize")     <- n_patients
+  attr(eval_design, "priorESS")       <- getESS(prior_list)
   
   return (eval_design)
   
@@ -347,6 +352,7 @@ performBayesianMCP <- function(
   
   class(b_mcp)                 <- "BayesianMCP"
   attr(b_mcp, "crit_prob_adj") <- crit_prob_adj
+  attr(b_mcp, "successRate")   <- mean(b_mcp[, 1])
   attr(b_mcp, "ess_avg")       <- ifelse(
     test = is.na(attr(posterior_list[[1]], "ess")),
     yes  = numeric(0),
