@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 #' @title getPriorList
 #' 
 #' @param hist_data historical trial summary level data,
@@ -66,8 +65,6 @@ getPriorList <- function (
   return (prior_list)
   
 }
-=======
->>>>>>> 25f8f28541ce5be0c55fecee4cdd47a6c8603237
 
 #' @title getPosterior
 #' 
@@ -82,10 +79,6 @@ getPriorList <- function (
 #'
 #' @export
 getPosterior <- function(
-<<<<<<< HEAD
-  data = NULL,
-=======
->>>>>>> 25f8f28541ce5be0c55fecee4cdd47a6c8603237
   prior_list,
   data     = NULL,
   mu_hat   = NULL,
@@ -93,7 +86,6 @@ getPosterior <- function(
   calc_ess = FALSE
   
 ) {
-<<<<<<< HEAD
   checkmate::check_data_frame(data, null.ok = TRUE)
   checkmate::check_list(prior_list, names = "named", any.missing = FALSE)
   checkmate::check_vector(mu_hat, any.missing = FALSE, null.ok = TRUE)
@@ -112,28 +104,7 @@ getPosterior <- function(
                            sd_hat     = sd_hat)
 
   }
-=======
-  
-  if (!is.null(mu_hat) && !is.null(se_hat) && is.null(data)) {
-    
-    posterior_list <- getPosteriorI(
-      prior_list = prior_list,
-      mu_hat     = mu_hat,
-      se_hat     = se_hat,
-      calc_ess   = calc_ess)
-    
-  } else if (is.null(mu_hat) && is.null(se_hat) && !is.null(data)) {
-    
-    posterior_list <- lapply(split(data, data$simulation), getPosteriorI,
-                             prior_list = prior_list, calc_ess = calc_ess)
-    
-  } else {
-    
-    stop ("Either 'data' or 'mu_hat' and 'se_hat' must not be NULL.")
-    
-  }
  
->>>>>>> 25f8f28541ce5be0c55fecee4cdd47a6c8603237
   if (length(posterior_list) == 1) {
     
     posterior_list <- posterior_list[[1]]

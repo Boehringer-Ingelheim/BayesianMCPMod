@@ -11,7 +11,7 @@ Authors@R: c(
            role = "aut",
            email = "lars.andersen@boehringer-ingelheim.com"),
     person("Steven", "Brooks",
-           role = "aut",
+           role = "ctb",
            email = "lars.andersen@boehringer-ingelheim.com"),
     person("Sebastian", "Bossert",
            role = "aut",

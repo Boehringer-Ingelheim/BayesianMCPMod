@@ -21,14 +21,11 @@ getModelFits <- function (
   
 ) {
   
-<<<<<<< HEAD
   checkmate::check_list(models, any.missing = FALSE)
   checkmate::check_double(dose_levels, lower = 0, any.missing = FALSE, len = length(models))
   checkmate::check_class(posterior, "postList")
   checkmate::check_logical(simple)
-=======
   models      <- unique(gsub("\\d", "", models))
->>>>>>> 25f8f28541ce5be0c55fecee4cdd47a6c8603237
   
   getModelFit <- ifelse(simple, getModelFitSimple, getModelFitOpt)
   model_fits  <- lapply(models, getModelFit, dose_levels, posterior)
