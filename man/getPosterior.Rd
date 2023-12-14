@@ -5,16 +5,32 @@
 \title{getPosterior}
 \usage{
 <<<<<<< HEAD
+<<<<<<< HEAD
 getPosterior(data = NULL, prior_list, mu_hat = NULL, sd_hat = NULL)
 }
 \arguments{
 \item{data}{dataframe containing the information of dose and response.
 Also a simulateData object can be provided.}
 
+=======
+getPosterior(
+  prior_list,
+  data = NULL,
+  mu_hat = NULL,
+  se_hat = NULL,
+  calc_ess = FALSE
+)
+}
+\arguments{
+>>>>>>> 25f8f28541ce5be0c55fecee4cdd47a6c8603237
 \item{prior_list}{prior_list object}
+
+\item{data}{dataframe containing the information of dose and response. Default NULL
+Also a simulateData object can be provided.}
 
 \item{mu_hat}{vector of estimated mean values}
 
+<<<<<<< HEAD
 \item{sd_hat}{vector of estimated standard deviations.}
 =======
 getPosterior(prior_list, data = NULL, mu_hat = NULL, se_hat = NULL)
@@ -28,6 +44,11 @@ getPosterior(prior_list, data = NULL, mu_hat = NULL, se_hat = NULL)
 
 \item{se_hat}{tbd}
 >>>>>>> ff9a940b072d43dcf445d6c6944d4b8bcbc07a8b
+=======
+\item{se_hat}{vector of estimated standard deviations.}
+
+\item{calc_ess}{tbd. Default NULL}
+>>>>>>> 25f8f28541ce5be0c55fecee4cdd47a6c8603237
 }
 \description{
 Either the patient level data or both the mu_hat as well as the sd_hat must to be provided.

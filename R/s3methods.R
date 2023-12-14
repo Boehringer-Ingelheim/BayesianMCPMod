@@ -8,9 +8,11 @@ print.BayesianMCPMod <- function (
   
 ) {
   
-  n_models      <- ncol(x$BayesianMCP) - 2L
-  model_names   <- colnames(x$BayesianMCP)[-c(1, 2)] |>
-    sub(pattern = "post_probs.", replacement = "", x = _)
+  model_names <- colnames(x$BayesianMCP)[
+    grepl("post_probs.", colnames(x$BayesianMCP))] |>
+    sub(pattern = "post_probs.", replacement = "", x = _) |>
+    gsub(pattern = "\\d", replacement = "", x = _) |>
+    unique(x = _)
   
   model_success <- colMeans(do.call(rbind, lapply(x$Mod, function (y) {
     
@@ -20,7 +22,7 @@ print.BayesianMCPMod <- function (
       
     } else {
       
-      model_signs <- rep(FALSE, n_models)
+      model_signs        <- rep(FALSE, length(model_names))
       names(model_signs) <- model_names
       
       return (model_signs)
@@ -34,6 +36,13 @@ print.BayesianMCPMod <- function (
   cat("Model Significance Frequencies\n")
   print(model_success, ...)
   
+  if (!is.na(attr(x$BayesianMCP, "ess_avg"))) {
+    
+    cat("Average Posterior ESS\n")
+    print(attr(x$BayesianMCP, "ess_avg"), ...)
+    
+  }
+  
 }
 
 ## BayesianMCP --------------------------------------------
@@ -46,33 +55,42 @@ print.BayesianMCP <- function (
   
 ) {
   
-  power <- mean(x[, 1])
   n_sim <- nrow(x)
   
   cat("Bayesian Multiple Comparison Procedure\n")
-  cat("  Estimated Success Rate: ", power, "\n")
-  cat("  N Simulations:          ", n_sim)
   
-  ## TODO if n_nim == 1
-  # c(sign       = ifelse(max(post_probs) > crit_prob, 1, 0),
-  #   p_val      = max(post_probs),
-  #   post_probs = post_probs,
-  #   crit_prob  = crit_prob)
+  if (n_sim == 1L) {
+    
+    attr(x, "crit_prob_adj") <- NULL
+    attr(x, "success_rate")  <- NULL
+    class(x) <- NULL
+    
+    print.default(x, ...)
+    
+  } else {
+    
+    cat("  Estimated Success Rate: ", attr(x, "successRate"), "\n")
+    cat("  N Simulations:          ", n_sim)
+    
+  }
   
 }
 
 ## ModelFits ----------------------------------------------
 
 #' @export
-predict.ModelFits <- function (
+predict.modelFits <- function (
     
   object,
   doses = NULL,
   ...
   
 ) {
+
+  predictions <- lapply(object, predictModelFit, doses = doses)
+  attr(predictions, "doses") <- doses
   
-  lapply(object, predictModelFit, doses = doses, ...)
+  return (predictions)
   
 }
 
@@ -94,7 +112,8 @@ print.modelFits <- function (
   
   out_table <- data.frame(predictions,
                           mEff = sapply(x, function (y) y$max_effect),
-                          gAIC = sapply(x, function (y) y$gAIC))
+                          gAIC = sapply(x, function (y) y$gAIC),
+                          w    = sapply(x, function (y) y$model_weight))
   out_table <- apply(as.matrix(out_table), 2, round, digits = n_digits)
   
   if (!is.null(x[[1]]$significant)) {
@@ -128,7 +147,7 @@ print.modelFits <- function (
   cat("Dose Levels\n",
       paste(dose_names, round(dose_levels, n_digits), sep = " = "), "\n")
   cat("\n")
-  cat("Predictions, Maximum Effect, gAIC & Significance\n")
+  cat("Predictions, Maximum Effect, gAIC, Model Weights & Significance\n")
   print(out_table, ...)
   
 }

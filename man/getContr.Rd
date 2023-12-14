@@ -9,23 +9,26 @@ getContr(
   dose_levels,
   dose_weights = NULL,
   prior_list = NULL,
-  se_new_trial = NULL,
-  sd_posterior = NULL
+  sd_posterior = NULL,
+  se_new_trial = NULL
 )
 }
 \arguments{
-\item{mods}{tbd}
+\item{mods}{An object of class "Mods" as specified in the Dosefinding package.}
 
-\item{dose_levels}{tbd}
+\item{dose_levels}{vector containing the different doseage levels.}
 
-\item{dose_weights}{tbd}
+\item{dose_weights}{Vector specifying weights for the different doses. Default NULL}
 
-\item{prior_list}{tbd}
+\item{prior_list}{a prior_list object. Default NULL}
 
-\item{se_new_trial}{tbd}
+\item{sd_posterior}{tbd. Default NULL}
 
-\item{sd_posterior}{tbd}
+\item{se_new_trial}{tbd. Default NULL}
+}
+\value{
+contr Object of class ‘⁠optContr⁠’. A list containing entries contMat and muMat, and CorrMat. Specified in the Dosefinding package.
 }
 \description{
-getContr
+This function calculates contrast vectors that are optimal for detecting certain alternatives. More information and link to publication will be added.
 }
