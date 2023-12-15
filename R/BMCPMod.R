@@ -109,7 +109,7 @@ assessDesign <- function (
 #' @param dose_levels vector containing the different doseage levels.
 #' @param dose_weights Vector specifying weights for the different doses. Default NULL
 #' @param prior_list a prior_list object. Default NULL
-#' @param sd_posterior tbd. Default NULL
+#' @param sd_posterior a vector of positive numerics. Default NULL
 #' @param se_new_trial tbd. Default NULL
 #' 
 #' @return contr Object of class ‘⁠optContr⁠’. A list containing entries contMat and muMat, and CorrMat. Specified in the Dosefinding package.
