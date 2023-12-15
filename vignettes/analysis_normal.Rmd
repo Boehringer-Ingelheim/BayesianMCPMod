@@ -269,6 +269,13 @@ getBootstrapQuantiles(fit, quantiles = c(0.025, 0.975), doses = c(4, 7))
 
 ```
 # Additional notes
-TBD, whether certain wrapper functions should be mentioned.
+It is also possible to perform the testing and modelling step in combined fashion via the performBayesianMCPMod function
+```{r}
+performBayesianMCPMod(
+        posterior_list = posterior,
+         contr         = contr_mat_prior, 
+       crit_prob_adj   = crit_pval)
+```
+
 
 
