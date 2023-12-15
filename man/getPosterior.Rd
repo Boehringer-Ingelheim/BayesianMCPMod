@@ -18,12 +18,16 @@ getPosterior(
 \item{data}{dataframe containing the information of dose and response. Default NULL
 Also a simulateData object can be provided.}
 
-\item{mu_hat}{vector of estimated mean values}
+\item{mu_hat}{vector of estimated mean values (per dose group).}
 
-\item{se_hat}{vector of estimated standard deviations.}
+\item{se_hat}{vector of estimated standard deviations (per dose group).}
 
-\item{calc_ess}{tbd. Default NULL}
+\item{calc_ess}{boolean variable, indicating whether effective sample size should be calculated. Default FALSE}
+}
+\value{
+posterior_list, a posterior list object is returned with information about (mixture) posterior distribution per dose group
 }
 \description{
-Either the patient level data or both the mu_hat as well as the sd_hat must to be provided.
+Either the patient level data or both mu_hat as well as sd_hat must to be provided. If patient level data is provided mu_hat and se_hat are calculated within the function using a linear model.
+This function calculates the posterior for every dose group independently via the RBesT function postmix.
 }

@@ -7,8 +7,11 @@
 getESS(post_list)
 }
 \arguments{
-\item{post_list}{blubb}
+\item{post_list}{a posterior list object, for which the effective sample size (per dose group) should be calculated}
+}
+\value{
+a vector of the effective sample sizes (per dose group)
 }
 \description{
-blubber
+This function calculates the effective sample size for every dose group via the RBesT function ess.
 }

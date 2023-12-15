@@ -185,6 +185,8 @@ getContr <- function (
 
 #' @title getCritProb
 #' 
+#' @description This function calculates multiplicity adjusted 
+#' 
 #' @param mods An object of class "Mods" as specified in the Dosefinding package.
 #' @param dose_levels vector containing the different dosage levels.
 #' @param dose_weights Vector specifying weights for the different doses
@@ -197,15 +199,17 @@ getCritProb <- function (
     
   mods,
   dose_levels,
-  dose_weights,
+  dose_weights =NULL,
+  se_new_trial = NULL,
   alpha_crit_val = 0.025
   
 ) {
   
-  contr <- DoseFinding::optContr(
-    models = mods,
-    doses  = dose_levels,
-    w      = dose_weights)
+  contr <- getContr(mods  = mods,
+           dose_levels    = dose_levels ,
+           dose_weights   = dose_weights,
+           se_new_trial   = se_new_trial,
+           alpha_crit_val = alpha_crit_val)
   
   crit_prob <- stats::pnorm(DoseFinding::critVal(
     corMat      = contr$corMat,
@@ -317,13 +321,14 @@ addSignificance <- function (
 
 #' @title performBayesianMCP
 #' 
-#' @description performs bayesian MCP Test step.
+#' @description performs bayesian MCP Test step, as described in Fleischer et al. (Bayesian MCPMod. Pharmaceutical Statistics. 2022; 21(3): 654-670.) 
+#' Tests for a dose-response effect using a model-based multiple contrast test based on the (provided) posterior distribution. In particular for every dose-response candidate is calculated that the contrast  is bigger than 0 given the data observed
 #' 
-#' @param posterior_list a getPosterior object
+#' @param posterior_list a getPosterior object with information about the (mixture) posterior distribution per dose group 
 #' @param contr a getContrMat object, contrast matrix to be used for the testing step.
 #' @param crit_prob_adj a getCritProb object, specifying the critical value to be used for the testing (on the probability scale)
 #' 
-#' @return b_mcp test result 
+#' @return b_mcp test result, with information about p-values for the individual dose-response shapes   
 #' 
 #' @export
 performBayesianMCP <- function(

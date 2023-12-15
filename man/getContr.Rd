@@ -22,9 +22,9 @@ getContr(
 
 \item{prior_list}{a prior_list object. Default NULL}
 
-\item{sd_posterior}{tbd. Default NULL}
+\item{sd_posterior}{a vector of positive numerics. Default NULL}
 
-\item{se_new_trial}{tbd. Default NULL}
+\item{se_new_trial}{a vector of positive numerics. Default NULL}
 }
 \value{
 contr Object of class ‘⁠optContr⁠’. A list containing entries contMat and muMat, and CorrMat. Specified in the Dosefinding package.
