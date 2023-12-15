@@ -103,11 +103,22 @@ assessDesign <- function (
 
 #' @title getContr
 #' 
-#' @description This function calculates contrast vectors that are optimal for detecting certain alternatives. More information and link to publication will be added.
+#' @description This function calculates contrast vectors that are optimal for detecting certain alternatives via applying the function optContr of the DoseFinding package.
+#' Hereby 4 different options can be distinguished that are automatically executed based on the input that is provided
+#' i)  Bayesian approach: If dose_weights and a prior_list are provided an optimized contrasts for the posterior sample size is calculated. 
+#'     In detail,  in a first step the dose_weights (typically the number of patients per dose group) and the prior information is combined by calculating for
+#'     each dose group a posterior effective sample. Based on this posterior effective sample sizes the allocation ratio is derived, which allows for a calculation on
+#'     pseudo-optimal contrasts via regular MCPMod.are calculated from the
+#'     regular MCPMod for these specific weights 
+#' ii) Frequentist approach: If only dose_weights are provided optimal contrast vectors are calculated from the
+#'     regular MCPMod for these specific weights
+#' iii)Bayesian approach + re-estimation: If only a sd_posterior (i.e. variability of the posterior distribution) is provided, pseudo-optimal contrasts based on these posterior weights will be calculated
+#' iv) Frequentist approach+re-estimation:If only a se_new_trial (i.e. the estimated variability per dose group of a new trial) is provided, optimal contrast vectors are calculated from the
+#'     regular MCPMod for this specific vector of standard errors. For the actual evaluation this vector of standard errors is translated into a (diagonal) matrix of variances 
 #' 
 #' @param mods An object of class "Mods" as specified in the Dosefinding package.
 #' @param dose_levels vector containing the different doseage levels.
-#' @param dose_weights Vector specifying weights for the different doses. Default NULL
+#' @param dose_weights Vector specifying weights for the different doses. Please note that in case this information should be provided  Default NULL
 #' @param prior_list a prior_list object. Default NULL
 #' @param sd_posterior a vector of positive numerics. Default NULL
 #' @param se_new_trial a vector of positive numerics. Default NULL
@@ -223,11 +234,11 @@ getCritProb <- function (
 
 #' @title performBayesianMCPMod
 #' 
-#' @description performs bayesian MCP Test step and modelling.
+#' @description performs bayesian MCP Test step and modelling in a combined fashion. See performBayesianMCP function for MCT Test step and getModelFits for the modelling step
 #' 
-#' @param posterior_list a getPosterior object
+#' @param posterior_list a getPosterior object with information about the (mixture) posterior distribution per dose group
 #' @param contr a getContrMat object, contrast matrix to be used for the testing step.
-#' @param crit_prob_adj a getCritProb object
+#' @param crit_prob_adj a getCritProb object, specifying the critical value to be used for the testing (on the probability scale).
 #' @param simple boolean variable, defining whether simplified fit will be applied. Passed to the getModelFits function. Default FALSE.
 #' 
 #' @return bmcpmod test result as well as modelling result.
@@ -322,7 +333,8 @@ addSignificance <- function (
 #' @title performBayesianMCP
 #' 
 #' @description performs bayesian MCP Test step, as described in Fleischer et al. (Bayesian MCPMod. Pharmaceutical Statistics. 2022; 21(3): 654-670.) 
-#' Tests for a dose-response effect using a model-based multiple contrast test based on the (provided) posterior distribution. In particular for every dose-response candidate is calculated that the contrast  is bigger than 0 given the data observed
+#' Tests for a dose-response effect using a model-based multiple contrast test based on the (provided) posterior distribution. In particular for every dose-response candidate the posterior probability is calculated that the contrast is bigger than 0 (based on the posterior distribution of the dose groups).
+#' In order to obtain significant test decision we consider the maximum of the posterior probabilities across the different models. This maximum is compared with a (multiplicity adjusted) critical value (on the probability scale).
 #' 
 #' @param posterior_list a getPosterior object with information about the (mixture) posterior distribution per dose group 
 #' @param contr a getContrMat object, contrast matrix to be used for the testing step.
