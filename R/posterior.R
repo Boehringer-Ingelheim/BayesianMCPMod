@@ -87,12 +87,18 @@ getPosteriorI <- function(
     
   }
   
-  names(post_list)       <- names(prior_list)
-  class(post_list)       <- "postList"
-  attr(post_list, "ess") <- ifelse(
-    test = calc_ess,
-    yes  = getESS(post_list),
-    no   = numeric(0))
+  names(post_list) <- names(prior_list)
+  class(post_list) <- "postList"
+  
+  if (calc_ess) {
+    
+    attr(post_list, "ess") <- getESS(post_list)
+    
+  } else {
+    
+    attr(post_list, "ess") <- numeric(0)
+    
+  }
   
   return (post_list)
   

@@ -95,7 +95,7 @@ assessDesign <- function (
   attr(eval_design, "placEff")        <- attr(mods, "placEff")
   attr(eval_design, "maxEff")         <- attr(mods, "maxEff")
   attr(eval_design, "sampleSize")     <- n_patients
-  attr(eval_design, "priorESS")       <- getESS(prior_list)
+  attr(eval_design, "priorESS")       <- round(getESS(prior_list), 1)
   
   return (eval_design)
   
@@ -210,17 +210,16 @@ getCritProb <- function (
     
   mods,
   dose_levels,
-  dose_weights =NULL,
-  se_new_trial = NULL,
+  dose_weights   = NULL,
+  se_new_trial   = NULL,
   alpha_crit_val = 0.025
   
 ) {
   
-  contr <- getContr(mods  = mods,
-           dose_levels    = dose_levels ,
-           dose_weights   = dose_weights,
-           se_new_trial   = se_new_trial,
-           alpha_crit_val = alpha_crit_val)
+  contr <- getContr(mods           = mods,
+                    dose_levels    = dose_levels ,
+                    dose_weights   = dose_weights,
+                    se_new_trial   = se_new_trial)
   
   crit_prob <- stats::pnorm(DoseFinding::critVal(
     corMat      = contr$corMat,
