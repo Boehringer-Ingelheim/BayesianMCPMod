@@ -1,6 +1,6 @@
 #' @title getModelFits
 #' 
-#' @description Fits dose-response curves for the specified dose-repsonse models, based on the posterior distributions.
+#' @description Fits dose-response curves for the specified dose-response models, based on the posterior distributions.
 #' For the simplified fit, multivariate normal distributions will be approximated and reduced by one-dimensional normal distributions. 
 #' For the default case, the Nelder-Mead algorithm is used. Will be further updated and links to publication as well as references will be added.
 #' 
@@ -17,6 +17,7 @@ getModelFits <- function (
   models,
   dose_levels,
   posterior,
+  #avg_fit=FALSE, if possible we should add the average fit directly here
   simple = FALSE
   
 ) {
@@ -32,6 +33,7 @@ getModelFits <- function (
   attr(model_fits, "posterior") <- posterior
   class(model_fits)             <- "modelFits"
   
+ 
   return (model_fits)
   
 }
