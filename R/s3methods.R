@@ -77,22 +77,26 @@ print.BayesianMCP <- function (
 }
 
 ## ModelFits ----------------------------------------------
-#' @description This function performs model predictions based on the provided model and dose specifications 
+#' @description This function performs model predictions based on the provided
+#' model and dose specifications 
 #' 
-#' @param object a modelFits object containing information about the fitted model coefficients
-#' @param doses  a vector specifying the doses for which a prediction should be done getContrMat object, contrast matrix to be used for the testing step.
-
+#' @param object a modelFits object containing information about the fitted
+#' model coefficients
+#' @param doses a vector specifying the doses for which a prediction should be
+#' done getContrMat object, contrast matrix to be used for the testing step.
 #' @examples
 #' # example code
-#' posterior_list =   list(Ctrl=RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 1), sigma = 2),
-#'                    DG_1=RBesT::mixnorm(comp1 = c(w = 1, m = 3, s = 1.2), sigma = 2),
-#'                    DG_2=RBesT::mixnorm(comp1 = c(w = 1, m = 4, s = 1.5), sigma = 2) ,  
-#'                    DG_3=RBesT::mixnorm(comp1 = c(w = 1, m = 6, s = 1.2), sigma = 2) ,
-#'                    DG_4=RBesT::mixnorm(comp1 = c(w = 1, m = 6.5, s = 1.1) ,sigma = 2))
-#' models=c("emax","exponential","sigEmax","linear")
-#' dose_levels=c(0,1,2,4,8)
-#' fit<-getModelFits(models=models, posterior=posterior_list,dose_levels=dose_levels)
-#' predict(fit, doses = c(0, 1,3,4,6,8))
+#' posterior_list <- list(Ctrl = RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 1), sigma = 2),
+#'                        DG_1 = RBesT::mixnorm(comp1 = c(w = 1, m = 3, s = 1.2), sigma = 2),
+#'                        DG_2 = RBesT::mixnorm(comp1 = c(w = 1, m = 4, s = 1.5), sigma = 2) ,  
+#'                        DG_3 = RBesT::mixnorm(comp1 = c(w = 1, m = 6, s = 1.2), sigma = 2) ,
+#'                        DG_4 = RBesT::mixnorm(comp1 = c(w = 1, m = 6.5, s = 1.1), sigma = 2))
+#' models         <- c("emax", "exponential", "sigEmax", "linear")
+#' dose_levels    <- c(0, 1, 2, 4, 8)
+#' fit            <- getModelFits(models      = models,
+#'                                posterior   = posterior_list,
+#'                                dose_levels = dose_levels)
+#' predict(fit, doses = c(0, 1, 3, 4, 6, 8))
 #' 
 #' @return a list with the model predictions for the specified models and doses  
 #' @export

@@ -289,8 +289,8 @@ It is also possible to perform the testing and modelling step in a combined fash
 
 ```{r}
 overall_result<-performBayesianMCPMod(
-        posterior_list = posterior,
-         contr         = contr_mat, 
+      posterior_list   = posterior,
+      contr            = contr_mat, 
       crit_prob_adj    = crit_pval,
       simple           = FALSE)
 
