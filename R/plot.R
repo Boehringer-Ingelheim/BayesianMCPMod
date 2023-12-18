@@ -1,7 +1,7 @@
 #' @title plot.modelFits
 #' 
 #' @description plot function based on the ggplot2 package. Providing visualizations for each model and a average Fit.
-#' More details to be added, as well as references.
+#' Black line shows the fitted dose response models and an AIC based average model (black lines). To assess the uncertainty one can in addition visualize credible intervals (yellow shaded areas, the default is set to 50% and 95%). These credible intervals are calculated as follows.
 #' @param x an object of type getModelFits
 #' @param gAIC logical value indicating whether gAIC values are shown in the plot. Default TRUE
 #' @param avg_fit logical value indicating whether average fit is presented in the plot. Default TRUE
