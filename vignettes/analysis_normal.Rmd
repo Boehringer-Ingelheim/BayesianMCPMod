@@ -41,7 +41,7 @@ histcontrol <- filter(dataset,
                       dose       == 0,
                       primtime   == 8,
                       indication == "MAJOR DEPRESSIVE DISORDER",
-                      protid     != 6)
+                      protid     != 5)
 
 ##Create MAP Prior
 hist_data <- data.frame(
@@ -142,7 +142,7 @@ mods <- DoseFinding::Mods(
 new_trial  <- filter(dataset,
                      primtime   == 8,
                      indication == "MAJOR DEPRESSIVE DISORDER",
-                     protid     == 6)
+                     protid     == 5)
 
 n_patients <- c(150, 142, 147, 149)
 
