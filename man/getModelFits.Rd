@@ -31,7 +31,7 @@ The generalized AIC values are calculated via the formula
 \deqn{gAIC_{m} = \sum_{l=1}^{L} \tilde{\omega}_{l} \sum_{i=0}^{K} \frac{1}{\Sigma_{l_{i,i}}} (\theta_{l_i}^Y - f(dose_{i},\hat{\theta}_{m}))^2 + 2p }
 where \eqn{p} denotes the number of estimated parameters and \eqn{K} the number of active dose levels.
 Here as well for the simplified case the formula reduces to one summand as $L=1$.
-Corresponding gAIC based weights for model $M$ are calculated as outlined in Schorning et al. 2016:
+Corresponding gAIC based weights for model $M$ are calculated as outlined in \link{Schorning et al., 2016}
 \deqn{
 \Omega_I (M) = \frac{\exp(-0.5 gAIC_{M})}{\sum_{m=1}^{Q} \exp(-0.5 gAIC_(m))}
 }
@@ -48,4 +48,7 @@ models=c("emax","exponential","sigEmax","linear")
 dose_levels=c(0,1,2,4,8)
 fit<-getModelFits(models=models, posterior=posterior_list,dose_levels=dose_levels)
 fit_simple<-getModelFits(models=models, posterior=posterior_list,dose_levels=dose_levels,simple=TRUE)
+}
+\references{
+Schorning K, Bornkamp B, Bretz F, Dette H. 2016. “Model selection versus model averaging in dose finding studies”. Stat Med; 35; 4021-4040.
 }
