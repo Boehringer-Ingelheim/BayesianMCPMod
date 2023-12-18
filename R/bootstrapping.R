@@ -13,6 +13,19 @@
 #' @param doses a vector of doses for which a prediction should be performed
 #' @param avg_fit boolean variable, defining whether an average fit (based on generalized AIC weights) should be performed in addition to the individual models. Default TRUE.
 #'
+#' @examples
+#' # example code
+#' posterior_list =   list(Ctrl=RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 1), sigma = 2),
+#'                    DG_1=RBesT::mixnorm(comp1 = c(w = 1, m = 3, s = 1.2), sigma = 2),
+#'                    DG_2=RBesT::mixnorm(comp1 = c(w = 1, m = 4, s = 1.5), sigma = 2) ,  
+#'                    DG_3=RBesT::mixnorm(comp1 = c(w = 1, m = 6, s = 1.2), sigma = 2) ,
+#'                    DG_4=RBesT::mixnorm(comp1 = c(w = 1, m = 6.5, s = 1.1) ,sigma = 2))
+#' models=c("emax","exponential","sigEmax","linear")
+#' dose_levels=c(0,1,2,4,8)
+#' fit<-getModelFits(models=models, posterior=posterior_list,dose_levels=dose_levels)
+#' fit_simple<-getModelFits(models=models, posterior=posterior_list,dose_levels=dose_levels,simple=TRUE)
+#' getBootstrapQuantiles(fit, quantiles = c(0.025,0.5, 0.975), doses = c(0, 1,2,3,4,6,8))
+#' getBootstrapQuantiles(fit_simple, n_samples=2000, quantiles = c(0.025,0.5, 0.975), doses = c(0, 1,2,3,4,6,8))
 #' @return  A data frame with entries doses, models, and quantiles 
 #' @export
 getBootstrapQuantiles <- function (

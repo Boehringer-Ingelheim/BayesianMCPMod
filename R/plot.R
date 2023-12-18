@@ -2,7 +2,7 @@
 #' 
 #' @description plot function based on the ggplot2 package. Providing visualizations for each model and a average Fit.
 #' Black lines show the fitted dose response models and an AIC based average model. Dots indicate the posterior median and vertical lines show corresponding credible intervals (i.e. the variability of the posterior distribution of the respective dose group). 
-#' To assess the uncertainty of the model fit one can in addition visualize credible bands (yellow/orange shaded areas). The calculation of these bands is performed via the getBootstrapQuantiles function.
+#' To assess the uncertainty of the model fit one can in addition visualize credible bands (default coloring as orange shaded areas). The calculation of these bands is performed via the getBootstrapQuantiles function.
 #' The default setting is that these credible bands are not calculated. 
 #' @param x an object of type getModelFits
 #' @param gAIC logical value indicating whether gAIC values are shown in the plot. Default TRUE
@@ -14,7 +14,19 @@
 #' @param n_bs_smpl number of bootstrap samples being used. Default set to 1000.
 #' @param acc_color color of the credible bands. Default set to "orange"
 #' @param ... optional parameter to be passed.
-#' 
+#' @examples
+#' # example code
+#' posterior_list =   list(Ctrl=RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 1), sigma = 2),
+#'                    DG_1=RBesT::mixnorm(comp1 = c(w = 1, m = 3, s = 1.2), sigma = 2),
+#'                    DG_2=RBesT::mixnorm(comp1 = c(w = 1, m = 4, s = 1.5), sigma = 2) ,  
+#'                    DG_3=RBesT::mixnorm(comp1 = c(w = 1, m = 6, s = 1.2), sigma = 2) ,
+#'                    DG_4=RBesT::mixnorm(comp1 = c(w = 1, m = 6.5, s = 1.1) ,sigma = 2))
+#' models=c("emax","exponential","sigEmax","linear")
+#' dose_levels=c(0,1,2,4,8)
+#' fit<-getModelFits(models=models, posterior=posterior_list,dose_levels=dose_levels)
+#' fit_simple<-getModelFits(models=models, posterior=posterior_list,dose_levels=dose_levels,simple=TRUE)
+#' plot(fit, cr_bands = TRUE)
+#' plot(fit_simple, cr_bands = TRUE,alpha_CrB =c(0.05,0.1,0.5))
 #' @return plts returns a ggplot2 object
 #' @export
 plot.modelFits <- function (
