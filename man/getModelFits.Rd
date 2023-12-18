@@ -16,10 +16,17 @@ getModelFits(models, dose_levels, posterior, simple = FALSE)
 \item{simple}{boolean variable, defining whether simplified fit will be applied. Default FALSE.}
 }
 \value{
-model_fits returns a list, containing information about the fitted model coefficients, the prediction per dose group as well as maximum effect and generalized AIC per model.
+model_fits returns a list, containing information about the fitted model coefficients, the prediction per dose group as well as maximum effect and generalized AIC (and corresponding weight) per model.
 }
 \description{
-Fits dose-response curves for the specified dose-repsonse models, based on the posterior distributions.
+Fits dose-response curves for the specified dose-response models, based on the posterior distributions.
 For the simplified fit, multivariate normal distributions will be approximated and reduced by one-dimensional normal distributions.
-For the default case, the Nelder-Mead algorithm is used. Will be further updated and links to publication as well as references will be added.
+For the default case, the Nelder-Mead algorithm is used.
+In detail, for both approaches the mean vector and the covariance $\Sigma_{l}^{-1}$ of the mixture posterior distributions and the corresponding posterior weights $\omega_{l}^{\emph{}$ for $l \in {1,...,L}$ is used as basis
+For the full fit a GLS estimator is used to minimize the following expression for the respective dose-response models $m$
+$$
+\hat{\theta}\emph{{m}=argmin}{\theta_{m}} \sum_{i=l}^{L^{}}} \omega_{l}^{*}(\theta_{l_{i}}^{Y}-f(dose_{i},\hat{\theta}\emph{{m}))'\Sigma}{l}^{-1}(\theta_{l_{i}}^{Y}-f(dose_{i},\hat{\theta}_{m}))
+$$
+Herefore the function nloptr of the nloptr package is utilized.
+In the simplified case $L=1$ as the dimension of the posterior is reduced to 1 first.
 }

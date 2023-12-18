@@ -1,7 +1,14 @@
 #' @title getBootstrapQuantiles
 #'
-#' @param model_fits tbd
-#' @param quantiles tbd
+#' @description A function to Calculate credible intervals to assess the uncertainty for the model fit. one can in addition visualize credible intervals (yellow shaded areas, the default is set to 50% and 95%). These credible intervals are calculated as follows.
+#' Samples from the posterior distribution are drawn and for every sample the simplified fitting step and a prediction is performed. These fits are then used to identify and visualize the specified quantiles. 
+#' The bootstrap based quantiles can also directly be calculated and displayed via the gotbootstrapQuantiles function.dose-response curves for the specified dose-response models, based on the posterior distributions.
+#' For the simplified fit, multivariate normal distributions will be approximated and reduced by one-dimensional normal distributions. 
+#' For the default case, the Nelder-Mead algorithm is used.
+#' 
+#' 
+#' @param model_fits an object of class modelFits, i.e. information about fitted models & corresponding model coefficients as well as the posterior distribution that was the basis for the model fitting 
+#' @param quantiles a vector of quantiles that should be evaluated 
 #' @param n_samples tbd
 #' @param doses tbd
 #' @param avg_fit tbd

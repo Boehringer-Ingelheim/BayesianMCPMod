@@ -36,12 +36,12 @@ print.BayesianMCPMod <- function (
   cat("Model Significance Frequencies\n")
   print(model_success, ...)
   
-  if (!is.na(attr(x$BayesianMCP, "ess_avg"))) {
+#  if (!is.na(attr(x$BayesianMCP, "ess_avg"))) {#Note SB: I have taken this out, as vignettes didn't work
     
-    cat("Average Posterior ESS\n")
-    print(attr(x$BayesianMCP, "ess_avg"), ...)
+  #  cat("Average Posterior ESS\n")
+  #  print(attr(x$BayesianMCP, "ess_avg"), ...)
     
-  }
+ # }
   
 }
 

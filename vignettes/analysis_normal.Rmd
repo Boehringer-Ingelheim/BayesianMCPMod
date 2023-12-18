@@ -285,12 +285,16 @@ getBootstrapQuantiles(fit, quantiles = c(0.025,0.5, 0.975), doses = c(0, 2.5,4, 
 Technical note: The median quantile of the bootstrap based procedure is not necessary similar to the main model fit, as they are derived via different procedures (main fit, i.e. black lines in the plot, show the best fit of a certain model based on minimizing the residuals for the posterior distribution while bootstrap based 50% quantile indicates the median fit of the random sampling and fitting procedure). 
 
 # Additional notes
-It is also possible to perform the testing and modelling step in combined fashion via the performBayesianMCPMod function.
+It is also possible to perform the testing and modelling step in a combined fashion via the performBayesianMCPMod function.
+
 ```{r}
-#performBayesianMCPMod(
-   #     posterior_list = posterior,
-   #      contr         = contr_mat, 
-    #   crit_prob_adj   = crit_pval)
+overall_result<-performBayesianMCPMod(
+        posterior_list = posterior,
+         contr         = contr_mat, 
+      crit_prob_adj    = crit_pval,
+      simple           = FALSE)
+
+overall_result$Mod
 ```
 
 

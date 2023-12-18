@@ -117,11 +117,11 @@ assessDesign <- function (
 #'     regular MCPMod for this specific vector of standard errors. For the actual evaluation this vector of standard errors is translated into a (diagonal) matrix of variances 
 #' 
 #' @param mods An object of class "Mods" as specified in the Dosefinding package.
-#' @param dose_levels vector containing the different doseage levels.
-#' @param dose_weights Vector specifying weights for the different doses. Please note that in case this information should be provided  Default NULL
-#' @param prior_list a prior_list object. Default NULL
-#' @param sd_posterior a vector of positive numerics. Default NULL
-#' @param se_new_trial a vector of positive numerics. Default NULL
+#' @param dose_levels vector containing the different dosage levels.
+#' @param dose_weights Vector specifying weights for the different doses. Please note that in case this information is provided together with a prior (i.e. Option i) is planned) these two inputs should be provided on the same scale (e.g. patient numbers).  Default NULL
+#' @param prior_list a prior_list object, only required as input for Option i). Default NULL
+#' @param sd_posterior a vector of positive values with information about the variability of the posterior distribution, only required for Option iii). Default NULL
+#' @param se_new_trial a vector of positive values with information about the observed variability, only required for Option iv). Default NULL
 #' 
 #' @return contr Object of class ‘⁠optContr⁠’. A list containing entries contMat and muMat, and CorrMat. Specified in the Dosefinding package.
 #' 
@@ -196,11 +196,18 @@ getContr <- function (
 
 #' @title getCritProb
 #' 
-#' @description This function calculates multiplicity adjusted 
+#' @description This function calculates multiplicity adjusted critical values. The critical values are calculated in such a way that
+#'  when using non-informative priors the actual error level for falsely declaring a significant trial in the Bayesian MCPMod is controlled (by the specified alpha level). 
+#'  Hereby optimal contrasts of the frequentist MCPMod are applied and two options can be distinguished
+#'  i) Frequentist approach: If only dose_weights are provided optimal contrast vectors are calculated from the
+#'     regular MCPMod for these specific weights and the corresponding critical value for this set of contrasts is calculated via the critVal function of the DoseFinding package.
+#' ii) Frequentist approach+re-estimation:If only a se_new_trial (i.e. the estimated variability per dose group of a new trial) is provided, optimal contrast vectors are calculated from the
+#'     regular MCPMod for this specific vector of standard errors. Here as well the critical value for this set of contrasts is calculated via the critVal function of the DoseFinding package.
 #' 
 #' @param mods An object of class "Mods" as specified in the Dosefinding package.
 #' @param dose_levels vector containing the different dosage levels.
-#' @param dose_weights Vector specifying weights for the different doses
+#' @param dose_weights Vector specifying weights for the different doses, only required for Option i). Default NULL
+#' @param se_new_trial a vector of positive values, only required for Option ii). Default NULL
 #' @param alpha_crit_val significance level. Default set to 0.025.
 #' 
 #' @return crit_pval multiplicity adjusted critical value on the probability scale.
@@ -339,7 +346,7 @@ addSignificance <- function (
 #' @param contr a getContrMat object, contrast matrix to be used for the testing step.
 #' @param crit_prob_adj a getCritProb object, specifying the critical value to be used for the testing (on the probability scale)
 #' 
-#' @return b_mcp test result, with information about p-values for the individual dose-response shapes   
+#' @return b_mcp test result, with information about p-values for the individual dose-response shapes and overall significance    
 #' 
 #' @export
 performBayesianMCP <- function(

@@ -16,19 +16,30 @@ getContr(
 \arguments{
 \item{mods}{An object of class "Mods" as specified in the Dosefinding package.}
 
-\item{dose_levels}{vector containing the different doseage levels.}
+\item{dose_levels}{vector containing the different dosage levels.}
 
-\item{dose_weights}{Vector specifying weights for the different doses. Default NULL}
+\item{dose_weights}{Vector specifying weights for the different doses. Please note that in case this information is provided together with a prior (i.e. Option i) is planned) these two inputs should be provided on the same scale (e.g. patient numbers).  Default NULL}
 
-\item{prior_list}{a prior_list object. Default NULL}
+\item{prior_list}{a prior_list object, only required as input for Option i). Default NULL}
 
-\item{sd_posterior}{a vector of positive numerics. Default NULL}
+\item{sd_posterior}{a vector of positive values with information about the variability of the posterior distribution, only required for Option iii). Default NULL}
 
-\item{se_new_trial}{a vector of positive numerics. Default NULL}
+\item{se_new_trial}{a vector of positive values with information about the observed variability, only required for Option iv). Default NULL}
 }
 \value{
 contr Object of class ‘⁠optContr⁠’. A list containing entries contMat and muMat, and CorrMat. Specified in the Dosefinding package.
 }
 \description{
-This function calculates contrast vectors that are optimal for detecting certain alternatives. More information and link to publication will be added.
+This function calculates contrast vectors that are optimal for detecting certain alternatives via applying the function optContr of the DoseFinding package.
+Hereby 4 different options can be distinguished that are automatically executed based on the input that is provided
+i)  Bayesian approach: If dose_weights and a prior_list are provided an optimized contrasts for the posterior sample size is calculated.
+In detail,  in a first step the dose_weights (typically the number of patients per dose group) and the prior information is combined by calculating for
+each dose group a posterior effective sample. Based on this posterior effective sample sizes the allocation ratio is derived, which allows for a calculation on
+pseudo-optimal contrasts via regular MCPMod.are calculated from the
+regular MCPMod for these specific weights
+ii) Frequentist approach: If only dose_weights are provided optimal contrast vectors are calculated from the
+regular MCPMod for these specific weights
+iii)Bayesian approach + re-estimation: If only a sd_posterior (i.e. variability of the posterior distribution) is provided, pseudo-optimal contrasts based on these posterior weights will be calculated
+iv) Frequentist approach+re-estimation:If only a se_new_trial (i.e. the estimated variability per dose group of a new trial) is provided, optimal contrast vectors are calculated from the
+regular MCPMod for this specific vector of standard errors. For the actual evaluation this vector of standard errors is translated into a (diagonal) matrix of variances
 }

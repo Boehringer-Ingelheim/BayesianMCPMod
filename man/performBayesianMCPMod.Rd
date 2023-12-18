@@ -7,11 +7,11 @@
 performBayesianMCPMod(posterior_list, contr, crit_prob_adj, simple = FALSE)
 }
 \arguments{
-\item{posterior_list}{a getPosterior object}
+\item{posterior_list}{a getPosterior object with information about the (mixture) posterior distribution per dose group}
 
 \item{contr}{a getContrMat object, contrast matrix to be used for the testing step.}
 
-\item{crit_prob_adj}{a getCritProb object}
+\item{crit_prob_adj}{a getCritProb object, specifying the critical value to be used for the testing (on the probability scale).}
 
 \item{simple}{boolean variable, defining whether simplified fit will be applied. Passed to the getModelFits function. Default FALSE.}
 }
@@ -19,5 +19,5 @@ performBayesianMCPMod(posterior_list, contr, crit_prob_adj, simple = FALSE)
 bmcpmod test result as well as modelling result.
 }
 \description{
-performs bayesian MCP Test step and modelling.
+performs bayesian MCP Test step and modelling in a combined fashion. See performBayesianMCP function for MCT Test step and getModelFits for the modelling step
 }
