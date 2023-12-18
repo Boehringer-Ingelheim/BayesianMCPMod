@@ -123,6 +123,17 @@ assessDesign <- function (
 #' @param sd_posterior a vector of positive values with information about the variability of the posterior distribution, only required for Option iii). Default NULL
 #' @param se_new_trial a vector of positive values with information about the observed variability, only required for Option iv). Default NULL
 #' 
+#' @examples
+#' # example code
+#' models <- DoseFinding::Mods(linear = NULL, linlog = NULL, emax = c(0.5, 1.2), exponential = 2, 
+#' doses = c(0, 0.5, 2,4, 8))
+#' dose_levels=c(0, 0.5, 2, 4, 8)
+#' sd_posterior   = c(2.8,3,2.5,3.5,4)
+#' contr_mat<- getContr(
+#' mods           = models,
+#' dose_levels    = dose_levels,
+#' sd_posterior   = sd_posterior) 
+#' 
 #' @return contr Object of class ‘⁠optContr⁠’. A list containing entries contMat and muMat, and CorrMat. Specified in the Dosefinding package.
 #' 
 #' @export
@@ -209,7 +220,17 @@ getContr <- function (
 #' @param dose_weights Vector specifying weights for the different doses, only required for Option i). Default NULL
 #' @param se_new_trial a vector of positive values, only required for Option ii). Default NULL
 #' @param alpha_crit_val significance level. Default set to 0.025.
-#' 
+#'
+#' @examples
+#' # example code
+#' models <- DoseFinding::Mods(linear = NULL, linlog = NULL, emax = c(0.5, 1.2), exponential = 2, 
+#' doses = c(0, 0.5, 2,4, 8))
+#' dose_levels=c(0, 0.5, 2, 4, 8)
+#' critVal<- getCritProb(
+#'   mods           = models,
+#'   dose_weights  =c(50,50,50,50,50), #reflecting the planned sample size
+#'   dose_levels    = dose_levels,
+#'   alpha_crit_val = 0.05) 
 #' @return crit_pval multiplicity adjusted critical value on the probability scale.
 #' 
 #' @export
@@ -246,6 +267,27 @@ getCritProb <- function (
 #' @param contr a getContrMat object, contrast matrix to be used for the testing step.
 #' @param crit_prob_adj a getCritProb object, specifying the critical value to be used for the testing (on the probability scale).
 #' @param simple boolean variable, defining whether simplified fit will be applied. Passed to the getModelFits function. Default FALSE.
+#' @examples
+#' # example code
+#' models <- DoseFinding::Mods(linear = NULL, linlog = NULL, emax = c(0.5, 1.2), exponential = 2, 
+#' doses = c(0, 0.5, 2,4, 8))
+#' dose_levels=c(0, 0.5, 2, 4, 8)
+#' sd_posterior   = c(2.8,3,2.5,3.5,4)
+#' contr_mat<- getContr(
+#' mods           = models,
+#' dose_levels    = dose_levels,
+#' sd_posterior   = sd_posterior)
+#' critVal<- getCritProb(
+#'   mods           = models,
+#'   dose_weights  =c(50,50,50,50,50), #reflecting the planned sample size
+#'   dose_levels    = dose_levels,
+#'   alpha_crit_val = 0.05)
+#' posterior_list =   list(Ctrl=RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 5), sigma = 2),
+#'                    DG_1=RBesT::mixnorm(comp1 = c(w = 1, m = 1, s = 12), sigma = 2),
+#'                    DG_2=RBesT::mixnorm(comp1 = c(w = 1, m = 1.2, s = 11), sigma = 2) ,  
+#'                    DG_3=RBesT::mixnorm(comp1 = c(w = 1, m = 1.3, s = 11), sigma = 2) ,
+#'                    DG_4=RBesT::mixnorm(comp1 = c(w = 1, m = 2, s = 13) ,sigma = 2))
+#' performBayesianMCPMod(posterior_list=posterior_list, contr=contr_mat,crit_prob_adj=critVal,simple = FALSE)
 #' 
 #' @return bmcpmod test result as well as modelling result.
 #' 
@@ -345,6 +387,28 @@ addSignificance <- function (
 #' @param posterior_list a getPosterior object with information about the (mixture) posterior distribution per dose group 
 #' @param contr a getContrMat object, contrast matrix to be used for the testing step.
 #' @param crit_prob_adj a getCritProb object, specifying the critical value to be used for the testing (on the probability scale)
+#' 
+#' @examples
+#' # example code
+#' models <- DoseFinding::Mods(linear = NULL, linlog = NULL, emax = c(0.5, 1.2), exponential = 2, 
+#' doses = c(0, 0.5, 2,4, 8))
+#' dose_levels=c(0, 0.5, 2, 4, 8)
+#' sd_posterior   = c(2.8,3,2.5,3.5,4)
+#' contr_mat<- getContr(
+#' mods           = models,
+#' dose_levels    = dose_levels,
+#' sd_posterior   = sd_posterior)
+#' critVal<- getCritProb(
+#'   mods           = models,
+#'   dose_weights  =c(50,50,50,50,50), #reflecting the planned sample size
+#'   dose_levels    = dose_levels,
+#'   alpha_crit_val = 0.05)
+#' posterior_list =   list(Ctrl=RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 5), sigma = 2),
+#'                    DG_1=RBesT::mixnorm(comp1 = c(w = 1, m = 1, s = 12), sigma = 2),
+#'                    DG_2=RBesT::mixnorm(comp1 = c(w = 1, m = 1.2, s = 11), sigma = 2) ,  
+#'                    DG_3=RBesT::mixnorm(comp1 = c(w = 1, m = 1.3, s = 11), sigma = 2) ,
+#'                    DG_4=RBesT::mixnorm(comp1 = c(w = 1, m = 2, s = 13) ,sigma = 2))
+#' performBayesianMCP(posterior_list=posterior_list, contr=contr_mat,crit_prob_adj=critVal)
 #' 
 #' @return b_mcp test result, with information about p-values for the individual dose-response shapes and overall significance    
 #' 
