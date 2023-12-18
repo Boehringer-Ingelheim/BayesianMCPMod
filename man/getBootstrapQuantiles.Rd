@@ -34,3 +34,17 @@ These fits are then used to identify the specified quantiles.
 This approach can be considered as the bayesian equivalent of the frequentist bootstrap approach described in O'Quigley, Iasonos, J., and B. Bornkamp. 2017. Handbook of Methods for Designing, Monitoring, and Analyzing Dose-Finding Trials. Boca Raton: CRC Press.
 Instead of drawing n bootstrap samples from the sampling distribution of the trial dose-response estimates, here the samples are directly taken from the posterior distribution.
 }
+\examples{
+# example code
+posterior_list =   list(Ctrl=RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 1), sigma = 2),
+                   DG_1=RBesT::mixnorm(comp1 = c(w = 1, m = 3, s = 1.2), sigma = 2),
+                   DG_2=RBesT::mixnorm(comp1 = c(w = 1, m = 4, s = 1.5), sigma = 2) ,  
+                   DG_3=RBesT::mixnorm(comp1 = c(w = 1, m = 6, s = 1.2), sigma = 2) ,
+                   DG_4=RBesT::mixnorm(comp1 = c(w = 1, m = 6.5, s = 1.1) ,sigma = 2))
+models=c("emax","exponential","sigEmax","linear")
+dose_levels=c(0,1,2,4,8)
+fit<-getModelFits(models=models, posterior=posterior_list,dose_levels=dose_levels)
+fit_simple<-getModelFits(models=models, posterior=posterior_list,dose_levels=dose_levels,simple=TRUE)
+getBootstrapQuantiles(fit, quantiles = c(0.025,0.5, 0.975), doses = c(0, 1,2,3,4,6,8))
+getBootstrapQuantiles(fit_simple, n_samples=2000, quantiles = c(0.025,0.5, 0.975), doses = c(0, 1,2,3,4,6,8))
+}

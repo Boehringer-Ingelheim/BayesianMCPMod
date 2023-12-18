@@ -21,3 +21,26 @@ performs bayesian MCP Test step, as described in Fleischer et al. (Bayesian MCPM
 Tests for a dose-response effect using a model-based multiple contrast test based on the (provided) posterior distribution. In particular for every dose-response candidate the posterior probability is calculated that the contrast is bigger than 0 (based on the posterior distribution of the dose groups).
 In order to obtain significant test decision we consider the maximum of the posterior probabilities across the different models. This maximum is compared with a (multiplicity adjusted) critical value (on the probability scale).
 }
+\examples{
+# example code
+models <- DoseFinding::Mods(linear = NULL, linlog = NULL, emax = c(0.5, 1.2), exponential = 2, 
+doses = c(0, 0.5, 2,4, 8))
+dose_levels=c(0, 0.5, 2, 4, 8)
+sd_posterior   = c(2.8,3,2.5,3.5,4)
+contr_mat<- getContr(
+mods           = models,
+dose_levels    = dose_levels,
+sd_posterior   = sd_posterior)
+critVal<- getCritProb(
+  mods           = models,
+  dose_weights  =c(50,50,50,50,50), #reflecting the planned sample size
+  dose_levels    = dose_levels,
+  alpha_crit_val = 0.05)
+posterior_list =   list(Ctrl=RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 5), sigma = 2),
+                   DG_1=RBesT::mixnorm(comp1 = c(w = 1, m = 1, s = 12), sigma = 2),
+                   DG_2=RBesT::mixnorm(comp1 = c(w = 1, m = 1.2, s = 11), sigma = 2) ,  
+                   DG_3=RBesT::mixnorm(comp1 = c(w = 1, m = 1.3, s = 11), sigma = 2) ,
+                   DG_4=RBesT::mixnorm(comp1 = c(w = 1, m = 2, s = 13) ,sigma = 2))
+performBayesianMCP(posterior_list=posterior_list, contr=contr_mat,crit_prob_adj=critVal)
+
+}

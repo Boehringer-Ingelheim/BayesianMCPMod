@@ -43,3 +43,15 @@ iii)Bayesian approach + re-estimation: If only a sd_posterior (i.e. variability 
 iv) Frequentist approach+re-estimation:If only a se_new_trial (i.e. the estimated variability per dose group of a new trial) is provided, optimal contrast vectors are calculated from the
 regular MCPMod for this specific vector of standard errors. For the actual evaluation this vector of standard errors is translated into a (diagonal) matrix of variances
 }
+\examples{
+# example code
+models <- DoseFinding::Mods(linear = NULL, linlog = NULL, emax = c(0.5, 1.2), exponential = 2, 
+doses = c(0, 0.5, 2,4, 8))
+dose_levels=c(0, 0.5, 2, 4, 8)
+sd_posterior   = c(2.8,3,2.5,3.5,4)
+contr_mat<- getContr(
+mods           = models,
+dose_levels    = dose_levels,
+sd_posterior   = sd_posterior) 
+
+}
