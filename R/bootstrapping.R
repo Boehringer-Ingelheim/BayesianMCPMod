@@ -7,7 +7,6 @@
 #' This approach can be considered as the bayesian equivalent of the frequentist bootstrap approach described in O'Quigley, Iasonos, J., and B. Bornkamp. 2017. Handbook of Methods for Designing, Monitoring, and Analyzing Dose-Finding Trials. Boca Raton: CRC Press. 
 #' Instead of drawing n bootstrap samples from the sampling distribution of the trial dose-response estimates, here the samples are directly taken from the posterior distribution.
 #' 
-#' 
 #' @param model_fits an object of class modelFits, i.e. information about fitted models & corresponding model coefficients as well as the posterior distribution that was the basis for the model fitting 
 #' @param quantiles a vector of quantiles that should be evaluated 
 #' @param n_samples number of samples that should be drawn as basis for the 

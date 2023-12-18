@@ -43,5 +43,7 @@ plts returns a ggplot2 object
 }
 \description{
 plot function based on the ggplot2 package. Providing visualizations for each model and a average Fit.
-More details to be added, as well as references.
+Black lines show the fitted dose response models and an AIC based average model. Dots indicate the posterior median and vertical lines show corresponding credible intervals (i.e. the variability of the posterior distribution of the respective dose group).
+To assess the uncertainty of the model fit one can in addition visualize credible bands (yellow/orange shaded areas). The calculation of these bands is performed via the getBootstrapQuantiles function.
+The default setting is that these credible bands are not calculated.
 }

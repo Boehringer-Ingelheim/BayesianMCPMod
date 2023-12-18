@@ -266,9 +266,9 @@ fit <- getModelFits(
 
 Via the predict function one can also receive estimates for dose levels that were not included in the trial.
 
-It is possible to plot the fitted dose response models and an AIC based average model (black lines). To assess the uncertainty one can in addition visualize credible intervals (yellow shaded areas, the default is set to 50% and 95%). These credible intervals are calculated as follows.
+It is possible to plot the fitted dose response models and an AIC based average model (black lines). To assess the uncertainty one can in addition visualize credible bands (yellow/orange shaded areas, the default is set to 50% and 95%). These credible bands are calculated as follows.
 Samples from the posterior distribution are drawn and for every sample the simplified fitting step and a prediction is performed. These fits are then used to identify and visualize the specified quantiles. 
-The bootstrap based quantiles can also directly be calculated and displayed via the gotbootstrapQuantiles function.
+The bootstrap based quantiles can also be directly calculated and displayed via the getbootstrapQuantiles function.
  
 
 ```{r Visualization and interpretation of the results}

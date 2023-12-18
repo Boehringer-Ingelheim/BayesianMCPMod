@@ -13,19 +13,24 @@ getBootstrapQuantiles(
 )
 }
 \arguments{
-\item{model_fits}{tbd}
+\item{model_fits}{an object of class modelFits, i.e. information about fitted models & corresponding model coefficients as well as the posterior distribution that was the basis for the model fitting}
 
-\item{quantiles}{tbd}
+\item{quantiles}{a vector of quantiles that should be evaluated}
 
-\item{n_samples}{tbd}
+\item{n_samples}{number of samples that should be drawn as basis for the}
 
-\item{doses}{tbd}
+\item{doses}{a vector of doses for which a prediction should be performed}
 
-\item{avg_fit}{tbd}
+\item{avg_fit}{boolean variable, defining whether an average fit (based on generalized AIC weights) should be performed in addition to the individual models. Default TRUE.}
 }
 \value{
-tbd
+A data frame with entries doses, models, and quantiles
 }
 \description{
-getBootstrapQuantiles
+A function for the calculation of credible intervals to assess the uncertainty for the model fit.
+Hereby the credible intervals are calculated as follows.
+Samples from the posterior distribution are drawn (via the RBesT function rmix) and for every sample the simplified fitting step (see getModelFits function) and a prediction is performed.
+These fits are then used to identify the specified quantiles.
+This approach can be considered as the bayesian equivalent of the frequentist bootstrap approach described in O'Quigley, Iasonos, J., and B. Bornkamp. 2017. Handbook of Methods for Designing, Monitoring, and Analyzing Dose-Finding Trials. Boca Raton: CRC Press.
+Instead of drawing n bootstrap samples from the sampling distribution of the trial dose-response estimates, here the samples are directly taken from the posterior distribution.
 }
