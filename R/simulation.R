@@ -72,6 +72,13 @@ simulateData <- function(
     
   }
   
+  if (!is.null(dr_means)) {
+    
+    sim_data           <- sim_data[1:4]
+    colnames(sim_data) <- c(colnames(sim_data)[-4], "dose_resp")
+    
+  }
+  
   return (sim_data)
   
 }

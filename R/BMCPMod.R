@@ -20,11 +20,11 @@
 #'  models <- DoseFinding::Mods(linear = NULL, linlog = NULL, emax = c(0.5, 1.2), exponential = 2, 
 #' doses = c(0, 0.5, 2,4, 8),maxEff= 6)
 #' sd   = 12
-#' prior_list<-list(Ctrl=RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 12), sigma = 2),
-#'                    DG_1=RBesT::mixnorm(comp1 = c(w = 1, m = 1, s = 12), sigma = 2),
-#'                    DG_2=RBesT::mixnorm(comp1 = c(w = 1, m = 1.2, s = 11), sigma = 2) ,  
-#'                    DG_3=RBesT::mixnorm(comp1 = c(w = 1, m = 1.3, s = 11), sigma = 2) ,
-#'                    DG_4=RBesT::mixnorm(comp1 = c(w = 1, m = 2, s = 13) ,sigma = 2))
+#' prior_list<-list(Ctrl   = RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 12), sigma = 2),
+#'                    DG_1 = RBesT::mixnorm(comp1 = c(w = 1, m = 1, s = 12), sigma = 2),
+#'                    DG_2 = RBesT::mixnorm(comp1 = c(w = 1, m = 1.2, s = 11), sigma = 2) ,  
+#'                    DG_3 = RBesT::mixnorm(comp1 = c(w = 1, m = 1.3, s = 11), sigma = 2) ,
+#'                    DG_4 = RBesT::mixnorm(comp1 = c(w = 1, m = 2, s = 13) ,sigma = 2))
 #' 
 #' n_patients <- c(40,60,60,60,60)
 #' success_probabilities <- assessDesign(
@@ -114,8 +114,12 @@ assessDesign <- function (
   names(eval_design) <- model_names
   
   attr(eval_design, "avgSuccessRate") <- avg_success_rate
-  attr(eval_design, "placEff")        <- attr(mods, "placEff")
-  attr(eval_design, "maxEff")         <- attr(mods, "maxEff")
+  attr(eval_design, "placEff")        <- ifelse(test = is.null(dr_means),
+                                                yes  = attr(mods, "placEff"),
+                                                no   = dr_means[1])
+  attr(eval_design, "maxEff")         <- ifelse(test = is.null(dr_means),
+                                                yes  = attr(mods, "maxEff"),
+                                                no   = diff(range(dr_means)))
   attr(eval_design, "sampleSize")     <- n_patients
   attr(eval_design, "priorESS")       <- round(getESS(prior_list), 1)
   
