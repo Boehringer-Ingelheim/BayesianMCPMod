@@ -26,7 +26,7 @@ set.seed(7015)
 # Background and data
 
 In this vignette we will show the use of the Bayesian MCPMod package for trial planning for continuous distributed data. 
-As in [the analysis example vignette](analysis_normal.Rmd) we focus on the indication MDD and make use of historical data that is included in the clinDR package. 
+As in [the analysis example vignette](analysis_normal.html) we focus on the indication MDD and make use of historical data that is included in the clinDR package. 
 More specifically trial results for BRINTELLIX will be utilized to establish an informative prior for the control group.
 
 # Calculation of a MAP prior
@@ -51,7 +51,7 @@ hist_data <- data.frame(
 sd_tot <- with(hist_data, sum(sd * n) / sum(n))
 ```
 
-We will make use of the same getPriorList function as in the [analysis example vignette](analysis_normal.Rmd) to create a MAP prior.
+We will make use of the same getPriorList function as in the [analysis example vignette](analysis_normal.html) to create a MAP prior.
 
 ```{r Calculation of a MAP prior, echo = FALSE}
 getPriorList <- function (

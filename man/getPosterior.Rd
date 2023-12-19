@@ -40,8 +40,11 @@ prior_list<-list(Ctrl=RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 5), sigma = 2),
                    DG_4=RBesT::mixnorm(comp1 = c(w = 1, m = 2, s = 13) ,sigma = 2))
 mu<-c(0,1,1.5,2,2.5)
 se<-c(5,4,6,7,8)
-getPosterior <- function(
+posterior_list <- getPosterior(
    prior_list = prior_list,
     mu_hat   = mu,
    se_hat   = se)
+   
+summary(posterior_list)
+
 }

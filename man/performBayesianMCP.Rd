@@ -17,7 +17,7 @@ performBayesianMCP(posterior_list, contr, crit_prob_adj)
 b_mcp test result, with information about p-values for the individual dose-response shapes and overall significance
 }
 \description{
-performs bayesian MCP Test step, as described in \link{Fleischer et al.,2022}.
+performs bayesian MCP Test step, as described in Fleischer et al. (2022).
 Tests for a dose-response effect using a model-based multiple contrast test based on the (provided) posterior distribution. In particular for every dose-response candidate the posterior probability is calculated that the contrast is bigger than 0 (based on the posterior distribution of the dose groups).
 In order to obtain significant test decision we consider the maximum of the posterior probabilities across the different models. This maximum is compared with a (multiplicity adjusted) critical value (on the probability scale).
 }
@@ -36,11 +36,17 @@ critVal<- getCritProb(
   dose_weights  =c(50,50,50,50,50), #reflecting the planned sample size
   dose_levels    = dose_levels,
   alpha_crit_val = 0.05)
-posterior_list =   list(Ctrl=RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 5), sigma = 2),
+prior_list<-list(Ctrl=RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 5), sigma = 2),
                    DG_1=RBesT::mixnorm(comp1 = c(w = 1, m = 1, s = 12), sigma = 2),
                    DG_2=RBesT::mixnorm(comp1 = c(w = 1, m = 1.2, s = 11), sigma = 2) ,  
                    DG_3=RBesT::mixnorm(comp1 = c(w = 1, m = 1.3, s = 11), sigma = 2) ,
                    DG_4=RBesT::mixnorm(comp1 = c(w = 1, m = 2, s = 13) ,sigma = 2))
+mu<-c(0,1,1.5,2,2.5)
+se<-c(5,4,6,7,8)
+posterior_list <- getPosterior(
+   prior_list = prior_list,
+    mu_hat   = mu,
+   se_hat   = se)
 performBayesianMCP(posterior_list=posterior_list, contr=contr_mat,crit_prob_adj=critVal)
 
 }

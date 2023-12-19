@@ -3,16 +3,16 @@
 #' @description Fits dose-response curves for the specified dose-response models, based on the posterior distributions.
 #' For the simplified fit, multivariate normal distributions will be approximated and reduced by one-dimensional normal distributions. 
 #' For the default case, the Nelder-Mead algorithm is used. 
-#' In detail, for both approaches the mean vector \eqn{\theta^{Y}} and the covariance \eqn{\Sigma} of the (mixture) posterior distributions and the corresponding posterior weights \eqn{\tilde{\omega}_{l}} for $l \in {1,...,L}$ are used as basis
+#' In detail, for both approaches the mean vector \eqn{\theta^{Y}} and the covariance \eqn{\Sigma} of the (mixture) posterior distributions and the corresponding posterior weights \eqn{\tilde{\omega}_{l}} for \eqn{l \in {1,...,L}} are used as basis
 #' For the full fit a GLS estimator is used to minimize the following expression for the respective dose-response models \eqn{m}
 #' \deqn{ \hat{\theta}_{m}=argmin_{\theta_{m}} \sum_{i=l}^{L} \tilde{\omega}_{l}(\theta_{l_{i}}^{Y}-f(dose_{i},\hat{\theta}_{m}))'\Sigma_{l}^{-1}(\theta_{l_{i}}^{Y}-f(dose_{i},\hat{\theta}_{m}))}
 #' Herefore the function nloptr of the nloptr package is utilized. 
-#' In the simplified case $L=1$, as the dimension of the posterior is reduced to 1 first.
+#' In the simplified case \eqn{L=1}, as the dimension of the posterior is reduced to 1 first.
 #' The generalized AIC values are calculated via the formula
 #' \deqn{gAIC_{m} = \sum_{l=1}^{L} \tilde{\omega}_{l} \sum_{i=0}^{K} \frac{1}{\Sigma_{l_{i,i}}} (\theta_{l_i}^Y - f(dose_{i},\hat{\theta}_{m}))^2 + 2p }
 #' where \eqn{p} denotes the number of estimated parameters and \eqn{K} the number of active dose levels.
-#' Here as well for the simplified case the formula reduces to one summand as $L=1$.
-#' Corresponding gAIC based weights for model $M$ are calculated as outlined in [Schorning et al., 2016]
+#' Here as well for the simplified case the formula reduces to one summand as \eqn{L=1}.
+#' Corresponding gAIC based weights for model $M$ are calculated as outlined in Schorning et al. (2016)
 #' \deqn{
 #' \Omega_I (M) = \frac{\exp(-0.5 gAIC_{M})}{\sum_{m=1}^{Q} \exp(-0.5 gAIC_(m))}
 #' }

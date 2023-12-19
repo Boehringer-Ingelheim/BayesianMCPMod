@@ -408,7 +408,7 @@ addSignificance <- function (
 
 #' @title performBayesianMCP
 #' 
-#' @description performs bayesian MCP Test step, as described in [Fleischer et al.,2022].
+#' @description performs bayesian MCP Test step, as described in Fleischer et al. (2022).
 #' Tests for a dose-response effect using a model-based multiple contrast test based on the (provided) posterior distribution. In particular for every dose-response candidate the posterior probability is calculated that the contrast is bigger than 0 (based on the posterior distribution of the dose groups).
 #' In order to obtain significant test decision we consider the maximum of the posterior probabilities across the different models. This maximum is compared with a (multiplicity adjusted) critical value (on the probability scale).
 #' @references Fleischer F, Bossert S, Deng Q, Loley C, Gierse J. Bayesian MCPMod. Pharmaceutical Statistics. 2022; 21(3): 654-670. doi:10.1002/pst.2193 

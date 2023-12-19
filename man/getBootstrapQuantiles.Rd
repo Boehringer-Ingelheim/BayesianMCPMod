@@ -31,7 +31,7 @@ A function for the calculation of credible intervals to assess the uncertainty f
 Hereby the credible intervals are calculated as follows.
 Samples from the posterior distribution are drawn (via the RBesT function rmix) and for every sample the simplified fitting step (see getModelFits function) and a prediction is performed.
 These fits are then used to identify the specified quantiles.
-This approach can be considered as the bayesian equivalent of the frequentist bootstrap approach described in \link{O'Quigley et al., 2017}.
+This approach can be considered as the bayesian equivalent of the frequentist bootstrap approach described in O'Quigley et al. (2017).
 Instead of drawing n bootstrap samples from the sampling distribution of the trial dose-response estimates, here the samples are directly taken from the posterior distribution.
 }
 \examples{
