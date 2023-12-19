@@ -1,8 +1,12 @@
 #' @title simulateData
 #' 
+#' @description
+#' Function to simulate patient level data for a normally distributed endpoint
+#' 
+#' 
 #' @param n_patients vector containing number of patients as a numerical
 #' value per dose-group.
-#' @param dose_levels vector containing the different doseage levels.
+#' @param dose_levels vector containing the different dosage levels.
 #' @param sd standard deviation on patient level.
 #' @param mods An object of class "Mods" as specified in the Dosefinding package.
 #' @param n_sim number of simulations to be performed,
@@ -10,7 +14,7 @@
 #' @param true_model Default value is NULL.
 #' Assumed true underlying model. Provided via a String. e.g. "emax".
 #' In case of NULL, all dose-response models, included in the mods input parameter will be used.
-#' @param dr_means tbd. Default NULL.
+#' @param dr_means a vector, with information about assumed effects per dose group. Default NULL.
 #' 
 #' @return sim_data one list object, containing patient level simulated data for all assumed true models.
 #' Also providing information about simulation iteration, patient number as well as dosage levels.

@@ -5,14 +5,36 @@
 #' @param n_patients Vector specifying the planned number of patients per dose group
 #' @param mods An object of class "Mods" as specified in the Dosefinding package.
 #' @param prior_list a prior_list object specifying the utilized prior for the different dose groups 
-#' @param sd tbd
+#' @param sd a positive value, specification of assumed sd 
 #' @param n_sim number of simulations to be performed
-#' @param alpha_crit_val critical value to be used for the testing (on the probability scale)
+#' @param alpha_crit_val (unadjusted) critical value to be used for the MCT testing step. Passed to the getCritProb function for the calculation of adjusted critical values (on the probability scale). Default is 0.05.
 #' @param simple boolean variable, defining whether simplified fit will be applied. Passed to the getModelFits function. Default FALSE.
-#' @param reestimate tbd Default FALSE
-#' @param contr tbd Default NULL
-#' @param dr_means tbd Default NULL
+#' @param reestimate boolean variable, defining whether critical value should be calculated with re-estimated contrasts (see getCritProb function for more details). Default FALSE
+#' @param contr Allows specification of a fixed contrasts matrix. Default NULL
+#' @param dr_means a vector, allows specification of  individual (not model based) assumed effects per dose group. Default NULL
 #' 
+#' @return returns success probabilities for the different assumed dose-response shapes, attributes also includes information around average success rate (across all assumed models) and prior Effective sample size
+#' 
+#' @examples
+#' # example code
+#'  models <- DoseFinding::Mods(linear = NULL, linlog = NULL, emax = c(0.5, 1.2), exponential = 2, 
+#' doses = c(0, 0.5, 2,4, 8),maxEff= 6)
+#' sd   = 12
+#' prior_list<-list(Ctrl=RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 12), sigma = 2),
+#'                    DG_1=RBesT::mixnorm(comp1 = c(w = 1, m = 1, s = 12), sigma = 2),
+#'                    DG_2=RBesT::mixnorm(comp1 = c(w = 1, m = 1.2, s = 11), sigma = 2) ,  
+#'                    DG_3=RBesT::mixnorm(comp1 = c(w = 1, m = 1.3, s = 11), sigma = 2) ,
+#'                    DG_4=RBesT::mixnorm(comp1 = c(w = 1, m = 2, s = 13) ,sigma = 2))
+#' 
+#' n_patients <- c(40,60,60,60,60)
+#' success_probabilities <- assessDesign(
+#' n_patients  = n_patients,
+#' mods        = mods,
+#' prior_list  = prior_list,
+#' sd          = sd)
+#' 
+#' success_probabilities
+
 #' @export
 assessDesign <- function (
     
@@ -282,15 +304,18 @@ getCritProb <- function (
 #'   dose_weights  =c(50,50,50,50,50), #reflecting the planned sample size
 #'   dose_levels    = dose_levels,
 #'   alpha_crit_val = 0.05)
-#' posterior_list =   list(Ctrl=RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 5), sigma = 2),
+#' prior_list<-list(Ctrl=RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 5), sigma = 2),
 #'                    DG_1=RBesT::mixnorm(comp1 = c(w = 1, m = 1, s = 12), sigma = 2),
 #'                    DG_2=RBesT::mixnorm(comp1 = c(w = 1, m = 1.2, s = 11), sigma = 2) ,  
 #'                    DG_3=RBesT::mixnorm(comp1 = c(w = 1, m = 1.3, s = 11), sigma = 2) ,
 #'                    DG_4=RBesT::mixnorm(comp1 = c(w = 1, m = 2, s = 13) ,sigma = 2))
-#' performBayesianMCPMod(posterior_list=posterior_list,
-#' contr=contr_mat,
-#' crit_prob_adj=critVal,
-#' simple = FALSE)
+#' mu<-c(0,1,1.5,2,2.5)
+#' se<-c(5,4,6,7,8)
+#' posterior_list <- getPosterior(
+#'    prior_list = prior_list,
+#'     mu_hat   = mu,
+#'    se_hat   = se)
+#' performBayesianMCPMod(posterior_list=posterior_list, contr=contr_mat,crit_prob_adj=critVal,simple = FALSE)
 #' 
 #' @return bmcpmod test result as well as modelling result.
 #' 
@@ -406,11 +431,17 @@ addSignificance <- function (
 #'   dose_weights  =c(50,50,50,50,50), #reflecting the planned sample size
 #'   dose_levels    = dose_levels,
 #'   alpha_crit_val = 0.05)
-#' posterior_list =   list(Ctrl=RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 5), sigma = 2),
+#' prior_list<-list(Ctrl=RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 5), sigma = 2),
 #'                    DG_1=RBesT::mixnorm(comp1 = c(w = 1, m = 1, s = 12), sigma = 2),
 #'                    DG_2=RBesT::mixnorm(comp1 = c(w = 1, m = 1.2, s = 11), sigma = 2) ,  
 #'                    DG_3=RBesT::mixnorm(comp1 = c(w = 1, m = 1.3, s = 11), sigma = 2) ,
 #'                    DG_4=RBesT::mixnorm(comp1 = c(w = 1, m = 2, s = 13) ,sigma = 2))
+#' mu<-c(0,1,1.5,2,2.5)
+#' se<-c(5,4,6,7,8)
+#' posterior_list <- getPosterior(
+#'    prior_list = prior_list,
+#'     mu_hat   = mu,
+#'    se_hat   = se)
 #' performBayesianMCP(posterior_list=posterior_list, contr=contr_mat,crit_prob_adj=critVal)
 #' 
 #' @return b_mcp test result, with information about p-values for the individual dose-response shapes and overall significance    
@@ -423,8 +454,11 @@ performBayesianMCP <- function(
   crit_prob_adj
   
 ) {
-  
-  posterior_list <- list(posterior_list)
+  if (inherits(posterior_list,  "postList")) {
+    
+    posterior_list <- list(posterior_list)
+    
+  }
   
   if (inherits(contr, "optContr")) {
     
