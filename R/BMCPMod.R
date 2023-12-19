@@ -287,7 +287,10 @@ getCritProb <- function (
 #'                    DG_2=RBesT::mixnorm(comp1 = c(w = 1, m = 1.2, s = 11), sigma = 2) ,  
 #'                    DG_3=RBesT::mixnorm(comp1 = c(w = 1, m = 1.3, s = 11), sigma = 2) ,
 #'                    DG_4=RBesT::mixnorm(comp1 = c(w = 1, m = 2, s = 13) ,sigma = 2))
-#' performBayesianMCPMod(posterior_list=posterior_list, contr=contr_mat,crit_prob_adj=critVal,simple = FALSE)
+#' performBayesianMCPMod(posterior_list=posterior_list,
+#' contr=contr_mat,
+#' crit_prob_adj=critVal,
+#' simple = FALSE)
 #' 
 #' @return bmcpmod test result as well as modelling result.
 #' 
@@ -421,11 +424,7 @@ performBayesianMCP <- function(
   
 ) {
   
-  if (inherits(posterior_list,  "postList")) {
-    
-    posterior_list <- list(posterior_list)
-    
-  }
+  posterior_list <- list(posterior_list)
   
   if (inherits(contr, "optContr")) {
     

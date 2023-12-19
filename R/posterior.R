@@ -20,10 +20,13 @@
 #'                    DG_4=RBesT::mixnorm(comp1 = c(w = 1, m = 2, s = 13) ,sigma = 2))
 #' mu<-c(0,1,1.5,2,2.5)
 #' se<-c(5,4,6,7,8)
-#' getPosterior <- function(
+#' posterior_list <- getPosterior(
 #'    prior_list = prior_list,
 #'     mu_hat   = mu,
 #'    se_hat   = se)
+#'    
+#' summary(posterior_list)
+#' 
 #' @export
 getPosterior <- function(
   prior_list,
@@ -92,7 +95,8 @@ getPosteriorI <- function(
     
   }
   
-  post_list <- mapply(RBesT::postmix, prior_list, m = mu_hat, se = se_hat)
+  post_list <- mapply(RBesT::postmix, prior_list, m = mu_hat, se = se_hat,
+                      SIMPLIFY = FALSE)
   
   if (is.null(names(prior_list))) {
     
