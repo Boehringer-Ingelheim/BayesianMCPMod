@@ -16,6 +16,22 @@
 #' In case of NULL, all dose-response models, included in the mods input parameter will be used.
 #' @param dr_means a vector, with information about assumed effects per dose group. Default NULL.
 #' 
+#' @examples
+#' # example code
+#'  models <- DoseFinding::Mods(linear = NULL, linlog = NULL, emax = c(0.5, 1.2), exponential = 2, 
+#' doses = c(0, 0.5, 2,4, 8),maxEff= 6)
+#' dose_levels = c(0, 0.5, 2,4, 8)
+#' sd   = 12
+#' n_patients <- c(40,60,60,60,60)
+#' sim_data <- simulateData(
+#' n_patients  = n_patients,
+#' dose_levels = dose_levels,
+#' mods        = models,
+#' n_sim       = 100,
+#' sd          = sd)
+#' 
+#' sim_data
+
 #' @return sim_data one list object, containing patient level simulated data for all assumed true models.
 #' Also providing information about simulation iteration, patient number as well as dosage levels.
 #' 
