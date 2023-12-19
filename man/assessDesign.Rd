@@ -50,11 +50,11 @@ This function performs simulation based trial design evaluations for a set of sp
  models <- DoseFinding::Mods(linear = NULL, linlog = NULL, emax = c(0.5, 1.2), exponential = 2, 
 doses = c(0, 0.5, 2,4, 8),maxEff= 6)
 sd   = 12
-prior_list<-list(Ctrl=RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 12), sigma = 2),
-                   DG_1=RBesT::mixnorm(comp1 = c(w = 1, m = 1, s = 12), sigma = 2),
-                   DG_2=RBesT::mixnorm(comp1 = c(w = 1, m = 1.2, s = 11), sigma = 2) ,  
-                   DG_3=RBesT::mixnorm(comp1 = c(w = 1, m = 1.3, s = 11), sigma = 2) ,
-                   DG_4=RBesT::mixnorm(comp1 = c(w = 1, m = 2, s = 13) ,sigma = 2))
+prior_list<-list(Ctrl   = RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 12), sigma = 2),
+                   DG_1 = RBesT::mixnorm(comp1 = c(w = 1, m = 1, s = 12), sigma = 2),
+                   DG_2 = RBesT::mixnorm(comp1 = c(w = 1, m = 1.2, s = 11), sigma = 2) ,  
+                   DG_3 = RBesT::mixnorm(comp1 = c(w = 1, m = 1.3, s = 11), sigma = 2) ,
+                   DG_4 = RBesT::mixnorm(comp1 = c(w = 1, m = 2, s = 13) ,sigma = 2))
 
 n_patients <- c(40,60,60,60,60)
 success_probabilities <- assessDesign(
