@@ -12,6 +12,8 @@ model coefficients}
 
 \item{doses}{a vector specifying the doses for which a prediction should be
 done getContrMat object, contrast matrix to be used for the testing step.}
+
+\item{...}{other parameters}
 }
 \value{
 a list with the model predictions for the specified models and doses

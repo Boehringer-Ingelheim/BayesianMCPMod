@@ -48,13 +48,13 @@ test_that("getPriorList input parameters do work as intented", {
     hist_data = testdata,
     dose_levels = dose_levels,
     robustify_weight = 0.5
-    ))
+  ))
   # passing wrong format for dose_levels
   expect_error(getPriorList(
     hist_data = hist_data,
     dose_levels = c("hello", "world"),
     robustify_weight = 0.5
-    ))
+  ))
   
 })
 

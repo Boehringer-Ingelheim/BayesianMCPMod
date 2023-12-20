@@ -47,7 +47,7 @@ test_that("addModelWeights works correctly in a simple case", {
   expect_equal(length(result), length(test_model_fits1))
   expect_true(all(sapply(result, function(x) "model_weight" %in% names(x))))
   expect_equal(result, expected_output1)
-
+  
   test_model_fits2 <- list(
     model1 = list(gAIC = 100),
     model2 = list(gAIC = 0),

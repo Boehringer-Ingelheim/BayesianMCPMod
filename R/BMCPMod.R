@@ -3,7 +3,7 @@
 #' @description This function performs simulation based trial design evaluations for a set of specified dose-response models
 #'
 #' @param n_patients Vector specifying the planned number of patients per dose group
-#' @param mods An object of class "Mods" as specified in the Dosefinding package.
+#' @param mods An object of class "Mods" as specified in the DoseFinding package.
 #' @param prior_list a prior_list object specifying the utilized prior for the different dose groups 
 #' @param sd a positive value, specification of assumed sd 
 #' @param n_sim number of simulations to be performed
@@ -151,7 +151,7 @@ assessDesign <- function (
 #' iv) Frequentist approach+re-estimation:If only a se_new_trial (i.e. the estimated variability per dose group of a new trial) is provided, optimal contrast vectors are calculated from the
 #'     regular MCPMod for this specific vector of standard errors. For the actual evaluation this vector of standard errors is translated into a (diagonal) matrix of variances 
 #' 
-#' @param mods An object of class "Mods" as specified in the Dosefinding package.
+#' @param mods An object of class "Mods" as specified in the DoseFinding package.
 #' @param dose_levels vector containing the different dosage levels.
 #' @param dose_weights Vector specifying weights for the different doses. Please note that in case this information is provided together with a prior (i.e. Option i) is planned) these two inputs should be provided on the same scale (e.g. patient numbers).  Default NULL
 #' @param prior_list a prior_list object, only required as input for Option i). Default NULL
@@ -164,11 +164,11 @@ assessDesign <- function (
 #' dose_levels=c(0, 0.5, 2, 4, 8)
 #' sd_posterior   = c(2.8,3,2.5,3.5,4)
 #' contr_mat<- getContr(
-#' mods           = models,
+#' mods           = mods,
 #' dose_levels    = dose_levels,
 #' sd_posterior   = sd_posterior) 
 #' 
-#' @return contr Object of class ‘⁠optContr⁠’. A list containing entries contMat and muMat, and CorrMat. Specified in the Dosefinding package.
+#' @return contr Object of class ‘⁠optContr⁠’. A list containing entries contMat and muMat, and CorrMat. Specified in the DoseFinding package.
 #' 
 #' @export
 getContr <- function (
@@ -254,7 +254,7 @@ getContr <- function (
 #' ii) Frequentist approach+re-estimation:If only a se_new_trial (i.e. the estimated variability per dose group of a new trial) is provided, optimal contrast vectors are calculated from the
 #'     regular MCPMod for this specific vector of standard errors. Here as well the critical value for this set of contrasts is calculated via the critVal function of the DoseFinding package.
 #' 
-#' @param mods An object of class "Mods" as specified in the Dosefinding package.
+#' @param mods An object of class "Mods" as specified in the DoseFinding package.
 #' @param dose_levels vector containing the different dosage levels.
 #' @param dose_weights Vector specifying weights for the different doses, only required for Option i). Default NULL
 #' @param se_new_trial a vector of positive values, only required for Option ii). Default NULL
@@ -262,10 +262,10 @@ getContr <- function (
 #'
 #' @examples
 #' # example code
-#' mods <- DoseFinding::Mods(linear = NULL, linlog = NULL, emax = c(0.5, 1.2), exponential = 2, doses = c(0, 0.5, 2,4, 8), maxEff= 6)
+#' mods <- DoseFinding::Mods(linear = NULL, linlog = NULL, emax = c(0.5, 1.2), exponential = 2, doses = c(0, 0.5, 2,4, 8))
 #' dose_levels=c(0, 0.5, 2, 4, 8)
 #' critVal<- getCritProb(
-#'   mods           = models,
+#'   mods           = mods,
 #'   dose_weights  =c(50,50,50,50,50), #reflecting the planned sample size
 #'   dose_levels    = dose_levels,
 #'   alpha_crit_val = 0.05) 
@@ -312,15 +312,15 @@ getCritProb <- function (
 #' @param simple boolean variable, defining whether simplified fit will be applied. Passed to the getModelFits function. Default FALSE.
 #' @examples
 #' # example code
-#' mods <- DoseFinding::Mods(linear = NULL, linlog = NULL, emax = c(0.5, 1.2), exponential = 2, doses = c(0, 0.5, 2,4, 8), maxEff= 6)
+#' mods <- DoseFinding::Mods(linear = NULL, linlog = NULL, emax = c(0.5, 1.2), exponential = 2, doses = c(0, 0.5, 2,4, 8))
 #' dose_levels=c(0, 0.5, 2, 4, 8)
 #' sd_posterior   = c(2.8,3,2.5,3.5,4)
 #' contr_mat<- getContr(
-#' mods           = models,
+#' mods           = mods,
 #' dose_levels    = dose_levels,
 #' sd_posterior   = sd_posterior)
 #' critVal<- getCritProb(
-#'   mods           = models,
+#'   mods           = mods,
 #'   dose_weights  =c(50,50,50,50,50), #reflecting the planned sample size
 #'   dose_levels    = dose_levels,
 #'   alpha_crit_val = 0.05)
@@ -449,15 +449,15 @@ addSignificance <- function (
 #' 
 #' @examples
 #' # example code
-#' mods <- DoseFinding::Mods(linear = NULL, linlog = NULL, emax = c(0.5, 1.2), exponential = 2, doses = c(0, 0.5, 2,4, 8), maxEff= 6)
+#' mods <- DoseFinding::Mods(linear = NULL, linlog = NULL, emax = c(0.5, 1.2), exponential = 2, doses = c(0, 0.5, 2,4, 8))
 #' dose_levels=c(0, 0.5, 2, 4, 8)
 #' sd_posterior   = c(2.8,3,2.5,3.5,4)
-#' contr<- getContr(
-#' mods           = models,
+#' contr_mat<- getContr(
+#' mods           = mods,
 #' dose_levels    = dose_levels,
 #' sd_posterior   = sd_posterior)
 #' critVal<- getCritProb(
-#'   mods           = models,
+#'   mods           = mods,
 #'   dose_weights  =c(50,50,50,50,50), #reflecting the planned sample size
 #'   dose_levels    = dose_levels,
 #'   alpha_crit_val = 0.05)

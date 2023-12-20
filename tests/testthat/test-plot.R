@@ -48,7 +48,7 @@ test_that("Test plot.modelFits with different model_fits input", {
   dose_levels <- c(0, 50, 100, 200)
   ## combine priors in list
   prior_list <- c(list(prior_ctr), rep(list(prior_trt), times = length(dose_levels[-1])))
-
+  
   # Pre-Specification (B)MCPMod
   
   ## candidate models for MCPMod
@@ -74,7 +74,7 @@ test_that("Test plot.modelFits with different model_fits input", {
     maxEff      = 10,
     placEff     = 1.4
   )
-
+  
   # Simulation of new trial
   ## Note: This part will be simplified and direct results from one trial will be used
   mods_sim <- DoseFinding::Mods(
@@ -100,7 +100,7 @@ test_that("Test plot.modelFits with different model_fits input", {
     data       = data_emax,
     prior_list = prior_list
   )
-
+  
   # Evaluation of Bayesian MCPMod
   
   contr_mat <- DoseFinding::optContr(
@@ -126,7 +126,7 @@ test_that("Test plot.modelFits with different model_fits input", {
     contr_mat       = contr_mat_prior,
     crit_prob       = crit_pval
   )
-
+  
   # Model fit
   # This part is currently not working
   post_observed <- posterior_emax

@@ -21,7 +21,7 @@ assessDesign(
 \arguments{
 \item{n_patients}{Vector specifying the planned number of patients per dose group}
 
-\item{mods}{An object of class "Mods" as specified in the Dosefinding package.}
+\item{mods}{An object of class "Mods" as specified in the DoseFinding package.}
 
 \item{prior_list}{a prior_list object specifying the utilized prior for the different dose groups}
 
@@ -47,8 +47,7 @@ This function performs simulation based trial design evaluations for a set of sp
 }
 \examples{
 # example code
- models <- DoseFinding::Mods(linear = NULL, linlog = NULL, emax = c(0.5, 1.2), exponential = 2, 
-doses = c(0, 0.5, 2,4, 8),maxEff= 6)
+mods <- DoseFinding::Mods(linear = NULL, linlog = NULL, emax = c(0.5, 1.2), exponential = 2, doses = c(0, 0.5, 2,4, 8), maxEff= 6)
 sd   = 12
 prior_list<-list(Ctrl   = RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 12), sigma = 2),
                    DG_1 = RBesT::mixnorm(comp1 = c(w = 1, m = 1, s = 12), sigma = 2),
