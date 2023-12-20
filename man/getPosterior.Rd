@@ -4,18 +4,47 @@
 \alias{getPosterior}
 \title{getPosterior}
 \usage{
-getPosterior(data, prior_list, mu_hat = NULL, sd_hat = NULL)
+getPosterior(
+  prior_list,
+  data = NULL,
+  mu_hat = NULL,
+  se_hat = NULL,
+  calc_ess = FALSE
+)
 }
 \arguments{
-\item{data}{dataframe containing the information of dose and response.
-Also a simulateData object can be provided.}
-
 \item{prior_list}{prior_list object}
 
-\item{mu_hat}{vector of estimated mean values}
+\item{data}{dataframe containing the information of dose and response. Default NULL
+Also a simulateData object can be provided.}
 
-\item{sd_hat}{vector of estimated standard deviations.}
+\item{mu_hat}{vector of estimated mean values (per dose group).}
+
+\item{se_hat}{vector of estimated standard deviations (per dose group).}
+
+\item{calc_ess}{boolean variable, indicating whether effective sample size should be calculated. Default FALSE}
+}
+\value{
+posterior_list, a posterior list object is returned with information about (mixture) posterior distribution per dose group
 }
 \description{
-Either the patient level data or both the mu_hat as well as the sd_hat must to be provided.
+Either the patient level data or both mu_hat as well as sd_hat must to be provided. If patient level data is provided mu_hat and se_hat are calculated within the function using a linear model.
+This function calculates the posterior for every dose group independently via the RBesT function postmix.
+}
+\examples{
+# example code
+prior_list<-list(Ctrl=RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 5), sigma = 2),
+                   DG_1=RBesT::mixnorm(comp1 = c(w = 1, m = 1, s = 12), sigma = 2),
+                   DG_2=RBesT::mixnorm(comp1 = c(w = 1, m = 1.2, s = 11), sigma = 2) ,  
+                   DG_3=RBesT::mixnorm(comp1 = c(w = 1, m = 1.3, s = 11), sigma = 2) ,
+                   DG_4=RBesT::mixnorm(comp1 = c(w = 1, m = 2, s = 13) ,sigma = 2))
+mu<-c(0,1,1.5,2,2.5)
+se<-c(5,4,6,7,8)
+posterior_list <- getPosterior(
+   prior_list = prior_list,
+    mu_hat   = mu,
+   se_hat   = se)
+   
+summary(posterior_list)
+
 }

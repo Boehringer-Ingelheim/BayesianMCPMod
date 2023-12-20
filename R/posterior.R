@@ -1,104 +1,61 @@
-#' @title getPriorList
-#' 
-#' @param hist_data historical trial summary level data,
-#' needs to be provided as a dataframe. Including information of the
-#' estimates and variability.
-#' @param dose_levels vector of the different doseage levels
-#' @param dose_names character vector of dose levels,
-#' default NULL and will be automatically created
-#' based on the dose levels parameter.
-#' @param robustify_weight Null needs to be provided as a numeric
-#' value for the weight of the robustification component
-#'
-#' @export
-getPriorList <- function (
-    
-  hist_data,
-  dose_levels,
-  dose_names       = NULL,
-  robustify_weight = NULL
-  
-) {
-  
-  sd_tot <- with(hist_data, sum(sd * n) / sum(n))
-  
-  gmap <- RBesT::gMAP(
-    formula    = cbind(est, se) ~ 1 | trial,
-    weights    = hist_data$n,
-    data       = hist_data,
-    family     = gaussian,
-    beta.prior = cbind(0, 100 * sd_tot),
-    tau.dist   = "HalfNormal",
-    tau.prior  = cbind(0, sd_tot / 4))
-  
-  prior_ctr <- RBesT::automixfit(gmap)
-  
-  if(is.null(robustify_weight) | !is.numeric(robustify_weight)) {
-    stop("robustify_weight needs to be provided and must be numeric")
-  }
-  
-  if (!is.null(robustify_weight)) {
-    
-    prior_ctr <- suppressMessages(RBesT::robustify(
-      priormix = prior_ctr,
-      weight   = robustify_weight,
-      sigma    = sd_tot))
-    
-  }
-  
-  prior_trt <- RBesT::mixnorm(
-    comp1 = c(w = 1, m = summary(prior_ctr)[1], n = 1),
-    sigma = sd_tot,
-    param = "mn")
-  
-  prior_list <- c(list(prior_ctr),
-                  rep(x     = list(prior_trt),
-                      times = length(dose_levels[-1])))
-  
-  if (is.null(dose_names)) {
-    
-    dose_names <- c("Ctr", paste0("DG_", seq_along(dose_levels[-1])))
-    
-  }
-  
-  names(prior_list) <- dose_names
-  
-  attr(prior_list, "dose_levels") <- dose_levels
-  attr(prior_list, "sd_tot")      <- sd_tot
-  
-  return (prior_list)
-  
-}
 
 #' @title getPosterior
 #' 
-#' @description Either the patient level data or both the mu_hat as well as the sd_hat must to be provided.
+#' @description Either the patient level data or both mu_hat as well as sd_hat must to be provided. If patient level data is provided mu_hat and se_hat are calculated within the function using a linear model.
+#' This function calculates the posterior for every dose group independently via the RBesT function postmix.
 #' 
-#' @param data dataframe containing the information of dose and response.
-#' Also a simulateData object can be provided.
 #' @param prior_list prior_list object
-#' @param mu_hat vector of estimated mean values
-#' @param sd_hat vector of estimated standard deviations.
-#'
+#' @param data dataframe containing the information of dose and response. Default NULL
+#' Also a simulateData object can be provided.
+#' @param mu_hat vector of estimated mean values (per dose group).
+#' @param se_hat vector of estimated standard deviations (per dose group).
+#' @param calc_ess boolean variable, indicating whether effective sample size should be calculated. Default FALSE
+#' @return posterior_list, a posterior list object is returned with information about (mixture) posterior distribution per dose group
+#' @examples
+#' # example code
+#' prior_list<-list(Ctrl=RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 5), sigma = 2),
+#'                    DG_1=RBesT::mixnorm(comp1 = c(w = 1, m = 1, s = 12), sigma = 2),
+#'                    DG_2=RBesT::mixnorm(comp1 = c(w = 1, m = 1.2, s = 11), sigma = 2) ,  
+#'                    DG_3=RBesT::mixnorm(comp1 = c(w = 1, m = 1.3, s = 11), sigma = 2) ,
+#'                    DG_4=RBesT::mixnorm(comp1 = c(w = 1, m = 2, s = 13) ,sigma = 2))
+#' mu<-c(0,1,1.5,2,2.5)
+#' se<-c(5,4,6,7,8)
+#' posterior_list <- getPosterior(
+#'    prior_list = prior_list,
+#'     mu_hat   = mu,
+#'    se_hat   = se)
+#'    
+#' summary(posterior_list)
+#' 
 #' @export
 getPosterior <- function(
-  data = NULL,
   prior_list,
-  mu_hat = NULL,
-  sd_hat = NULL
+  data     = NULL,
+  mu_hat   = NULL,
+  se_hat   = NULL,
+  calc_ess = FALSE
   
 ) {
-  if (is.null(data)){
-    posterior_list <-getPosteriorI(data_i=NULL, prior_list = prior_list,
-                                   mu_hat     = mu_hat,
-                                   sd_hat     = sd_hat)
-  }else{
-  posterior_list <- lapply(split(data, data$simulation), getPosteriorI,
-                           prior_list = prior_list,
-                           mu_hat     = mu_hat,
-                           sd_hat     = sd_hat)
-  }
   
+  if (!is.null(mu_hat) && !is.null(se_hat) && is.null(data)) {
+    
+    posterior_list <- getPosteriorI(
+      prior_list = prior_list,
+      mu_hat     = mu_hat,
+      se_hat     = se_hat,
+      calc_ess   = calc_ess)
+    
+  } else if (is.null(mu_hat) && is.null(se_hat) && !is.null(data)) {
+    
+    posterior_list <- lapply(split(data, data$simulation), getPosteriorI,
+                             prior_list = prior_list, calc_ess = calc_ess)
+    
+  } else {
+    
+    stop ("Either 'data' or 'mu_hat' and 'se_hat' must not be NULL.")
+    
+  }
+ 
   if (length(posterior_list) == 1) {
     
     posterior_list <- posterior_list[[1]]
@@ -111,33 +68,35 @@ getPosterior <- function(
 
 getPosteriorI <- function(
     
-  data_i,
+  data_i   = NULL,
   prior_list,
-  mu_hat = NULL,
-  sd_hat = NULL
+  mu_hat   = NULL,
+  se_hat   = NULL,
+  calc_ess = FALSE
   
 ) {
   
-  if (is.null(mu_hat) && is.null(sd_hat)) {
+  if (is.null(mu_hat) && is.null(se_hat)) {
     
     anova_res <- stats::lm(data_i$response ~ factor(data_i$dose) - 1)
     mu_hat    <- summary(anova_res)$coefficients[, 1]
-    sd_hat    <- summary(anova_res)$coefficients[, 2]
+    se_hat    <- summary(anova_res)$coefficients[, 2]
     
-  } else if (!is.null(mu_hat) && !is.null(sd_hat)) {
+  } else if (!is.null(mu_hat) && !is.null(se_hat)) {
     
     stopifnot("m_hat length must match number of dose levels" = 
                 length(prior_list) == length(mu_hat),
-              "sd_hat length must match number of dose levels" = 
-                length(prior_list) == length(sd_hat))
+              "se_hat length must match number of dose levels" = 
+                length(prior_list) == length(se_hat))
     
   } else {
     
-    stop ("Both mu_hat and sd_hat must be provided.")
+    stop ("Both mu_hat and se_hat must be provided.")
     
   }
   
-  post_list <- mapply(RBesT::postmix, prior_list, m = mu_hat, se = sd_hat)
+  post_list <- mapply(RBesT::postmix, prior_list, m = mu_hat, se = se_hat,
+                      SIMPLIFY = FALSE)
   
   if (is.null(names(prior_list))) {
     
@@ -148,7 +107,35 @@ getPosteriorI <- function(
   names(post_list) <- names(prior_list)
   class(post_list) <- "postList"
   
+  if (calc_ess) {
+    
+    attr(post_list, "ess") <- getESS(post_list)
+    
+  } else {
+    
+    attr(post_list, "ess") <- numeric(0)
+    
+  }
+  
   return (post_list)
+  
+}
+
+#' @title getESS
+#' 
+#' @description This function calculates the effective sample size for every dose group via the RBesT function ess.
+#' 
+#' @param post_list a posterior list object, for which the effective sample size (per dose group) should be calculated
+#'
+#' @return a vector of the effective sample sizes (per dose group) 
+#' @export
+getESS <- function (
+    
+  post_list
+  
+) {
+  
+  suppressMessages(sapply(post_list, RBesT::ess))
   
 }
 

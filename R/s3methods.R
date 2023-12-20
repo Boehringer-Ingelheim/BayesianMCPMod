@@ -8,9 +8,11 @@ print.BayesianMCPMod <- function (
   
 ) {
   
-  n_models      <- ncol(x$BayesianMCP) - 2L
-  model_names   <- colnames(x$BayesianMCP)[-c(1, 2)] |>
-    sub(pattern = "post_probs.", replacement = "", x = _)
+  model_names <- colnames(x$BayesianMCP)[
+    grepl("post_probs.", colnames(x$BayesianMCP))] |>
+    sub(pattern = "post_probs.", replacement = "", x = _) |>
+    gsub(pattern = "\\d", replacement = "", x = _) |>
+    unique(x = _)
   
   model_success <- colMeans(do.call(rbind, lapply(x$Mod, function (y) {
     
@@ -20,7 +22,7 @@ print.BayesianMCPMod <- function (
       
     } else {
       
-      model_signs <- rep(FALSE, n_models)
+      model_signs        <- rep(FALSE, length(model_names))
       names(model_signs) <- model_names
       
       return (model_signs)
@@ -34,6 +36,13 @@ print.BayesianMCPMod <- function (
   cat("Model Significance Frequencies\n")
   print(model_success, ...)
   
+  if (any(!is.na(attr(x$BayesianMCP, "ess_avg")))) {
+    
+    cat("Average Posterior ESS\n")
+    print(attr(x$BayesianMCP, "ess_avg"), ...)
+    
+  }
+  
 }
 
 ## BayesianMCP --------------------------------------------
@@ -46,27 +55,65 @@ print.BayesianMCP <- function (
   
 ) {
   
-  power <- mean(x[, 1])
   n_sim <- nrow(x)
   
   cat("Bayesian Multiple Comparison Procedure\n")
-  cat("  Estimated Success Rate: ", power, "\n")
-  cat("  N Simulations:          ", n_sim)
+  
+  if (n_sim == 1L) {
+    
+    attr(x, "crit_prob_adj") <- NULL
+    attr(x, "success_rate")  <- NULL
+    class(x) <- NULL
+    
+    print.default(x, ...)
+    
+  } else {
+    
+    cat("  Estimated Success Rate: ", attr(x, "successRate"), "\n")
+    cat("  N Simulations:          ", n_sim)
+    
+  }
   
 }
 
 ## ModelFits ----------------------------------------------
-
+#' @title predict.modelFits
+#' @description This function performs model predictions based on the provided
+#' model and dose specifications 
+#' 
+#' @param object a modelFits object containing information about the fitted
+#' model coefficients
+#' @param doses a vector specifying the doses for which a prediction should be
+#' done getContrMat object, contrast matrix to be used for the testing step.
+#' @param ... other parameters
+#' @examples
+#' # example code
+#' posterior_list <- list(Ctrl = RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 1), sigma = 2),
+#'                        DG_1 = RBesT::mixnorm(comp1 = c(w = 1, m = 3, s = 1.2), sigma = 2),
+#'                        DG_2 = RBesT::mixnorm(comp1 = c(w = 1, m = 4, s = 1.5), sigma = 2) ,  
+#'                        DG_3 = RBesT::mixnorm(comp1 = c(w = 1, m = 6, s = 1.2), sigma = 2) ,
+#'                        DG_4 = RBesT::mixnorm(comp1 = c(w = 1, m = 6.5, s = 1.1), sigma = 2))
+#' models         <- c("emax", "exponential", "sigEmax", "linear")
+#' dose_levels    <- c(0, 1, 2, 4, 8)
+#' fit            <- getModelFits(models      = models,
+#'                                posterior   = posterior_list,
+#'                                dose_levels = dose_levels)
+#' predict(fit, doses = c(0, 1, 3, 4, 6, 8))
+#' 
+#' @return a list with the model predictions for the specified models and doses  
 #' @export
-predict.ModelFits <- function (
+predict.modelFits <- function (
     
   object,
   doses = NULL,
   ...
   
 ) {
+
+  predictions <- lapply(object, predictModelFit, doses = doses)
+  attr(predictions, "doses") <- doses
   
-  lapply(object, predictModelFit, doses = doses, ...)
+  return (predictions)
   
 }
 
@@ -88,7 +135,8 @@ print.modelFits <- function (
   
   out_table <- data.frame(predictions,
                           mEff = sapply(x, function (y) y$max_effect),
-                          gAIC = sapply(x, function (y) y$gAIC))
+                          gAIC = sapply(x, function (y) y$gAIC),
+                          w    = sapply(x, function (y) y$model_weight))
   out_table <- apply(as.matrix(out_table), 2, round, digits = n_digits)
   
   if (!is.null(x[[1]]$significant)) {
@@ -122,7 +170,7 @@ print.modelFits <- function (
   cat("Dose Levels\n",
       paste(dose_names, round(dose_levels, n_digits), sep = " = "), "\n")
   cat("\n")
-  cat("Predictions, Maximum Effect, gAIC & Significance\n")
+  cat("Predictions, Maximum Effect, gAIC, Model Weights & Significance\n")
   print(out_table, ...)
   
 }

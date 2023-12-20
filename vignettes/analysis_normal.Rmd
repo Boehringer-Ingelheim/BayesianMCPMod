@@ -28,17 +28,20 @@ In this vignette we will show the use of the Bayesian MCPMod package for continu
 Hereby the focus is on the utilization of an informative prior and the BayesianMCPMod evaluation of a single trial.
 We will use data that is included in the clinDR package. 
 More specifically trial results for BRINTELLIX will be used to illustrate the specification of an informative prior and the usage of such a prior for the bayesian evaluation of a (hypothetical) new trial. 
-More information around BRINTELLIX to be added...
+BRINTELLIX is a medication used to treat major depressive disorder. Various clinical trials with different dose groups (including a control group) were conducted.
 
 
 # Calculation of a MAP prior
-In a first step a meta analytic prior will be calculated using historical data from 4 trials (with main endpoint CfB in MADRS score after 8 weeks).
-Please note that only information from the control group will be integrated (leading to an informative multicomponent prior for the control group), while for the active groups a non-informative prior will be specified.
-```{r Calculation of a MAP prior}
+In a first step a meta analytic prior will be calculated using historical data from 4 trials (with main endpoint Change from baseline in MADRS score after 8 weeks).
+Please note that only information from the control group will be integrated (leading to an informative mixture prior for the control group), while for the active groups a non-informative prior will be specified.
+```{r Historical Data for Control Arm}
 data("metaData")
-testdata    <- as.data.frame(metaData)
-dataset     <- filter(testdata, bname == "BRINTELLIX")
-histcontrol <- filter(dataset, dose == 0, primtime == 8, indication == "MAJOR DEPRESSIVE DISORDER",protid!=6)
+dataset     <- filter(as.data.frame(metaData), bname == "BRINTELLIX")
+histcontrol <- filter(dataset,
+                      dose       == 0,
+                      primtime   == 8,
+                      indication == "MAJOR DEPRESSIVE DISORDER",
+                      protid     != 5)
 
 ##Create MAP Prior
 hist_data <- data.frame(
@@ -47,100 +50,181 @@ hist_data <- data.frame(
   se    = histcontrol$se,
   sd    = histcontrol$sd,
   n     = histcontrol$sampsize)
-
+```
+Here, we suggest a function to construct a list of prior distributions for the different dose groups.
+This function is adapted to the needs of this example.
+Other applications may need a different way to construct prior distributions.
+```{r Defining MAP prior function}
+getPriorList <- function (
+  
+  hist_data,
+  dose_levels,
+  dose_names    = NULL,
+  robust_weight = 0.5
+  
+) {
+  
+  sd_tot <- with(hist_data, sum(sd * n) / sum(n))
+  
+  gmap <- RBesT::gMAP(
+    formula    = cbind(est, se) ~ 1 | trial,
+    weights    = hist_data$n,
+    data       = hist_data,
+    family     = gaussian,
+    beta.prior = cbind(0, 100 * sd_tot),
+    tau.dist   = "HalfNormal",
+    tau.prior  = cbind(0, sd_tot / 4))
+  
+  prior_ctr <- RBesT::automixfit(gmap)
+  
+  if (!is.null(robust_weight)) {
+    
+    prior_ctr <- suppressMessages(RBesT::robustify(
+      priormix = prior_ctr,
+      weight   = robust_weight,
+      sigma    = sd_tot))
+    
+  }
+  
+  prior_trt <- RBesT::mixnorm(
+    comp1 = c(w = 1, m = summary(prior_ctr)[1], n = 1),
+    sigma = sd_tot,
+    param = "mn")
+  
+  prior_list <- c(list(prior_ctr),
+                  rep(x     = list(prior_trt),
+                      times = length(dose_levels[-1])))
+  
+  if (is.null(dose_names)) {
+    
+    dose_names <- c("Ctr", paste0("DG_", seq_along(dose_levels[-1])))
+    
+  }
+  
+  names(prior_list) <- dose_names
+  
+  return (prior_list)
+  
+}
+```
+With the dose levels to be investigated, the prior distribution can be constructed.
+```{r Getting the MAP prior}
 dose_levels <- c(0, 2.5, 5, 10)
 
 prior_list <- getPriorList(
   hist_data   = hist_data,
-  dose_levels = dose_levels,robustify_weight = 0.5)
+  dose_levels = dose_levels,
+  robust_weight = 0.3)
 
+getESS(prior_list)
 ```
-
 # Specifications new trial 
-We will use the trial with ct.gov number NCT00635219 as exemplary new trial. 
-To be able to apply the bayesian MCPMod approach, candidate models need to be specified. Since there are only 3 active dose levels we will limit the set of candidate models to a linear, an exponential and an emax model.
+We will use the trial with ct.gov number NCT00735709 as exemplary new trial. 
+To be able to apply the bayesian MCPMod approach, candidate models need to be specified.
+Since there are only 3 active dose levels we will limit the set of candidate models to a linear, an exponential, and an emax model.
+Note that the linear candidate model does not require a guesstimate.
 
 ```{r Pre-Specification of candidate models}
-#Pre-Specification (B)MCPMod 
+exp_guesst  <- DoseFinding::guesst(d     = 5,
+                                   p     = c(0.2),
+                                   model = "exponential",
+                                   Maxd  = max(dose_levels))
 
-## candidate models for MCPMod
-# linear function - no guestimates needed
-exp     <- DoseFinding::guesst(d     = 5,
-                               p     = c(0.2),
-                               model = "exponential",
-                               Maxd  = max(dose_levels))
-emax    <- DoseFinding::guesst(d     = 2.5,
-                               p     = c(0.9),
-                               model = "emax")
-
+emax_guesst <- DoseFinding::guesst(d     = 2.5,
+                                   p     = c(0.9),
+                                   model = "emax")
 
 mods <- DoseFinding::Mods(
   linear      = NULL,
-  emax        = emax,
-  exponential = exp,
+  emax        = emax_guesst,
+  exponential = exp_guesst,
   doses       = dose_levels,
   maxEff      = -1,
   placEff     = -12.8)
 
-new_trial <- filter(dataset, primtime == 8, indication == "MAJOR DEPRESSIVE DISORDER",protid==6)
-n_patients <- c(150, 142, 147, 149)
+new_trial  <- filter(dataset,
+                     primtime   == 8,
+                     indication == "MAJOR DEPRESSIVE DISORDER",
+                     protid     == 5)
+
+n_patients <- c(128, 124, 129, 122)
 
 ```
 
 # Combination of prior information and trial results
 
-As outlined in citePaper, in a first step the posterior is calculated combining the prior information with the estimated results of the new trial.
+As outlined in Fleischer et al. [Bayesian MCPMod. Pharmaceutical Statistics. 2022; 21(3): 654-670.], in a first step the posterior is calculated combining the prior information with the estimated results of the new trial. Via the summary function it is possible to print out the summary information of the posterior distributions.
+
 
 ```{r Trial results}
-posterior <- getPosterior(prior=prior_list,
-                               mu_hat = new_trial$rslt,
-                               sd_hat = new_trial$se)
+
+posterior <- getPosterior(prior  = prior_list,
+                          mu_hat = new_trial$rslt,
+                          se_hat = new_trial$se,
+                          calc_ess = TRUE)
+
+summary(posterior)
+
 
 ```
 
 # Execution of Bayesian MCPMod Test step
-For the execution of the testing step of bayesian MCPMod a critical value (on the probability scale) will be determined for a given alpha level. In addition a contrast matrix is created. Please note that there are different possibilities how to generate contrasts.
-This information is then used as input for the bayesian MCP testing function. 
+For the execution of the testing step of Bayesian MCPMod a critical value (on the probability scale) will be determined for a given alpha level. This critical value is calculated using (the re-estimated) contrasts for the frequentist MCPMod to ensure that when using non-informative priors the actual error level for falsely declaring a significant trial in the Bayesian MCPMod is controlled (by the specified alpha level). 
 
-```{r Execution of Bayesian MCPMod Test step}
+A pseudo-optimal contrast matrix is generated based on the variability of the posterior distribution (see Fleischer et al. 2022 for more details). Please note that there are different possibilities how to establish the contrasts.
+
+
+
+```{r Preparation of input for Bayesian MCPMod Test step}
 crit_pval <- getCritProb(
-  mods           = mods,
-  dose_levels    = dose_levels,
-  dose_weights   = n_patients,
-  alpha_crit_val = 0.1)
+    mods           = mods,
+    dose_levels    = dose_levels,
+    se_new_trial   = new_trial$se,
+    alpha_crit_val = 0.05)
 
-contr_mat_prior <- getContrMat(
-  mods           = mods,
-  dose_levels    = dose_levels,
-  dose_weights   = n_patients,
-  prior_list     = prior_list)
+contr_mat<- getContr(
+ mods           = mods,
+ dose_levels    = dose_levels,
+ sd_posterior   = summary(posterior)[,2])
 
-#This would be the most reasonable output, but since it is not exported it is currently not usable.
-#BMCP_result<-BayesMCPi(posterior_i = posterior,
-     #     contr_mat       = contr_mat_prior, 
-      #    crit_prob       = crit_pval)
-
-BMCP_result <- performBayesianMCP(
-  posteriors_list = posterior,
-  contr_mat       = contr_mat_prior, 
- crit_prob       = crit_pval)
-
-#BMCP_result2 <- performBayesianMCPMod(
-#    posteriors_list = posterior_emax,
-#    contr_mat       = contr_mat_prior, 
-#    crit_prob       = crit_pval)
-
-#BMCP_result2
-
-BMCP_result[1,1:5]
+#Alternative ways to come up with a contrast would be to use 
+#i) the frequentist contrast 
+#contr_mat_prior <- getContr(
+# mods           = mods,
+# dose_levels    = dose_levels,
+# dose_weights   = n_patients,
+# prior_list     = prior_list)
+# ii) re-estimated frequentist contrasts
+# contr_mat_prior <- getContr(
+# mods           = mods,
+# dose_levels    = dose_levels,
+# se_new_trial   = new_trial$se)
+# iii)  Bayesian approach using number of patients for new trial and prior distribution  
+#contr_mat_prior <- getContr(
+#  mods           = mods,
+#  dose_levels    = dose_levels,
+#  dose_weights   = n_patients,
+#  prior_list     = prior_list)
 ```
-The testing step is significant indicating a non-flat dose-response shape. In detail the p-values for the emax model is the most significant one.
+The bayesian MCP testing step is then executed based on the posterior information, the provided contrasts and the (multiplicity adjusted) critical value.   
+```{r  Executionr of Bayesian MCPMod Test step}
+BMCP_result <- performBayesianMCP(
+  posterior_list = posterior,
+  contr          = contr_mat, 
+  crit_prob_adj  = crit_pval)
+
+BMCP_result
+```
+
+The testing step is significant indicating a non-flat dose-response shape. In detail, all 3 models are significant and the p-value for the emax model is the most significant one.
 
 # Model fitting and visualization of results
-In the model fitting step the posterior distribution is used as basis. Both simplified and full fitting are performed.
-Please note that all models are fitted to the data even though they were not significant in the testing step.
-For the plotting bootstrap based credible intervals (for 50% and 95%) are shown as well.
 
+In the model fitting step the posterior distribution is used as basis. Both simplified and full fitting are performed. 
+For the simplified fit the multivariate normal distribution of the control group is approximated and reduced by a one-dimensional normal distribution.The actual fit (on this approximated posterior distribution) is then performed using generalized least squares criterion.
+For the full fitting the (multi-dimensional) non-linear optimization problem is adressed via the Nelder Mead algorithm. 
+
+The output of the fit includes information about the predicted effects for the included dose levels the generalized AIC (and the corresponding weights). For the considered case the simplified and the full fit are very similar.
 ```{r Model fitting}
 #Model fit
 post_observed <- posterior
@@ -159,12 +243,40 @@ fit <- getModelFits(
   dose_levels = dose_levels,
   posterior   = post_observed,
   simple      = FALSE)
+```
 
-plot(fit,cr_bands=TRUE)
+Via the predict function one can also receive estimates for dose levels that were not included in the trial.
+
+It is possible to plot the fitted dose response models and an AIC based average model (black lines). To assess the uncertainty one can in addition visualize credible bands (orange shaded areas, the default is set to 50% and 95%). These credible bands are calculated as follows.
+Samples from the posterior distribution are drawn and for every sample the simplified fitting step and a prediction is performed. These fits are then used to identify and visualize the specified quantiles. 
+The bootstrap based quantiles can also be directly calculated and displayed via the getbootstrapQuantiles function.
+ 
+
+```{r Visualization and interpretation of the results}
+predict(fit, doses = c(0, 2.5,4, 5,7, 10))
+
+
+plot(fit, cr_bands = TRUE)
 plot(fit_simple, cr_bands = TRUE)
 
+
+getBootstrapQuantiles(fit, quantiles = c(0.025,0.5, 0.975), doses = c(0, 2.5,4, 5,7, 10))
 ```
+
+Technical note: The median quantile of the bootstrap based procedure is not necessary similar to the main model fit, as they are derived via different procedures (main fit, i.e. black lines in the plot, show the best fit of a certain model based on minimizing the residuals for the posterior distribution while bootstrap based 50% quantile indicates the median fit of the random sampling and fitting procedure). 
+
 # Additional notes
-TBD, whether certain wrapper functions should be mentioned.
+It is also possible to perform the testing and modelling step in a combined fashion via the performBayesianMCPMod function.
+
+```{r}
+overall_result<-performBayesianMCPMod(
+      posterior_list   = posterior,
+      contr            = contr_mat, 
+      crit_prob_adj    = crit_pval,
+      simple           = FALSE)
+
+overall_result$Mod
+```
+
 
 

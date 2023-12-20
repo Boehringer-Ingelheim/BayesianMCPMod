@@ -1,7 +1,9 @@
 #' @title plot.modelFits
 #' 
 #' @description plot function based on the ggplot2 package. Providing visualizations for each model and a average Fit.
-#' More details to be added, as well as references.
+#' Black lines show the fitted dose response models and an AIC based average model. Dots indicate the posterior median and vertical lines show corresponding credible intervals (i.e. the variability of the posterior distribution of the respective dose group). 
+#' To assess the uncertainty of the model fit one can in addition visualize credible bands (default coloring as orange shaded areas). The calculation of these bands is performed via the getBootstrapQuantiles function.
+#' The default setting is that these credible bands are not calculated. 
 #' @param x an object of type getModelFits
 #' @param gAIC logical value indicating whether gAIC values are shown in the plot. Default TRUE
 #' @param avg_fit logical value indicating whether average fit is presented in the plot. Default TRUE
@@ -12,7 +14,19 @@
 #' @param n_bs_smpl number of bootstrap samples being used. Default set to 1000.
 #' @param acc_color color of the credible bands. Default set to "orange"
 #' @param ... optional parameter to be passed.
-#' 
+#' @examples
+#' # example code
+#' posterior_list =   list(Ctrl=RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 1), sigma = 2),
+#'                    DG_1=RBesT::mixnorm(comp1 = c(w = 1, m = 3, s = 1.2), sigma = 2),
+#'                    DG_2=RBesT::mixnorm(comp1 = c(w = 1, m = 4, s = 1.5), sigma = 2) ,  
+#'                    DG_3=RBesT::mixnorm(comp1 = c(w = 1, m = 6, s = 1.2), sigma = 2) ,
+#'                    DG_4=RBesT::mixnorm(comp1 = c(w = 1, m = 6.5, s = 1.1) ,sigma = 2))
+#' models=c("emax","exponential","sigEmax","linear")
+#' dose_levels=c(0,1,2,4,8)
+#' fit<-getModelFits(models=models, posterior=posterior_list,dose_levels=dose_levels)
+#' fit_simple<-getModelFits(models=models, posterior=posterior_list,dose_levels=dose_levels,simple=TRUE)
+#' plot(fit, cr_bands = TRUE)
+#' plot(fit_simple, cr_bands = TRUE,alpha_CrB =c(0.05,0.1,0.5))
 #' @return plts returns a ggplot2 object
 #' @export
 plot.modelFits <- function (
@@ -37,27 +51,27 @@ plot.modelFits <- function (
   post_summary <- summary.postList(
     object = attr(model_fits, "posterior"),
     probs  = c(alpha_CrI / 2, 0.5, 1 - alpha_CrI / 2))
-  doses        <- seq(from       = min(dose_levels),
-                      to         = max(dose_levels),
-                      length.out = plot_res)
+  dose_seq <- seq(from       = min(dose_levels),
+                  to         = max(dose_levels),
+                  length.out = plot_res)
   
-  preds_models <- sapply(model_fits, predictModelFit, doses = doses)
+  preds_models <- sapply(model_fits, predictModelFit, doses = dose_seq)
   model_names  <- names(model_fits)
   
   if (avg_fit) {
     
     mod_weights <- sapply(model_fits, function (x) x$model_weight)
-    avg_mod     <- preds_models %*% mod_weights
+    avg_preds   <- preds_models %*% mod_weights
     
-    preds_models <- cbind(preds_models, avg_mod)
+    preds_models <- cbind(preds_models, avg_preds)
     model_names  <- c(model_names, "avgFit")
     
   }
   
   gg_data <- data.frame(
-    dose_seqs = rep(doses, length(model_names)),
-    fits      = as.vector(preds_models),
-    models    = rep(factor(model_names,
+    doses  = rep(dose_seq, length(model_names)),
+    fits   = as.vector(preds_models),
+    models = rep(factor(model_names,
                            levels = c("linear", "emax", "exponential",
                                       "sigEmax", "logistic", "quadratic",
                                       "avgFit")),
@@ -88,12 +102,12 @@ plot.modelFits <- function (
   
   if (cr_bands) {
     
-    crB_data <- getBootstrapBands(
+    crB_data <- getBootstrapQuantiles(
       model_fits = model_fits,
       n_samples  = n_bs_smpl,
-      alpha      = alpha_CrB,
+      quantiles  = c(0.5, sort(unique(c(alpha_CrB / 2, 1 - alpha_CrB / 2)))),
       avg_fit    = avg_fit,
-      dose_seq   = doses)
+      doses      = dose_seq)
     
     getInx <- function (alpha_CrB) {
       n        <- length(alpha_CrB)
@@ -131,7 +145,7 @@ plot.modelFits <- function (
       loop_txt <- paste0(
         "ggplot2::geom_ribbon(
           data    = crB_data,
-          mapping = ggplot2::aes(x    = dose_seqs,
+          mapping = ggplot2::aes(x    = doses,
                                  ymin = crB_data[, ", inx[1], "],
                                  ymax = crB_data[, ", inx[2], "]),
           fill    = acc_color,                    
@@ -146,7 +160,7 @@ plot.modelFits <- function (
     plts <- plts +
       ggplot2::geom_line(
         data    = crB_data,
-        mapping = ggplot2::aes(dose_seqs, `50%`),
+        mapping = ggplot2::aes(doses, `50%`),
         color   = acc_color)
     
   }
@@ -177,7 +191,7 @@ plot.modelFits <- function (
     ## Fitted Models
     ggplot2::geom_line(
       data    = gg_data,
-      mapping = ggplot2::aes(dose_seqs, fits)) + 
+      mapping = ggplot2::aes(doses, fits)) + 
     ## Faceting
     ggplot2::facet_wrap(~ models)
   

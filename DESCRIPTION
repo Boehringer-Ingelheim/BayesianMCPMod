@@ -2,26 +2,29 @@ Package: BayesianMCPMod
 Title: Bayesian MCPMod
 Version: 0.1.3-3
 Authors@R: c(
-    person("Sebastian", "Bossert",
-           role = "aut",
-           email = "sebastian.bossert@boehringer-ingelheim.com"),
+    person("Boehringer Ingelheim Pharma GmbH & Co. KG",
+           role = c("cph", "fnd")),
     person("Stephan", "Wojciekowski",
            role = c("aut", "cre"),
            email = "stephan.wojciekowski@boehringer-ingelheim.com"),
     person("Lars", "Andersen",
            role = "aut",
            email = "lars.andersen@boehringer-ingelheim.com"),
-    person("Boehringer Ingelheim Pharma GmbH & Co. KG",
-           role = c("cph", "fnd"))
+    person("Steven", "Brooks",
+           role = "aut",
+           email = "lars.andersen@boehringer-ingelheim.com"),
+    person("Sebastian", "Bossert",
+           role = "aut",
+           email = "sebastian.bossert@boehringer-ingelheim.com")
     )
-Description: Provides functions for the analysis of dose finding trials with Bayesian MCPMod.
+Description: Provides functions for the planning and analysis of dose finding trials with Bayesian MCPMod.
 License: Apache License (>= 2)
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
 Imports:
-    DoseFinding,
+    DoseFinding (>= 1.1-1),
     ggplot2,
     stats,
     RBesT,
