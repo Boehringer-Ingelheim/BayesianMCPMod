@@ -14,7 +14,7 @@ getContr(
 )
 }
 \arguments{
-\item{mods}{An object of class "Mods" as specified in the Dosefinding package.}
+\item{mods}{An object of class "Mods" as specified in the DoseFinding package.}
 
 \item{dose_levels}{vector containing the different dosage levels.}
 
@@ -27,7 +27,7 @@ getContr(
 \item{se_new_trial}{a vector of positive values with information about the observed variability, only required for Option iv). Default NULL}
 }
 \value{
-contr Object of class ‘⁠optContr⁠’. A list containing entries contMat and muMat, and CorrMat. Specified in the Dosefinding package.
+contr Object of class ‘⁠optContr⁠’. A list containing entries contMat and muMat, and CorrMat. Specified in the DoseFinding package.
 }
 \description{
 This function calculates contrast vectors that are optimal for detecting certain alternatives via applying the function optContr of the DoseFinding package.

@@ -13,7 +13,7 @@ getCritProb(
 )
 }
 \arguments{
-\item{mods}{An object of class "Mods" as specified in the Dosefinding package.}
+\item{mods}{An object of class "Mods" as specified in the DoseFinding package.}
 
 \item{dose_levels}{vector containing the different dosage levels.}
 

@@ -21,7 +21,7 @@ assessDesign(
 \arguments{
 \item{n_patients}{Vector specifying the planned number of patients per dose group}
 
-\item{mods}{An object of class "Mods" as specified in the Dosefinding package.}
+\item{mods}{An object of class "Mods" as specified in the DoseFinding package.}
 
 \item{prior_list}{a prior_list object specifying the utilized prior for the different dose groups}
 
