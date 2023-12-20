@@ -37,8 +37,7 @@ regular MCPMod for this specific vector of standard errors. Here as well the cri
 }
 \examples{
 # example code
-models <- DoseFinding::Mods(linear = NULL, linlog = NULL, emax = c(0.5, 1.2), exponential = 2, 
-doses = c(0, 0.5, 2,4, 8))
+mods <- DoseFinding::Mods(linear = NULL, linlog = NULL, emax = c(0.5, 1.2), exponential = 2, doses = c(0, 0.5, 2,4, 8))
 dose_levels=c(0, 0.5, 2, 4, 8)
 critVal<- getCritProb(
   mods           = models,

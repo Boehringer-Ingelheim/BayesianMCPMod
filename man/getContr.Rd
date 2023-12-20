@@ -45,8 +45,7 @@ regular MCPMod for this specific vector of standard errors. For the actual evalu
 }
 \examples{
 # example code
-models <- DoseFinding::Mods(linear = NULL, linlog = NULL, emax = c(0.5, 1.2), exponential = 2, 
-doses = c(0, 0.5, 2,4, 8))
+mods <- DoseFinding::Mods(linear = NULL, linlog = NULL, emax = c(0.5, 1.2), exponential = 2, doses = c(0, 0.5, 2,4, 8), maxEff= 6)
 dose_levels=c(0, 0.5, 2, 4, 8)
 sd_posterior   = c(2.8,3,2.5,3.5,4)
 contr_mat<- getContr(
