@@ -7,7 +7,7 @@
 #' @param dose_names character vector of dose levels,
 #' default NULL and will be automatically created
 #' based on the dose levels parameter.
-#' @param robustify_weight needs to be provided as a numeric
+#' @param robust_weight needs to be provided as a numeric
 #' value for the weight of the robustification component
 #'
 getPriorList <- function (
@@ -15,7 +15,7 @@ getPriorList <- function (
   hist_data,
   dose_levels,
   dose_names       = NULL,
-  robustify_weight
+  robust_weight
   
 ) {
   
@@ -23,7 +23,7 @@ getPriorList <- function (
   checkmate::assert_double(dose_levels, lower = 0, any.missing = FALSE)
   checkmate::check_string(dose_names, null.ok = TRUE)
   checkmate::check_vector(dose_names, null.ok = TRUE, len = length(dose_levels))
-  checkmate::check_numeric(robustify_weight, len = 1, null.ok = FALSE)
+  checkmate::check_numeric(robust_weight, len = 1, null.ok = FALSE)
   
   sd_tot <- with(hist_data, sum(sd * n) / sum(n))
   
@@ -40,7 +40,7 @@ getPriorList <- function (
   
   prior_ctr <- suppressMessages(RBesT::robustify(
     priormix = prior_ctr,
-    weight   = robustify_weight,
+    weight   = robust_weight,
     sigma    = sd_tot))
   
   
@@ -115,7 +115,7 @@ mods <- DoseFinding::Mods(
 prior_list <- getPriorList(
   hist_data   = hist_data,
   dose_levels = dose_levels,
-  robustify_weight = 0.5
+  robust_weight = 0.5
 )
 
 n_sim = 1

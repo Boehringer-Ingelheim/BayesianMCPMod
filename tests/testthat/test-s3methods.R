@@ -38,7 +38,7 @@ test_that("s3 postList functions work as intented", {
   post_test_list <- getPriorList(
     hist_data = hist_data,
     dose_levels = dose_levels,
-    robustify_weight = 0.5)
+    robust_weight = 0.5)
   expect_error(summary.postList())
   expect_type(summary.postList(post_test_list), "double")
   expect_error(print.postList())
