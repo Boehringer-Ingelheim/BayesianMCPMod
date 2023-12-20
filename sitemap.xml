@@ -25,22 +25,22 @@
     <loc>https://boehringer-ingelheim.github.io/BayesianMCPMod/reference/assessDesign.html</loc>
   </url>
   <url>
-    <loc>https://boehringer-ingelheim.github.io/BayesianMCPMod/reference/getBootstrapBands.html</loc>
+    <loc>https://boehringer-ingelheim.github.io/BayesianMCPMod/reference/getBootstrapQuantiles.html</loc>
   </url>
   <url>
-    <loc>https://boehringer-ingelheim.github.io/BayesianMCPMod/reference/getContrMat.html</loc>
+    <loc>https://boehringer-ingelheim.github.io/BayesianMCPMod/reference/getContr.html</loc>
   </url>
   <url>
     <loc>https://boehringer-ingelheim.github.io/BayesianMCPMod/reference/getCritProb.html</loc>
+  </url>
+  <url>
+    <loc>https://boehringer-ingelheim.github.io/BayesianMCPMod/reference/getESS.html</loc>
   </url>
   <url>
     <loc>https://boehringer-ingelheim.github.io/BayesianMCPMod/reference/getModelFits.html</loc>
   </url>
   <url>
     <loc>https://boehringer-ingelheim.github.io/BayesianMCPMod/reference/getPosterior.html</loc>
-  </url>
-  <url>
-    <loc>https://boehringer-ingelheim.github.io/BayesianMCPMod/reference/getPriorList.html</loc>
   </url>
   <url>
     <loc>https://boehringer-ingelheim.github.io/BayesianMCPMod/reference/index.html</loc>
@@ -53,6 +53,9 @@
   </url>
   <url>
     <loc>https://boehringer-ingelheim.github.io/BayesianMCPMod/reference/plot.modelFits.html</loc>
+  </url>
+  <url>
+    <loc>https://boehringer-ingelheim.github.io/BayesianMCPMod/reference/predict.modelFits.html</loc>
   </url>
   <url>
     <loc>https://boehringer-ingelheim.github.io/BayesianMCPMod/reference/simulateData.html</loc>
