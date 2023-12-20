@@ -123,8 +123,8 @@ test_that("Test plot.modelFits with different model_fits input", {
   
   BMCP_result <- performBayesianMCP(
     posterior_list = list(posterior_emax),
-    contr_mat       = contr_mat_prior,
-    crit_prob       = crit_pval
+    contr          = contr_mat_prior,
+    crit_prob      = crit_pval
   )
   
   # Model fit

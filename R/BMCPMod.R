@@ -57,7 +57,7 @@ assessDesign <- function (
   checkmate::check_class(mods, classes = "Mods")
   checkmate::check_list(prior_list, names = "named", len = length(attr(prior_list, "dose_levels")), any.missing = FALSE)
   # sensitive to how DoseFinding labels their attributes for "Mods" class
-  checkmate::check_true(length(attr(mods, "doses")) == length(attr(prior_list, "dose_levels"))) 
+  checkmate::assert_true(length(attr(mods, "doses")) == length(attr(prior_list, "dose_levels"))) 
   checkmate::check_double(n_sim, lower = 1, upper = Inf)
   checkmate::check_double(alpha_crit_val, lower = 0, upper = 1)
   checkmate::check_logical(simple)

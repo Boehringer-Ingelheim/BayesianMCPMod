@@ -7,6 +7,8 @@ test_that("print.BayesianMCPMod works as intented", {
 test_that("print.BayesianMCP works as intented", {
   expect_error(print.BayesianMCP())
   
+  
+  
 })
 
 test_that("predict.ModelFits works as intented", {
@@ -45,4 +47,24 @@ test_that("s3 postList functions work as intented", {
   # expect_true(names(print(post_test_list)) == c("Summary of Posterior Distributions",
   #                                               "Maximum Difference to Control and Dose Group",
   #                                               "Posterior Distributions"))
+})
+
+test_that("test modelFits s3 methods", {
+  
+  model_shapes <- colnames(contr_mat$contMat)
+  dose_levels  <- as.numeric(rownames(contr_mat$contMat))
+  
+  model_fits  <- getModelFits(
+    models      = model_shapes,
+    dose_levels = dose_levels,
+    posterior   = posterior_list,
+    simple      = simple)
+  
+  pred <- predict(model_fits)
+  pred_dosage <- predict(model_fits, doses = dose_levels)
+  
+  expect_type(pred, "list")
+  expect_true(is.null(attr(pred, "doses")))
+  expect_identical(attr(pred_dosage, "doses"), dose_levels)
+  expect_type(print(model_fits), "double")
 })

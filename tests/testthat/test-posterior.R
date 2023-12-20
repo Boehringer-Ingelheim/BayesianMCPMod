@@ -1,14 +1,11 @@
 test_that("getPosterior works correctly", {
-  # Prepare test data and parameters
-  data <- data.frame(simulation = rep(1, 4),
-                     dose = c(0, 1, 2, 3),
-                     response = c(10, 20, 30, 40))
-  prior_list <- list(1, 2, 3, 4)
-  mu_hat <- c(10, 20, 30, 40)
-  se_hat <- matrix(c(1, 2, 3, 4), nrow = 4, ncol = 1)
+  dummy_data <- getModelData(data, names(mods)[1])
   
   # Test getPosterior function
-  posterior_list <- getPosterior(data, prior_list, mu_hat, se_hat)
+  posterior_list <- getPosterior(
+    data = getModelData(data, names(mods)[1]),
+    prior_list = prior_list
+  )
   expect_type(posterior_list, "list")
   expect_s3_class(posterior_list, "postList")
 })
@@ -71,12 +68,12 @@ test_that("getPosteriorI works correctly", {
   
   # Test getPosteriorI function
   post_list <- getPosteriorI(data_i, prior_list, mu_hat, se_hat)
-  expect_type(post_list, "character")
+  expect_type(post_list, "list")
   expect_s3_class(post_list, "postList")
   
   # Test mu_hat and sd_hat both null branch
   post_list <- getPosteriorI(data_i, prior_list, NULL, NULL)
-  expect_type(post_list, "character")
+  expect_type(post_list, "list")
   expect_s3_class(post_list, "postList")
 })
 

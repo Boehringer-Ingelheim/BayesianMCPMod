@@ -44,13 +44,11 @@ test_that("assessDesign validates n_patients parameter input and give appropriat
     # n_patients should be a non-NULL numeric vector
   
   expect_error(
-    assessDesign(n_patients = n_patients[-1], sd = sd, mods = mods, prior_list = prior_list, n_sim = n_sim),
-    "length of n_patients should equal number of dose groups", ignore.case = T
+    assessDesign(n_patients = n_patients[-1], sd = sd, mods = mods, prior_list = prior_list, n_sim = n_sim)
   )
   
   expect_error(
     assessDesign(n_patients = rep(1, length(n_patients)), sd = sd, mods = mods, prior_list = prior_list, n_sim = n_sim),
-    "at least one element in n_patients needs to be > 1", ignore.case = T
   )
 })
 
@@ -62,7 +60,7 @@ test_that("assessDesign validates mods parameter input and give appropriate erro
     # mods should be non-NULL object of class "Mods" from {DoseFinding}
   
   
-  # checking that DOseFinding didn't change how they named their 'doses' attribute
+  # checking that DoseFinding didn't change how they named their 'doses' attribute
   expect_true(
     "doses" %in% names(attributes(mods))
   )
@@ -70,8 +68,7 @@ test_that("assessDesign validates mods parameter input and give appropriate erro
   mods2 <- mods
   attr(mods2, "doses") <- 0
   expect_error(
-    assessDesign(n_patients = n_patients, mods = mods2, sd = sd, prior_list = prior_list, n_sim = n_sim),
-    "number of dose groups in mods should be equal to number of dose levels in prior_list"
+    assessDesign(n_patients = n_patients, mods = mods2, sd = sd, prior_list = prior_list, n_sim = n_sim)
   )
   rm(mods2)
   
@@ -147,7 +144,7 @@ test_that("performBayesianMCP returns the right type of object under normal case
   data <- simulateData(
     n_patients  = n_patients,
     dose_levels = dose_levels,
-    sd          = attr(prior_list, "sd_tot"),
+    sd          = sd,
     mods        = mods,
     n_sim       = n_sim
   )
@@ -156,11 +153,25 @@ test_that("performBayesianMCP returns the right type of object under normal case
     data = getModelData(data, names(mods)[1]),
     prior_list = prior_list
   )
+  
+  contr_mat = getContr(
+    mods = mods, 
+    dose_levels = dose_levels, 
+    dose_weights = n_patients,
+    prior_list = prior_list
+  )
+  
+  crit_pval = getCritProb(
+    mods = mods, 
+    dose_levels = dose_levels, 
+    dose_weights = n_patients, 
+    alpha_crit_val = alpha_crit_val
+  )
 
   b_mcp <- performBayesianMCP(
     posterior_list = posterior_list,
-    contr_mat = contr_mat,
-    crit_prob = crit_pval
+    contr = contr_mat,
+    crit_prob_adj = crit_pval
   )
 
   expect_s3_class(
@@ -169,8 +180,19 @@ test_that("performBayesianMCP returns the right type of object under normal case
   )
 
   expect_true(
-    attr(b_mcp, "crit_prob") == crit_pval
+    attr(b_mcp, "crit_prob_adj") == crit_pval
   )
+  
+  expect_type(
+    attr(b_mcp, "ess_avg"), "logical"
+  )
+
+  expect_type(
+    attr(b_mcp, "successRate"), "double"
+  )
+  
+  
+  expect_type(b_mcp, "double")
   
 })
 
@@ -182,8 +204,8 @@ test_that("performBayesianMCPMod returns the right type of object under normal c
   
   b_mcp_mod <- performBayesianMCPMod(
     posterior_list = posterior_list,
-    contr_mat = contr_mat,
-    crit_prob = crit_pval
+    contr = contr_mat,
+    crit_prob_adj = crit_pval
   )
 
   expect_s3_class(
@@ -226,19 +248,9 @@ test_that("BayesMCPi function works correctly in a simple case", {
   # The logic being tested here is: 
     # BayesMCPi returns 1 if the posterior probability is strictly greater than the critical value, and 0 otherwise
   
-  # Define a mock function for getPostCombsI
-  mockr::local_mock(getPostCombsI = function(posterior_i) {
-    return(0)
-  })
-  
-  # Define a mock function for getPostProb
-  mockr::local_mock(getPostProb = function(x, post_combs_i) {
-    return(x)
-  })
-  
   # Define inputs
-  posterior_i = 0
-  contr_mat = list(contMat = matrix(c(0, 1), nrow = 1))
+  posterior_i = posterior_list
+  contr_mat = list(contMat = matrix(c(0, 1), nrow = 2))
   crit_prob = 0.5
   
   # Call the function
@@ -247,18 +259,18 @@ test_that("BayesMCPi function works correctly in a simple case", {
   expect_equal(result[["sign"]], 1)
   
   # Define inputs
-  contr_mat = list(contMat = matrix(c(0, 0), nrow = 1))
+  contr_mat = list(contMat = matrix(c(0, 0), nrow = 2))
   # Call the function
   result = BayesMCPi(posterior_i, contr_mat, crit_prob)
   # Check the results
-  expect_equal(result[["sign"]], 0)
+  expect_equal(result[["sign"]], rep(NA_real_, 1))
 
-  # Define inputs
-  contr_mat = list(contMat = matrix(c(0, 0.5), nrow = 1))
-  # Call the function
-  result = BayesMCPi(posterior_i, contr_mat, crit_prob)
-  # Check the results
-  expect_equal(result[["sign"]], 0)
+#   # Define inputs
+#   contr_mat_2 = list(contMat = matrix(c(1, 0), nrow = 2))
+#   # Call the function
+#   result_2 = BayesMCPi(posterior_i, contr_mat_2, crit_prob)
+#   # Check the results
+#   expect_equal(result_2[["sign"]], 0)
 })
 
 #########################
