@@ -7,7 +7,7 @@
 performBayesianMCP(posterior_list, contr, crit_prob_adj)
 }
 \arguments{
-\item{posterior_list}{a getPosterior object}
+\item{posterior_list}{a getPosterior object with information about the (mixture) posterior distribution per dose group}
 
 \item{contr}{a getContrMat object, contrast matrix to be used for the testing step.}
 
@@ -18,9 +18,10 @@ performBayesianMCP(posterior_list, contr, crit_prob_adj)
 >>>>>>> 25f8f28541ce5be0c55fecee4cdd47a6c8603237
 }
 \value{
-b_mcp test result
+b_mcp test result, with information about p-values for the individual dose-response shapes
 }
 \description{
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 performs bayesian MCP Test step.
@@ -30,4 +31,8 @@ performBayesianMCP
 =======
 performs bayesian MCP Test step.
 >>>>>>> 25f8f28541ce5be0c55fecee4cdd47a6c8603237
+=======
+performs bayesian MCP Test step, as described in Fleischer et al. (Bayesian MCPMod. Pharmaceutical Statistics. 2022; 21(3): 654-670.)
+Tests for a dose-response effect using a model-based multiple contrast test based on the (provided) posterior distribution. In particular for every dose-response candidate is calculated that the contrast  is bigger than 0 given the data observed
+>>>>>>> cb4cf39ef75ca89ecdb587b5ba0b0c863745f760
 }

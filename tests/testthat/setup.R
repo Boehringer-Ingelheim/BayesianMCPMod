@@ -28,11 +28,11 @@ n_sim = 1
 alpha_crit_val = 0.05
 simple = TRUE
 
-eval_design <- assessDesign(
-  n_patients = n_patients, 
-  mods = mods, 
-  prior_list = prior_list,
-  n_sim = n_sim,
-  alpha_crit_val = alpha_crit_val,
-  simple = TRUE
-)
+# eval_design <- assessDesign(
+#   n_patients = n_patients, 
+#   mods = mods, 
+#   prior_list = prior_list,
+#   n_sim = n_sim,
+#   alpha_crit_val = alpha_crit_val,
+#   simple = TRUE
+# )

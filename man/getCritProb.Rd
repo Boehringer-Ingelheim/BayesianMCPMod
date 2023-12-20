@@ -4,7 +4,13 @@
 \alias{getCritProb}
 \title{getCritProb}
 \usage{
-getCritProb(mods, dose_levels, dose_weights, alpha_crit_val = 0.025)
+getCritProb(
+  mods,
+  dose_levels,
+  dose_weights = NULL,
+  se_new_trial = NULL,
+  alpha_crit_val = 0.025
+)
 }
 \arguments{
 \item{mods}{An object of class "Mods" as specified in the Dosefinding package.}
@@ -19,5 +25,5 @@ getCritProb(mods, dose_levels, dose_weights, alpha_crit_val = 0.025)
 crit_pval multiplicity adjusted critical value on the probability scale.
 }
 \description{
-getCritProb
+This function calculates multiplicity adjusted
 }
