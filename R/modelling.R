@@ -5,7 +5,7 @@
 #' For the default case, the Nelder-Mead algorithm is used. 
 #' In detail, for both approaches the mean vector \eqn{\theta^{Y}} and the covariance \eqn{\Sigma} of the (mixture) posterior distributions and the corresponding posterior weights \eqn{\tilde{\omega}_{l}} for \eqn{l \in {1,...,L}} are used as basis
 #' For the full fit a GLS estimator is used to minimize the following expression for the respective dose-response models \eqn{m}
-#' \deqn{ \hat{\theta}_{m}=argmin_{\theta_{m}} \sum_{i=l}^{L} \tilde{\omega}_{l}(\theta_{l_{i}}^{Y}-f(dose_{i},\hat{\theta}_{m}))'\Sigma_{l}^{-1}(\theta_{l_{i}}^{Y}-f(dose_{i},\hat{\theta}_{m}))}
+#' \deqn{ \hat{\theta}_{m}=argmin_{\theta_{m}} \sum_{l=1}^{L} \tilde{\omega}_{l}(\theta_{l_{i}}^{Y}-f(dose_{i},\hat{\theta}_{m}))'\Sigma_{l}^{-1}(\theta_{l_{i}}^{Y}-f(dose_{i},\hat{\theta}_{m}))}
 #' Herefore the function nloptr of the nloptr package is utilized. 
 #' In the simplified case \eqn{L=1}, as the dimension of the posterior is reduced to 1 first.
 #' The generalized AIC values are calculated via the formula
@@ -14,7 +14,7 @@
 #' Here as well for the simplified case the formula reduces to one summand as \eqn{L=1}.
 #' Corresponding gAIC based weights for model \eqn{M} are calculated as outlined in Schorning et al. (2016)
 #' \deqn{
-#' \Omega_I (M) = \frac{\exp(-0.5 gAIC_{M})}{\sum_{m=1}^{Q} \exp(-0.5 gAIC_(m))}
+#' \Omega_I (M) = \frac{\exp(-0.5 gAIC_{M})}{\sum_{m=1}^{Q} \exp(-0.5 gAIC_{m})}
 #' }
 #' where \eqn{Q} denotes the number of models included in the averaging procedure.
 #' @references Schorning K, Bornkamp B, Bretz F, Dette H. 2016. “Model selection versus model averaging in dose finding studies”. Stat Med; 35; 4021-4040.
