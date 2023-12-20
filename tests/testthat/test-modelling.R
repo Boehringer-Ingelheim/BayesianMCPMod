@@ -6,7 +6,7 @@ test_data <- data.frame(
 )
 
 # Mock getPosterior function
-getPosterior <- function(data, prior_list, mu_hat, sd_hat) {
+getPosterior <- function(data, prior_list, mu_hat, se_hat) {
   list(
     means = c(0, 1, 2, 3, 4, 5),
     vars = c(1, 1, 1, 1, 1, 1),

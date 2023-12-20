@@ -17,8 +17,7 @@
 #' 
 #' @examples
 #' # example code
-#'  models <- DoseFinding::Mods(linear = NULL, linlog = NULL, emax = c(0.5, 1.2), exponential = 2, 
-#' doses = c(0, 0.5, 2,4, 8),maxEff= 6)
+#' mods <- DoseFinding::Mods(linear = NULL, linlog = NULL, emax = c(0.5, 1.2), exponential = 2, doses = c(0, 0.5, 2,4, 8), maxEff= 6)
 #' sd   = 12
 #' prior_list<-list(Ctrl   = RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 12), sigma = 2),
 #'                    DG_1 = RBesT::mixnorm(comp1 = c(w = 1, m = 1, s = 12), sigma = 2),
@@ -54,7 +53,7 @@ assessDesign <- function (
   
 ) {
   
-  checkmate::check_vector(n_patients, len = length(attr(prior_list, "dose_levels")), any.missing = FALSE)
+  checkmate::assert_vector(n_patients, len = length(attr(prior_list, "dose_levels")), any.missing = FALSE)
   checkmate::check_class(mods, classes = "Mods")
   checkmate::check_list(prior_list, names = "named", len = length(attr(prior_list, "dose_levels")), any.missing = FALSE)
   # sensitive to how DoseFinding labels their attributes for "Mods" class
@@ -161,8 +160,7 @@ assessDesign <- function (
 #' 
 #' @examples
 #' # example code
-#' models <- DoseFinding::Mods(linear = NULL, linlog = NULL, emax = c(0.5, 1.2), exponential = 2, 
-#' doses = c(0, 0.5, 2,4, 8))
+#' mods <- DoseFinding::Mods(linear = NULL, linlog = NULL, emax = c(0.5, 1.2), exponential = 2, doses = c(0, 0.5, 2,4, 8), maxEff= 6)
 #' dose_levels=c(0, 0.5, 2, 4, 8)
 #' sd_posterior   = c(2.8,3,2.5,3.5,4)
 #' contr_mat<- getContr(
@@ -264,8 +262,7 @@ getContr <- function (
 #'
 #' @examples
 #' # example code
-#' models <- DoseFinding::Mods(linear = NULL, linlog = NULL, emax = c(0.5, 1.2), exponential = 2, 
-#' doses = c(0, 0.5, 2,4, 8))
+#' mods <- DoseFinding::Mods(linear = NULL, linlog = NULL, emax = c(0.5, 1.2), exponential = 2, doses = c(0, 0.5, 2,4, 8), maxEff= 6)
 #' dose_levels=c(0, 0.5, 2, 4, 8)
 #' critVal<- getCritProb(
 #'   mods           = models,
@@ -315,8 +312,7 @@ getCritProb <- function (
 #' @param simple boolean variable, defining whether simplified fit will be applied. Passed to the getModelFits function. Default FALSE.
 #' @examples
 #' # example code
-#' models <- DoseFinding::Mods(linear = NULL, linlog = NULL, emax = c(0.5, 1.2), exponential = 2, 
-#' doses = c(0, 0.5, 2,4, 8))
+#' mods <- DoseFinding::Mods(linear = NULL, linlog = NULL, emax = c(0.5, 1.2), exponential = 2, doses = c(0, 0.5, 2,4, 8), maxEff= 6)
 #' dose_levels=c(0, 0.5, 2, 4, 8)
 #' sd_posterior   = c(2.8,3,2.5,3.5,4)
 #' contr_mat<- getContr(
@@ -353,9 +349,9 @@ performBayesianMCPMod <- function (
   
 ) {
   
-  checkmate::check_class(posteriors_list, "postList")
-  checkmate::check_class(contr_mat, "optContr")
-  checkmate::check_class(crit_prob, "numeric")
+  checkmate::check_class(posterior_list, "postList")
+  checkmate::check_class(contr, "optContr")
+  checkmate::check_class(crit_prob_adj, "numeric")
   checkmate::check_logical(simple)
   
   if (inherits(posterior_list,  "postList")) {
@@ -453,11 +449,10 @@ addSignificance <- function (
 #' 
 #' @examples
 #' # example code
-#' models <- DoseFinding::Mods(linear = NULL, linlog = NULL, emax = c(0.5, 1.2), exponential = 2, 
-#' doses = c(0, 0.5, 2,4, 8))
+#' mods <- DoseFinding::Mods(linear = NULL, linlog = NULL, emax = c(0.5, 1.2), exponential = 2, doses = c(0, 0.5, 2,4, 8), maxEff= 6)
 #' dose_levels=c(0, 0.5, 2, 4, 8)
 #' sd_posterior   = c(2.8,3,2.5,3.5,4)
-#' contr_mat<- getContr(
+#' contr<- getContr(
 #' mods           = models,
 #' dose_levels    = dose_levels,
 #' sd_posterior   = sd_posterior)
@@ -490,10 +485,10 @@ performBayesianMCP <- function(
   
 ) {
   
-  checkmate::check_class(posteriors_list, "postList")
-  checkmate::check_class(contr_mat, "optContr")
-  checkmate::check_class(crit_prob, "numeric")
-  checkmate::check_numeric(crit_prob, lower = 0, upper = Inf)
+  checkmate::check_class(posterior_list, "postList")
+  checkmate::check_class(contr, "optContr")
+  checkmate::check_class(crit_prob_adj, "numeric")
+  checkmate::check_numeric(crit_prob_adj, lower = 0, upper = Inf)
   
   if (inherits(posterior_list,  "postList")) {
     

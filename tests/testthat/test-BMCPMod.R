@@ -8,6 +8,7 @@ test_that("base case input throws no error and has correct properties", {
     eval_design <- assessDesign(
       n_patients = n_patients, 
       mods = mods, 
+      sd = sd,
       prior_list = prior_list,
       n_sim = n_sim,
       alpha_crit_val = alpha_crit_val,
@@ -43,12 +44,12 @@ test_that("assessDesign validates n_patients parameter input and give appropriat
     # n_patients should be a non-NULL numeric vector
   
   expect_error(
-    assessDesign(n_patients = n_patients[-1], mods = mods, prior_list = prior_list, n_sim = n_sim),
+    assessDesign(n_patients = n_patients[-1], sd = sd, mods = mods, prior_list = prior_list, n_sim = n_sim),
     "length of n_patients should equal number of dose groups", ignore.case = T
   )
   
   expect_error(
-    assessDesign(n_patients = rep(1, length(n_patients)), mods = mods, prior_list = prior_list, n_sim = n_sim),
+    assessDesign(n_patients = rep(1, length(n_patients)), sd = sd, mods = mods, prior_list = prior_list, n_sim = n_sim),
     "at least one element in n_patients needs to be > 1", ignore.case = T
   )
 })
@@ -69,7 +70,7 @@ test_that("assessDesign validates mods parameter input and give appropriate erro
   mods2 <- mods
   attr(mods2, "doses") <- 0
   expect_error(
-    assessDesign(n_patients = n_patients, mods = mods2, prior_list = prior_list, n_sim = n_sim),
+    assessDesign(n_patients = n_patients, mods = mods2, sd = sd, prior_list = prior_list, n_sim = n_sim),
     "number of dose groups in mods should be equal to number of dose levels in prior_list"
   )
   rm(mods2)
@@ -124,7 +125,7 @@ test_that("getCritProb returns the right type of value under normal case", {
 
 test_that("getContrMat returns the right type of object under normal case", {
   
-  contr_mat = getContrMat(
+  contr_mat = getContr(
     mods = mods, 
     dose_levels = dose_levels, 
     dose_weights = n_patients,
@@ -151,13 +152,13 @@ test_that("performBayesianMCP returns the right type of object under normal case
     n_sim       = n_sim
   )
 
-  posteriors_list <- getPosterior(
+  posterior_list <- getPosterior(
     data = getModelData(data, names(mods)[1]),
     prior_list = prior_list
   )
 
   b_mcp <- performBayesianMCP(
-    posteriors_list = posteriors_list,
+    posterior_list = posterior_list,
     contr_mat = contr_mat,
     crit_prob = crit_pval
   )
@@ -180,7 +181,7 @@ test_that("performBayesianMCP returns the right type of object under normal case
 test_that("performBayesianMCPMod returns the right type of object under normal case", {
   
   b_mcp_mod <- performBayesianMCPMod(
-    posteriors_list = posterior_list,
+    posterior_list = posterior_list,
     contr_mat = contr_mat,
     crit_prob = crit_pval
   )

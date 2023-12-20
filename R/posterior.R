@@ -107,18 +107,18 @@ getPosterior <- function(
   checkmate::check_list(prior_list, names = "named", any.missing = FALSE)
   checkmate::check_vector(mu_hat, any.missing = FALSE, null.ok = TRUE)
   checkmate::check_double(mu_hat, null.ok = TRUE, lower = -Inf, upper = Inf)
-  checkmate::check_vector(sd_hat, any.missing = FALSE, null.ok = TRUE)
-  checkmate::check_double(sd_hat, null.ok = TRUE, lower = 0, upper = Inf)
+  checkmate::check_vector(se_hat, any.missing = FALSE, null.ok = TRUE)
+  checkmate::check_double(se_hat, null.ok = TRUE, lower = 0, upper = Inf)
   
   if (is.null(data)) {
     posterior_list <- getPosteriorI(data_i = NULL, prior_list = prior_list,
                                    mu_hat     = mu_hat,
-                                   sd_hat     = sd_hat)
+                                   se_hat     = se_hat)
   } else {
   posterior_list <- lapply(split(data, data$simulation), getPosteriorI,
                            prior_list = prior_list,
                            mu_hat     = mu_hat,
-                           sd_hat     = sd_hat)
+                           se_hat     = se_hat)
 
   }
  
@@ -146,10 +146,10 @@ getPosteriorI <- function(
   checkmate::check_list(prior_list, names = "named", any.missing = FALSE)
   checkmate::check_vector(mu_hat, any.missing = FALSE, null.ok = TRUE)
   checkmate::check_double(mu_hat, null.ok = TRUE, lower = -Inf, upper = Inf)
-  checkmate::check_vector(sd_hat, any.missing = FALSE, null.ok = TRUE)
-  checkmate::check_double(sd_hat, null.ok = TRUE, lower = 0, upper = Inf)
+  checkmate::check_vector(se_hat, any.missing = FALSE, null.ok = TRUE)
+  checkmate::check_double(se_hat, null.ok = TRUE, lower = 0, upper = Inf)
   
-  if (is.null(mu_hat) && is.null(sd_hat)) {
+  if (is.null(mu_hat) && is.null(se_hat)) {
     checkmate::check_data_frame(data_i, null.ok = FALSE)
     # checkmate::assert_names(names(data_i), must.include = "reponse")
     # needs fixing! the reponse field is not available after using simulateData

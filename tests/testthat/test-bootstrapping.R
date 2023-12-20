@@ -109,7 +109,7 @@ test_that("test getBootstrapBands", {
     w      = n_patients + ess_prior)
 
   BMCP_result <- performBayesianMCP(
-    posteriors_list = list(posterior_emax),
+    posterior_list = list(posterior_emax),
     contr_mat       = contr_mat_prior,
     crit_prob       = crit_pval)
 

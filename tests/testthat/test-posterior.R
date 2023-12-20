@@ -5,11 +5,11 @@ test_that("getPosterior works correctly", {
                      response = c(10, 20, 30, 40))
   prior_list <- list(1, 2, 3, 4)
   mu_hat <- c(10, 20, 30, 40)
-  sd_hat <- matrix(c(1, 2, 3, 4), nrow = 4, ncol = 1)
+  se_hat <- matrix(c(1, 2, 3, 4), nrow = 4, ncol = 1)
   
   # Test getPosterior function
-  posterior_list <- getPosterior(data, prior_list, mu_hat, sd_hat)
-  expect_type(posterior_list, "character")
+  posterior_list <- getPosterior(data, prior_list, mu_hat, se_hat)
+  expect_type(posterior_list, "list")
   expect_s3_class(posterior_list, "postList")
 })
 
@@ -67,10 +67,10 @@ test_that("getPosteriorI works correctly", {
   
   prior_list <- list(1, 2, 3, 4)
   mu_hat <- c(10, 20, 30, 40)
-  sd_hat <- matrix(c(1, 2, 3, 4), nrow = 4, ncol = 1)
+  se_hat <- matrix(c(1, 2, 3, 4), nrow = 4, ncol = 1)
   
   # Test getPosteriorI function
-  post_list <- getPosteriorI(data_i, prior_list, mu_hat, sd_hat)
+  post_list <- getPosteriorI(data_i, prior_list, mu_hat, se_hat)
   expect_type(post_list, "character")
   expect_s3_class(post_list, "postList")
   
