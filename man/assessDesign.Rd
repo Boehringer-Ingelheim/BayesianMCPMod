@@ -25,28 +25,43 @@ assessDesign(
 
 \item{prior_list}{a prior_list object specifying the utilized prior for the different dose groups}
 
-<<<<<<< HEAD
-\item{n_sim}{number of simulations to be performed}
-
-\item{alpha_crit_val}{critical value to be used for the testing (on the probability scale)}
-
-\item{simple}{boolean variable, defining whether simplified fit will be applied. Passed to the getModelFits function. Default TRUE}
-=======
-\item{sd}{tbd}
+\item{sd}{a positive value, specification of assumed sd}
 
 \item{n_sim}{number of simulations to be performed}
 
-\item{alpha_crit_val}{critical value to be used for the testing (on the probability scale)}
+\item{alpha_crit_val}{(unadjusted) critical value to be used for the MCT testing step. Passed to the getCritProb function for the calculation of adjusted critical values (on the probability scale). Default is 0.05.}
 
 \item{simple}{boolean variable, defining whether simplified fit will be applied. Passed to the getModelFits function. Default FALSE.}
 
-\item{reestimate}{tbd Default FALSE}
+\item{reestimate}{boolean variable, defining whether critical value should be calculated with re-estimated contrasts (see getCritProb function for more details). Default FALSE}
 
-\item{contr}{tbd Default NULL}
+\item{contr}{Allows specification of a fixed contrasts matrix. Default NULL}
 
-\item{dr_means}{tbd Default NULL}
->>>>>>> 25f8f28541ce5be0c55fecee4cdd47a6c8603237
+\item{dr_means}{a vector, allows specification of  individual (not model based) assumed effects per dose group. Default NULL}
+}
+\value{
+returns success probabilities for the different assumed dose-response shapes, attributes also includes information around average success rate (across all assumed models) and prior Effective sample size
 }
 \description{
 This function performs simulation based trial design evaluations for a set of specified dose-response models
+}
+\examples{
+# example code
+ models <- DoseFinding::Mods(linear = NULL, linlog = NULL, emax = c(0.5, 1.2), exponential = 2, 
+doses = c(0, 0.5, 2,4, 8),maxEff= 6)
+sd   = 12
+prior_list<-list(Ctrl   = RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 12), sigma = 2),
+                   DG_1 = RBesT::mixnorm(comp1 = c(w = 1, m = 1, s = 12), sigma = 2),
+                   DG_2 = RBesT::mixnorm(comp1 = c(w = 1, m = 1.2, s = 11), sigma = 2) ,  
+                   DG_3 = RBesT::mixnorm(comp1 = c(w = 1, m = 1.3, s = 11), sigma = 2) ,
+                   DG_4 = RBesT::mixnorm(comp1 = c(w = 1, m = 2, s = 13) ,sigma = 2))
+
+n_patients <- c(40,60,60,60,60)
+success_probabilities <- assessDesign(
+n_patients  = n_patients,
+mods        = mods,
+prior_list  = prior_list,
+sd          = sd)
+
+success_probabilities
 }

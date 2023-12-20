@@ -4,15 +4,6 @@
 \alias{getPosterior}
 \title{getPosterior}
 \usage{
-<<<<<<< HEAD
-<<<<<<< HEAD
-getPosterior(data = NULL, prior_list, mu_hat = NULL, sd_hat = NULL)
-}
-\arguments{
-\item{data}{dataframe containing the information of dose and response.
-Also a simulateData object can be provided.}
-
-=======
 getPosterior(
   prior_list,
   data = NULL,
@@ -22,7 +13,6 @@ getPosterior(
 )
 }
 \arguments{
->>>>>>> 25f8f28541ce5be0c55fecee4cdd47a6c8603237
 \item{prior_list}{prior_list object}
 
 \item{data}{dataframe containing the information of dose and response. Default NULL
@@ -30,36 +20,31 @@ Also a simulateData object can be provided.}
 
 \item{mu_hat}{vector of estimated mean values (per dose group).}
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-\item{sd_hat}{vector of estimated standard deviations.}
-=======
-getPosterior(prior_list, data = NULL, mu_hat = NULL, se_hat = NULL)
-}
-\arguments{
-\item{prior_list}{prior_list}
-
-\item{data}{tbd}
-
-\item{mu_hat}{tbd}
-
-\item{se_hat}{tbd}
->>>>>>> ff9a940b072d43dcf445d6c6944d4b8bcbc07a8b
-=======
-\item{se_hat}{vector of estimated standard deviations.}
-
-\item{calc_ess}{tbd. Default NULL}
->>>>>>> 25f8f28541ce5be0c55fecee4cdd47a6c8603237
-=======
 \item{se_hat}{vector of estimated standard deviations (per dose group).}
 
 \item{calc_ess}{boolean variable, indicating whether effective sample size should be calculated. Default FALSE}
 }
 \value{
 posterior_list, a posterior list object is returned with information about (mixture) posterior distribution per dose group
->>>>>>> cb4cf39ef75ca89ecdb587b5ba0b0c863745f760
 }
 \description{
 Either the patient level data or both mu_hat as well as sd_hat must to be provided. If patient level data is provided mu_hat and se_hat are calculated within the function using a linear model.
 This function calculates the posterior for every dose group independently via the RBesT function postmix.
+}
+\examples{
+# example code
+prior_list<-list(Ctrl=RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 5), sigma = 2),
+                   DG_1=RBesT::mixnorm(comp1 = c(w = 1, m = 1, s = 12), sigma = 2),
+                   DG_2=RBesT::mixnorm(comp1 = c(w = 1, m = 1.2, s = 11), sigma = 2) ,  
+                   DG_3=RBesT::mixnorm(comp1 = c(w = 1, m = 1.3, s = 11), sigma = 2) ,
+                   DG_4=RBesT::mixnorm(comp1 = c(w = 1, m = 2, s = 13) ,sigma = 2))
+mu<-c(0,1,1.5,2,2.5)
+se<-c(5,4,6,7,8)
+posterior_list <- getPosterior(
+   prior_list = prior_list,
+    mu_hat   = mu,
+   se_hat   = se)
+   
+summary(posterior_list)
+
 }

@@ -26,12 +26,12 @@ set.seed(7015)
 # Background and data
 
 In this vignette we will show the use of the Bayesian MCPMod package for trial planning for continuous distributed data. 
-As in [link to other vignette] we focus on the indication MDD and make use of historical data that is included in the clinDR package. 
+As in [the analysis example vignette](analysis_normal.html) we focus on the indication MDD and make use of historical data that is included in the clinDR package. 
 More specifically trial results for BRINTELLIX will be utilized to establish an informative prior for the control group.
 
 # Calculation of a MAP prior
-In a first step a meta analytic prior will be calculated using historical data from 5 trials (with main endpoint CfB in MADRS score after 8 weeks).
-Please note that only information from the control group will be integrated (leading to an informative multicomponent prior for the control group), while for the active groups a non-informative prior will be specified.
+In a first step a meta analytic prior will be calculated using historical data from 5 trials (with main endpoint Change from baseline in MADRS score after 8 weeks).
+Please note that only information from the control group will be integrated (leading to an informative mixture prior for the control group), while for the active groups a non-informative prior will be specified.
 
 
 ```{r Historical Data}
@@ -51,7 +51,9 @@ hist_data <- data.frame(
 sd_tot <- with(hist_data, sum(sd * n) / sum(n))
 ```
 
-```{r Calculation of a MAP prior}
+We will make use of the same getPriorList function as in the [analysis example vignette](analysis_normal.html) to create a MAP prior.
+
+```{r Calculation of a MAP prior, echo = FALSE}
 getPriorList <- function (
   
   hist_data,
@@ -103,19 +105,24 @@ getPriorList <- function (
   return (prior_list)
   
 }
+```
 
+
+```{r Evaluation of a MAP prior}
 dose_levels <- c(0, 2.5, 5, 10, 20)
 
 prior_list <- getPriorList(
   hist_data   = hist_data,
-  dose_levels = dose_levels)
+  dose_levels = dose_levels,
+  robust_weight = 0.3)
 
+getESS(prior_list)
 ```
 
 # Specification of new trial design 
 
-For the hypothetical new trial we plan with 4 active dose levels $2.5, 5, 10, 20$ and we specify a broad set of potential dose-response relationships, including a linear, an exponential, an emax and a sigEMax model.  
-Furthermore we assume a maximum effect of -3 on top of control (i.e. assuming that  active treatment can reduce the MADRS score after 8 weeks by up to 15.8) and plan a trial with 80 patients for all active groups and 60 patients for control.
+For the hypothetical new trial we plan with 4 active dose levels \eqn{2.5, 5, 10, 20} and we specify a broad set of potential dose-response relationships, including a linear, an exponential, an emax and a sigEMax model.  
+Furthermore we assume a maximum effect of -3 on top of control (i.e. assuming that active treatment can reduce the MADRS score after 8 weeks by up to 15.8) and plan a trial with 80 patients for all active groups and 60 patients for control.
 ```{r}
 #Pre-Specification (B)MCPMod 
 
@@ -134,12 +141,7 @@ sigemax <- DoseFinding::guesst(d     = c(2.5, 5),
 sigemax2 <- DoseFinding::guesst(d     = c(2, 4),
                                p     = c(0.3, 0.8),
                                model = "sigEmax")
-# beta    <- DoseFinding::guesst(d     = 5,
-#                                p     = 0.8,
-#                                model = "betaMod",
-#                                dMax  = 1,
-#                                scal  = 1.2,
-#                                Maxd  = 20)
+
 
 mods <- DoseFinding::Mods(
   linear      = NULL,
@@ -192,5 +194,17 @@ success_probabilities_uneq
 ```
 
 For this specific trial setting the adapted allocation ratio leads to increased success probabilities under all assumed dose response relationships.
+
+Instead of specifying the assumed effects via the models it is also possible to directly specify the effects for the individual dose levels via the dr_means input. This allows e.g. also the simulation of scenarios with a prior-data conflict.
+
+```{r}
+success_probabilities <- assessDesign(
+  n_patients  = c(60, 80, 80, 80, 80),
+  mods        = mods,
+  prior_list  = prior_list,
+  sd          = sd_tot,
+  dr_means = c(-12,-14,-15,-16,-17))
+success_probabilities
+```
 
 

@@ -43,5 +43,21 @@ plts returns a ggplot2 object
 }
 \description{
 plot function based on the ggplot2 package. Providing visualizations for each model and a average Fit.
-More details to be added, as well as references.
+Black lines show the fitted dose response models and an AIC based average model. Dots indicate the posterior median and vertical lines show corresponding credible intervals (i.e. the variability of the posterior distribution of the respective dose group).
+To assess the uncertainty of the model fit one can in addition visualize credible bands (default coloring as orange shaded areas). The calculation of these bands is performed via the getBootstrapQuantiles function.
+The default setting is that these credible bands are not calculated.
+}
+\examples{
+# example code
+posterior_list =   list(Ctrl=RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 1), sigma = 2),
+                   DG_1=RBesT::mixnorm(comp1 = c(w = 1, m = 3, s = 1.2), sigma = 2),
+                   DG_2=RBesT::mixnorm(comp1 = c(w = 1, m = 4, s = 1.5), sigma = 2) ,  
+                   DG_3=RBesT::mixnorm(comp1 = c(w = 1, m = 6, s = 1.2), sigma = 2) ,
+                   DG_4=RBesT::mixnorm(comp1 = c(w = 1, m = 6.5, s = 1.1) ,sigma = 2))
+models=c("emax","exponential","sigEmax","linear")
+dose_levels=c(0,1,2,4,8)
+fit<-getModelFits(models=models, posterior=posterior_list,dose_levels=dose_levels)
+fit_simple<-getModelFits(models=models, posterior=posterior_list,dose_levels=dose_levels,simple=TRUE)
+plot(fit, cr_bands = TRUE)
+plot(fit_simple, cr_bands = TRUE,alpha_CrB =c(0.05,0.1,0.5))
 }

@@ -78,6 +78,22 @@ getPriorList <- function (
 #' @param se_hat vector of estimated standard deviations (per dose group).
 #' @param calc_ess boolean variable, indicating whether effective sample size should be calculated. Default FALSE
 #' @return posterior_list, a posterior list object is returned with information about (mixture) posterior distribution per dose group
+#' @examples
+#' # example code
+#' prior_list<-list(Ctrl=RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 5), sigma = 2),
+#'                    DG_1=RBesT::mixnorm(comp1 = c(w = 1, m = 1, s = 12), sigma = 2),
+#'                    DG_2=RBesT::mixnorm(comp1 = c(w = 1, m = 1.2, s = 11), sigma = 2) ,  
+#'                    DG_3=RBesT::mixnorm(comp1 = c(w = 1, m = 1.3, s = 11), sigma = 2) ,
+#'                    DG_4=RBesT::mixnorm(comp1 = c(w = 1, m = 2, s = 13) ,sigma = 2))
+#' mu<-c(0,1,1.5,2,2.5)
+#' se<-c(5,4,6,7,8)
+#' posterior_list <- getPosterior(
+#'    prior_list = prior_list,
+#'     mu_hat   = mu,
+#'    se_hat   = se)
+#'    
+#' summary(posterior_list)
+#' 
 #' @export
 getPosterior <- function(
   prior_list,
@@ -156,7 +172,8 @@ getPosteriorI <- function(
     stop ("Both mu_hat and se_hat must be provided.")
   }
   
-  post_list <- mapply(RBesT::postmix, prior_list, m = mu_hat, se = se_hat)
+  post_list <- mapply(RBesT::postmix, prior_list, m = mu_hat, se = se_hat,
+                      SIMPLIFY = FALSE)
   
   if (is.null(names(prior_list))) {
     
@@ -164,12 +181,18 @@ getPosteriorI <- function(
     
   }
   
-  names(post_list)       <- names(prior_list)
-  class(post_list)       <- "postList"
-  attr(post_list, "ess") <- ifelse(
-    test = calc_ess,
-    yes  = getESS(post_list),
-    no   = numeric(0))
+  names(post_list) <- names(prior_list)
+  class(post_list) <- "postList"
+  
+  if (calc_ess) {
+    
+    attr(post_list, "ess") <- getESS(post_list)
+    
+  } else {
+    
+    attr(post_list, "ess") <- numeric(0)
+    
+  }
   
   return (post_list)
   

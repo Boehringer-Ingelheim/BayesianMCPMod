@@ -1,6 +1,6 @@
 Package: BayesianMCPMod
 Title: Bayesian MCPMod
-Version: 0.1.3-6
+Version: 0.1.4-0
 Authors@R: c(
     person("Boehringer Ingelheim Pharma GmbH & Co. KG",
            role = c("cph", "fnd")),

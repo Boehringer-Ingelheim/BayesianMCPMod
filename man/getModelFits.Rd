@@ -16,10 +16,39 @@ getModelFits(models, dose_levels, posterior, simple = FALSE)
 \item{simple}{boolean variable, defining whether simplified fit will be applied. Default FALSE.}
 }
 \value{
-model_fits returns a list, containing information about the fitted model coefficients, the prediction per dose group as well as maximum effect and generalized AIC per model.
+model_fits returns a list, containing information about the fitted model coefficients, the prediction per dose group as well as maximum effect and generalized AIC (and corresponding weight) per model.
 }
 \description{
-Fits dose-response curves for the specified dose-repsonse models, based on the posterior distributions.
+Fits dose-response curves for the specified dose-response models, based on the posterior distributions.
 For the simplified fit, multivariate normal distributions will be approximated and reduced by one-dimensional normal distributions.
-For the default case, the Nelder-Mead algorithm is used. Will be further updated and links to publication as well as references will be added.
+For the default case, the Nelder-Mead algorithm is used.
+In detail, for both approaches the mean vector \eqn{\theta^{Y}} and the covariance \eqn{\Sigma} of the (mixture) posterior distributions and the corresponding posterior weights \eqn{\tilde{\omega}_{l}} for \eqn{l \in {1,...,L}} are used as basis
+For the full fit a GLS estimator is used to minimize the following expression for the respective dose-response models \eqn{m}
+\deqn{ \hat{\theta}_{m}=argmin_{\theta_{m}} \sum_{i=l}^{L} \tilde{\omega}_{l}(\theta_{l_{i}}^{Y}-f(dose_{i},\hat{\theta}_{m}))'\Sigma_{l}^{-1}(\theta_{l_{i}}^{Y}-f(dose_{i},\hat{\theta}_{m}))}
+Herefore the function nloptr of the nloptr package is utilized.
+In the simplified case \eqn{L=1}, as the dimension of the posterior is reduced to 1 first.
+The generalized AIC values are calculated via the formula
+\deqn{gAIC_{m} = \sum_{l=1}^{L} \tilde{\omega}_{l} \sum_{i=0}^{K} \frac{1}{\Sigma_{l_{i,i}}} (\theta_{l_i}^Y - f(dose_{i},\hat{\theta}_{m}))^2 + 2p }
+where \eqn{p} denotes the number of estimated parameters and \eqn{K} the number of active dose levels.
+Here as well for the simplified case the formula reduces to one summand as \eqn{L=1}.
+Corresponding gAIC based weights for model \eqn{M} are calculated as outlined in Schorning et al. (2016)
+\deqn{
+\Omega_I (M) = \frac{\exp(-0.5 gAIC_{M})}{\sum_{m=1}^{Q} \exp(-0.5 gAIC_(m))}
+}
+where \eqn{Q} denotes the number of models included in the averaging procedure.
+}
+\examples{
+# example code
+posterior_list =   list(Ctrl=RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 1), sigma = 2),
+                   DG_1=RBesT::mixnorm(comp1 = c(w = 1, m = 3, s = 1.2), sigma = 2),
+                   DG_2=RBesT::mixnorm(comp1 = c(w = 1, m = 4, s = 1.5), sigma = 2) ,  
+                   DG_3=RBesT::mixnorm(comp1 = c(w = 1, m = 6, s = 1.2), sigma = 2) ,
+                   DG_4=RBesT::mixnorm(comp1 = c(w = 1, m = 6.5, s = 1.1) ,sigma = 2))
+models=c("emax","exponential","sigEmax","linear")
+dose_levels=c(0,1,2,4,8)
+fit<-getModelFits(models=models, posterior=posterior_list,dose_levels=dose_levels)
+fit_simple<-getModelFits(models=models, posterior=posterior_list,dose_levels=dose_levels,simple=TRUE)
+}
+\references{
+Schorning K, Bornkamp B, Bretz F, Dette H. 2016. “Model selection versus model averaging in dose finding studies”. Stat Med; 35; 4021-4040.
 }

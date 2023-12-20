@@ -7,11 +7,11 @@
 performBayesianMCPMod(posterior_list, contr, crit_prob_adj, simple = FALSE)
 }
 \arguments{
-\item{posterior_list}{a getPosterior object}
+\item{posterior_list}{a getPosterior object with information about the (mixture) posterior distribution per dose group}
 
 \item{contr}{a getContrMat object, contrast matrix to be used for the testing step.}
 
-\item{crit_prob_adj}{a getCritProb object}
+\item{crit_prob_adj}{a getCritProb object, specifying the critical value to be used for the testing (on the probability scale).}
 
 \item{simple}{boolean variable, defining whether simplified fit will be applied. Passed to the getModelFits function. Default FALSE.}
 }
@@ -19,5 +19,34 @@ performBayesianMCPMod(posterior_list, contr, crit_prob_adj, simple = FALSE)
 bmcpmod test result as well as modelling result.
 }
 \description{
-performs bayesian MCP Test step and modelling.
+performs bayesian MCP Test step and modelling in a combined fashion. See performBayesianMCP function for MCT Test step and getModelFits for the modelling step
+}
+\examples{
+# example code
+models <- DoseFinding::Mods(linear = NULL, linlog = NULL, emax = c(0.5, 1.2), exponential = 2, 
+doses = c(0, 0.5, 2,4, 8))
+dose_levels=c(0, 0.5, 2, 4, 8)
+sd_posterior   = c(2.8,3,2.5,3.5,4)
+contr_mat<- getContr(
+mods           = models,
+dose_levels    = dose_levels,
+sd_posterior   = sd_posterior)
+critVal<- getCritProb(
+  mods           = models,
+  dose_weights  =c(50,50,50,50,50), #reflecting the planned sample size
+  dose_levels    = dose_levels,
+  alpha_crit_val = 0.05)
+prior_list<-list(Ctrl=RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 5), sigma = 2),
+                   DG_1=RBesT::mixnorm(comp1 = c(w = 1, m = 1, s = 12), sigma = 2),
+                   DG_2=RBesT::mixnorm(comp1 = c(w = 1, m = 1.2, s = 11), sigma = 2) ,  
+                   DG_3=RBesT::mixnorm(comp1 = c(w = 1, m = 1.3, s = 11), sigma = 2) ,
+                   DG_4=RBesT::mixnorm(comp1 = c(w = 1, m = 2, s = 13) ,sigma = 2))
+mu<-c(0,1,1.5,2,2.5)
+se<-c(5,4,6,7,8)
+posterior_list <- getPosterior(
+   prior_list = prior_list,
+    mu_hat   = mu,
+   se_hat   = se)
+performBayesianMCPMod(posterior_list=posterior_list, contr=contr_mat,crit_prob_adj=critVal,simple = FALSE)
+
 }
