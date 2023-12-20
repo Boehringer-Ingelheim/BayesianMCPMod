@@ -85,6 +85,7 @@ print.BayesianMCP <- function (
 #' model coefficients
 #' @param doses a vector specifying the doses for which a prediction should be
 #' done getContrMat object, contrast matrix to be used for the testing step.
+#' @param ... other parameters
 #' @examples
 #' # example code
 #' posterior_list <- list(Ctrl = RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 1), sigma = 2),
