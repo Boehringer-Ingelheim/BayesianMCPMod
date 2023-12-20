@@ -40,7 +40,7 @@ regular MCPMod for this specific vector of standard errors. Here as well the cri
 mods <- DoseFinding::Mods(linear = NULL, linlog = NULL, emax = c(0.5, 1.2), exponential = 2, doses = c(0, 0.5, 2,4, 8))
 dose_levels=c(0, 0.5, 2, 4, 8)
 critVal<- getCritProb(
-  mods           = models,
+  mods           = mods,
   dose_weights  =c(50,50,50,50,50), #reflecting the planned sample size
   dose_levels    = dose_levels,
   alpha_crit_val = 0.05) 

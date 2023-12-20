@@ -49,7 +49,7 @@ mods <- DoseFinding::Mods(linear = NULL, linlog = NULL, emax = c(0.5, 1.2), expo
 dose_levels=c(0, 0.5, 2, 4, 8)
 sd_posterior   = c(2.8,3,2.5,3.5,4)
 contr_mat<- getContr(
-mods           = models,
+mods           = mods,
 dose_levels    = dose_levels,
 sd_posterior   = sd_posterior) 
 

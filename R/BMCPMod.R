@@ -92,9 +92,9 @@ assessDesign <- function (
       post_sds <- sapply(posterior_list, function (post) summary(post)[, 2])
       
       contr <- apply(post_sds, 2, function (post_sd) getContr(
-          mods           = mods,
-          dose_levels    = dose_levels,
-          sd_posterior   = post_sd))
+        mods           = mods,
+        dose_levels    = dose_levels,
+        sd_posterior   = post_sd))
       
     } 
     
@@ -154,7 +154,7 @@ assessDesign <- function (
 #' dose_levels=c(0, 0.5, 2, 4, 8)
 #' sd_posterior   = c(2.8,3,2.5,3.5,4)
 #' contr_mat<- getContr(
-#' mods           = models,
+#' mods           = mods,
 #' dose_levels    = dose_levels,
 #' sd_posterior   = sd_posterior) 
 #' 
@@ -179,21 +179,21 @@ getContr <- function (
     w <- NULL
     S <- diag((se_new_trial)^2)
     
-  # frequentist & no re-estimation
+    # frequentist & no re-estimation
   } else if (!is.null(dose_weights) & 
              is.null(se_new_trial) & is.null(prior_list) & is.null(sd_posterior)) {
     
     w <- dose_weights
     S <- NULL
     
-  # Bayesian & re-estimation
+    # Bayesian & re-estimation
   } else if (!is.null(sd_posterior) & 
              is.null(se_new_trial) & is.null(prior_list) & is.null(dose_weights)) {
     
     w <- NULL
     S <- diag((sd_posterior)^2)
     
-  # Bayesian & no re-estimation
+    # Bayesian & no re-estimation
   } else if (!is.null(dose_weights) & !is.null(prior_list) & 
              is.null(se_new_trial) & is.null(sd_posterior)) {
     
@@ -204,8 +204,8 @@ getContr <- function (
   } else {
     
     stop (paste("Provided combiations of 'se_new_trial',",
-                 "'dose_weights', 'prior_list', 'sd_posterior' not allowed.",
-                 "See ?getContr for allowed combinations."))
+                "'dose_weights', 'prior_list', 'sd_posterior' not allowed.",
+                "See ?getContr for allowed combinations."))
     
   }
   
@@ -250,7 +250,7 @@ getContr <- function (
 #' mods <- DoseFinding::Mods(linear = NULL, linlog = NULL, emax = c(0.5, 1.2), exponential = 2, doses = c(0, 0.5, 2,4, 8))
 #' dose_levels=c(0, 0.5, 2, 4, 8)
 #' critVal<- getCritProb(
-#'   mods           = models,
+#'   mods           = mods,
 #'   dose_weights  =c(50,50,50,50,50), #reflecting the planned sample size
 #'   dose_levels    = dose_levels,
 #'   alpha_crit_val = 0.05) 
@@ -296,11 +296,11 @@ getCritProb <- function (
 #' dose_levels=c(0, 0.5, 2, 4, 8)
 #' sd_posterior   = c(2.8,3,2.5,3.5,4)
 #' contr_mat<- getContr(
-#' mods           = models,
+#' mods           = mods,
 #' dose_levels    = dose_levels,
 #' sd_posterior   = sd_posterior)
 #' critVal<- getCritProb(
-#'   mods           = models,
+#'   mods           = mods,
 #'   dose_weights  =c(50,50,50,50,50), #reflecting the planned sample size
 #'   dose_levels    = dose_levels,
 #'   alpha_crit_val = 0.05)
@@ -389,7 +389,7 @@ addSignificance <- function (
     
   model_fits,
   sign_models
-
+  
 ) {
   
   names(sign_models) <- NULL
@@ -422,11 +422,11 @@ addSignificance <- function (
 #' dose_levels=c(0, 0.5, 2, 4, 8)
 #' sd_posterior   = c(2.8,3,2.5,3.5,4)
 #' contr_mat<- getContr(
-#' mods           = models,
+#' mods           = mods,
 #' dose_levels    = dose_levels,
 #' sd_posterior   = sd_posterior)
 #' critVal<- getCritProb(
-#'   mods           = models,
+#'   mods           = mods,
 #'   dose_weights  =c(50,50,50,50,50), #reflecting the planned sample size
 #'   dose_levels    = dose_levels,
 #'   alpha_crit_val = 0.05)
