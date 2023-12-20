@@ -205,25 +205,6 @@ contr_mat<- getContr(
 #  dose_levels    = dose_levels,
 #  dose_weights   = n_patients,
 #  prior_list     = prior_list)
-#This would be the most reasonable output, but since it is not exported it is currently not usable.
-#BMCP_result<-BayesMCPi(posterior_i = posterior,
-     #     contr_mat       = contr_mat_prior, 
-      #    crit_prob       = crit_pval)
-
-
-#This would be the most reasonable output, but since it is not exported it is currently not usable.
-#BMCP_result<-BayesMCPi(posterior_i = posterior,
-     #     contr_mat       = contr_mat_prior, 
-      #    crit_prob       = crit_pval)
-
-
-
-#BMCP_result2 <- performBayesianMCPMod(
-#    posteriors_list = posterior_emax,
-#    contr_mat       = contr_mat_prior, 
-#    crit_prob       = crit_pval)
-
-#BMCP_result2
 ```
 The bayesian MCP testing step is then executed based on the posterior information, the provided contrasts and the (multiplicity adjusted) critical value.   
 ```{r  Executionr of Bayesian MCPMod Test step}
