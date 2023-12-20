@@ -17,7 +17,7 @@
 #' 
 #' @examples
 #' # example code
-#'  models <- DoseFinding::Mods(linear = NULL, linlog = NULL, emax = c(0.5, 1.2), exponential = 2, 
+#' mods <- DoseFinding::Mods(linear = NULL, linlog = NULL, emax = c(0.5, 1.2), exponential = 2, 
 #' doses = c(0, 0.5, 2,4, 8),maxEff= 6)
 #' sd   = 12
 #' prior_list<-list(Ctrl   = RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 12), sigma = 2),
