@@ -205,8 +205,8 @@ be constructed.</p>
 <code class="sourceCode R"><span><span class="va">dose_levels</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">2.5</span>, <span class="fl">5</span>, <span class="fl">10</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">prior_list</span> <span class="op">&lt;-</span> <span class="fu">getPriorList</span><span class="op">(</span></span>
-<span>  hist_data   <span class="op">=</span> <span class="va">hist_data</span>,</span>
-<span>  dose_levels <span class="op">=</span> <span class="va">dose_levels</span>,</span>
+<span>  hist_data     <span class="op">=</span> <span class="va">hist_data</span>,</span>
+<span>  dose_levels   <span class="op">=</span> <span class="va">dose_levels</span>,</span>
 <span>  robust_weight <span class="op">=</span> <span class="fl">0.3</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/getESS.html">getESS</a></span><span class="op">(</span><span class="va">prior_list</span><span class="op">)</span></span>
@@ -257,9 +257,9 @@ the new trial. Via the summary function it is possible to print out the
 summary information of the posterior distributions.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span><span class="va">posterior</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getPosterior.html">getPosterior</a></span><span class="op">(</span>prior  <span class="op">=</span> <span class="va">prior_list</span>,</span>
-<span>                          mu_hat <span class="op">=</span> <span class="va">new_trial</span><span class="op">$</span><span class="va">rslt</span>,</span>
-<span>                          se_hat <span class="op">=</span> <span class="va">new_trial</span><span class="op">$</span><span class="va">se</span>,</span>
+<span><span class="va">posterior</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getPosterior.html">getPosterior</a></span><span class="op">(</span>prior    <span class="op">=</span> <span class="va">prior_list</span>,</span>
+<span>                          mu_hat   <span class="op">=</span> <span class="va">new_trial</span><span class="op">$</span><span class="va">rslt</span>,</span>
+<span>                          se_hat   <span class="op">=</span> <span class="va">new_trial</span><span class="op">$</span><span class="va">se</span>,</span>
 <span>                          calc_ess <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">posterior</span><span class="op">)</span></span>
@@ -290,10 +290,10 @@ establish the contrasts.</p>
 <span>    se_new_trial   <span class="op">=</span> <span class="va">new_trial</span><span class="op">$</span><span class="va">se</span>,</span>
 <span>    alpha_crit_val <span class="op">=</span> <span class="fl">0.05</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">contr_mat</span><span class="op">&lt;-</span> <span class="fu"><a href="../reference/getContr.html">getContr</a></span><span class="op">(</span></span>
-<span> mods           <span class="op">=</span> <span class="va">mods</span>,</span>
-<span> dose_levels    <span class="op">=</span> <span class="va">dose_levels</span>,</span>
-<span> sd_posterior   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">posterior</span><span class="op">)</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="va">contr_mat</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getContr.html">getContr</a></span><span class="op">(</span></span>
+<span> mods         <span class="op">=</span> <span class="va">mods</span>,</span>
+<span> dose_levels  <span class="op">=</span> <span class="va">dose_levels</span>,</span>
+<span> sd_posterior <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">posterior</span><span class="op">)</span><span class="op">[</span>, <span class="fl">2</span><span class="op">]</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">#Alternative ways to come up with a contrast would be to use </span></span>
 <span><span class="co">#i) the frequentist contrast </span></span>
@@ -382,7 +382,7 @@ are then used to identify and visualize the specified quantiles. The
 bootstrap based quantiles can also be directly calculated and displayed
 via the getbootstrapQuantiles function.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">fit</span>, doses <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">2.5</span>,<span class="fl">4</span>, <span class="fl">5</span>,<span class="fl">7</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">fit</span>, doses <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">2.5</span>, <span class="fl">4</span>, <span class="fl">5</span>, <span class="fl">7</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; $linear</span></span>
 <span><span class="co">#&gt; [1] -12.45164 -13.42980 -14.01669 -14.40796 -15.19049 -16.36428</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -395,7 +395,6 @@ via the getbootstrapQuantiles function.</p>
 <span><span class="co">#&gt; attr(,"doses")</span></span>
 <span><span class="co">#&gt; [1]  0.0  2.5  4.0  5.0  7.0 10.0</span></span>
 <span></span>
-<span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit</span>, cr_bands <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p><img src="analysis_normal_files/figure-html/Visualization%20and%20interpretation%20of%20the%20results-1.png" width="700"></p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
@@ -403,8 +402,7 @@ via the getbootstrapQuantiles function.</p>
 <p><img src="analysis_normal_files/figure-html/Visualization%20and%20interpretation%20of%20the%20results-2.png" width="700"></p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span></span>
-<span><span class="fu"><a href="../reference/getBootstrapQuantiles.html">getBootstrapQuantiles</a></span><span class="op">(</span><span class="va">fit</span>, quantiles <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.025</span>,<span class="fl">0.5</span>, <span class="fl">0.975</span><span class="op">)</span>, doses <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">2.5</span>,<span class="fl">4</span>, <span class="fl">5</span>,<span class="fl">7</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/getBootstrapQuantiles.html">getBootstrapQuantiles</a></span><span class="op">(</span><span class="va">fit</span>, quantiles <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.025</span>, <span class="fl">0.5</span>, <span class="fl">0.975</span><span class="op">)</span>, doses <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">2.5</span>, <span class="fl">4</span>, <span class="fl">5</span>, <span class="fl">7</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    doses      models      2.5%       50%      97.5%</span></span>
 <span><span class="co">#&gt; 1    0.0      linear -13.65811 -12.60508 -11.502452</span></span>
 <span><span class="co">#&gt; 2    2.5      linear -14.31011 -13.51303 -12.770222</span></span>
@@ -434,8 +432,8 @@ via the getbootstrapQuantiles function.</p>
 is not necessary similar to the main model fit, as they are derived via
 different procedures (main fit, i.e. black lines in the plot, show the
 best fit of a certain model based on minimizing the residuals for the
-posterior distribution while bootstrap based 50% quantile indicates the
-median fit of the random sampling and fitting procedure).</p>
+posterior distribution while the bootstrap based 50% quantile indicates
+the median fit of the random sampling and fitting procedure).</p>
 </div>
 <div class="section level2">
 <h2 id="additional-notes">Additional notes<a class="anchor" aria-label="anchor" href="#additional-notes"></a>

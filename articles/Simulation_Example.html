@@ -144,8 +144,8 @@ MAP prior.</p>
 <code class="sourceCode R"><span><span class="va">dose_levels</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">2.5</span>, <span class="fl">5</span>, <span class="fl">10</span>, <span class="fl">20</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">prior_list</span> <span class="op">&lt;-</span> <span class="fu">getPriorList</span><span class="op">(</span></span>
-<span>  hist_data   <span class="op">=</span> <span class="va">hist_data</span>,</span>
-<span>  dose_levels <span class="op">=</span> <span class="va">dose_levels</span>,</span>
+<span>  hist_data     <span class="op">=</span> <span class="va">hist_data</span>,</span>
+<span>  dose_levels   <span class="op">=</span> <span class="va">dose_levels</span>,</span>
 <span>  robust_weight <span class="op">=</span> <span class="fl">0.3</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/getESS.html">getESS</a></span><span class="op">(</span><span class="va">prior_list</span><span class="op">)</span></span>
@@ -177,7 +177,7 @@ groups and 60 patients for control.</p>
 <span><span class="va">sigemax</span> <span class="op">&lt;-</span> <span class="fu">DoseFinding</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/DoseFinding/man/guesst.html" class="external-link">guesst</a></span><span class="op">(</span>d     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2.5</span>, <span class="fl">5</span><span class="op">)</span>,</span>
 <span>                               p     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.1</span>, <span class="fl">0.6</span><span class="op">)</span>,</span>
 <span>                               model <span class="op">=</span> <span class="st">"sigEmax"</span><span class="op">)</span></span>
-<span><span class="va">sigemax2</span> <span class="op">&lt;-</span> <span class="fu">DoseFinding</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/DoseFinding/man/guesst.html" class="external-link">guesst</a></span><span class="op">(</span>d     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">4</span><span class="op">)</span>,</span>
+<span><span class="va">sigemax2</span> <span class="op">&lt;-</span> <span class="fu">DoseFinding</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/DoseFinding/man/guesst.html" class="external-link">guesst</a></span><span class="op">(</span>d    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">4</span><span class="op">)</span>,</span>
 <span>                               p     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.3</span>, <span class="fl">0.8</span><span class="op">)</span>,</span>
 <span>                               model <span class="op">=</span> <span class="st">"sigEmax"</span><span class="op">)</span></span>
 <span></span>
@@ -333,7 +333,7 @@ scenarios with a prior-data conflict.</p>
 <span>  mods        <span class="op">=</span> <span class="va">mods</span>,</span>
 <span>  prior_list  <span class="op">=</span> <span class="va">prior_list</span>,</span>
 <span>  sd          <span class="op">=</span> <span class="va">sd_tot</span>,</span>
-<span>  dr_means <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">12</span>,<span class="op">-</span><span class="fl">14</span>,<span class="op">-</span><span class="fl">15</span>,<span class="op">-</span><span class="fl">16</span>,<span class="op">-</span><span class="fl">17</span><span class="op">)</span><span class="op">)</span></span>
+<span>  dr_means    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">12</span>,<span class="op">-</span><span class="fl">14</span>,<span class="op">-</span><span class="fl">15</span>,<span class="op">-</span><span class="fl">16</span>,<span class="op">-</span><span class="fl">17</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">success_probabilities</span></span>
 <span><span class="co">#&gt; $dose_resp</span></span>
 <span><span class="co">#&gt; Bayesian Multiple Comparison Procedure</span></span>

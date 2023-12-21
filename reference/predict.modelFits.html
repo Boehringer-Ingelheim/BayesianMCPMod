@@ -65,17 +65,17 @@ model and dose specifications</p>
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>object</dt>
-<dd><p>a modelFits object containing information about the fitted
+<dd><p>A modelFits object containing information about the fitted
 model coefficients</p></dd>
 
 
 <dt>doses</dt>
-<dd><p>a vector specifying the doses for which a prediction should be
+<dd><p>A vector specifying the doses for which a prediction should be
 done getContrMat object, contrast matrix to be used for the testing step.</p></dd>
 
 
 <dt>...</dt>
-<dd><p>other parameters</p></dd>
+<dd><p>currently without function</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -98,6 +98,7 @@ done getContrMat object, contrast matrix to be used for the testing step.</p></d
 <span class="r-in"><span><span class="va">fit</span>            <span class="op">&lt;-</span> <span class="fu"><a href="getModelFits.html">getModelFits</a></span><span class="op">(</span>models      <span class="op">=</span> <span class="va">models</span>,</span></span>
 <span class="r-in"><span>                               posterior   <span class="op">=</span> <span class="va">posterior_list</span>,</span></span>
 <span class="r-in"><span>                               dose_levels <span class="op">=</span> <span class="va">dose_levels</span><span class="op">)</span></span></span>
+<span class="r-in"><span>                               </span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">fit</span>, doses <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">3</span>, <span class="fl">4</span>, <span class="fl">6</span>, <span class="fl">8</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $emax</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] -0.008147777  2.977266585  5.136083687  5.647278697  6.271281080</span>
