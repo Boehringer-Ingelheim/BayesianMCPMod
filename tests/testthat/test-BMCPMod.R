@@ -84,7 +84,7 @@ test_that("assessDesign validates prior_list parameter input and give appropriat
   
   # checking that we didn't change how we named the 'dose_levels' attribute
   expect_true(
-    "dose_levels" %in% names(attributes(prior_list))
+    "doses" %in% names(attributes(mods))
   )
   
 })

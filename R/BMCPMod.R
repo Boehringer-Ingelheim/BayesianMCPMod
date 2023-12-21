@@ -24,7 +24,6 @@
 #'                    DG_2 = RBesT::mixnorm(comp1 = c(w = 1, m = 1.2, s = 11), sigma = 2) ,  
 #'                    DG_3 = RBesT::mixnorm(comp1 = c(w = 1, m = 1.3, s = 11), sigma = 2) ,
 #'                    DG_4 = RBesT::mixnorm(comp1 = c(w = 1, m = 2, s = 13) ,sigma = 2))
-#' 
 #' n_patients <- c(40,60,60,60,60)
 #' success_probabilities <- assessDesign(
 #' n_patients  = n_patients,
@@ -53,11 +52,10 @@ assessDesign <- function (
   
 ) {
   
-  checkmate::assert_vector(n_patients, len = length(attr(prior_list, "dose_levels")), any.missing = FALSE)
+  checkmate::assert_vector(n_patients, len = length(attr(mods, "doses")), any.missing = FALSE)
   checkmate::check_class(mods, classes = "Mods")
-  checkmate::check_list(prior_list, names = "named", len = length(attr(prior_list, "dose_levels")), any.missing = FALSE)
+  checkmate::check_list(prior_list, names = "named", len = length(attr(mods, "doses")), any.missing = FALSE)
   # sensitive to how DoseFinding labels their attributes for "Mods" class
-  checkmate::assert_true(length(attr(mods, "doses")) == length(attr(prior_list, "dose_levels"))) 
   checkmate::check_double(n_sim, lower = 1, upper = Inf)
   checkmate::check_double(alpha_crit_val, lower = 0, upper = 1)
   checkmate::check_logical(simple)
@@ -183,9 +181,9 @@ getContr <- function (
 ) {
   
   checkmate::check_class(mods, classes = "Mods")
-  checkmate::check_double(dose_levels, lower = 0, any.missing = FALSE, len = length(attr(prior_list, "dose_levels")))
-  checkmate::check_double(dose_weights, any.missing = FALSE, len = length(attr(prior_list, "dose_levels")))
-  checkmate::check_list(prior_list, names = "named", len = length(attr(prior_list, "dose_levels")), any.missing = FALSE)
+  checkmate::check_double(dose_levels, lower = 0, any.missing = FALSE, len = length(attr(mods, "doses")))
+  checkmate::check_double(dose_weights, any.missing = FALSE, len = length(attr(mods, "doses")))
+  checkmate::check_list(prior_list, names = "named", len = length(attr(mods, "doses")), any.missing = FALSE)
   
   # frequentist & re-estimation
   if (!is.null(se_new_trial) & 

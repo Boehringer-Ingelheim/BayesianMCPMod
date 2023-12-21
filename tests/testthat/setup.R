@@ -59,9 +59,6 @@ getPriorList <- function (
   
   names(prior_list) <- dose_names
   
-  attr(prior_list, "dose_levels") <- dose_levels
-  attr(prior_list, "sd_tot")      <- sd_tot
-  
   return (prior_list)
   
 }
