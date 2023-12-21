@@ -1,6 +1,6 @@
 Package: BayesianMCPMod
 Title: Bayesian MCPMod
-Version: 0.1.4-2
+Version: 0.1.4-3
 Authors@R: c(
     person("Boehringer Ingelheim Pharma GmbH & Co. KG",
            role = c("cph", "fnd")),
@@ -12,7 +12,7 @@ Authors@R: c(
            email = "lars.andersen@boehringer-ingelheim.com"),
     person("Steven", "Brooks",
            role = "ctb",
-           email = "lars.andersen@boehringer-ingelheim.com"),
+           email = "steven.brooks@boehringer-ingelheim.com"),
     person("Sebastian", "Bossert",
            role = "aut",
            email = "sebastian.bossert@boehringer-ingelheim.com")

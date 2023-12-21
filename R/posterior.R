@@ -42,18 +42,25 @@ getPosterior <- function(
   checkmate::check_vector(se_hat, any.missing = FALSE, null.ok = TRUE)
   checkmate::check_double(se_hat, null.ok = TRUE, lower = 0, upper = Inf)
   
-  if (is.null(data)) {
-    posterior_list <- getPosteriorI(data_i = NULL, prior_list = prior_list,
-                                   mu_hat     = mu_hat,
-                                   se_hat     = se_hat)
+  if (!is.null(mu_hat) && !is.null(se_hat) && is.null(data)) {
+    
+    posterior_list <- getPosteriorI(
+      prior_list = prior_list,
+      mu_hat     = mu_hat,
+      se_hat     = se_hat,
+      calc_ess   = calc_ess)
+    
+  } else if (is.null(mu_hat) && is.null(se_hat) && !is.null(data)) {
+    
+    posterior_list <- lapply(split(data, data$simulation), getPosteriorI,
+                             prior_list = prior_list, calc_ess = calc_ess)
+    
   } else {
-  posterior_list <- lapply(split(data, data$simulation), getPosteriorI,
-                           prior_list = prior_list,
-                           mu_hat     = mu_hat,
-                           se_hat     = se_hat)
-
+    
+    stop ("Either 'data' or 'mu_hat' and 'se_hat' must not be NULL.")
+    
   }
- 
+  
   if (length(posterior_list) == 1) {
     
     posterior_list <- posterior_list[[1]]
@@ -83,11 +90,9 @@ getPosteriorI <- function(
   
   if (is.null(mu_hat) && is.null(se_hat)) {
     checkmate::check_data_frame(data_i, null.ok = FALSE)
-    # checkmate::assert_names(names(data_i), must.include = "reponse")
-    # needs fixing! the reponse field is not available after using simulateData
-    # posterior <- getPosterior(data = simulateData(4, dose_levels, new_trial$sd, mods), prior = prior_list,
-    #                           mu_hat = NULL,
-    #                           sd_hat = NULL)
+    checkmate::assert_names(names(data_i), must.include = "response")
+    checkmate::assert_names(names(data_i), must.include = "dose")
+
     anova_res <- stats::lm(data_i$response ~ factor(data_i$dose) - 1)
     mu_hat    <- summary(anova_res)$coefficients[, 1]
     se_hat    <- summary(anova_res)$coefficients[, 2]
