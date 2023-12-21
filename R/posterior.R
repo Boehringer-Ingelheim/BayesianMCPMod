@@ -1,4 +1,3 @@
-
 #' @title getPosterior
 #' 
 #' @description Either the patient level data or both mu_hat as well as sd_hat must to be provided. If patient level data is provided mu_hat and se_hat are calculated within the function using a linear model.
@@ -36,6 +35,12 @@ getPosterior <- function(
   calc_ess = FALSE
   
 ) {
+  checkmate::check_data_frame(data, null.ok = TRUE)
+  checkmate::check_list(prior_list, names = "named", any.missing = FALSE)
+  checkmate::check_vector(mu_hat, any.missing = FALSE, null.ok = TRUE)
+  checkmate::check_double(mu_hat, null.ok = TRUE, lower = -Inf, upper = Inf)
+  checkmate::check_vector(se_hat, any.missing = FALSE, null.ok = TRUE)
+  checkmate::check_double(se_hat, null.ok = TRUE, lower = 0, upper = Inf)
   
   if (!is.null(mu_hat) && !is.null(se_hat) && is.null(data)) {
     
@@ -55,7 +60,7 @@ getPosterior <- function(
     stop ("Either 'data' or 'mu_hat' and 'se_hat' must not be NULL.")
     
   }
- 
+  
   if (length(posterior_list) == 1) {
     
     posterior_list <- posterior_list[[1]]
@@ -75,9 +80,19 @@ getPosteriorI <- function(
   calc_ess = FALSE
   
 ) {
+
+  checkmate::check_data_frame(data_i, null.ok = TRUE)
+  checkmate::check_list(prior_list, names = "named", any.missing = FALSE)
+  checkmate::check_vector(mu_hat, any.missing = FALSE, null.ok = TRUE)
+  checkmate::check_double(mu_hat, null.ok = TRUE, lower = -Inf, upper = Inf)
+  checkmate::check_vector(se_hat, any.missing = FALSE, null.ok = TRUE)
+  checkmate::check_double(se_hat, null.ok = TRUE, lower = 0, upper = Inf)
   
   if (is.null(mu_hat) && is.null(se_hat)) {
-    
+    checkmate::check_data_frame(data_i, null.ok = FALSE)
+    checkmate::assert_names(names(data_i), must.include = "response")
+    checkmate::assert_names(names(data_i), must.include = "dose")
+
     anova_res <- stats::lm(data_i$response ~ factor(data_i$dose) - 1)
     mu_hat    <- summary(anova_res)$coefficients[, 1]
     se_hat    <- summary(anova_res)$coefficients[, 2]
@@ -92,7 +107,6 @@ getPosteriorI <- function(
   } else {
     
     stop ("Both mu_hat and se_hat must be provided.")
-    
   }
   
   post_list <- mapply(RBesT::postmix, prior_list, m = mu_hat, se = se_hat,

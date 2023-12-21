@@ -194,5 +194,3 @@ success_probabilities <- assessDesign(
   dr_means = c(-12,-14,-15,-16,-17))
 success_probabilities
 ```
-
-

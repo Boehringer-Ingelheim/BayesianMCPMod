@@ -207,7 +207,7 @@ contr_mat<- getContr(
 #  prior_list     = prior_list)
 ```
 The bayesian MCP testing step is then executed based on the posterior information, the provided contrasts and the (multiplicity adjusted) critical value.   
-```{r  Executionr of Bayesian MCPMod Test step}
+```{r  Execution of Bayesian MCPMod Test step}
 BMCP_result <- performBayesianMCP(
   posterior_list = posterior,
   contr          = contr_mat, 
@@ -277,6 +277,3 @@ overall_result<-performBayesianMCPMod(
 
 overall_result$Mod
 ```
-
-
-

@@ -54,7 +54,6 @@ prior_list<-list(Ctrl   = RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 12), sigma 
                    DG_2 = RBesT::mixnorm(comp1 = c(w = 1, m = 1.2, s = 11), sigma = 2) ,  
                    DG_3 = RBesT::mixnorm(comp1 = c(w = 1, m = 1.3, s = 11), sigma = 2) ,
                    DG_4 = RBesT::mixnorm(comp1 = c(w = 1, m = 2, s = 13) ,sigma = 2))
-
 n_patients <- c(40,60,60,60,60)
 success_probabilities <- assessDesign(
 n_patients  = n_patients,

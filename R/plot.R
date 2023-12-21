@@ -43,6 +43,15 @@ plot.modelFits <- function (
   ...
   
 ) {
+  checkmate::check_class(x, "modelFits")
+  checkmate::check_logical(gAIC)
+  checkmate::check_logical(avg_fit)
+  checkmate::check_logical(cr_intv)
+  checkmate::check_double(alpha_CrI, lower = 0, upper = 1)
+  checkmate::check_logical(cr_bands)
+  checkmate::check_double(alpha_CrB, lower = 0, upper = 1, len = 2)
+  checkmate::check_integer(n_bs_smpl, lower = 1, upper = Inf)
+  checkmate::check_string(acc_color, na.ok = TRUE)
   
   plot_res   <- 1e2
   model_fits <- x

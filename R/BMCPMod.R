@@ -24,7 +24,6 @@
 #'                    DG_2 = RBesT::mixnorm(comp1 = c(w = 1, m = 1.2, s = 11), sigma = 2) ,  
 #'                    DG_3 = RBesT::mixnorm(comp1 = c(w = 1, m = 1.3, s = 11), sigma = 2) ,
 #'                    DG_4 = RBesT::mixnorm(comp1 = c(w = 1, m = 2, s = 13) ,sigma = 2))
-#' 
 #' n_patients <- c(40,60,60,60,60)
 #' success_probabilities <- assessDesign(
 #' n_patients  = n_patients,
@@ -52,6 +51,15 @@ assessDesign <- function (
   dr_means       = NULL
   
 ) {
+  
+  checkmate::assert_vector(n_patients, len = length(attr(mods, "doses")), any.missing = FALSE)
+  checkmate::check_class(mods, classes = "Mods")
+  checkmate::check_list(prior_list, names = "named", len = length(attr(mods, "doses")), any.missing = FALSE)
+  # sensitive to how DoseFinding labels their attributes for "Mods" class
+  checkmate::check_double(n_sim, lower = 1, upper = Inf)
+  checkmate::check_double(alpha_crit_val, lower = 0, upper = 1)
+  checkmate::check_logical(simple)
+  # TODO: check that prior_list has 'sd_tot' attribute, and that it's numeric
   
   dose_levels <- attr(mods, "doses")
   
@@ -172,6 +180,11 @@ getContr <- function (
   
 ) {
   
+  checkmate::check_class(mods, classes = "Mods")
+  checkmate::check_double(dose_levels, lower = 0, any.missing = FALSE, len = length(attr(mods, "doses")))
+  checkmate::check_double(dose_weights, any.missing = FALSE, len = length(attr(mods, "doses")))
+  checkmate::check_list(prior_list, names = "named", len = length(attr(mods, "doses")), any.missing = FALSE)
+  
   # frequentist & re-estimation
   if (!is.null(se_new_trial) & 
       is.null(dose_weights) & is.null(prior_list) & is.null(sd_posterior)) {
@@ -267,6 +280,11 @@ getCritProb <- function (
   
 ) {
   
+  checkmate::check_class(mods, classes = "Mods")
+  checkmate::check_double(dose_levels, lower = 0, any.missing = FALSE, len = length(dose_weights))
+  checkmate::check_double(dose_weights, any.missing = FALSE, len = length(dose_levels))
+  checkmate::check_double(alpha_crit_val, lower = 0, upper = 1)
+  
   contr <- getContr(mods           = mods,
                     dose_levels    = dose_levels ,
                     dose_weights   = dose_weights,
@@ -328,6 +346,17 @@ performBayesianMCPMod <- function (
   simple = FALSE
   
 ) {
+  
+  checkmate::check_class(posterior_list, "postList")
+  checkmate::check_class(contr, "optContr")
+  checkmate::check_class(crit_prob_adj, "numeric")
+  checkmate::check_logical(simple)
+  
+  if (inherits(posterior_list,  "postList")) {
+    
+    posterior_list <- list(posterior_list)
+    
+  }
   
   if (inherits(posterior_list,  "postList")) {
     
@@ -453,6 +482,12 @@ performBayesianMCP <- function(
   crit_prob_adj
   
 ) {
+  
+  checkmate::check_class(posterior_list, "postList")
+  checkmate::check_class(contr, "optContr")
+  checkmate::check_class(crit_prob_adj, "numeric")
+  checkmate::check_numeric(crit_prob_adj, lower = 0, upper = Inf)
+  
   if (inherits(posterior_list,  "postList")) {
     
     posterior_list <- list(posterior_list)
