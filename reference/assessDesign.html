@@ -12,7 +12,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">BayesianMCPMod</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.3-3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.4-3</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -131,7 +131,6 @@
 <span class="r-in"><span>                   DG_2 <span class="op">=</span> <span class="fu">RBesT</span><span class="fu">::</span><span class="fu"><a href="https://opensource.nibr.com/RBesT/reference/mixnorm.html" class="external-link">mixnorm</a></span><span class="op">(</span>comp1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>w <span class="op">=</span> <span class="fl">1</span>, m <span class="op">=</span> <span class="fl">1.2</span>, s <span class="op">=</span> <span class="fl">11</span><span class="op">)</span>, sigma <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> ,  </span></span>
 <span class="r-in"><span>                   DG_3 <span class="op">=</span> <span class="fu">RBesT</span><span class="fu">::</span><span class="fu"><a href="https://opensource.nibr.com/RBesT/reference/mixnorm.html" class="external-link">mixnorm</a></span><span class="op">(</span>comp1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>w <span class="op">=</span> <span class="fl">1</span>, m <span class="op">=</span> <span class="fl">1.3</span>, s <span class="op">=</span> <span class="fl">11</span><span class="op">)</span>, sigma <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> ,</span></span>
 <span class="r-in"><span>                   DG_4 <span class="op">=</span> <span class="fu">RBesT</span><span class="fu">::</span><span class="fu"><a href="https://opensource.nibr.com/RBesT/reference/mixnorm.html" class="external-link">mixnorm</a></span><span class="op">(</span>comp1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>w <span class="op">=</span> <span class="fl">1</span>, m <span class="op">=</span> <span class="fl">2</span>, s <span class="op">=</span> <span class="fl">13</span><span class="op">)</span> ,sigma <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">n_patients</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">40</span>,<span class="fl">60</span>,<span class="fl">60</span>,<span class="fl">60</span>,<span class="fl">60</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">success_probabilities</span> <span class="op">&lt;-</span> <span class="fu">assessDesign</span><span class="op">(</span></span></span>
 <span class="r-in"><span>n_patients  <span class="op">=</span> <span class="va">n_patients</span>,</span></span>
@@ -142,46 +141,46 @@
 <span class="r-in"><span><span class="va">success_probabilities</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $linear</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Bayesian Multiple Comparison Procedure</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   Estimated Success Rate:  0.919 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Estimated Success Rate:  0.892 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   N Simulations:           1000</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Model Significance Frequencies</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      linear      linlog        emax exponential </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       0.919       0.881       0.745       0.628 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       0.892       0.848       0.722       0.620 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $linlog</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Bayesian Multiple Comparison Procedure</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   Estimated Success Rate:  0.844 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Estimated Success Rate:  0.829 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   N Simulations:           1000</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Model Significance Frequencies</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      linear      linlog        emax exponential </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       0.844       0.658       0.798       0.781 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       0.829       0.626       0.762       0.755 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $emax1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Bayesian Multiple Comparison Procedure</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   Estimated Success Rate:  0.844 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Estimated Success Rate:  0.824 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   N Simulations:           1000</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Model Significance Frequencies</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      linear      linlog        emax exponential </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       0.844       0.562       0.813       0.815 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       0.824       0.545       0.774       0.792 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $emax2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Bayesian Multiple Comparison Procedure</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   Estimated Success Rate:  0.877 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Estimated Success Rate:  0.865 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   N Simulations:           1000</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Model Significance Frequencies</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      linear      linlog        emax exponential </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       0.877       0.716       0.841       0.819 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       0.865       0.685       0.808       0.798 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $exponential</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Bayesian Multiple Comparison Procedure</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   Estimated Success Rate:  0.94 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Estimated Success Rate:  0.917 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   N Simulations:           1000</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Model Significance Frequencies</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      linear      linlog        emax exponential </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       0.940       0.887       0.576       0.399 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       0.917       0.858       0.548       0.391 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"avgSuccessRate")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.8848</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.8654</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"placEff")</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"maxEff")</span>
@@ -198,7 +197,7 @@
 
 
     <footer><div class="pkgdown-footer-left">
-  <p></p><p>Developed by Boehringer Ingelheim Pharma GmbH &amp; Co. KG, Stephan Wojciekowski, Lars Andersen, Steven Brooks, Sebastian Bossert.</p>
+  <p></p><p>Developed by Boehringer Ingelheim Pharma GmbH &amp; Co. KG, Stephan Wojciekowski, Lars Andersen, Sebastian Bossert.</p>
 </div>
 
 <div class="pkgdown-footer-right">

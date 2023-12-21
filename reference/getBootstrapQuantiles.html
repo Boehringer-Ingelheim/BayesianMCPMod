@@ -20,7 +20,7 @@ Instead of drawing n bootstrap samples from the sampling distribution of the tri
     
     <a class="navbar-brand me-2" href="../index.html">BayesianMCPMod</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.3-3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.4-3</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -125,79 +125,79 @@ Instead of drawing n bootstrap samples from the sampling distribution of the tri
 <span class="r-in"><span><span class="va">fit</span><span class="op">&lt;-</span><span class="fu"><a href="getModelFits.html">getModelFits</a></span><span class="op">(</span>models<span class="op">=</span><span class="va">models</span>, posterior<span class="op">=</span><span class="va">posterior_list</span>,dose_levels<span class="op">=</span><span class="va">dose_levels</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">fit_simple</span><span class="op">&lt;-</span><span class="fu"><a href="getModelFits.html">getModelFits</a></span><span class="op">(</span>models<span class="op">=</span><span class="va">models</span>, posterior<span class="op">=</span><span class="va">posterior_list</span>,dose_levels<span class="op">=</span><span class="va">dose_levels</span>,simple<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">getBootstrapQuantiles</span><span class="op">(</span><span class="va">fit</span>, quantiles <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.025</span>,<span class="fl">0.5</span>, <span class="fl">0.975</span><span class="op">)</span>, doses <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">3</span>,<span class="fl">4</span>,<span class="fl">6</span>,<span class="fl">8</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    doses      models       2.5%         50%    97.5%</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1      0        emax -2.2090311 -0.06429509 1.789216</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2      1        emax  1.4455189  2.99395016 5.020870</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3      2        emax  2.8170118  4.28985090 5.698190</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4      3        emax  3.6557575  5.06226439 6.354852</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5      4        emax  4.2269682  5.58676874 6.823712</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6      6        emax  4.5910264  6.25661476 7.702195</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7      8        emax  4.7695430  6.67951819 8.485015</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8      0 exponential  0.1150537  1.63897916 3.117934</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9      1 exponential  0.8697511  2.20256908 3.427680</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10     2 exponential  1.6603340  2.79663868 3.910288</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11     3 exponential  2.4131488  3.44224283 4.440358</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12     4 exponential  3.0935838  4.13661200 5.102228</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13     6 exponential  4.1830006  5.68242306 6.959259</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14     8 exponential  5.2397223  7.43667015 9.278641</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15     0     sigEmax -2.1934481  0.02704978 2.000043</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16     1     sigEmax  0.4257830  2.67517725 4.945819</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17     2     sigEmax  1.7655819  4.51073355 6.469958</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18     3     sigEmax  3.5125863  5.36664856 7.108517</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19     4     sigEmax  4.2948308  5.79261458 7.313631</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20     6     sigEmax  4.6860570  6.30187036 7.843713</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 21     8     sigEmax  4.7511659  6.58345253 8.495847</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 22     0      linear -0.1627849  1.41553086 2.915317</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 23     1      linear  0.8530038  2.15645064 3.391756</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 24     2      linear  1.8008893  2.89814643 4.001711</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 25     3      linear  2.6293591  3.63781817 4.619482</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 26     4      linear  3.3131704  4.39551725 5.385323</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 27     6      linear  4.4081171  5.93035029 7.275674</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 28     8      linear  5.2815981  7.45013321 9.272253</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 29     0      avgFit -2.1605415  0.02015519 2.151871</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 30     1      avgFit  0.6548723  2.82174578 5.020870</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 31     2      avgFit  2.1825928  4.33856463 6.288643</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 32     3      avgFit  3.1082430  5.15600617 6.987099</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 33     4      avgFit  3.8505589  5.62077249 7.270106</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 34     6      avgFit  4.6361165  6.23801577 7.722548</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 35     8      avgFit  4.8272027  6.70477968 8.649504</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    doses      models        2.5%        50%    97.5%</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1      0        emax -1.93528014 0.01077891 1.947431</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2      1        emax  1.51839521 3.01480132 4.993380</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3      2        emax  2.84259809 4.31727095 5.827932</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4      3        emax  3.73742385 5.04418422 6.397990</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5      4        emax  4.25567230 5.55952573 6.903312</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6      6        emax  4.71176519 6.25070875 7.821955</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7      8        emax  4.89068093 6.65078875 8.662474</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8      0 exponential  0.29547838 1.68805391 3.039746</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9      1 exponential  1.04603310 2.26115833 3.465395</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10     2 exponential  1.77263154 2.84272768 3.915899</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11     3 exponential  2.43118922 3.47454117 4.461304</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12     4 exponential  3.07552286 4.15624764 5.197397</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13     6 exponential  4.26828761 5.66234451 7.096050</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14     8 exponential  5.38508837 7.37542203 9.439437</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15     0     sigEmax -1.87367798 0.11791852 2.233049</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16     1     sigEmax  0.63253212 2.68329617 4.905757</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17     2     sigEmax  1.59936097 4.51246682 6.512710</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18     3     sigEmax  3.33744156 5.30996347 7.000478</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19     4     sigEmax  4.26221620 5.78662176 7.381777</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20     6     sigEmax  4.68488321 6.29601598 8.023277</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21     8     sigEmax  4.77273777 6.56383526 8.618064</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22     0      linear  0.05489318 1.46672523 2.879485</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 23     1      linear  1.02146375 2.21686560 3.420844</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 24     2      linear  1.89111264 2.95494103 3.999765</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 25     3      linear  2.66572999 3.68835482 4.656323</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 26     4      linear  3.28130103 4.41443217 5.493044</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 27     6      linear  4.44984435 5.91282775 7.365232</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 28     8      linear  5.46989991 7.39913174 9.408080</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29     0      avgFit -1.89063299 0.11602443 2.336867</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 30     1      avgFit  0.71036897 2.83484290 4.993380</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 31     2      avgFit  2.12071843 4.33096953 6.229083</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 32     3      avgFit  3.10425110 5.08262758 6.807129</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 33     4      avgFit  3.83243798 5.54807527 7.214086</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 34     6      avgFit  4.68742752 6.23911264 7.873420</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 35     8      avgFit  4.90220485 6.66979013 8.833800</span>
 <span class="r-in"><span><span class="fu">getBootstrapQuantiles</span><span class="op">(</span><span class="va">fit_simple</span>, n_samples<span class="op">=</span><span class="fl">2000</span>, quantiles <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.025</span>,<span class="fl">0.5</span>, <span class="fl">0.975</span><span class="op">)</span>, doses <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">3</span>,<span class="fl">4</span>,<span class="fl">6</span>,<span class="fl">8</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    doses      models        2.5%         50%    97.5%</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1      0        emax -1.94317363 -0.06110680 1.807746</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2      1        emax  1.48686657  2.99329311 4.971980</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3      2        emax  2.80320127  4.28927613 5.755415</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4      3        emax  3.66669231  5.06970178 6.394878</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5      4        emax  4.32215425  5.57886476 6.917411</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6      6        emax  4.77650252  6.26149257 7.791714</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7      8        emax  4.96808764  6.67647901 8.610389</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8      0 exponential  0.26569968  1.58651524 2.989615</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9      1 exponential  0.97686263  2.16290716 3.383302</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10     2 exponential  1.69477158  2.78635002 3.850873</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11     3 exponential  2.41163630  3.45421891 4.433342</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12     4 exponential  3.12251421  4.15010122 5.133863</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13     6 exponential  4.33067308  5.68263379 7.031909</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14     8 exponential  5.50112505  7.40911699 9.390239</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15     0     sigEmax -1.91840711  0.02088513 2.096220</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16     1     sigEmax  0.64348675  2.68711419 4.903478</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17     2     sigEmax  1.72894336  4.48543013 6.384898</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18     3     sigEmax  3.49884454  5.32639494 7.019983</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19     4     sigEmax  4.35052663  5.79176610 7.367356</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20     6     sigEmax  4.80846080  6.29960160 7.950547</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 21     8     sigEmax  4.93470567  6.60854370 8.513999</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 22     0      linear  0.01358658  1.35936323 2.828523</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 23     1      linear  0.95296083  2.12015568 3.332168</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 24     2      linear  1.82468480  2.89097058 3.929317</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 25     3      linear  2.64826467  3.66030285 4.616384</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 26     4      linear  3.36765275  4.41613073 5.443984</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 27     6      linear  4.52113132  5.92623584 7.346681</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 28     8      linear  5.56317188  7.43575149 9.361398</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 29     0      avgFit -1.92724541  0.03556676 2.174575</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 30     1      avgFit  0.72207245  2.86505869 4.971980</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 31     2      avgFit  1.98255668  4.31019984 6.142802</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 32     3      avgFit  3.08617440  5.12190894 6.810014</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 33     4      avgFit  3.86884316  5.60262344 7.185815</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 34     6      avgFit  4.76762728  6.24210082 7.838421</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 35     8      avgFit  4.98196490  6.71686460 8.765388</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1      0        emax -1.95040916 -0.01643583 1.923381</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2      1        emax  1.48947257  3.03303975 5.044103</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3      2        emax  2.83023658  4.34249687 5.817454</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4      3        emax  3.69308204  5.06425438 6.389599</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5      4        emax  4.24810719  5.56497131 6.846450</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6      6        emax  4.73074800  6.23009516 7.795064</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7      8        emax  4.87428947  6.64186553 8.593463</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8      0 exponential  0.27919499  1.67287334 3.097421</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9      1 exponential  1.03059768  2.23115993 3.516183</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10     2 exponential  1.76166290  2.83321346 3.995873</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11     3 exponential  2.49266725  3.46586918 4.570417</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12     4 exponential  3.11089418  4.15300334 5.241860</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13     6 exponential  4.26058346  5.65092908 7.062801</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14     8 exponential  5.37163269  7.35558197 9.343059</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15     0     sigEmax -1.94894538  0.08031039 2.205732</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16     1     sigEmax  0.58688084  2.71658034 4.981393</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17     2     sigEmax  1.92335994  4.53897536 6.428498</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18     3     sigEmax  3.54617380  5.35712986 7.022326</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19     4     sigEmax  4.26125612  5.79015593 7.367985</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20     6     sigEmax  4.72605591  6.28488784 7.961943</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21     8     sigEmax  4.85696208  6.55043145 8.573101</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22     0      linear  0.02919889  1.45507272 2.943918</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 23     1      linear  1.00766332  2.19121960 3.465393</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 24     2      linear  1.88741584  2.93094517 4.065752</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 25     3      linear  2.69734211  3.66547742 4.745622</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 26     4      linear  3.33495177  4.40823091 5.545061</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 27     6      linear  4.46151637  5.89739470 7.346379</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 28     8      linear  5.44933114  7.38475024 9.316822</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29     0      avgFit -1.94568391  0.09915765 2.273201</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 30     1      avgFit  0.69007803  2.91940598 5.039259</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 31     2      avgFit  2.07759391  4.38164769 6.100169</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 32     3      avgFit  3.11642600  5.14982555 6.866144</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 33     4      avgFit  3.84198424  5.58951774 7.236870</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 34     6      avgFit  4.69553922  6.21479517 7.830037</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 35     8      avgFit  4.88697896  6.66335717 8.787278</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
@@ -205,7 +205,7 @@ Instead of drawing n bootstrap samples from the sampling distribution of the tri
 
 
     <footer><div class="pkgdown-footer-left">
-  <p></p><p>Developed by Boehringer Ingelheim Pharma GmbH &amp; Co. KG, Stephan Wojciekowski, Lars Andersen, Steven Brooks, Sebastian Bossert.</p>
+  <p></p><p>Developed by Boehringer Ingelheim Pharma GmbH &amp; Co. KG, Stephan Wojciekowski, Lars Andersen, Sebastian Bossert.</p>
 </div>
 
 <div class="pkgdown-footer-right">
