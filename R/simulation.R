@@ -2,14 +2,12 @@
 #' 
 #' @description
 #' Function to simulate patient level data for a normally distributed endpoint
-#' 
-#' 
-#' @param n_patients vector containing number of patients as a numerical
+#' @param n_patients Vector containing number of patients as a numerical
 #' value per dose-group.
-#' @param dose_levels vector containing the different dosage levels.
-#' @param sd standard deviation on patient level.
+#' @param dose_levels Vector containing the different dosage levels.
+#' @param sd Standard deviation on patient level.
 #' @param mods An object of class "Mods" as specified in the Doseinding package.
-#' @param n_sim number of simulations to be performed,
+#' @param n_sim Number of simulations to be performed,
 #' Default is 1000
 #' @param true_model Default value is NULL.
 #' Assumed true underlying model. Provided via a String. e.g. "emax".
@@ -18,21 +16,25 @@
 #' 
 #' @examples
 #' # example code
-#'  models <- DoseFinding::Mods(linear = NULL, linlog = NULL, emax = c(0.5, 1.2), exponential = 2, 
-#' doses = c(0, 0.5, 2,4, 8),maxEff= 6)
-#' dose_levels = c(0, 0.5, 2,4, 8)
-#' sd   = 12
-#' n_patients <- c(40,60,60,60,60)
-#' sim_data <- simulateData(
-#' n_patients  = n_patients,
-#' dose_levels = dose_levels,
-#' mods        = models,
-#' n_sim       = 100,
-#' sd          = sd)
+#' models <- DoseFinding::Mods(linear      = NULL,
+#'                             linlog      = NULL,
+#'                             emax        = c(0.5, 1.2),
+#'                             exponential = 2, 
+#'                             doses       = c(0, 0.5, 2,4, 8),
+#'                             maxEff      = 6)
+#' dose_levels <- c(0, 0.5, 2,4, 8)
+#' sd          <- 12
+#' n_patients  <- c(40,60,60,60,60)
+#' 
+#' sim_data <- simulateData(n_patients  = n_patients,
+#'                          dose_levels = dose_levels,
+#'                          sd          = sd,
+#'                          mods        = models,
+#'                          n_sim       = 100)
 #' 
 #' sim_data
 
-#' @return sim_data one list object, containing patient level simulated data for all assumed true models.
+#' @return A list object, containing patient level simulated data for all assumed true models.
 #' Also providing information about simulation iteration, patient number as well as dosage levels.
 #' 
 #' @export

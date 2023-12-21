@@ -4,35 +4,41 @@
 #'
 #' @param n_patients Vector specifying the planned number of patients per dose group
 #' @param mods An object of class "Mods" as specified in the DoseFinding package.
-#' @param prior_list a prior_list object specifying the utilized prior for the different dose groups 
-#' @param sd a positive value, specification of assumed sd 
-#' @param n_sim number of simulations to be performed
-#' @param alpha_crit_val (unadjusted) critical value to be used for the MCT testing step. Passed to the getCritProb function for the calculation of adjusted critical values (on the probability scale). Default is 0.05.
-#' @param simple boolean variable, defining whether simplified fit will be applied. Passed to the getModelFits function. Default FALSE.
-#' @param reestimate boolean variable, defining whether critical value should be calculated with re-estimated contrasts (see getCritProb function for more details). Default FALSE
+#' @param prior_list A prior_list object specifying the utilized prior for the different dose groups 
+#' @param sd A positive value, specification of assumed sd 
+#' @param n_sim Number of simulations to be performed
+#' @param alpha_crit_val (Unadjusted) Critical value to be used for the MCT testing step. Passed to the getCritProb function for the calculation of adjusted critical values (on the probability scale). Default is 0.05.
+#' @param simple Boolean variable defining whether simplified fit will be applied. Passed to the getModelFits function. Default FALSE.
+#' @param reestimate Boolean variable defining whether critical value should be calculated with re-estimated contrasts (see getCritProb function for more details). Default FALSE
 #' @param contr Allows specification of a fixed contrasts matrix. Default NULL
-#' @param dr_means a vector, allows specification of  individual (not model based) assumed effects per dose group. Default NULL
+#' @param dr_means A vector, allows specification of  individual (not model based) assumed effects per dose group. Default NULL
 #' 
-#' @return returns success probabilities for the different assumed dose-response shapes, attributes also includes information around average success rate (across all assumed models) and prior Effective sample size
+#' @return Returns success probabilities for the different assumed dose-response shapes, attributes also includes information around average success rate (across all assumed models) and prior Effective sample size
 #' 
 #' @examples
 #' # example code
-#' mods <- DoseFinding::Mods(linear = NULL, linlog = NULL, emax = c(0.5, 1.2), exponential = 2, doses = c(0, 0.5, 2,4, 8), maxEff= 6)
-#' sd   = 12
-#' prior_list<-list(Ctrl   = RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 12), sigma = 2),
+#' mods <- DoseFinding::Mods(linear      = NULL,
+#'                           linlog      = NULL,
+#'                           emax        = c(0.5, 1.2),
+#'                           exponential = 2,
+#'                           doses       = c(0, 0.5, 2,4, 8),
+#'                           maxEff      = 6)
+#' sd <- 12
+#' prior_list <- list(Ctrl = RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 12), sigma = 2),
 #'                    DG_1 = RBesT::mixnorm(comp1 = c(w = 1, m = 1, s = 12), sigma = 2),
 #'                    DG_2 = RBesT::mixnorm(comp1 = c(w = 1, m = 1.2, s = 11), sigma = 2) ,  
 #'                    DG_3 = RBesT::mixnorm(comp1 = c(w = 1, m = 1.3, s = 11), sigma = 2) ,
-#'                    DG_4 = RBesT::mixnorm(comp1 = c(w = 1, m = 2, s = 13) ,sigma = 2))
-#' n_patients <- c(40,60,60,60,60)
+#'                    DG_4 = RBesT::mixnorm(comp1 = c(w = 1, m = 2, s = 13), sigma = 2))
+#' n_patients <- c(40, 60, 60, 60, 60)
+#' 
 #' success_probabilities <- assessDesign(
-#' n_patients  = n_patients,
-#' mods        = mods,
-#' prior_list  = prior_list,
-#' sd          = sd)
+#'   n_patients  = n_patients,
+#'   mods        = mods,
+#'   prior_list  = prior_list,
+#'   sd          = sd)
 #' 
 #' success_probabilities
-
+#' 
 #' @export
 assessDesign <- function (
     
@@ -59,7 +65,7 @@ assessDesign <- function (
   checkmate::check_double(n_sim, lower = 1, upper = Inf)
   checkmate::check_double(alpha_crit_val, lower = 0, upper = 1)
   checkmate::check_logical(simple)
-  # TODO: check that prior_list has 'sd_tot' attribute, and that it's numeric
+  # TODO: check that prior_list has 'sd_tot' attribute, and that it's numeric # this is not applicable at the moment
   
   dose_levels <- attr(mods, "doses")
   
@@ -138,35 +144,41 @@ assessDesign <- function (
 #' 
 #' @description This function calculates contrast vectors that are optimal for detecting certain alternatives via applying the function optContr of the DoseFinding package.
 #' Hereby 4 different options can be distinguished that are automatically executed based on the input that is provided
-#' i)  Bayesian approach: If dose_weights and a prior_list are provided an optimized contrasts for the posterior sample size is calculated. 
-#'     In detail,  in a first step the dose_weights (typically the number of patients per dose group) and the prior information is combined by calculating for
-#'     each dose group a posterior effective sample. Based on this posterior effective sample sizes the allocation ratio is derived, which allows for a calculation on
-#'     pseudo-optimal contrasts via regular MCPMod.are calculated from the
-#'     regular MCPMod for these specific weights 
-#' ii) Frequentist approach: If only dose_weights are provided optimal contrast vectors are calculated from the
-#'     regular MCPMod for these specific weights
-#' iii)Bayesian approach + re-estimation: If only a sd_posterior (i.e. variability of the posterior distribution) is provided, pseudo-optimal contrasts based on these posterior weights will be calculated
-#' iv) Frequentist approach+re-estimation:If only a se_new_trial (i.e. the estimated variability per dose group of a new trial) is provided, optimal contrast vectors are calculated from the
-#'     regular MCPMod for this specific vector of standard errors. For the actual evaluation this vector of standard errors is translated into a (diagonal) matrix of variances 
+#' 1) Bayesian approach: If dose_weights and a prior_list are provided an optimized contrasts for the posterior sample size is calculated. 
+#'    In detail,  in a first step the dose_weights (typically the number of patients per dose group) and the prior information is combined by calculating for
+#'    each dose group a posterior effective sample. Based on this posterior effective sample sizes the allocation ratio is derived, which allows for a calculation on
+#'    pseudo-optimal contrasts via regular MCPMod.are calculated from the
+#'    regular MCPMod for these specific weights 
+#' 2) Frequentist approach: If only dose_weights are provided optimal contrast vectors are calculated from the
+#'    regular MCPMod for these specific weights
+#' 3) Bayesian approach + re-estimation: If only a sd_posterior (i.e. variability of the posterior distribution) is provided, pseudo-optimal contrasts based on these posterior weights will be calculated
+#' 4) Frequentist approach+re-estimation:If only a se_new_trial (i.e. the estimated variability per dose group of a new trial) is provided, optimal contrast vectors are calculated from the
+#'    regular MCPMod for this specific vector of standard errors. For the actual evaluation this vector of standard errors is translated into a (diagonal) matrix of variances 
 #' 
 #' @param mods An object of class "Mods" as specified in the DoseFinding package.
-#' @param dose_levels vector containing the different dosage levels.
+#' @param dose_levels Vector containing the different dosage levels.
 #' @param dose_weights Vector specifying weights for the different doses. Please note that in case this information is provided together with a prior (i.e. Option i) is planned) these two inputs should be provided on the same scale (e.g. patient numbers).  Default NULL
-#' @param prior_list a prior_list object, only required as input for Option i). Default NULL
-#' @param sd_posterior a vector of positive values with information about the variability of the posterior distribution, only required for Option iii). Default NULL
-#' @param se_new_trial a vector of positive values with information about the observed variability, only required for Option iv). Default NULL
+#' @param prior_list A prior_list object, only required as input for Option i). Default NULL
+#' @param sd_posterior A vector of positive values with information about the variability of the posterior distribution, only required for Option iii). Default NULL
+#' @param se_new_trial A vector of positive values with information about the observed variability, only required for Option iv). Default NULL
 #' 
 #' @examples
 #' # example code
-#' mods <- DoseFinding::Mods(linear = NULL, linlog = NULL, emax = c(0.5, 1.2), exponential = 2, doses = c(0, 0.5, 2,4, 8), maxEff= 6)
-#' dose_levels=c(0, 0.5, 2, 4, 8)
-#' sd_posterior   = c(2.8,3,2.5,3.5,4)
-#' contr_mat<- getContr(
-#' mods           = mods,
-#' dose_levels    = dose_levels,
-#' sd_posterior   = sd_posterior) 
+#' mods <- DoseFinding::Mods(linear      = NULL,
+#'                           linlog      = NULL,
+#'                           emax        = c(0.5, 1.2),
+#'                           exponential = 2,
+#'                           doses       = c(0, 0.5, 2,4, 8),
+#'                           maxEff      = 6)
+#' dose_levels  <- c(0, 0.5, 2, 4, 8)
+#' sd_posterior <- c(2.8,3,2.5,3.5,4)
 #' 
-#' @return contr Object of class ‘⁠optContr⁠’. A list containing entries contMat and muMat, and CorrMat. Specified in the DoseFinding package.
+#' contr_mat <- getContr(
+#'   mods           = mods,
+#'   dose_levels    = dose_levels,
+#'   sd_posterior   = sd_posterior) 
+#' 
+#' @return Object of class ‘⁠optContr⁠’. A list containing entries contMat and muMat, and CorrMat. Specified in the DoseFinding package.
 #' 
 #' @export
 getContr <- function (
@@ -247,27 +259,31 @@ getContr <- function (
 #' @description This function calculates multiplicity adjusted critical values. The critical values are calculated in such a way that
 #'  when using non-informative priors the actual error level for falsely declaring a significant trial in the Bayesian MCPMod is controlled (by the specified alpha level). 
 #'  Hereby optimal contrasts of the frequentist MCPMod are applied and two options can be distinguished
-#'  i) Frequentist approach: If only dose_weights are provided optimal contrast vectors are calculated from the
+#'  1) Frequentist approach: If only dose_weights are provided optimal contrast vectors are calculated from the
 #'     regular MCPMod for these specific weights and the corresponding critical value for this set of contrasts is calculated via the critVal function of the DoseFinding package.
-#' ii) Frequentist approach+re-estimation:If only a se_new_trial (i.e. the estimated variability per dose group of a new trial) is provided, optimal contrast vectors are calculated from the
+#'  2) Frequentist approach + re-estimation: If only a se_new_trial (i.e. the estimated variability per dose group of a new trial) is provided, optimal contrast vectors are calculated from the
 #'     regular MCPMod for this specific vector of standard errors. Here as well the critical value for this set of contrasts is calculated via the critVal function of the DoseFinding package.
 #' 
 #' @param mods An object of class "Mods" as specified in the DoseFinding package.
-#' @param dose_levels vector containing the different dosage levels.
+#' @param dose_levels Vector containing the different dosage levels.
 #' @param dose_weights Vector specifying weights for the different doses, only required for Option i). Default NULL
-#' @param se_new_trial a vector of positive values, only required for Option ii). Default NULL
-#' @param alpha_crit_val significance level. Default set to 0.025.
+#' @param se_new_trial A vector of positive values, only required for Option ii). Default NULL
+#' @param alpha_crit_val Significance level. Default set to 0.025.
 #'
 #' @examples
 #' # example code
-#' mods <- DoseFinding::Mods(linear = NULL, linlog = NULL, emax = c(0.5, 1.2), exponential = 2, doses = c(0, 0.5, 2,4, 8))
-#' dose_levels=c(0, 0.5, 2, 4, 8)
-#' critVal<- getCritProb(
+#' mods <- DoseFinding::Mods(linear      = NULL,
+#'                           linlog      = NULL,
+#'                           emax        = c(0.5, 1.2),
+#'                           exponential = 2,
+#'                           doses       = c(0, 0.5, 2,4, 8))
+#' dose_levels <- c(0, 0.5, 2, 4, 8)
+#' critVal <- getCritProb(
 #'   mods           = mods,
-#'   dose_weights  =c(50,50,50,50,50), #reflecting the planned sample size
+#'   dose_weights   = c(50,50,50,50,50), #reflecting the planned sample size
 #'   dose_levels    = dose_levels,
 #'   alpha_crit_val = 0.05) 
-#' @return crit_pval multiplicity adjusted critical value on the probability scale.
+#' @return Multiplicity adjusted critical value on the probability scale.
 #' 
 #' @export
 getCritProb <- function (
@@ -304,36 +320,43 @@ getCritProb <- function (
 #' 
 #' @description performs bayesian MCP Test step and modelling in a combined fashion. See performBayesianMCP function for MCT Test step and getModelFits for the modelling step
 #' 
-#' @param posterior_list a getPosterior object with information about the (mixture) posterior distribution per dose group
-#' @param contr a getContrMat object, contrast matrix to be used for the testing step.
-#' @param crit_prob_adj a getCritProb object, specifying the critical value to be used for the testing (on the probability scale).
-#' @param simple boolean variable, defining whether simplified fit will be applied. Passed to the getModelFits function. Default FALSE.
+#' @param posterior_list A getPosterior object with information about the (mixture) posterior distribution per dose group
+#' @param contr A getContrMat object, contrast matrix to be used for the testing step.
+#' @param crit_prob_adj A getCritProb object, specifying the critical value to be used for the testing (on the probability scale).
+#' @param simple Boolean variable, defining whether simplified fit will be applied. Passed to the getModelFits function. Default FALSE.
 #' @examples
 #' # example code
-#' mods <- DoseFinding::Mods(linear = NULL, linlog = NULL, emax = c(0.5, 1.2), exponential = 2, doses = c(0, 0.5, 2,4, 8))
-#' dose_levels=c(0, 0.5, 2, 4, 8)
-#' sd_posterior   = c(2.8,3,2.5,3.5,4)
-#' contr_mat<- getContr(
-#' mods           = mods,
-#' dose_levels    = dose_levels,
-#' sd_posterior   = sd_posterior)
-#' critVal<- getCritProb(
+#' mods <- DoseFinding::Mods(linear      = NULL,
+#'                           linlog      = NULL,
+#'                           emax        = c(0.5, 1.2),
+#'                           exponential = 2,
+#'                           doses       = c(0, 0.5, 2,4, 8))
+#' dose_levels  <- c(0, 0.5, 2, 4, 8)
+#' sd_posterior <- c(2.8, 3, 2.5, 3.5, 4)
+#' contr_mat <- getContr(
+#'   mods         = mods,
+#'   dose_levels  = dose_levels,
+#'   sd_posterior = sd_posterior)
+#' critVal <- getCritProb(
 #'   mods           = mods,
-#'   dose_weights  =c(50,50,50,50,50), #reflecting the planned sample size
+#'   dose_weights   = c(50, 50, 50, 50, 50), #reflecting the planned sample size
 #'   dose_levels    = dose_levels,
 #'   alpha_crit_val = 0.05)
-#' prior_list<-list(Ctrl=RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 5), sigma = 2),
-#'                    DG_1=RBesT::mixnorm(comp1 = c(w = 1, m = 1, s = 12), sigma = 2),
-#'                    DG_2=RBesT::mixnorm(comp1 = c(w = 1, m = 1.2, s = 11), sigma = 2) ,  
-#'                    DG_3=RBesT::mixnorm(comp1 = c(w = 1, m = 1.3, s = 11), sigma = 2) ,
-#'                    DG_4=RBesT::mixnorm(comp1 = c(w = 1, m = 2, s = 13) ,sigma = 2))
-#' mu<-c(0,1,1.5,2,2.5)
-#' se<-c(5,4,6,7,8)
+#' prior_list <- list(Ctrl = RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 5), sigma = 2),
+#'                    DG_1 = RBesT::mixnorm(comp1 = c(w = 1, m = 1, s = 12), sigma = 2),
+#'                    DG_2 = RBesT::mixnorm(comp1 = c(w = 1, m = 1.2, s = 11), sigma = 2) ,  
+#'                    DG_3 = RBesT::mixnorm(comp1 = c(w = 1, m = 1.3, s = 11), sigma = 2) ,
+#'                    DG_4 = RBesT::mixnorm(comp1 = c(w = 1, m = 2, s = 13), sigma = 2))
+#' mu <- c(0, 1, 1.5, 2, 2.5)
+#' se <- c(5, 4, 6, 7, 8)
 #' posterior_list <- getPosterior(
-#'    prior_list = prior_list,
-#'     mu_hat   = mu,
-#'    se_hat   = se)
-#' performBayesianMCPMod(posterior_list=posterior_list, contr=contr_mat,crit_prob_adj=critVal,simple = FALSE)
+#'   prior_list = prior_list,
+#'   mu_hat     = mu,
+#'   se_hat     = se)
+#' performBayesianMCPMod(posterior_list = posterior_list,
+#'                       contr          = contr_mat,
+#'                       crit_prob_adj  = critVal,
+#'                       simple         = FALSE)
 #' 
 #' @return bmcpmod test result as well as modelling result.
 #' 
@@ -437,40 +460,47 @@ addSignificance <- function (
 
 #' @title performBayesianMCP
 #' 
-#' @description performs bayesian MCP Test step, as described in Fleischer et al. (2022).
+#' @description Performs bayesian MCP Test step, as described in Fleischer et al. (2022).
 #' Tests for a dose-response effect using a model-based multiple contrast test based on the (provided) posterior distribution. In particular for every dose-response candidate the posterior probability is calculated that the contrast is bigger than 0 (based on the posterior distribution of the dose groups).
 #' In order to obtain significant test decision we consider the maximum of the posterior probabilities across the different models. This maximum is compared with a (multiplicity adjusted) critical value (on the probability scale).
 #' @references Fleischer F, Bossert S, Deng Q, Loley C, Gierse J. Bayesian MCPMod. Pharmaceutical Statistics. 2022; 21(3): 654-670. doi:10.1002/pst.2193 
-#' @param posterior_list a getPosterior object with information about the (mixture) posterior distribution per dose group 
-#' @param contr a getContrMat object, contrast matrix to be used for the testing step.
-#' @param crit_prob_adj a getCritProb object, specifying the critical value to be used for the testing (on the probability scale)
+#' @param posterior_list An object derived with getPosterior with information about the (mixture) posterior distribution per dose group 
+#' @param contr A getContrMat object, contrast matrix to be used for the testing step.
+#' @param crit_prob_adj A getCritProb object, specifying the critical value to be used for the testing (on the probability scale)
 #' 
 #' @examples
 #' # example code
-#' mods <- DoseFinding::Mods(linear = NULL, linlog = NULL, emax = c(0.5, 1.2), exponential = 2, doses = c(0, 0.5, 2,4, 8))
-#' dose_levels=c(0, 0.5, 2, 4, 8)
-#' sd_posterior   = c(2.8,3,2.5,3.5,4)
-#' contr_mat<- getContr(
-#' mods           = mods,
-#' dose_levels    = dose_levels,
-#' sd_posterior   = sd_posterior)
-#' critVal<- getCritProb(
+#' mods <- DoseFinding::Mods(linear      = NULL,
+#'                           linlog      = NULL,
+#'                           emax        = c(0.5, 1.2),
+#'                           exponential = 2,
+#'                           doses       = c(0, 0.5, 2,4, 8))
+#' dose_levels  <- c(0, 0.5, 2, 4, 8)
+#' sd_posterior <- c(2.8,3,2.5,3.5,4)
+#' contr_mat <- getContr(
+#'   mods         = mods,
+#'   dose_levels  = dose_levels,
+#'   sd_posterior = sd_posterior)
+#' critVal <- getCritProb(
 #'   mods           = mods,
-#'   dose_weights  =c(50,50,50,50,50), #reflecting the planned sample size
+#'   dose_weights   = c(50, 50, 50, 50, 50), #reflecting the planned sample size
 #'   dose_levels    = dose_levels,
 #'   alpha_crit_val = 0.05)
-#' prior_list<-list(Ctrl=RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 5), sigma = 2),
-#'                    DG_1=RBesT::mixnorm(comp1 = c(w = 1, m = 1, s = 12), sigma = 2),
-#'                    DG_2=RBesT::mixnorm(comp1 = c(w = 1, m = 1.2, s = 11), sigma = 2) ,  
-#'                    DG_3=RBesT::mixnorm(comp1 = c(w = 1, m = 1.3, s = 11), sigma = 2) ,
-#'                    DG_4=RBesT::mixnorm(comp1 = c(w = 1, m = 2, s = 13) ,sigma = 2))
-#' mu<-c(0,1,1.5,2,2.5)
-#' se<-c(5,4,6,7,8)
+#' prior_list <- list(Ctrl = RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 5), sigma = 2),
+#'                    DG_1 = RBesT::mixnorm(comp1 = c(w = 1, m = 1, s = 12), sigma = 2),
+#'                    DG_2 = RBesT::mixnorm(comp1 = c(w = 1, m = 1.2, s = 11), sigma = 2) ,  
+#'                    DG_3 = RBesT::mixnorm(comp1 = c(w = 1, m = 1.3, s = 11), sigma = 2) ,
+#'                    DG_4 = RBesT::mixnorm(comp1 = c(w = 1, m = 2, s = 13), sigma = 2))
+#' mu <- c(0, 1, 1.5, 2, 2.5)
+#' se <- c(5, 4, 6, 7, 8)
 #' posterior_list <- getPosterior(
-#'    prior_list = prior_list,
-#'     mu_hat   = mu,
-#'    se_hat   = se)
-#' performBayesianMCP(posterior_list=posterior_list, contr=contr_mat,crit_prob_adj=critVal)
+#'   prior_list = prior_list,
+#'   mu_hat     = mu,
+#'   se_hat     = se)
+#'   
+#' performBayesianMCP(posterior_list = posterior_list,
+#'                    contr          = contr_mat,
+#'                    crit_prob_adj  = critVal)
 #' 
 #' @return b_mcp test result, with information about p-values for the individual dose-response shapes and overall significance    
 #' 

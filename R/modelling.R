@@ -18,22 +18,29 @@
 #' }
 #' where \eqn{Q} denotes the number of models included in the averaging procedure.
 #' @references Schorning K, Bornkamp B, Bretz F, Dette H. 2016. “Model selection versus model averaging in dose finding studies”. Stat Med; 35; 4021-4040.
-#' @param models list of model names for which a fit will be performed.
-#' @param dose_levels a vector containing the different dosage levels.
-#' @param posterior a getPosterior object, containing the (multivariate) posterior distribution per dosage level. 
-#' @param simple boolean variable, defining whether simplified fit will be applied. Default FALSE.
+#' @param models List of model names for which a fit will be performed.
+#' @param dose_levels A vector containing the different dosage levels.
+#' @param posterior A getPosterior object, containing the (multivariate) posterior distribution per dosage level. 
+#' @param simple Boolean variable, defining whether simplified fit will be applied. Default FALSE.
 #' @examples
 #' # example code
-#' posterior_list =   list(Ctrl=RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 1), sigma = 2),
-#'                    DG_1=RBesT::mixnorm(comp1 = c(w = 1, m = 3, s = 1.2), sigma = 2),
-#'                    DG_2=RBesT::mixnorm(comp1 = c(w = 1, m = 4, s = 1.5), sigma = 2) ,  
-#'                    DG_3=RBesT::mixnorm(comp1 = c(w = 1, m = 6, s = 1.2), sigma = 2) ,
-#'                    DG_4=RBesT::mixnorm(comp1 = c(w = 1, m = 6.5, s = 1.1) ,sigma = 2))
-#' models=c("emax","exponential","sigEmax","linear")
-#' dose_levels=c(0,1,2,4,8)
-#' fit<-getModelFits(models=models, posterior=posterior_list,dose_levels=dose_levels)
-#' fit_simple<-getModelFits(models=models, posterior=posterior_list,dose_levels=dose_levels,simple=TRUE)
-#' @return model_fits returns a list, containing information about the fitted model coefficients, the prediction per dose group as well as maximum effect and generalized AIC (and corresponding weight) per model.
+#' posterior_list <- list(Ctrl = RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 1), sigma = 2),
+#'                        DG_1 = RBesT::mixnorm(comp1 = c(w = 1, m = 3, s = 1.2), sigma = 2),
+#'                        DG_2 = RBesT::mixnorm(comp1 = c(w = 1, m = 4, s = 1.5), sigma = 2) ,  
+#'                        DG_3 = RBesT::mixnorm(comp1 = c(w = 1, m = 6, s = 1.2), sigma = 2) ,
+#'                        DG_4 = RBesT::mixnorm(comp1 = c(w = 1, m = 6.5, s = 1.1), sigma = 2))
+#' models         <- c("emax", "exponential", "sigEmax", "linear")
+#' dose_levels    <- c(0, 1, 2, 4, 8)
+#' 
+#' fit        <- getModelFits(models      = models,
+#'                            posterior   = posterior_list,
+#'                            dose_levels = dose_levels)
+#' fit_simple <- getModelFits(models      = models,
+#'                            posterior   = posterior_list,
+#'                            dose_levels = dose_levels,
+#'                            simple      = TRUE)
+#'                            
+#' @return A list containing information about the fitted model coefficients, the prediction per dose group as well as maximum effect and generalized AIC (and corresponding weight) per model.
 #' 
 #' @export
 getModelFits <- function (
@@ -49,6 +56,7 @@ getModelFits <- function (
   checkmate::check_double(dose_levels, lower = 0, any.missing = FALSE, len = length(models))
   checkmate::check_class(posterior, "postList")
   checkmate::check_logical(simple)
+  
   models      <- unique(gsub("\\d", "", models))
   
   getModelFit <- ifelse(simple, getModelFitSimple, getModelFitOpt)

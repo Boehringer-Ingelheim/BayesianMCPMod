@@ -7,13 +7,13 @@
 \method{predict}{modelFits}(object, doses = NULL, ...)
 }
 \arguments{
-\item{object}{a modelFits object containing information about the fitted
+\item{object}{A modelFits object containing information about the fitted
 model coefficients}
 
-\item{doses}{a vector specifying the doses for which a prediction should be
+\item{doses}{A vector specifying the doses for which a prediction should be
 done getContrMat object, contrast matrix to be used for the testing step.}
 
-\item{...}{other parameters}
+\item{...}{currently without function}
 }
 \value{
 a list with the model predictions for the specified models and doses
@@ -34,6 +34,7 @@ dose_levels    <- c(0, 1, 2, 4, 8)
 fit            <- getModelFits(models      = models,
                                posterior   = posterior_list,
                                dose_levels = dose_levels)
+                               
 predict(fit, doses = c(0, 1, 3, 4, 6, 8))
 
 }

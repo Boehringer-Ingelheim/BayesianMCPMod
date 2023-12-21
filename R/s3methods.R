@@ -81,11 +81,11 @@ print.BayesianMCP <- function (
 #' @description This function performs model predictions based on the provided
 #' model and dose specifications 
 #' 
-#' @param object a modelFits object containing information about the fitted
+#' @param object A modelFits object containing information about the fitted
 #' model coefficients
-#' @param doses a vector specifying the doses for which a prediction should be
+#' @param doses A vector specifying the doses for which a prediction should be
 #' done getContrMat object, contrast matrix to be used for the testing step.
-#' @param ... other parameters
+#' @param ... currently without function
 #' @examples
 #' # example code
 #' posterior_list <- list(Ctrl = RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 1), sigma = 2),
@@ -98,6 +98,7 @@ print.BayesianMCP <- function (
 #' fit            <- getModelFits(models      = models,
 #'                                posterior   = posterior_list,
 #'                                dose_levels = dose_levels)
+#'                                
 #' predict(fit, doses = c(0, 1, 3, 4, 6, 8))
 #' 
 #' @return a list with the model predictions for the specified models and doses  

@@ -13,15 +13,15 @@ getBootstrapQuantiles(
 )
 }
 \arguments{
-\item{model_fits}{an object of class modelFits, i.e. information about fitted models & corresponding model coefficients as well as the posterior distribution that was the basis for the model fitting}
+\item{model_fits}{An object of class modelFits, i.e. information about fitted models & corresponding model coefficients as well as the posterior distribution that was the basis for the model fitting}
 
-\item{quantiles}{a vector of quantiles that should be evaluated}
+\item{quantiles}{A vector of quantiles that should be evaluated}
 
-\item{n_samples}{number of samples that should be drawn as basis for the}
+\item{n_samples}{Number of samples that should be drawn as basis for the}
 
-\item{doses}{a vector of doses for which a prediction should be performed}
+\item{doses}{A vector of doses for which a prediction should be performed}
 
-\item{avg_fit}{boolean variable, defining whether an average fit (based on generalized AIC weights) should be performed in addition to the individual models. Default TRUE.}
+\item{avg_fit}{Boolean variable, defining whether an average fit (based on generalized AIC weights) should be performed in addition to the individual models. Default TRUE.}
 }
 \value{
 A data frame with entries doses, models, and quantiles
@@ -36,17 +36,27 @@ Instead of drawing n bootstrap samples from the sampling distribution of the tri
 }
 \examples{
 # example code
-posterior_list =   list(Ctrl=RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 1), sigma = 2),
-                   DG_1=RBesT::mixnorm(comp1 = c(w = 1, m = 3, s = 1.2), sigma = 2),
-                   DG_2=RBesT::mixnorm(comp1 = c(w = 1, m = 4, s = 1.5), sigma = 2) ,  
-                   DG_3=RBesT::mixnorm(comp1 = c(w = 1, m = 6, s = 1.2), sigma = 2) ,
-                   DG_4=RBesT::mixnorm(comp1 = c(w = 1, m = 6.5, s = 1.1) ,sigma = 2))
-models=c("emax","exponential","sigEmax","linear")
-dose_levels=c(0,1,2,4,8)
-fit<-getModelFits(models=models, posterior=posterior_list,dose_levels=dose_levels)
-fit_simple<-getModelFits(models=models, posterior=posterior_list,dose_levels=dose_levels,simple=TRUE)
-getBootstrapQuantiles(fit, quantiles = c(0.025,0.5, 0.975), doses = c(0, 1,2,3,4,6,8))
-getBootstrapQuantiles(fit_simple, n_samples=2000, quantiles = c(0.025,0.5, 0.975), doses = c(0, 1,2,3,4,6,8))
+posterior_list <- list(Ctrl = RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 1), sigma = 2),
+                       DG_1 = RBesT::mixnorm(comp1 = c(w = 1, m = 3, s = 1.2), sigma = 2),
+                       DG_2 = RBesT::mixnorm(comp1 = c(w = 1, m = 4, s = 1.5), sigma = 2) ,  
+                       DG_3 = RBesT::mixnorm(comp1 = c(w = 1, m = 6, s = 1.2), sigma = 2) ,
+                       DG_4 = RBesT::mixnorm(comp1 = c(w = 1, m = 6.5, s = 1.1), sigma = 2))
+models <- c("emax", "exponential", "sigEmax", "linear")
+dose_levels <- c(0, 1, 2, 4, 8)
+fit <- getModelFits(models      = models,
+                    posterior   = posterior_list,
+                    dose_levels = dose_levels)
+fit_simple <- getModelFits(models      = models,
+                           posterior   = posterior_list,
+                           dose_levels = dose_levels,
+                           simple      = TRUE)
+getBootstrapQuantiles(model_fits = fit,
+                      quantiles  = c(0.025,0.5, 0.975),
+                      doses      = c(0, 1,2,3,4,6,8))
+getBootstrapQuantiles(model_fits = fit_simple,
+                      quantiles  = c(0.025,0.5, 0.975),
+                      n_samples  = 2000,
+                      doses      = c(0, 1, 2, 3, 4, 6, 8))
 }
 \references{
 O'Quigley, J., Iasonos, A., & Bornkamp, B. (Eds.). (2017). Handbook of Methods for Designing, Monitoring, and Analyzing Dose-Finding Trials (1st ed.). Chapman and Hall/CRC. https://doi.org/10.1201/9781315151984

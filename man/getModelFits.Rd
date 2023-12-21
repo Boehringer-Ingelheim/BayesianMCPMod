@@ -7,16 +7,16 @@
 getModelFits(models, dose_levels, posterior, simple = FALSE)
 }
 \arguments{
-\item{models}{list of model names for which a fit will be performed.}
+\item{models}{List of model names for which a fit will be performed.}
 
-\item{dose_levels}{a vector containing the different dosage levels.}
+\item{dose_levels}{A vector containing the different dosage levels.}
 
-\item{posterior}{a getPosterior object, containing the (multivariate) posterior distribution per dosage level.}
+\item{posterior}{A getPosterior object, containing the (multivariate) posterior distribution per dosage level.}
 
-\item{simple}{boolean variable, defining whether simplified fit will be applied. Default FALSE.}
+\item{simple}{Boolean variable, defining whether simplified fit will be applied. Default FALSE.}
 }
 \value{
-model_fits returns a list, containing information about the fitted model coefficients, the prediction per dose group as well as maximum effect and generalized AIC (and corresponding weight) per model.
+A list containing information about the fitted model coefficients, the prediction per dose group as well as maximum effect and generalized AIC (and corresponding weight) per model.
 }
 \description{
 Fits dose-response curves for the specified dose-response models, based on the posterior distributions.
@@ -39,15 +39,22 @@ where \eqn{Q} denotes the number of models included in the averaging procedure.
 }
 \examples{
 # example code
-posterior_list =   list(Ctrl=RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 1), sigma = 2),
-                   DG_1=RBesT::mixnorm(comp1 = c(w = 1, m = 3, s = 1.2), sigma = 2),
-                   DG_2=RBesT::mixnorm(comp1 = c(w = 1, m = 4, s = 1.5), sigma = 2) ,  
-                   DG_3=RBesT::mixnorm(comp1 = c(w = 1, m = 6, s = 1.2), sigma = 2) ,
-                   DG_4=RBesT::mixnorm(comp1 = c(w = 1, m = 6.5, s = 1.1) ,sigma = 2))
-models=c("emax","exponential","sigEmax","linear")
-dose_levels=c(0,1,2,4,8)
-fit<-getModelFits(models=models, posterior=posterior_list,dose_levels=dose_levels)
-fit_simple<-getModelFits(models=models, posterior=posterior_list,dose_levels=dose_levels,simple=TRUE)
+posterior_list <- list(Ctrl = RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 1), sigma = 2),
+                       DG_1 = RBesT::mixnorm(comp1 = c(w = 1, m = 3, s = 1.2), sigma = 2),
+                       DG_2 = RBesT::mixnorm(comp1 = c(w = 1, m = 4, s = 1.5), sigma = 2) ,  
+                       DG_3 = RBesT::mixnorm(comp1 = c(w = 1, m = 6, s = 1.2), sigma = 2) ,
+                       DG_4 = RBesT::mixnorm(comp1 = c(w = 1, m = 6.5, s = 1.1), sigma = 2))
+models         <- c("emax", "exponential", "sigEmax", "linear")
+dose_levels    <- c(0, 1, 2, 4, 8)
+
+fit        <- getModelFits(models      = models,
+                           posterior   = posterior_list,
+                           dose_levels = dose_levels)
+fit_simple <- getModelFits(models      = models,
+                           posterior   = posterior_list,
+                           dose_levels = dose_levels,
+                           simple      = TRUE)
+                           
 }
 \references{
 Schorning K, Bornkamp B, Bretz F, Dette H. 2016. “Model selection versus model averaging in dose finding studies”. Stat Med; 35; 4021-4040.

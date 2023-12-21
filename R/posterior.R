@@ -12,22 +12,23 @@
 #' @return posterior_list, a posterior list object is returned with information about (mixture) posterior distribution per dose group
 #' @examples
 #' # example code
-#' prior_list<-list(Ctrl=RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 5), sigma = 2),
-#'                    DG_1=RBesT::mixnorm(comp1 = c(w = 1, m = 1, s = 12), sigma = 2),
-#'                    DG_2=RBesT::mixnorm(comp1 = c(w = 1, m = 1.2, s = 11), sigma = 2) ,  
-#'                    DG_3=RBesT::mixnorm(comp1 = c(w = 1, m = 1.3, s = 11), sigma = 2) ,
-#'                    DG_4=RBesT::mixnorm(comp1 = c(w = 1, m = 2, s = 13) ,sigma = 2))
-#' mu<-c(0,1,1.5,2,2.5)
-#' se<-c(5,4,6,7,8)
+#' prior_list <- list(Ctrl = RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 5), sigma = 2),
+#'                    DG_1 = RBesT::mixnorm(comp1 = c(w = 1, m = 1, s = 12), sigma = 2),
+#'                    DG_2 = RBesT::mixnorm(comp1 = c(w = 1, m = 1.2, s = 11), sigma = 2) ,  
+#'                    DG_3 = RBesT::mixnorm(comp1 = c(w = 1, m = 1.3, s = 11), sigma = 2) ,
+#'                    DG_4 = RBesT::mixnorm(comp1 = c(w = 1, m = 2, s = 13), sigma = 2))
+#' mu <- c(0, 1, 1.5, 2, 2.5)
+#' se <- c(5, 4, 6, 7, 8)
 #' posterior_list <- getPosterior(
 #'    prior_list = prior_list,
-#'     mu_hat   = mu,
-#'    se_hat   = se)
+#'    mu_hat     = mu,
+#'    se_hat     = se)
 #'    
 #' summary(posterior_list)
 #' 
 #' @export
 getPosterior <- function(
+    
   prior_list,
   data     = NULL,
   mu_hat   = NULL,
@@ -35,6 +36,7 @@ getPosterior <- function(
   calc_ess = FALSE
   
 ) {
+  
   checkmate::check_data_frame(data, null.ok = TRUE)
   checkmate::check_list(prior_list, names = "named", any.missing = FALSE)
   checkmate::check_vector(mu_hat, any.missing = FALSE, null.ok = TRUE)
@@ -89,6 +91,7 @@ getPosteriorI <- function(
   checkmate::check_double(se_hat, null.ok = TRUE, lower = 0, upper = Inf)
   
   if (is.null(mu_hat) && is.null(se_hat)) {
+    
     checkmate::check_data_frame(data_i, null.ok = FALSE)
     checkmate::assert_names(names(data_i), must.include = "response")
     checkmate::assert_names(names(data_i), must.include = "dose")

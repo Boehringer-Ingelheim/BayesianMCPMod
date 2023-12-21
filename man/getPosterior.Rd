@@ -33,17 +33,17 @@ This function calculates the posterior for every dose group independently via th
 }
 \examples{
 # example code
-prior_list<-list(Ctrl=RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 5), sigma = 2),
-                   DG_1=RBesT::mixnorm(comp1 = c(w = 1, m = 1, s = 12), sigma = 2),
-                   DG_2=RBesT::mixnorm(comp1 = c(w = 1, m = 1.2, s = 11), sigma = 2) ,  
-                   DG_3=RBesT::mixnorm(comp1 = c(w = 1, m = 1.3, s = 11), sigma = 2) ,
-                   DG_4=RBesT::mixnorm(comp1 = c(w = 1, m = 2, s = 13) ,sigma = 2))
-mu<-c(0,1,1.5,2,2.5)
-se<-c(5,4,6,7,8)
+prior_list <- list(Ctrl = RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 5), sigma = 2),
+                   DG_1 = RBesT::mixnorm(comp1 = c(w = 1, m = 1, s = 12), sigma = 2),
+                   DG_2 = RBesT::mixnorm(comp1 = c(w = 1, m = 1.2, s = 11), sigma = 2) ,  
+                   DG_3 = RBesT::mixnorm(comp1 = c(w = 1, m = 1.3, s = 11), sigma = 2) ,
+                   DG_4 = RBesT::mixnorm(comp1 = c(w = 1, m = 2, s = 13), sigma = 2))
+mu <- c(0, 1, 1.5, 2, 2.5)
+se <- c(5, 4, 6, 7, 8)
 posterior_list <- getPosterior(
    prior_list = prior_list,
-    mu_hat   = mu,
-   se_hat   = se)
+   mu_hat     = mu,
+   se_hat     = se)
    
 summary(posterior_list)
 
