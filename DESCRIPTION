@@ -17,9 +17,15 @@ Authors@R: c(
            role = "aut",
            email = "sebastian.bossert@boehringer-ingelheim.com")
     )
-Description: This package is a comprehensive tool for simulating, analyzing, and evaluating dose finding trials with Bayesian MCPMod. 
-             It extends the traditional MCPMod approach by allowing systematic incorporation of historical data, such as previous placebo group data, for both testing and modelling step. The package enables the assessment of trial designs incorporating historical data across various true dose-response relationships. Robust mixture prior distributions, such as those derived with the Meta-Analytic-Predictive approach, can be specified for each dose group. 
-             Resulting mixture posterior distributions are used in the Bayesian Multiple Comparison Procedure and modelling step 
+Description: This package is a comprehensive tool for simulating, analyzing, 
+             and evaluating dose finding trials with Bayesian MCPMod. 
+             It extends the traditional MCPMod approach by allowing systematic incorporation of historical data, such as 
+             previous placebo group data, for both testing and modelling step. 
+             The package enables the assessment of trial designs incorporating historical 
+             data across various true dose-response relationships. 
+             Robust mixture prior distributions, such as those derived with the Meta-Analytic-Predictive approach,
+             can be specified for each dose group. 
+             Resulting mixture posterior distributions are used in the Bayesian Multiple Comparison Procedure 
              (Fleischer et al. (2022) <doi:10.1002/pst.2193>). 
              The 'BayesianMCPMod' package makes use of the 'DoseFinding' and 'RBesT' R packages. 
 License: Apache License (>= 2)
