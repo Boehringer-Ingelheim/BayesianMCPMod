@@ -1,54 +1,52 @@
 Package: BayesianMCPMod
-Title: Bayesian MCPMod
+Title: Simulate, Analyze, and Evaluate Dose Finding Trials with Bayesian
+    MCPMod
 Version: 0.1.5
 Authors@R: c(
-    person("Boehringer Ingelheim Pharma GmbH & Co. KG",
-           role = c("cph", "fnd")),
-    person("Stephan", "Wojciekowski",
-           role = c("aut", "cre"),
-           email = "stephan.wojciekowski@boehringer-ingelheim.com"),
-    person("Lars", "Andersen",
-           role = "aut",
-           email = "lars.andersen@boehringer-ingelheim.com"),
-    person("Steven", "Brooks",
-           role = "ctb",
-           email = "steven.brooks@boehringer-ingelheim.com"),
-    person("Sebastian", "Bossert",
-           role = "aut",
-           email = "sebastian.bossert@boehringer-ingelheim.com")
-    )
-Description: This package is a comprehensive tool for simulating, analyzing, 
-             and evaluating dose finding trials with Bayesian MCPMod. 
-             It extends the traditional MCPMod approach by allowing systematic incorporation of historical data, such as 
-             previous placebo group data, for both testing and modelling step. 
-             The package enables the assessment of trial designs incorporating historical 
-             data across various true dose-response relationships. 
-             Robust mixture prior distributions, such as those derived with the Meta-Analytic-Predictive approach,
-             can be specified for each dose group. 
-             Resulting mixture posterior distributions are used in the Bayesian Multiple Comparison Procedure 
-             (Fleischer et al. (2022) <doi:10.1002/pst.2193>). 
-             The 'BayesianMCPMod' package makes use of the 'DoseFinding' and 'RBesT' R packages. 
+    person("Boehringer Ingelheim Pharma GmbH & Co. KG", role = c("cph", "fnd")),
+    person("Stephan", "Wojciekowski", , "stephan.wojciekowski@boehringer-ingelheim.com", role = c("aut", "cre")),
+    person("Lars", "Andersen", , "lars.andersen@boehringer-ingelheim.com", role = "aut"),
+    person("Steven", "Brooks", , "steven.brooks@boehringer-ingelheim.com", role = "ctb"),
+    person("Sebastian", "Bossert", , "sebastian.bossert@boehringer-ingelheim.com", role = "aut")
+  )
+Description: Bayesian MCPMod (Fleischer et al. (2022)
+    <doi:10.1002/pst.2193>) is an innovative method that improves the
+    traditional MCPMod by systematically incorporating historical data,
+    such as previous placebo group data.  This R package offers functions
+    for simulating, analyzing, and evaluating Bayesian MCPMod trials with
+    normally distributed endpoints.  It enables the assessment of trial
+    designs incorporating historical data across various true
+    dose-response relationships and sample sizes. Robust mixture prior
+    distributions, such as those derived with the Meta-Analytic-Predictive
+    approach (Schmidli et al. (2014) <doi:10.1111/biom.12242>), can be
+    specified for each dose group.  Resulting mixture posterior
+    distributions are used in the Bayesian Multiple Comparison Procedure
+    and modeling steps.  The modeling step also includes a weighted model
+    averaging approach (Pinheiro et al. (2014) <doi:10.1002/sim.6052>).
+    Estimated dose-response relationships can be bootstrapped and
+    visualized.
 License: Apache License (>= 2)
+URL: https://github.com/Boehringer-Ingelheim/BayesianMCPMod
+BugReports: https://github.com/Boehringer-Ingelheim/BayesianMCPMod/issues
+Depends:
+    R (>= 4.2)
+Imports:
+    checkmate,
+    DoseFinding (>= 1.1-1),
+    ggplot2,
+    nloptr,
+    RBesT,
+    stats
+Suggests:
+    clinDR,
+    dplyr,
+    knitr,
+    rmarkdown,
+    testthat (>= 3.0.0)
+VignetteBuilder: 
+    knitr
+Config/testthat/edition: 3
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
-Imports:
-    DoseFinding (>= 1.1-1),
-    ggplot2,
-    stats,
-    RBesT,
-    nloptr,
-    clinDR,
-    knitr,
-    rmarkdown,
-    dplyr,
-    checkmate
-Suggests:
-    testthat (>= 3.0.0)
-Depends:
-  R (>= 4.2)
-VignetteBuilder: knitr
-Config/testthat/edition: 3
-URL: https://github.com/Boehringer-Ingelheim/BayesianMCPMod
-BugReports: https://github.com/Boehringer-Ingelheim/BayesianMCPMod/issues
