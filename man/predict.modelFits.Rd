@@ -11,7 +11,7 @@
 model coefficients}
 
 \item{doses}{A vector specifying the doses for which a prediction should be
-done getContrMat object, contrast matrix to be used for the testing step.}
+done}
 
 \item{...}{currently without function}
 }

@@ -18,7 +18,7 @@
 )
 }
 \arguments{
-\item{x}{An object of type getModelFits}
+\item{x}{An object of type modelFits}
 
 \item{gAIC}{Logical value indicating whether gAIC values are shown in the plot. Default TRUE}
 
@@ -44,7 +44,7 @@ A ggplot2 object
 \description{
 Plot function based on the ggplot2 package. Providing visualizations for each model and a average Fit.
 Black lines show the fitted dose response models and an AIC based average model. Dots indicate the posterior median and vertical lines show corresponding credible intervals (i.e. the variability of the posterior distribution of the respective dose group).
-To assess the uncertainty of the model fit one can in addition visualize credible bands (default coloring as orange shaded areas). The calculation of these bands is performed via the getBootstrapQuantiles function.
+To assess the uncertainty of the model fit one can in addition visualize credible bands (default coloring as orange shaded areas). The calculation of these bands is performed via the getBootstrapQuantiles() function.
 The default setting is that these credible bands are not calculated.
 }
 \examples{

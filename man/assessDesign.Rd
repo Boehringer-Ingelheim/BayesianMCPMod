@@ -29,7 +29,7 @@ assessDesign(
 
 \item{n_sim}{Number of simulations to be performed}
 
-\item{alpha_crit_val}{(Unadjusted) Critical value to be used for the MCT testing step. Passed to the getCritProb function for the calculation of adjusted critical values (on the probability scale). Default is 0.05.}
+\item{alpha_crit_val}{(Unadjusted) Critical value to be used for the MCT testing step. Passed to the getCritProb() function for the calculation of adjusted critical values (on the probability scale). Default is 0.05.}
 
 \item{simple}{Boolean variable defining whether simplified fit will be applied. Passed to the getModelFits function. Default FALSE.}
 

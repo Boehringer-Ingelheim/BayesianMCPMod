@@ -40,7 +40,7 @@
 #'                            dose_levels = dose_levels,
 #'                            simple      = TRUE)
 #'                            
-#' @return A list containing information about the fitted model coefficients, the prediction per dose group as well as maximum effect and generalized AIC (and corresponding weight) per model.
+#' @return An object of class modelFits. A list containing information about the fitted model coefficients, the prediction per dose group as well as maximum effect and generalized AIC (and corresponding weight) per model.
 #' 
 #' @export
 getModelFits <- function (

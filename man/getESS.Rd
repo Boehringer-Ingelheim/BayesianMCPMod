@@ -13,5 +13,5 @@ getESS(post_list)
 a vector of the effective sample sizes (per dose group)
 }
 \description{
-This function calculates the effective sample size for every dose group via the RBesT function ess.
+This function calculates the effective sample size for every dose group via the RBesT function ess().
 }

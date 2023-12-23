@@ -84,7 +84,7 @@ print.BayesianMCP <- function (
 #' @param object A modelFits object containing information about the fitted
 #' model coefficients
 #' @param doses A vector specifying the doses for which a prediction should be
-#' done getContrMat object, contrast matrix to be used for the testing step.
+#' done 
 #' @param ... currently without function
 #' @examples
 #' # example code

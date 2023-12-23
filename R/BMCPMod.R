@@ -7,7 +7,7 @@
 #' @param prior_list A prior_list object specifying the utilized prior for the different dose groups 
 #' @param sd A positive value, specification of assumed sd 
 #' @param n_sim Number of simulations to be performed
-#' @param alpha_crit_val (Unadjusted) Critical value to be used for the MCT testing step. Passed to the getCritProb function for the calculation of adjusted critical values (on the probability scale). Default is 0.05.
+#' @param alpha_crit_val (Unadjusted) Critical value to be used for the MCT testing step. Passed to the getCritProb() function for the calculation of adjusted critical values (on the probability scale). Default is 0.05.
 #' @param simple Boolean variable defining whether simplified fit will be applied. Passed to the getModelFits function. Default FALSE.
 #' @param reestimate Boolean variable defining whether critical value should be calculated with re-estimated contrasts (see getCritProb function for more details). Default FALSE
 #' @param contr Allows specification of a fixed contrasts matrix. Default NULL
@@ -142,7 +142,7 @@ assessDesign <- function (
 
 #' @title getContr
 #' 
-#' @description This function calculates contrast vectors that are optimal for detecting certain alternatives via applying the function optContr of the DoseFinding package.
+#' @description This function calculates contrast vectors that are optimal for detecting certain alternatives via applying the function optContr() of the DoseFinding package.
 #' Hereby 4 different options can be distinguished that are automatically executed based on the input that is provided
 #' 1) Bayesian approach: If dose_weights and a prior_list are provided an optimized contrasts for the posterior sample size is calculated. 
 #'    In detail,  in a first step the dose_weights (typically the number of patients per dose group) and the prior information is combined by calculating for
@@ -260,9 +260,9 @@ getContr <- function (
 #'  when using non-informative priors the actual error level for falsely declaring a significant trial in the Bayesian MCPMod is controlled (by the specified alpha level). 
 #'  Hereby optimal contrasts of the frequentist MCPMod are applied and two options can be distinguished
 #'  1) Frequentist approach: If only dose_weights are provided optimal contrast vectors are calculated from the
-#'     regular MCPMod for these specific weights and the corresponding critical value for this set of contrasts is calculated via the critVal function of the DoseFinding package.
+#'     regular MCPMod for these specific weights and the corresponding critical value for this set of contrasts is calculated via the critVal() function of the DoseFinding package.
 #'  2) Frequentist approach + re-estimation: If only a se_new_trial (i.e. the estimated variability per dose group of a new trial) is provided, optimal contrast vectors are calculated from the
-#'     regular MCPMod for this specific vector of standard errors. Here as well the critical value for this set of contrasts is calculated via the critVal function of the DoseFinding package.
+#'     regular MCPMod for this specific vector of standard errors. Here as well the critical value for this set of contrasts is calculated via the critVal() function of the DoseFinding package.
 #' 
 #' @param mods An object of class "Mods" as specified in the DoseFinding package.
 #' @param dose_levels Vector containing the different dosage levels.
@@ -318,12 +318,12 @@ getCritProb <- function (
 
 #' @title performBayesianMCPMod
 #' 
-#' @description performs bayesian MCP Test step and modelling in a combined fashion. See performBayesianMCP function for MCT Test step and getModelFits for the modelling step
+#' @description Performs bayesian MCT Test step and modelling in a combined fashion. See performBayesianMCP() function for MCT Test step and getModelFits() for the modelling step
 #' 
 #' @param posterior_list A getPosterior object with information about the (mixture) posterior distribution per dose group
-#' @param contr A getContrMat object, contrast matrix to be used for the testing step.
+#' @param contr An object of class ‘⁠optContr' as specified by the getContr() function, contrast matrix to be used for the testing step.
 #' @param crit_prob_adj A getCritProb object, specifying the critical value to be used for the testing (on the probability scale).
-#' @param simple Boolean variable, defining whether simplified fit will be applied. Passed to the getModelFits function. Default FALSE.
+#' @param simple Boolean variable, defining whether simplified fit will be applied. Passed to the getModelFits() function. Default FALSE.
 #' @examples
 #' # example code
 #' mods <- DoseFinding::Mods(linear      = NULL,
@@ -465,7 +465,7 @@ addSignificance <- function (
 #' In order to obtain significant test decision we consider the maximum of the posterior probabilities across the different models. This maximum is compared with a (multiplicity adjusted) critical value (on the probability scale).
 #' @references Fleischer F, Bossert S, Deng Q, Loley C, Gierse J. Bayesian MCPMod. Pharmaceutical Statistics. 2022; 21(3): 654-670. doi:10.1002/pst.2193 
 #' @param posterior_list An object derived with getPosterior with information about the (mixture) posterior distribution per dose group 
-#' @param contr A getContrMat object, contrast matrix to be used for the testing step.
+#' @param contr An object of class ‘⁠optContr' as specified by the getContr() function, contrast matrix to be used for the testing step
 #' @param crit_prob_adj A getCritProb object, specifying the critical value to be used for the testing (on the probability scale)
 #' 
 #' @examples

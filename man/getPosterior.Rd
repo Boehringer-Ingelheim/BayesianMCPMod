@@ -13,7 +13,7 @@ getPosterior(
 )
 }
 \arguments{
-\item{prior_list}{prior_list object}
+\item{prior_list}{a prior list with information about the prior to be used for every dose group}
 
 \item{data}{dataframe containing the information of dose and response. Default NULL
 Also a simulateData object can be provided.}
@@ -29,7 +29,7 @@ posterior_list, a posterior list object is returned with information about (mixt
 }
 \description{
 Either the patient level data or both mu_hat as well as sd_hat must to be provided. If patient level data is provided mu_hat and se_hat are calculated within the function using a linear model.
-This function calculates the posterior for every dose group independently via the RBesT function postmix.
+This function calculates the posterior for every dose group independently via the RBesT function postmix().
 }
 \examples{
 # example code

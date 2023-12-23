@@ -1,9 +1,9 @@
 #' @title getPosterior
 #' 
 #' @description Either the patient level data or both mu_hat as well as sd_hat must to be provided. If patient level data is provided mu_hat and se_hat are calculated within the function using a linear model.
-#' This function calculates the posterior for every dose group independently via the RBesT function postmix.
+#' This function calculates the posterior for every dose group independently via the RBesT function postmix().
 #' 
-#' @param prior_list prior_list object
+#' @param prior_list a prior list with information about the prior to be used for every dose group 
 #' @param data dataframe containing the information of dose and response. Default NULL
 #' Also a simulateData object can be provided.
 #' @param mu_hat vector of estimated mean values (per dose group).
@@ -140,7 +140,7 @@ getPosteriorI <- function(
 
 #' @title getESS
 #' 
-#' @description This function calculates the effective sample size for every dose group via the RBesT function ess.
+#' @description This function calculates the effective sample size for every dose group via the RBesT function ess().
 #' 
 #' @param post_list a posterior list object, for which the effective sample size (per dose group) should be calculated
 #'

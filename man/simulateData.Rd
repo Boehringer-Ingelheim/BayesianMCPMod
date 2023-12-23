@@ -22,7 +22,7 @@ value per dose-group.}
 
 \item{sd}{Standard deviation on patient level.}
 
-\item{mods}{An object of class "Mods" as specified in the Doseinding package.}
+\item{mods}{An object of class "Mods" as specified in the DoseFinding package.}
 
 \item{n_sim}{Number of simulations to be performed,
 Default is 1000}

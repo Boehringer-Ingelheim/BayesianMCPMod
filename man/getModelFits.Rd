@@ -16,7 +16,7 @@ getModelFits(models, dose_levels, posterior, simple = FALSE)
 \item{simple}{Boolean variable, defining whether simplified fit will be applied. Default FALSE.}
 }
 \value{
-A list containing information about the fitted model coefficients, the prediction per dose group as well as maximum effect and generalized AIC (and corresponding weight) per model.
+An object of class modelFits. A list containing information about the fitted model coefficients, the prediction per dose group as well as maximum effect and generalized AIC (and corresponding weight) per model.
 }
 \description{
 Fits dose-response curves for the specified dose-response models, based on the posterior distributions.

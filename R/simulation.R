@@ -6,7 +6,7 @@
 #' value per dose-group.
 #' @param dose_levels Vector containing the different dosage levels.
 #' @param sd Standard deviation on patient level.
-#' @param mods An object of class "Mods" as specified in the Doseinding package.
+#' @param mods An object of class "Mods" as specified in the DoseFinding package.
 #' @param n_sim Number of simulations to be performed,
 #' Default is 1000
 #' @param true_model Default value is NULL.
