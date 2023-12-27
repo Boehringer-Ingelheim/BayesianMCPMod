@@ -4,12 +4,12 @@
 #' Hereby the credible intervals are calculated as follows.
 #' Samples from the posterior distribution are drawn (via the RBesT function rmix()) and for every sample the simplified fitting step (see getModelFits() function) and a prediction is performed. 
 #' These fits are then used to identify the specified quantiles. 
-#' This approach can be considered as the bayesian equivalent of the frequentist bootstrap approach described in O'Quigley et al. (2017).
+#' This approach can be considered as the Bayesian equivalent of the frequentist bootstrap approach described in O'Quigley et al. (2017).
 #' Instead of drawing n bootstrap samples from the sampling distribution of the trial dose-response estimates, here the samples are directly taken from the posterior distribution.
 #' @references O'Quigley, J., Iasonos, A., & Bornkamp, B. (Eds.). (2017). Handbook of Methods for Designing, Monitoring, and Analyzing Dose-Finding Trials (1st ed.). Chapman and Hall/CRC. https://doi.org/10.1201/9781315151984
 #' @param model_fits An object of class modelFits, i.e. information about fitted models & corresponding model coefficients as well as the posterior distribution that was the basis for the model fitting 
 #' @param quantiles A vector of quantiles that should be evaluated 
-#' @param n_samples Number of samples that should be drawn as basis for the 
+#' @param n_samples Number of samples that should be drawn as basis for the bootstrapped quantiles
 #' @param doses A vector of doses for which a prediction should be performed
 #' @param avg_fit Boolean variable, defining whether an average fit (based on generalized AIC weights) should be performed in addition to the individual models. Default TRUE.
 #'
@@ -30,12 +30,13 @@
 #'                            dose_levels = dose_levels,
 #'                            simple      = TRUE)
 #' getBootstrapQuantiles(model_fits = fit,
-#'                       quantiles  = c(0.025,0.5, 0.975),
-#'                       doses      = c(0, 1,2,3,4,6,8))
-#' getBootstrapQuantiles(model_fits = fit_simple,
-#'                       quantiles  = c(0.025,0.5, 0.975),
-#'                       n_samples  = 2000,
+#'                       quantiles  = c(0.025, 0.5, 0.975),
+#'                       n_samples  = 100, # not recommended, speeding up example
 #'                       doses      = c(0, 1, 2, 3, 4, 6, 8))
+#' # getBootstrapQuantiles(model_fits = fit_simple,
+#' #                       quantiles  = c(0.025, 0.5, 0.975),
+#' #                       n_samples  = 2000,
+#' #                       doses      = c(0, 1, 2, 3, 4, 6, 8))
 #' @return  A data frame with entries doses, models, and quantiles 
 #' @export
 getBootstrapQuantiles <- function (

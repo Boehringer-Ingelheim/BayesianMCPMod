@@ -65,5 +65,5 @@ fit_simple <- getModelFits(models      = models,
                            simple      = TRUE)
                            
 plot(fit, cr_bands = TRUE)
-plot(fit_simple, cr_bands = TRUE, alpha_CrB = c(0.05, 0.1, 0.5))
+# plot(fit_simple, cr_bands = TRUE, alpha_CrB = c(0.05, 0.1, 0.5))
 }

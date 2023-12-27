@@ -17,7 +17,7 @@ getBootstrapQuantiles(
 
 \item{quantiles}{A vector of quantiles that should be evaluated}
 
-\item{n_samples}{Number of samples that should be drawn as basis for the}
+\item{n_samples}{Number of samples that should be drawn as basis for the bootstrapped quantiles}
 
 \item{doses}{A vector of doses for which a prediction should be performed}
 
@@ -31,7 +31,7 @@ A function for the calculation of credible intervals to assess the uncertainty f
 Hereby the credible intervals are calculated as follows.
 Samples from the posterior distribution are drawn (via the RBesT function rmix()) and for every sample the simplified fitting step (see getModelFits() function) and a prediction is performed.
 These fits are then used to identify the specified quantiles.
-This approach can be considered as the bayesian equivalent of the frequentist bootstrap approach described in O'Quigley et al. (2017).
+This approach can be considered as the Bayesian equivalent of the frequentist bootstrap approach described in O'Quigley et al. (2017).
 Instead of drawing n bootstrap samples from the sampling distribution of the trial dose-response estimates, here the samples are directly taken from the posterior distribution.
 }
 \examples{
@@ -51,12 +51,13 @@ fit_simple <- getModelFits(models      = models,
                            dose_levels = dose_levels,
                            simple      = TRUE)
 getBootstrapQuantiles(model_fits = fit,
-                      quantiles  = c(0.025,0.5, 0.975),
-                      doses      = c(0, 1,2,3,4,6,8))
-getBootstrapQuantiles(model_fits = fit_simple,
-                      quantiles  = c(0.025,0.5, 0.975),
-                      n_samples  = 2000,
+                      quantiles  = c(0.025, 0.5, 0.975),
+                      n_samples  = 100, # not recommended, speeding up example
                       doses      = c(0, 1, 2, 3, 4, 6, 8))
+# getBootstrapQuantiles(model_fits = fit_simple,
+#                       quantiles  = c(0.025, 0.5, 0.975),
+#                       n_samples  = 2000,
+#                       doses      = c(0, 1, 2, 3, 4, 6, 8))
 }
 \references{
 O'Quigley, J., Iasonos, A., & Bornkamp, B. (Eds.). (2017). Handbook of Methods for Designing, Monitoring, and Analyzing Dose-Finding Trials (1st ed.). Chapman and Hall/CRC. https://doi.org/10.1201/9781315151984

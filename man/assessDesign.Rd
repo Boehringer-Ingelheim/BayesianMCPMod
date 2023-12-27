@@ -29,7 +29,7 @@ assessDesign(
 
 \item{n_sim}{Number of simulations to be performed}
 
-\item{alpha_crit_val}{(Unadjusted) Critical value to be used for the MCT testing step. Passed to the getCritProb() function for the calculation of adjusted critical values (on the probability scale). Default is 0.05.}
+\item{alpha_crit_val}{(Un-adjusted) Critical value to be used for the MCP testing step. Passed to the getCritProb() function for the calculation of adjusted critical values (on the probability scale). Default is 0.05.}
 
 \item{simple}{Boolean variable defining whether simplified fit will be applied. Passed to the getModelFits function. Default FALSE.}
 
@@ -47,6 +47,8 @@ This function performs simulation based trial design evaluations for a set of sp
 }
 \examples{
 # example code
+if (interactive()) { # takes typically > 5 seconds
+
 mods <- DoseFinding::Mods(linear      = NULL,
                           linlog      = NULL,
                           emax        = c(0.5, 1.2),
@@ -68,5 +70,9 @@ success_probabilities <- assessDesign(
   sd          = sd)
 
 success_probabilities
+
+}
+
+
 
 }

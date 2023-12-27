@@ -27,7 +27,7 @@ set.seed(7015)
 In this vignette we will show the use of the Bayesian MCPMod package for continuous distributed data. 
 Hereby the focus is on the utilization of an informative prior and the BayesianMCPMod evaluation of a single trial.
 We will use data that is included in the clinDR package. 
-More specifically trial results for BRINTELLIX will be used to illustrate the specification of an informative prior and the usage of such a prior for the bayesian evaluation of a (hypothetical) new trial. 
+More specifically trial results for BRINTELLIX will be used to illustrate the specification of an informative prior and the usage of such a prior for the Bayesian evaluation of a (hypothetical) new trial. 
 BRINTELLIX is a medication used to treat major depressive disorder. Various clinical trials with different dose groups (including a control group) were conducted.
 
 
@@ -120,7 +120,7 @@ getESS(prior_list)
 ```
 # Specifications new trial 
 We will use the trial with ct.gov number NCT00735709 as exemplary new trial. 
-To be able to apply the bayesian MCPMod approach, candidate models need to be specified.
+To be able to apply the Bayesian MCPMod approach, candidate models need to be specified.
 Since there are only 3 active dose levels we will limit the set of candidate models to a linear, an exponential, and an emax model.
 Note that the linear candidate model does not require a guesstimate.
 
@@ -206,7 +206,7 @@ contr_mat <- getContr(
 #  dose_weights   = n_patients,
 #  prior_list     = prior_list)
 ```
-The bayesian MCP testing step is then executed based on the posterior information, the provided contrasts and the (multiplicity adjusted) critical value.   
+The Bayesian MCP testing step is then executed based on the posterior information, the provided contrasts and the (multiplicity adjusted) critical value.   
 ```{r  Execution of Bayesian MCPMod Test step}
 BMCP_result <- performBayesianMCP(
   posterior_list = posterior,
@@ -222,7 +222,7 @@ The testing step is significant indicating a non-flat dose-response shape. In de
 
 In the model fitting step the posterior distribution is used as basis. Both simplified and full fitting are performed. 
 For the simplified fit the multivariate normal distribution of the control group is approximated and reduced by a one-dimensional normal distribution.The actual fit (on this approximated posterior distribution) is then performed using generalized least squares criterion.
-For the full fitting the (multi-dimensional) non-linear optimization problem is adressed via the Nelder Mead algorithm. 
+For the full fitting the (multi-dimensional) non-linear optimization problem is addressed via the Nelder Mead algorithm. 
 
 The output of the fit includes information about the predicted effects for the included dose levels the generalized AIC (and the corresponding weights). For the considered case the simplified and the full fit are very similar.
 ```{r Model fitting}
@@ -249,7 +249,7 @@ Via the predict function one can also receive estimates for dose levels that wer
 
 It is possible to plot the fitted dose response models and an AIC based average model (black lines). To assess the uncertainty one can in addition visualize credible bands (orange shaded areas, the default is set to 50% and 95%). These credible bands are calculated as follows.
 Samples from the posterior distribution are drawn and for every sample the simplified fitting step and a prediction is performed. These fits are then used to identify and visualize the specified quantiles. 
-The bootstrap based quantiles can also be directly calculated and displayed via the getbootstrapQuantiles function.
+The bootstrap based quantiles can also be directly calculated and displayed via the getBootstrapQuantiles function.
 ```{r Visualization and interpretation of the results}
 predict(fit, doses = c(0, 2.5, 4, 5, 7, 10))
 
@@ -262,7 +262,7 @@ getBootstrapQuantiles(fit, quantiles = c(0.025, 0.5, 0.975), doses = c(0, 2.5, 4
 Technical note: The median quantile of the bootstrap based procedure is not necessary similar to the main model fit, as they are derived via different procedures (main fit, i.e. black lines in the plot, show the best fit of a certain model based on minimizing the residuals for the posterior distribution while the bootstrap based 50% quantile indicates the median fit of the random sampling and fitting procedure). 
 
 # Additional notes
-It is also possible to perform the testing and modelling step in a combined fashion via the performBayesianMCPMod function.
+It is also possible to perform the testing and modeling step in a combined fashion via the performBayesianMCPMod function.
 
 ```{r}
 overall_result<-performBayesianMCPMod(

@@ -27,7 +27,7 @@ getContr(
 \item{se_new_trial}{A vector of positive values with information about the observed variability, only required for Option iv). Default NULL}
 }
 \value{
-Object of class ‘⁠optContr⁠’. A list containing entries contMat and muMat, and CorrMat. Specified in the DoseFinding package.
+Object of class ‘⁠optContr⁠ . A list containing entries contMat and muMat, and CorrMat. Specified in the DoseFinding package.
 }
 \description{
 This function calculates contrast vectors that are optimal for detecting certain alternatives via applying the function optContr() of the DoseFinding package.
@@ -36,7 +36,7 @@ Hereby 4 different options can be distinguished that are automatically executed 
 \item Bayesian approach: If dose_weights and a prior_list are provided an optimized contrasts for the posterior sample size is calculated.
 In detail,  in a first step the dose_weights (typically the number of patients per dose group) and the prior information is combined by calculating for
 each dose group a posterior effective sample. Based on this posterior effective sample sizes the allocation ratio is derived, which allows for a calculation on
-pseudo-optimal contrasts via regular MCPMod.are calculated from the
+pseudo-optimal contrasts via regular MCPMod are calculated from the
 regular MCPMod for these specific weights
 \item Frequentist approach: If only dose_weights are provided optimal contrast vectors are calculated from the
 regular MCPMod for these specific weights

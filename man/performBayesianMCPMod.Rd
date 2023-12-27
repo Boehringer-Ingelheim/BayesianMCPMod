@@ -16,10 +16,10 @@ performBayesianMCPMod(posterior_list, contr, crit_prob_adj, simple = FALSE)
 \item{simple}{Boolean variable, defining whether simplified fit will be applied. Passed to the getModelFits() function. Default FALSE.}
 }
 \value{
-bmcpmod test result as well as modelling result.
+Bayesian MCP test result as well as modelling result.
 }
 \description{
-Performs bayesian MCT Test step and modelling in a combined fashion. See performBayesianMCP() function for MCT Test step and getModelFits() for the modelling step
+Performs Bayesian MCP Test step and modeling in a combined fashion. See performBayesianMCP() function for MCP Test step and getModelFits() for the modelling step
 }
 \examples{
 # example code

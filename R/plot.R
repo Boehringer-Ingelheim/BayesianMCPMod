@@ -32,7 +32,7 @@
 #'                            simple      = TRUE)
 #'                            
 #' plot(fit, cr_bands = TRUE)
-#' plot(fit_simple, cr_bands = TRUE, alpha_CrB = c(0.05, 0.1, 0.5))
+#' # plot(fit_simple, cr_bands = TRUE, alpha_CrB = c(0.05, 0.1, 0.5))
 #' @return A ggplot2 object
 #' @export
 plot.modelFits <- function (
@@ -49,6 +49,9 @@ plot.modelFits <- function (
   ...
   
 ) {
+  
+  ## R CMD --as-cran appeasement
+  .data <- NULL
   
   checkmate::check_class(x, "modelFits")
   checkmate::check_logical(gAIC)
@@ -176,7 +179,7 @@ plot.modelFits <- function (
     plts <- plts +
       ggplot2::geom_line(
         data    = crB_data,
-        mapping = ggplot2::aes(doses, `50%`),
+        mapping = ggplot2::aes(.data$doses, .data$`50%`),
         color   = acc_color)
     
   }
@@ -189,9 +192,9 @@ plot.modelFits <- function (
         data    = data.frame(x    = dose_levels,
                              ymin = post_summary[, 3],
                              ymax = post_summary[, 5]),
-        mapping = ggplot2::aes(x    = x,
-                               ymin = ymin,
-                               ymax = ymax),
+        mapping = ggplot2::aes(x    = .data$x,
+                               ymin = .data$ymin,
+                               ymax = .data$ymax),
         width   = 0,
         alpha   = 0.5)
       
@@ -202,12 +205,12 @@ plot.modelFits <- function (
       data    = data.frame(
         dose_levels = dose_levels,
         medians     = post_summary[, 4]),
-      mapping = ggplot2::aes(dose_levels, medians),
+      mapping = ggplot2::aes(.data$dose_levels, .data$medians),
       size    = 2) +
     ## Fitted Models
     ggplot2::geom_line(
       data    = gg_data,
-      mapping = ggplot2::aes(doses, fits)) + 
+      mapping = ggplot2::aes(.data$doses, .data$fits)) + 
     ## Faceting
     ggplot2::facet_wrap(~ models)
   

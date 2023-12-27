@@ -3,3 +3,9 @@
 ^LICENSE$
 
 docs
+^\.github$
+^_pkgdown\.yml$
+^dev$
+^doc$
+^Meta$
+^cran-comments\.md$

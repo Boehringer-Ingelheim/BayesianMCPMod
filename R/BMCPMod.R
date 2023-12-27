@@ -7,7 +7,7 @@
 #' @param prior_list A prior_list object specifying the utilized prior for the different dose groups 
 #' @param sd A positive value, specification of assumed sd 
 #' @param n_sim Number of simulations to be performed
-#' @param alpha_crit_val (Unadjusted) Critical value to be used for the MCT testing step. Passed to the getCritProb() function for the calculation of adjusted critical values (on the probability scale). Default is 0.05.
+#' @param alpha_crit_val (Un-adjusted) Critical value to be used for the MCP testing step. Passed to the getCritProb() function for the calculation of adjusted critical values (on the probability scale). Default is 0.05.
 #' @param simple Boolean variable defining whether simplified fit will be applied. Passed to the getModelFits function. Default FALSE.
 #' @param reestimate Boolean variable defining whether critical value should be calculated with re-estimated contrasts (see getCritProb function for more details). Default FALSE
 #' @param contr Allows specification of a fixed contrasts matrix. Default NULL
@@ -17,6 +17,8 @@
 #' 
 #' @examples
 #' # example code
+#' if (interactive()) { # takes typically > 5 seconds
+#' 
 #' mods <- DoseFinding::Mods(linear      = NULL,
 #'                           linlog      = NULL,
 #'                           emax        = c(0.5, 1.2),
@@ -38,6 +40,10 @@
 #'   sd          = sd)
 #' 
 #' success_probabilities
+#' 
+#' }
+#' 
+#' 
 #' 
 #' @export
 assessDesign <- function (
@@ -147,7 +153,7 @@ assessDesign <- function (
 #' 1) Bayesian approach: If dose_weights and a prior_list are provided an optimized contrasts for the posterior sample size is calculated. 
 #'    In detail,  in a first step the dose_weights (typically the number of patients per dose group) and the prior information is combined by calculating for
 #'    each dose group a posterior effective sample. Based on this posterior effective sample sizes the allocation ratio is derived, which allows for a calculation on
-#'    pseudo-optimal contrasts via regular MCPMod.are calculated from the
+#'    pseudo-optimal contrasts via regular MCPMod are calculated from the
 #'    regular MCPMod for these specific weights 
 #' 2) Frequentist approach: If only dose_weights are provided optimal contrast vectors are calculated from the
 #'    regular MCPMod for these specific weights
@@ -178,7 +184,7 @@ assessDesign <- function (
 #'   dose_levels    = dose_levels,
 #'   sd_posterior   = sd_posterior) 
 #' 
-#' @return Object of class ‘⁠optContr⁠’. A list containing entries contMat and muMat, and CorrMat. Specified in the DoseFinding package.
+#' @return Object of class ‘⁠optContr⁠ . A list containing entries contMat and muMat, and CorrMat. Specified in the DoseFinding package.
 #' 
 #' @export
 getContr <- function (
@@ -318,7 +324,7 @@ getCritProb <- function (
 
 #' @title performBayesianMCPMod
 #' 
-#' @description Performs bayesian MCT Test step and modelling in a combined fashion. See performBayesianMCP() function for MCT Test step and getModelFits() for the modelling step
+#' @description Performs Bayesian MCP Test step and modeling in a combined fashion. See performBayesianMCP() function for MCP Test step and getModelFits() for the modelling step
 #' 
 #' @param posterior_list A getPosterior object with information about the (mixture) posterior distribution per dose group
 #' @param contr An object of class ‘⁠optContr' as specified by the getContr() function, contrast matrix to be used for the testing step.
@@ -358,7 +364,7 @@ getCritProb <- function (
 #'                       crit_prob_adj  = critVal,
 #'                       simple         = FALSE)
 #' 
-#' @return bmcpmod test result as well as modelling result.
+#' @return Bayesian MCP test result as well as modelling result.
 #' 
 #' @export
 performBayesianMCPMod <- function (
@@ -460,7 +466,7 @@ addSignificance <- function (
 
 #' @title performBayesianMCP
 #' 
-#' @description Performs bayesian MCP Test step, as described in Fleischer et al. (2022).
+#' @description Performs Bayesian MCP Test step, as described in Fleischer et al. (2022).
 #' Tests for a dose-response effect using a model-based multiple contrast test based on the (provided) posterior distribution. In particular for every dose-response candidate the posterior probability is calculated that the contrast is bigger than 0 (based on the posterior distribution of the dose groups).
 #' In order to obtain significant test decision we consider the maximum of the posterior probabilities across the different models. This maximum is compared with a (multiplicity adjusted) critical value (on the probability scale).
 #' @references Fleischer F, Bossert S, Deng Q, Loley C, Gierse J. Bayesian MCPMod. Pharmaceutical Statistics. 2022; 21(3): 654-670. doi:10.1002/pst.2193 
@@ -502,7 +508,7 @@ addSignificance <- function (
 #'                    contr          = contr_mat,
 #'                    crit_prob_adj  = critVal)
 #' 
-#' @return b_mcp test result, with information about p-values for the individual dose-response shapes and overall significance    
+#' @return Bayesian MCP test result, with information about p-values for the individual dose-response shapes and overall significance    
 #' 
 #' @export
 performBayesianMCP <- function(
