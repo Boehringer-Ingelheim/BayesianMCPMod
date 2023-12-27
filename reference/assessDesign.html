@@ -98,7 +98,7 @@
 
 
 <dt>alpha_crit_val</dt>
-<dd><p>(Unadjusted) Critical value to be used for the MCT testing step. Passed to the getCritProb() function for the calculation of adjusted critical values (on the probability scale). Default is 0.05.</p></dd>
+<dd><p>(Un-adjusted) Critical value to be used for the MCP testing step. Passed to the getCritProb() function for the calculation of adjusted critical values (on the probability scale). Default is 0.05.</p></dd>
 
 
 <dt>simple</dt>
@@ -127,6 +127,8 @@
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># example code</span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span> <span class="co"># takes typically &gt; 5 seconds</span></span></span>
+<span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">mods</span> <span class="op">&lt;-</span> <span class="fu">DoseFinding</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/DoseFinding/man/Mods.html" class="external-link">Mods</a></span><span class="op">(</span>linear      <span class="op">=</span> <span class="cn">NULL</span>,</span></span>
 <span class="r-in"><span>                          linlog      <span class="op">=</span> <span class="cn">NULL</span>,</span></span>
 <span class="r-in"><span>                          emax        <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">1.2</span><span class="op">)</span>,</span></span>
@@ -148,57 +150,10 @@
 <span class="r-in"><span>  sd          <span class="op">=</span> <span class="va">sd</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">success_probabilities</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $linear</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Bayesian Multiple Comparison Procedure</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   Estimated Success Rate:  0.91 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   N Simulations:           1000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Model Significance Frequencies</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      linear      linlog        emax exponential </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       0.910       0.861       0.734       0.636 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $linlog</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Bayesian Multiple Comparison Procedure</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   Estimated Success Rate:  0.822 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   N Simulations:           1000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Model Significance Frequencies</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      linear      linlog        emax exponential </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       0.822       0.620       0.782       0.774 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $emax1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Bayesian Multiple Comparison Procedure</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   Estimated Success Rate:  0.827 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   N Simulations:           1000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Model Significance Frequencies</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      linear      linlog        emax exponential </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       0.827       0.539       0.796       0.805 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $emax2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Bayesian Multiple Comparison Procedure</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   Estimated Success Rate:  0.855 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   N Simulations:           1000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Model Significance Frequencies</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      linear      linlog        emax exponential </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       0.855       0.678       0.823       0.810 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $exponential</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Bayesian Multiple Comparison Procedure</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   Estimated Success Rate:  0.935 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   N Simulations:           1000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Model Significance Frequencies</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      linear      linlog        emax exponential </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       0.935       0.869       0.565       0.409 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"avgSuccessRate")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.8698</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"placEff")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"maxEff")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 6</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"sampleSize")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 40 60 60 60 60</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"priorESS")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ctrl DG_1 DG_2 DG_3 DG_4 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    0    0    0    0    0 </span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

@@ -3,12 +3,12 @@
 Hereby the credible intervals are calculated as follows.
 Samples from the posterior distribution are drawn (via the RBesT function rmix()) and for every sample the simplified fitting step (see getModelFits() function) and a prediction is performed.
 These fits are then used to identify the specified quantiles.
-This approach can be considered as the bayesian equivalent of the frequentist bootstrap approach described in O'Quigley et al. (2017).
+This approach can be considered as the Bayesian equivalent of the frequentist bootstrap approach described in O'Quigley et al. (2017).
 Instead of drawing n bootstrap samples from the sampling distribution of the trial dose-response estimates, here the samples are directly taken from the posterior distribution."><title>getBootstrapQuantiles — getBootstrapQuantiles • BayesianMCPMod</title><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous"><!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="getBootstrapQuantiles — getBootstrapQuantiles"><meta property="og:description" content="A function for the calculation of credible intervals to assess the uncertainty for the model fit.
 Hereby the credible intervals are calculated as follows.
 Samples from the posterior distribution are drawn (via the RBesT function rmix()) and for every sample the simplified fitting step (see getModelFits() function) and a prediction is performed.
 These fits are then used to identify the specified quantiles.
-This approach can be considered as the bayesian equivalent of the frequentist bootstrap approach described in O'Quigley et al. (2017).
+This approach can be considered as the Bayesian equivalent of the frequentist bootstrap approach described in O'Quigley et al. (2017).
 Instead of drawing n bootstrap samples from the sampling distribution of the trial dose-response estimates, here the samples are directly taken from the posterior distribution."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -67,7 +67,7 @@ Instead of drawing n bootstrap samples from the sampling distribution of the tri
 Hereby the credible intervals are calculated as follows.
 Samples from the posterior distribution are drawn (via the RBesT function rmix()) and for every sample the simplified fitting step (see getModelFits() function) and a prediction is performed.
 These fits are then used to identify the specified quantiles.
-This approach can be considered as the bayesian equivalent of the frequentist bootstrap approach described in O'Quigley et al. (2017).
+This approach can be considered as the Bayesian equivalent of the frequentist bootstrap approach described in O'Quigley et al. (2017).
 Instead of drawing n bootstrap samples from the sampling distribution of the trial dose-response estimates, here the samples are directly taken from the posterior distribution.</p>
     </div>
 
@@ -93,7 +93,7 @@ Instead of drawing n bootstrap samples from the sampling distribution of the tri
 
 
 <dt>n_samples</dt>
-<dd><p>Number of samples that should be drawn as basis for the</p></dd>
+<dd><p>Number of samples that should be drawn as basis for the bootstrapped quantiles</p></dd>
 
 
 <dt>doses</dt>
@@ -133,84 +133,49 @@ Instead of drawing n bootstrap samples from the sampling distribution of the tri
 <span class="r-in"><span>                           dose_levels <span class="op">=</span> <span class="va">dose_levels</span>,</span></span>
 <span class="r-in"><span>                           simple      <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">getBootstrapQuantiles</span><span class="op">(</span>model_fits <span class="op">=</span> <span class="va">fit</span>,</span></span>
-<span class="r-in"><span>                      quantiles  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.025</span>,<span class="fl">0.5</span>, <span class="fl">0.975</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>                      doses      <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">3</span>,<span class="fl">4</span>,<span class="fl">6</span>,<span class="fl">8</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    doses      models        2.5%         50%    97.5%</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1      0        emax -2.06364775 -0.04182103 1.879269</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2      1        emax  1.48152711  2.97962680 4.998141</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3      2        emax  2.83208539  4.30020128 5.754037</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4      3        emax  3.67313662  5.06572907 6.402780</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5      4        emax  4.20233297  5.53854788 6.891962</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6      6        emax  4.64714346  6.22662201 7.830763</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7      8        emax  4.86278974  6.65266110 8.585525</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8      0 exponential  0.24154684  1.60986060 3.001579</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9      1 exponential  0.91499022  2.18408592 3.400978</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10     2 exponential  1.68257381  2.79424574 3.935494</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11     3 exponential  2.43552545  3.44840647 4.484224</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12     4 exponential  3.05032159  4.14739058 5.217536</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13     6 exponential  4.25923694  5.65745410 7.078278</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14     8 exponential  5.28495286  7.38738821 9.381222</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15     0     sigEmax -1.99729303  0.01452780 2.037483</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16     1     sigEmax  0.69692348  2.71722675 4.975932</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17     2     sigEmax  1.93054950  4.50930592 6.441991</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18     3     sigEmax  3.38054759  5.33703497 7.023975</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19     4     sigEmax  4.21537674  5.78023621 7.395215</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20     6     sigEmax  4.72410283  6.29522391 7.959263</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 21     8     sigEmax  4.79426182  6.53101627 8.534761</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 22     0      linear -0.02173135  1.39985790 2.860886</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 23     1      linear  0.87848916  2.14743284 3.347460</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 24     2      linear  1.80925266  2.89044562 4.024105</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 25     3      linear  2.63906496  3.65367432 4.702536</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 26     4      linear  3.27183701  4.41114185 5.534802</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 27     6      linear  4.44888468  5.90608592 7.386245</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 28     8      linear  5.34136143  7.41049276 9.391864</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 29     0      avgFit -2.03384712  0.03079286 2.207749</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 30     1      avgFit  0.85287472  2.88262443 4.995349</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 31     2      avgFit  2.06784531  4.32684321 6.147511</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 32     3      avgFit  3.06714894  5.12274011 6.790769</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 33     4      avgFit  3.81369309  5.55995106 7.253393</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 34     6      avgFit  4.60760872  6.21382992 7.855132</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 35     8      avgFit  4.89652119  6.65734362 8.657215</span>
-<span class="r-in"><span><span class="fu">getBootstrapQuantiles</span><span class="op">(</span>model_fits <span class="op">=</span> <span class="va">fit_simple</span>,</span></span>
-<span class="r-in"><span>                      quantiles  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.025</span>,<span class="fl">0.5</span>, <span class="fl">0.975</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>                      n_samples  <span class="op">=</span> <span class="fl">2000</span>,</span></span>
+<span class="r-in"><span>                      quantiles  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.025</span>, <span class="fl">0.5</span>, <span class="fl">0.975</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                      n_samples  <span class="op">=</span> <span class="fl">100</span>, <span class="co"># not recommended, speeding up example</span></span></span>
 <span class="r-in"><span>                      doses      <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">3</span>, <span class="fl">4</span>, <span class="fl">6</span>, <span class="fl">8</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    doses      models        2.5%         50%    97.5%</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1      0        emax -1.97832306 -0.01974186 1.939813</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2      1        emax  1.49489767  2.98716166 5.010259</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3      2        emax  2.80257976  4.29008804 5.779401</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4      3        emax  3.68937797  5.05162316 6.351153</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5      4        emax  4.23585410  5.57925671 6.885270</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6      6        emax  4.70649612  6.25394186 7.789121</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7      8        emax  4.85631691  6.66499437 8.567628</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8      0 exponential  0.18945771  1.63118776 3.137242</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9      1 exponential  0.93782673  2.19901446 3.506654</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10     2 exponential  1.69352549  2.80914427 3.940775</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11     3 exponential  2.41061714  3.46569402 4.497876</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12     4 exponential  3.05851012  4.15749144 5.196796</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13     6 exponential  4.23168967  5.65626630 7.050308</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14     8 exponential  5.34686051  7.38497141 9.393755</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15     0     sigEmax -1.95005002  0.06828831 2.134463</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16     1     sigEmax  0.55990155  2.68554597 4.894057</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17     2     sigEmax  1.78153008  4.48310086 6.423607</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18     3     sigEmax  3.56918261  5.36072139 6.988827</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19     4     sigEmax  4.25686277  5.78447508 7.316992</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20     6     sigEmax  4.70122951  6.29405440 7.907452</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 21     8     sigEmax  4.78540689  6.56531098 8.553021</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 22     0      linear -0.07866874  1.41022518 2.916168</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 23     1      linear  0.89059606  2.15995383 3.463040</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 24     2      linear  1.80782583  2.90834202 4.016882</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 25     3      linear  2.60866213  3.66921236 4.701423</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 26     4      linear  3.31498721  4.42678083 5.472452</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 27     6      linear  4.44327547  5.90629261 7.362575</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 28     8      linear  5.39005556  7.41414497 9.363023</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 29     0      avgFit -1.97313782  0.08111431 2.332068</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 30     1      avgFit  0.72608844  2.84354374 5.010259</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 31     2      avgFit  2.13466776  4.30931784 6.192630</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 32     3      avgFit  3.09562167  5.12888098 6.852147</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 33     4      avgFit  3.81769423  5.60605061 7.246474</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 34     6      avgFit  4.66360466  6.23230680 7.797463</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 35     8      avgFit  4.86013453  6.69084066 8.662302</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    doses      models       2.5%          50%    97.5%</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1      0        emax -2.0374689 -0.005324694 1.926131</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2      1        emax  1.0901746  2.999943094 4.719797</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3      2        emax  2.5472063  4.191276971 5.642363</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4      3        emax  3.5907989  4.924965803 6.315233</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5      4        emax  4.2600534  5.525900271 6.842398</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6      6        emax  4.8589101  6.198865724 7.719060</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7      8        emax  4.9540245  6.573454958 8.690564</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8      0 exponential  0.0171146  1.501727259 3.334947</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9      1 exponential  0.8422857  2.130599409 3.693775</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10     2 exponential  1.6400387  2.701538075 4.075746</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11     3 exponential  2.3622928  3.346978545 4.504791</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12     4 exponential  3.1311282  4.064947676 5.240261</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13     6 exponential  4.4970586  5.625657649 6.932881</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14     8 exponential  5.3319161  7.333499998 9.393404</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15     0     sigEmax -2.0229621 -0.039013503 2.077840</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16     1     sigEmax  0.1813952  2.680817988 4.575282</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17     2     sigEmax  2.0729741  4.377508587 6.202937</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18     3     sigEmax  3.5374986  5.409604936 6.822006</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19     4     sigEmax  4.2714853  5.705905857 7.163063</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20     6     sigEmax  4.8872499  6.261604521 8.075743</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21     8     sigEmax  4.9244199  6.617723317 8.573059</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22     0      linear -0.2704454  1.299229948 3.177887</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 23     1      linear  0.8024895  2.074266422 3.654845</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 24     2      linear  1.7647443  2.798496488 4.131803</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 25     3      linear  2.5868011  3.557459972 4.686252</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 26     4      linear  3.3804251  4.341745216 5.537938</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 27     6      linear  4.6541402  5.847778782 7.192692</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 28     8      linear  5.4208815  7.356956586 9.350679</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29     0      avgFit -2.0374689  0.068357852 2.163768</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 30     1      avgFit  0.2396810  2.941609351 4.719797</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 31     2      avgFit  1.7585578  4.153713624 5.742358</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 32     3      avgFit  2.9983824  4.942926287 6.391543</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 33     4      avgFit  3.8724262  5.565569261 6.897610</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 34     6      avgFit  4.7598863  6.193427575 7.796217</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 35     8      avgFit  4.9153471  6.776506901 8.899476</span>
+<span class="r-in"><span><span class="co"># getBootstrapQuantiles(model_fits = fit_simple,</span></span></span>
+<span class="r-in"><span><span class="co">#                       quantiles  = c(0.025, 0.5, 0.975),</span></span></span>
+<span class="r-in"><span><span class="co">#                       n_samples  = 2000,</span></span></span>
+<span class="r-in"><span><span class="co">#                       doses      = c(0, 1, 2, 3, 4, 6, 8))</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

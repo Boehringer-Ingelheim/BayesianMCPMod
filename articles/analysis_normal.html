@@ -116,7 +116,7 @@ of an informative prior and the BayesianMCPMod evaluation of a single
 trial. We will use data that is included in the clinDR package. More
 specifically trial results for BRINTELLIX will be used to illustrate the
 specification of an informative prior and the usage of such a prior for
-the bayesian evaluation of a (hypothetical) new trial. BRINTELLIX is a
+the Bayesian evaluation of a (hypothetical) new trial. BRINTELLIX is a
 medication used to treat major depressive disorder. Various clinical
 trials with different dose groups (including a control group) were
 conducted.</p>
@@ -220,7 +220,7 @@ be constructed.</p>
 <h2 id="specifications-new-trial">Specifications new trial<a class="anchor" aria-label="anchor" href="#specifications-new-trial"></a>
 </h2>
 <p>We will use the trial with ct.gov number NCT00735709 as exemplary new
-trial. To be able to apply the bayesian MCPMod approach, candidate
+trial. To be able to apply the Bayesian MCPMod approach, candidate
 models need to be specified. Since there are only 3 active dose levels
 we will limit the set of candidate models to a linear, an exponential,
 and an emax model. Note that the linear candidate model does not require
@@ -316,7 +316,7 @@ establish the contrasts.</p>
 <span><span class="co">#  dose_levels    = dose_levels,</span></span>
 <span><span class="co">#  dose_weights   = n_patients,</span></span>
 <span><span class="co">#  prior_list     = prior_list)</span></span></code></pre></div>
-<p>The bayesian MCP testing step is then executed based on the posterior
+<p>The Bayesian MCP testing step is then executed based on the posterior
 information, the provided contrasts and the (multiplicity adjusted)
 critical value.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
@@ -350,7 +350,7 @@ is approximated and reduced by a one-dimensional normal distribution.The
 actual fit (on this approximated posterior distribution) is then
 performed using generalized least squares criterion. For the full
 fitting the (multi-dimensional) non-linear optimization problem is
-adressed via the Nelder Mead algorithm.</p>
+addressed via the Nelder Mead algorithm.</p>
 <p>The output of the fit includes information about the predicted
 effects for the included dose levels the generalized AIC (and the
 corresponding weights). For the considered case the simplified and the
@@ -383,7 +383,7 @@ Samples from the posterior distribution are drawn and for every sample
 the simplified fitting step and a prediction is performed. These fits
 are then used to identify and visualize the specified quantiles. The
 bootstrap based quantiles can also be directly calculated and displayed
-via the getbootstrapQuantiles function.</p>
+via the getBootstrapQuantiles function.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">fit</span>, doses <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">2.5</span>, <span class="fl">4</span>, <span class="fl">5</span>, <span class="fl">7</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; $linear</span></span>
@@ -441,7 +441,7 @@ the median fit of the random sampling and fitting procedure).</p>
 <div class="section level2">
 <h2 id="additional-notes">Additional notes<a class="anchor" aria-label="anchor" href="#additional-notes"></a>
 </h2>
-<p>It is also possible to perform the testing and modelling step in a
+<p>It is also possible to perform the testing and modeling step in a
 combined fashion via the performBayesianMCPMod function.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">overall_result</span><span class="op">&lt;-</span><span class="fu"><a href="../reference/performBayesianMCPMod.html">performBayesianMCPMod</a></span><span class="op">(</span></span>
