@@ -17,7 +17,7 @@
 #' \Omega_I (M) = \frac{\exp(-0.5 gAIC_{M})}{\sum_{m=1}^{Q} \exp(-0.5 gAIC_{m})}
 #' }
 #' where \eqn{Q} denotes the number of models included in the averaging procedure.
-#' @references Schorning K, Bornkamp B, Bretz F, Dette H. 2016. “Model selection versus model averaging in dose finding studies”. Stat Med; 35; 4021-4040.
+#' @references Schorning K, Bornkamp B, Bretz F, Dette H. 2016. Model selection versus model averaging in dose finding studies. Stat Med; 35; 4021-4040.
 #' @param models List of model names for which a fit will be performed.
 #' @param dose_levels A vector containing the different dosage levels.
 #' @param posterior A getPosterior object, containing the (multivariate) posterior distribution per dosage level. 

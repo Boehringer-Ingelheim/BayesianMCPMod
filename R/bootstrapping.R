@@ -6,7 +6,7 @@
 #' These fits are then used to identify the specified quantiles. 
 #' This approach can be considered as the Bayesian equivalent of the frequentist bootstrap approach described in O'Quigley et al. (2017).
 #' Instead of drawing n bootstrap samples from the sampling distribution of the trial dose-response estimates, here the samples are directly taken from the posterior distribution.
-#' @references O'Quigley, J., Iasonos, A., & Bornkamp, B. (Eds.). (2017). Handbook of Methods for Designing, Monitoring, and Analyzing Dose-Finding Trials (1st ed.). Chapman and Hall/CRC. https://doi.org/10.1201/9781315151984
+#' @references O'Quigley J, Iasonos A, Bornkamp B. 2017. Handbook of Methods for Designing, Monitoring, and Analyzing Dose-Finding Trials (1st ed.). Chapman and Hall/CRC. doi:10.1201/9781315151984
 #' @param model_fits An object of class modelFits, i.e. information about fitted models & corresponding model coefficients as well as the posterior distribution that was the basis for the model fitting 
 #' @param quantiles A vector of quantiles that should be evaluated 
 #' @param n_samples Number of samples that should be drawn as basis for the bootstrapped quantiles

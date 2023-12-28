@@ -110,6 +110,7 @@ getPosteriorI <- function(
   } else {
     
     stop ("Both mu_hat and se_hat must be provided.")
+    
   }
   
   post_list <- mapply(RBesT::postmix, prior_list, m = mu_hat, se = se_hat,
@@ -142,9 +143,9 @@ getPosteriorI <- function(
 #' 
 #' @description This function calculates the effective sample size for every dose group via the RBesT function ess().
 #' 
-#' @param post_list a posterior list object, for which the effective sample size (per dose group) should be calculated
+#' @param post_list A posterior list object, for which the effective sample size (per dose group) should be calculated
 #'
-#' @return a vector of the effective sample sizes (per dose group) 
+#' @return A vector of the effective sample sizes (per dose group) 
 #' @export
 getESS <- function (
     

@@ -24,7 +24,7 @@
 #'                             maxEff      = 6)
 #' dose_levels <- c(0, 0.5, 2,4, 8)
 #' sd          <- 12
-#' n_patients  <- c(40,60,60,60,60)
+#' n_patients  <- c(40, 60, 60, 60, 60)
 #' 
 #' sim_data <- simulateData(n_patients  = n_patients,
 #'                          dose_levels = dose_levels,
@@ -33,7 +33,7 @@
 #'                          n_sim       = 100)
 #' 
 #' sim_data
-
+#'
 #' @return A list object, containing patient level simulated data for all assumed true models.
 #' Also providing information about simulation iteration, patient number as well as dosage levels.
 #' 

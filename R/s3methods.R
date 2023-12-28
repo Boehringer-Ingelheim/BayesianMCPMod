@@ -85,7 +85,7 @@ print.BayesianMCP <- function (
 #' model coefficients
 #' @param doses A vector specifying the doses for which a prediction should be
 #' done 
-#' @param ... currently without function
+#' @param ... Currently without function
 #' @examples
 #' # example code
 #' posterior_list <- list(Ctrl = RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 1), sigma = 2),
