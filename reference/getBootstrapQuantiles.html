@@ -20,7 +20,7 @@ Instead of drawing n bootstrap samples from the sampling distribution of the tri
     
     <a class="navbar-brand me-2" href="../index.html">BayesianMCPMod</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -123,59 +123,27 @@ Instead of drawing n bootstrap samples from the sampling distribution of the tri
 <span class="r-in"><span>                       DG_2 <span class="op">=</span> <span class="fu">RBesT</span><span class="fu">::</span><span class="fu"><a href="https://opensource.nibr.com/RBesT/reference/mixnorm.html" class="external-link">mixnorm</a></span><span class="op">(</span>comp1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>w <span class="op">=</span> <span class="fl">1</span>, m <span class="op">=</span> <span class="fl">4</span>, s <span class="op">=</span> <span class="fl">1.5</span><span class="op">)</span>, sigma <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> ,  </span></span>
 <span class="r-in"><span>                       DG_3 <span class="op">=</span> <span class="fu">RBesT</span><span class="fu">::</span><span class="fu"><a href="https://opensource.nibr.com/RBesT/reference/mixnorm.html" class="external-link">mixnorm</a></span><span class="op">(</span>comp1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>w <span class="op">=</span> <span class="fl">1</span>, m <span class="op">=</span> <span class="fl">6</span>, s <span class="op">=</span> <span class="fl">1.2</span><span class="op">)</span>, sigma <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> ,</span></span>
 <span class="r-in"><span>                       DG_4 <span class="op">=</span> <span class="fu">RBesT</span><span class="fu">::</span><span class="fu"><a href="https://opensource.nibr.com/RBesT/reference/mixnorm.html" class="external-link">mixnorm</a></span><span class="op">(</span>comp1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>w <span class="op">=</span> <span class="fl">1</span>, m <span class="op">=</span> <span class="fl">6.5</span>, s <span class="op">=</span> <span class="fl">1.1</span><span class="op">)</span>, sigma <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">models</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"emax"</span>, <span class="st">"exponential"</span>, <span class="st">"sigEmax"</span>, <span class="st">"linear"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">models</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"exponential"</span>, <span class="st">"linear"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">dose_levels</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">4</span>, <span class="fl">8</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="getModelFits.html">getModelFits</a></span><span class="op">(</span>models      <span class="op">=</span> <span class="va">models</span>,</span></span>
 <span class="r-in"><span>                    posterior   <span class="op">=</span> <span class="va">posterior_list</span>,</span></span>
-<span class="r-in"><span>                    dose_levels <span class="op">=</span> <span class="va">dose_levels</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">fit_simple</span> <span class="op">&lt;-</span> <span class="fu"><a href="getModelFits.html">getModelFits</a></span><span class="op">(</span>models      <span class="op">=</span> <span class="va">models</span>,</span></span>
-<span class="r-in"><span>                           posterior   <span class="op">=</span> <span class="va">posterior_list</span>,</span></span>
-<span class="r-in"><span>                           dose_levels <span class="op">=</span> <span class="va">dose_levels</span>,</span></span>
-<span class="r-in"><span>                           simple      <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span>                    dose_levels <span class="op">=</span> <span class="va">dose_levels</span>,</span></span>
+<span class="r-in"><span>                    simple      <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span>                           </span></span>
 <span class="r-in"><span><span class="fu">getBootstrapQuantiles</span><span class="op">(</span>model_fits <span class="op">=</span> <span class="va">fit</span>,</span></span>
 <span class="r-in"><span>                      quantiles  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.025</span>, <span class="fl">0.5</span>, <span class="fl">0.975</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>                      n_samples  <span class="op">=</span> <span class="fl">100</span>, <span class="co"># not recommended, speeding up example</span></span></span>
-<span class="r-in"><span>                      doses      <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">3</span>, <span class="fl">4</span>, <span class="fl">6</span>, <span class="fl">8</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    doses      models       2.5%          50%    97.5%</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1      0        emax -2.0374689 -0.005324694 1.926131</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2      1        emax  1.0901746  2.999943094 4.719797</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3      2        emax  2.5472063  4.191276971 5.642363</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4      3        emax  3.5907989  4.924965803 6.315233</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5      4        emax  4.2600534  5.525900271 6.842398</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6      6        emax  4.8589101  6.198865724 7.719060</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7      8        emax  4.9540245  6.573454958 8.690564</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8      0 exponential  0.0171146  1.501727259 3.334947</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9      1 exponential  0.8422857  2.130599409 3.693775</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10     2 exponential  1.6400387  2.701538075 4.075746</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11     3 exponential  2.3622928  3.346978545 4.504791</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12     4 exponential  3.1311282  4.064947676 5.240261</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13     6 exponential  4.4970586  5.625657649 6.932881</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14     8 exponential  5.3319161  7.333499998 9.393404</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15     0     sigEmax -2.0229621 -0.039013503 2.077840</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16     1     sigEmax  0.1813952  2.680817988 4.575282</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17     2     sigEmax  2.0729741  4.377508587 6.202937</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18     3     sigEmax  3.5374986  5.409604936 6.822006</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19     4     sigEmax  4.2714853  5.705905857 7.163063</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20     6     sigEmax  4.8872499  6.261604521 8.075743</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 21     8     sigEmax  4.9244199  6.617723317 8.573059</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 22     0      linear -0.2704454  1.299229948 3.177887</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 23     1      linear  0.8024895  2.074266422 3.654845</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 24     2      linear  1.7647443  2.798496488 4.131803</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 25     3      linear  2.5868011  3.557459972 4.686252</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 26     4      linear  3.3804251  4.341745216 5.537938</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 27     6      linear  4.6541402  5.847778782 7.192692</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 28     8      linear  5.4208815  7.356956586 9.350679</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 29     0      avgFit -2.0374689  0.068357852 2.163768</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 30     1      avgFit  0.2396810  2.941609351 4.719797</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 31     2      avgFit  1.7585578  4.153713624 5.742358</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 32     3      avgFit  2.9983824  4.942926287 6.391543</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 33     4      avgFit  3.8724262  5.565569261 6.897610</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 34     6      avgFit  4.7598863  6.193427575 7.796217</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 35     8      avgFit  4.9153471  6.776506901 8.899476</span>
-<span class="r-in"><span><span class="co"># getBootstrapQuantiles(model_fits = fit_simple,</span></span></span>
-<span class="r-in"><span><span class="co">#                       quantiles  = c(0.025, 0.5, 0.975),</span></span></span>
-<span class="r-in"><span><span class="co">#                       n_samples  = 2000,</span></span></span>
-<span class="r-in"><span><span class="co">#                       doses      = c(0, 1, 2, 3, 4, 6, 8))</span></span></span>
+<span class="r-in"><span>                      n_samples  <span class="op">=</span> <span class="fl">100</span>, <span class="co"># speeding up example run time</span></span></span>
+<span class="r-in"><span>                      doses      <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">6</span>, <span class="fl">8</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   doses      models      2.5%      50%    97.5%</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1     0 exponential 0.3996858 1.629747 2.777175</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2     6 exponential 4.5386308 5.641677 6.899173</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3     8 exponential 5.6532735 7.363009 9.426873</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4     0      linear 0.1269806 1.422249 2.557704</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5     6      linear 4.7684355 5.893015 7.254461</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6     8      linear 5.7236261 7.382450 9.451224</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7     0      avgFit 0.1269806 1.422249 2.557704</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8     6      avgFit 4.7684355 5.893015 7.254461</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9     8      avgFit 5.7236261 7.382450 9.451224</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
