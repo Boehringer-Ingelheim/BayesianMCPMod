@@ -21,18 +21,14 @@
 #'                        DG_2 = RBesT::mixnorm(comp1 = c(w = 1, m = 4, s = 1.5), sigma = 2) ,  
 #'                        DG_3 = RBesT::mixnorm(comp1 = c(w = 1, m = 6, s = 1.2), sigma = 2) ,
 #'                        DG_4 = RBesT::mixnorm(comp1 = c(w = 1, m = 6.5, s = 1.1), sigma = 2))
-#' models <- c("emax", "exponential", "sigEmax", "linear")
+#' models <- c("exponential", "linear")
 #' dose_levels <- c(0, 1, 2, 4, 8)
 #' fit <- getModelFits(models      = models,
 #'                     posterior   = posterior_list,
-#'                     dose_levels = dose_levels)
-#' fit_simple <- getModelFits(models      = models,
-#'                            posterior   = posterior_list,
-#'                            dose_levels = dose_levels,
-#'                            simple      = TRUE)
+#'                     dose_levels = dose_levels,
+#'                     simple      = TRUE)
 #'                            
-#' plot(fit, cr_bands = TRUE)
-#' # plot(fit_simple, cr_bands = TRUE, alpha_CrB = c(0.05, 0.1, 0.5))
+#' plot(fit) 
 #' @return A ggplot2 object
 #' @export
 plot.modelFits <- function (

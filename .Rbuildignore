@@ -9,3 +9,4 @@ docs
 ^doc$
 ^Meta$
 ^cran-comments\.md$
+^cran_submission_script\.R$

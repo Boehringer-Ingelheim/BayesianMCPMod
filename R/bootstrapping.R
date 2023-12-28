@@ -20,23 +20,17 @@
 #'                        DG_2 = RBesT::mixnorm(comp1 = c(w = 1, m = 4, s = 1.5), sigma = 2) ,  
 #'                        DG_3 = RBesT::mixnorm(comp1 = c(w = 1, m = 6, s = 1.2), sigma = 2) ,
 #'                        DG_4 = RBesT::mixnorm(comp1 = c(w = 1, m = 6.5, s = 1.1), sigma = 2))
-#' models <- c("emax", "exponential", "sigEmax", "linear")
+#' models <- c("exponential", "linear")
 #' dose_levels <- c(0, 1, 2, 4, 8)
 #' fit <- getModelFits(models      = models,
 #'                     posterior   = posterior_list,
-#'                     dose_levels = dose_levels)
-#' fit_simple <- getModelFits(models      = models,
-#'                            posterior   = posterior_list,
-#'                            dose_levels = dose_levels,
-#'                            simple      = TRUE)
+#'                     dose_levels = dose_levels,
+#'                     simple      = TRUE)
+#'                            
 #' getBootstrapQuantiles(model_fits = fit,
 #'                       quantiles  = c(0.025, 0.5, 0.975),
-#'                       n_samples  = 100, # not recommended, speeding up example
-#'                       doses      = c(0, 1, 2, 3, 4, 6, 8))
-#' # getBootstrapQuantiles(model_fits = fit_simple,
-#' #                       quantiles  = c(0.025, 0.5, 0.975),
-#' #                       n_samples  = 2000,
-#' #                       doses      = c(0, 1, 2, 3, 4, 6, 8))
+#'                       n_samples  = 100, # speeding up example run time
+#'                       doses      = c(0, 6, 8))
 #' @return  A data frame with entries doses, models, and quantiles 
 #' @export
 getBootstrapQuantiles <- function (

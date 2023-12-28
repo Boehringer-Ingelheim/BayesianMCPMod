@@ -1,7 +1,7 @@
 Package: BayesianMCPMod
 Title: Simulate, Evaluate, and Analyze Dose Finding Trials with Bayesian
     MCPMod
-Version: 0.1.5
+Version: 1.0.0
 Authors@R: c(
     person("Boehringer Ingelheim Pharma GmbH & Co. KG", role = c("cph", "fnd")),
     person("Stephan", "Wojciekowski", , "stephan.wojciekowski@boehringer-ingelheim.com", role = c("aut", "cre")),

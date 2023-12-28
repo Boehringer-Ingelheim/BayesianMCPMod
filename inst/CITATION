@@ -1,0 +1,20 @@
+citHeader("To cite BayesianMCPMod in publications, please use:")
+
+year <- sub("-.*", "", meta$Date)
+note <- sprintf("R package version %s", meta$Version)
+
+bibentry(
+  bibtype     = "Manual",
+  title       = "BayesianMCPMod: Simulate, Evaluate, and Analyze Dose Finding Trials with Bayesian MCPMod",
+  author      = c(
+    person("Stephan", "Wojciekowski"),
+    person("Lars", "Andersen"),
+    person("Sebastian", "Bossert")
+  ),
+  year        = year,
+  note        = note,
+  url         = "https://CRAN.R-project.org/package=bhmbasket",
+  textVersion = paste0(
+    "Wojciekowski, S, Andersen, L, Bossert, S (", year, "). BayesianMCPMod: Simulate, Evaluate, and Analyze Dose Finding Trials with Bayesian MCPMod. ", note, "."
+  )
+)
