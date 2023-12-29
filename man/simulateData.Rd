@@ -50,7 +50,7 @@ models <- DoseFinding::Mods(linear      = NULL,
                             maxEff      = 6)
 dose_levels <- c(0, 0.5, 2,4, 8)
 sd          <- 12
-n_patients  <- c(40,60,60,60,60)
+n_patients  <- c(40, 60, 60, 60, 60)
 
 sim_data <- simulateData(n_patients  = n_patients,
                          dose_levels = dose_levels,
@@ -59,4 +59,5 @@ sim_data <- simulateData(n_patients  = n_patients,
                          n_sim       = 100)
 
 sim_data
+
 }

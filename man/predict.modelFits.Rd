@@ -13,7 +13,7 @@ model coefficients}
 \item{doses}{A vector specifying the doses for which a prediction should be
 done}
 
-\item{...}{currently without function}
+\item{...}{Currently without function}
 }
 \value{
 a list with the model predictions for the specified models and doses

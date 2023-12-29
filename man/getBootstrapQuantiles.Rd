@@ -54,5 +54,5 @@ getBootstrapQuantiles(model_fits = fit,
                       doses      = c(0, 6, 8))
 }
 \references{
-O'Quigley, J., Iasonos, A., & Bornkamp, B. (Eds.). (2017). Handbook of Methods for Designing, Monitoring, and Analyzing Dose-Finding Trials (1st ed.). Chapman and Hall/CRC. https://doi.org/10.1201/9781315151984
+O'Quigley J, Iasonos A, Bornkamp B. 2017. Handbook of Methods for Designing, Monitoring, and Analyzing Dose-Finding Trials (1st ed.). Chapman and Hall/CRC. doi:10.1201/9781315151984
 }

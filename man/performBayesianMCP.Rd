@@ -57,5 +57,5 @@ performBayesianMCP(posterior_list = posterior_list,
 
 }
 \references{
-Fleischer F, Bossert S, Deng Q, Loley C, Gierse J. Bayesian MCPMod. Pharmaceutical Statistics. 2022; 21(3): 654-670. doi:10.1002/pst.2193
+Fleischer F, Bossert S, Deng Q, Loley C, Gierse J. 2022. Bayesian MCPMod. Pharmaceutical Statistics. 21(3): 654-670. doi:10.1002/pst.2193
 }

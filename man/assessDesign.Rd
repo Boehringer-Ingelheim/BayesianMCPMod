@@ -72,7 +72,4 @@ success_probabilities <- assessDesign(
 success_probabilities
 
 }
-
-
-
 }

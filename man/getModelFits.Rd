@@ -57,5 +57,5 @@ fit_simple <- getModelFits(models      = models,
                            
 }
 \references{
-Schorning K, Bornkamp B, Bretz F, Dette H. 2016. “Model selection versus model averaging in dose finding studies”. Stat Med; 35; 4021-4040.
+Schorning K, Bornkamp B, Bretz F, Dette H. 2016. Model selection versus model averaging in dose finding studies. Stat Med; 35; 4021-4040.
 }
