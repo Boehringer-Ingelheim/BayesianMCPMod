@@ -22,7 +22,6 @@ Bayesian MCP test result as well as modelling result.
 Performs Bayesian MCP Test step and modeling in a combined fashion. See performBayesianMCP() function for MCP Test step and getModelFits() for the modelling step
 }
 \examples{
-# example code
 mods <- DoseFinding::Mods(linear      = NULL,
                           linlog      = NULL,
                           emax        = c(0.5, 1.2),

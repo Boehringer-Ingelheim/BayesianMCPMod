@@ -16,7 +16,6 @@
 #' @return Returns success probabilities for the different assumed dose-response shapes, attributes also includes information around average success rate (across all assumed models) and prior Effective sample size
 #' 
 #' @examples
-#' # example code
 #' if (interactive()) { # takes typically > 5 seconds
 #' 
 #' mods <- DoseFinding::Mods(linear      = NULL,
@@ -277,7 +276,6 @@ getContr <- function (
 #' @param alpha_crit_val Significance level. Default set to 0.025.
 #'
 #' @examples
-#' # example code
 #' mods <- DoseFinding::Mods(linear      = NULL,
 #'                           linlog      = NULL,
 #'                           emax        = c(0.5, 1.2),
@@ -331,7 +329,6 @@ getCritProb <- function (
 #' @param crit_prob_adj A getCritProb object, specifying the critical value to be used for the testing (on the probability scale).
 #' @param simple Boolean variable, defining whether simplified fit will be applied. Passed to the getModelFits() function. Default FALSE.
 #' @examples
-#' # example code
 #' mods <- DoseFinding::Mods(linear      = NULL,
 #'                           linlog      = NULL,
 #'                           emax        = c(0.5, 1.2),
@@ -475,7 +472,6 @@ addSignificance <- function (
 #' @param crit_prob_adj A getCritProb object, specifying the critical value to be used for the testing (on the probability scale)
 #' 
 #' @examples
-#' # example code
 #' mods <- DoseFinding::Mods(linear      = NULL,
 #'                           linlog      = NULL,
 #'                           emax        = c(0.5, 1.2),

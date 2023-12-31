@@ -41,7 +41,6 @@ Also providing information about simulation iteration, patient number as well as
 Function to simulate patient level data for a normally distributed endpoint
 }
 \examples{
-# example code
 models <- DoseFinding::Mods(linear      = NULL,
                             linlog      = NULL,
                             emax        = c(0.5, 1.2),

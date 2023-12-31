@@ -22,7 +22,6 @@ Tests for a dose-response effect using a model-based multiple contrast test base
 In order to obtain significant test decision we consider the maximum of the posterior probabilities across the different models. This maximum is compared with a (multiplicity adjusted) critical value (on the probability scale).
 }
 \examples{
-# example code
 mods <- DoseFinding::Mods(linear      = NULL,
                           linlog      = NULL,
                           emax        = c(0.5, 1.2),

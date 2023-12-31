@@ -46,7 +46,6 @@ Returns success probabilities for the different assumed dose-response shapes, at
 This function performs simulation based trial design evaluations for a set of specified dose-response models
 }
 \examples{
-# example code
 if (interactive()) { # takes typically > 5 seconds
 
 mods <- DoseFinding::Mods(linear      = NULL,

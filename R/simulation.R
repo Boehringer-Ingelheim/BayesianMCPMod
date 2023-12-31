@@ -15,7 +15,6 @@
 #' @param dr_means a vector, with information about assumed effects per dose group. Default NULL.
 #' 
 #' @examples
-#' # example code
 #' models <- DoseFinding::Mods(linear      = NULL,
 #'                             linlog      = NULL,
 #'                             emax        = c(0.5, 1.2),

@@ -12,7 +12,6 @@
 #' @param calc_ess boolean variable, indicating whether effective sample size should be calculated. Default FALSE
 #' @return posterior_list, a posterior list object is returned with information about (mixture) posterior distribution per dose group
 #' @examples
-#' # example code
 #' prior_list <- list(Ctrl = RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 5), sigma = 2),
 #'                    DG_1 = RBesT::mixnorm(comp1 = c(w = 1, m = 1, s = 12), sigma = 2),
 #'                    DG_2 = RBesT::mixnorm(comp1 = c(w = 1, m = 1.2, s = 11), sigma = 2) ,  

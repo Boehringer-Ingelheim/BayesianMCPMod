@@ -33,7 +33,6 @@ If patient level data is provided mu_hat and se_hat are calculated within the fu
 This function calculates the posterior for every dose group independently via the RBesT function postmix().
 }
 \examples{
-# example code
 prior_list <- list(Ctrl = RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 5), sigma = 2),
                    DG_1 = RBesT::mixnorm(comp1 = c(w = 1, m = 1, s = 12), sigma = 2),
                    DG_2 = RBesT::mixnorm(comp1 = c(w = 1, m = 1.2, s = 11), sigma = 2) ,  
