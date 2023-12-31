@@ -110,21 +110,21 @@
 <div class="section level2">
 <h2 id="background-and-data">Background and data<a class="anchor" aria-label="anchor" href="#background-and-data"></a>
 </h2>
-<p>In this vignette we will show the use of the Bayesian MCPMod package
-for trial planning for continuous distributed data. As in <a href="analysis_normal.html">the analysis example vignette</a> we focus
+<p>In this vignette, we will show the use of the Bayesian MCPMod package
+for trial planning for continuous distributed data. As in <a href="analysis_normal.html">the analysis example vignette</a>, we focus
 on the indication MDD and make use of historical data that is included
-in the clinDR package. More specifically trial results for BRINTELLIX
+in the clinDR package. More specifically, trial results for BRINTELLIX
 will be utilized to establish an informative prior for the control
 group.</p>
 </div>
 <div class="section level2">
 <h2 id="calculation-of-a-map-prior">Calculation of a MAP prior<a class="anchor" aria-label="anchor" href="#calculation-of-a-map-prior"></a>
 </h2>
-<p>In a first step a meta analytic prior will be calculated using
-historical data from 5 trials (with main endpoint Change from baseline
-in MADRS score after 8 weeks). Please note that only information from
-the control group will be integrated (leading to an informative mixture
-prior for the control group), while for the active groups a
+<p>In a first step, a meta analytic predictive prior will be calculated
+using historical data from 5 trials with main endpoint Change from
+baseline in MADRS score after 8 weeks. Please note that only information
+from the control group will be integrated leading to an informative
+mixture prior for the control group, while for the active groups a
 non-informative prior will be specified.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"metaData"</span><span class="op">)</span></span>
@@ -132,7 +132,6 @@ non-informative prior will be specified.</p>
 <span><span class="va">dataset</span>     <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">testdata</span>, <span class="va">bname</span> <span class="op">==</span> <span class="st">"BRINTELLIX"</span><span class="op">)</span></span>
 <span><span class="va">histcontrol</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">dataset</span>, <span class="va">dose</span> <span class="op">==</span> <span class="fl">0</span>, <span class="va">primtime</span> <span class="op">==</span> <span class="fl">8</span>, <span class="va">indication</span> <span class="op">==</span> <span class="st">"MAJOR DEPRESSIVE DISORDER"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co">##Create MAP Prior</span></span>
 <span><span class="va">hist_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
 <span>  trial <span class="op">=</span> <span class="va">histcontrol</span><span class="op">$</span><span class="va">nctno</span>,</span>
 <span>  est   <span class="op">=</span> <span class="va">histcontrol</span><span class="op">$</span><span class="va">rslt</span>,</span>
@@ -141,118 +140,117 @@ non-informative prior will be specified.</p>
 <span>  n     <span class="op">=</span> <span class="va">histcontrol</span><span class="op">$</span><span class="va">sampsize</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">sd_tot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/with.html" class="external-link">with</a></span><span class="op">(</span><span class="va">hist_data</span>, <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">sd</span> <span class="op">*</span> <span class="va">n</span><span class="op">)</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p>We will make use of the same getPriorList function as in the <a href="analysis_normal.html">analysis example vignette</a> to create a
+<p>We will make use of the same getPriorList() function as in the <a href="analysis_normal.html">analysis example vignette</a> to create a
 MAP prior.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dose_levels</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">2.5</span>, <span class="fl">5</span>, <span class="fl">10</span>, <span class="fl">20</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">prior_list</span> <span class="op">&lt;-</span> <span class="fu">getPriorList</span><span class="op">(</span></span>
+<span><span class="va">prior_list</span>  <span class="op">&lt;-</span> <span class="fu">getPriorList</span><span class="op">(</span></span>
 <span>  hist_data     <span class="op">=</span> <span class="va">hist_data</span>,</span>
 <span>  dose_levels   <span class="op">=</span> <span class="va">dose_levels</span>,</span>
-<span>  robust_weight <span class="op">=</span> <span class="fl">0.3</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="../reference/getESS.html">getESS</a></span><span class="op">(</span><span class="va">prior_list</span><span class="op">)</span></span>
-<span><span class="co">#&gt;        Ctr       DG_1       DG_2       DG_3       DG_4 </span></span>
-<span><span class="co">#&gt; 13.5215240  0.9999996  0.9999996  0.9999996  0.9999996</span></span></code></pre></div>
+<span>  robust_weight <span class="op">=</span> <span class="fl">0.3</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="specification-of-new-trial-design">Specification of new trial design<a class="anchor" aria-label="anchor" href="#specification-of-new-trial-design"></a>
 </h2>
-<p>For the hypothetical new trial we plan with 4 active dose levels and
+<p>For the hypothetical new trial, we plan with 4 active dose levels and
 we specify a broad set of potential dose-response relationships,
-including a linear, an exponential, an emax and a sigEMax model.<br>
-Furthermore we assume a maximum effect of -3 on top of control
+including a linear, an exponential, an emax and 2 sigEMax models.<br>
+Furthermore, we assume a maximum effect of -3 on top of control
 (i.e. assuming that active treatment can reduce the MADRS score after 8
 weeks by up to 15.8) and plan a trial with 80 patients for all active
 groups and 60 patients for control.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#Pre-Specification (B)MCPMod </span></span>
+<code class="sourceCode R"><span><span class="va">exp</span>     <span class="op">&lt;-</span> <span class="fu">DoseFinding</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/DoseFinding/man/guesst.html" class="external-link">guesst</a></span><span class="op">(</span></span>
+<span>  d     <span class="op">=</span> <span class="fl">5</span>,</span>
+<span>  p     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.2</span><span class="op">)</span>,</span>
+<span>  model <span class="op">=</span> <span class="st">"exponential"</span>,</span>
+<span>  Maxd  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">dose_levels</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co">## candidate models for MCPMod</span></span>
-<span><span class="co"># linear function - no guestimates needed</span></span>
-<span><span class="va">exp</span>     <span class="op">&lt;-</span> <span class="fu">DoseFinding</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/DoseFinding/man/guesst.html" class="external-link">guesst</a></span><span class="op">(</span>d     <span class="op">=</span> <span class="fl">5</span>,</span>
-<span>                               p     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.2</span><span class="op">)</span>,</span>
-<span>                               model <span class="op">=</span> <span class="st">"exponential"</span>,</span>
-<span>                               Maxd  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">dose_levels</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">emax</span>    <span class="op">&lt;-</span> <span class="fu">DoseFinding</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/DoseFinding/man/guesst.html" class="external-link">guesst</a></span><span class="op">(</span>d     <span class="op">=</span> <span class="fl">2.5</span>,</span>
-<span>                               p     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.9</span><span class="op">)</span>,</span>
-<span>                               model <span class="op">=</span> <span class="st">"emax"</span><span class="op">)</span></span>
-<span><span class="va">sigemax</span> <span class="op">&lt;-</span> <span class="fu">DoseFinding</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/DoseFinding/man/guesst.html" class="external-link">guesst</a></span><span class="op">(</span>d     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2.5</span>, <span class="fl">5</span><span class="op">)</span>,</span>
-<span>                               p     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.1</span>, <span class="fl">0.6</span><span class="op">)</span>,</span>
-<span>                               model <span class="op">=</span> <span class="st">"sigEmax"</span><span class="op">)</span></span>
-<span><span class="va">sigemax2</span> <span class="op">&lt;-</span> <span class="fu">DoseFinding</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/DoseFinding/man/guesst.html" class="external-link">guesst</a></span><span class="op">(</span>d    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">4</span><span class="op">)</span>,</span>
-<span>                               p     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.3</span>, <span class="fl">0.8</span><span class="op">)</span>,</span>
-<span>                               model <span class="op">=</span> <span class="st">"sigEmax"</span><span class="op">)</span></span>
+<span><span class="va">emax</span>    <span class="op">&lt;-</span> <span class="fu">DoseFinding</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/DoseFinding/man/guesst.html" class="external-link">guesst</a></span><span class="op">(</span></span>
+<span>  d     <span class="op">=</span> <span class="fl">2.5</span>,</span>
+<span>  p     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.9</span><span class="op">)</span>,</span>
+<span>  model <span class="op">=</span> <span class="st">"emax"</span><span class="op">)</span></span>
 <span></span>
+<span><span class="va">sigemax</span> <span class="op">&lt;-</span> <span class="fu">DoseFinding</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/DoseFinding/man/guesst.html" class="external-link">guesst</a></span><span class="op">(</span></span>
+<span>  d     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2.5</span>, <span class="fl">5</span><span class="op">)</span>,</span>
+<span>  p     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.1</span>, <span class="fl">0.6</span><span class="op">)</span>,</span>
+<span>  model <span class="op">=</span> <span class="st">"sigEmax"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">sigemax2</span> <span class="op">&lt;-</span> <span class="fu">DoseFinding</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/DoseFinding/man/guesst.html" class="external-link">guesst</a></span><span class="op">(</span></span>
+<span>  d     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">4</span><span class="op">)</span>,</span>
+<span>  p     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.3</span>, <span class="fl">0.8</span><span class="op">)</span>,</span>
+<span>  model <span class="op">=</span> <span class="st">"sigEmax"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">mods</span> <span class="op">&lt;-</span> <span class="fu">DoseFinding</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/DoseFinding/man/Mods.html" class="external-link">Mods</a></span><span class="op">(</span></span>
 <span>  linear      <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  emax        <span class="op">=</span> <span class="va">emax</span>,</span>
 <span>  exponential <span class="op">=</span> <span class="va">exp</span>,</span>
 <span>  sigEmax     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">sigemax</span>, <span class="va">sigemax2</span><span class="op">)</span>,</span>
-<span>  <span class="co">#betaMod     = beta,</span></span>
 <span>  doses       <span class="op">=</span> <span class="va">dose_levels</span>,</span>
 <span>  maxEff      <span class="op">=</span> <span class="op">-</span><span class="fl">3</span>,</span>
 <span>  placEff     <span class="op">=</span> <span class="op">-</span><span class="fl">12.8</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">n_patients</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">60</span>, <span class="fl">80</span>, <span class="fl">80</span>, <span class="fl">80</span>, <span class="fl">80</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">n_patients</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">60</span>, <span class="fl">80</span>, <span class="fl">80</span>, <span class="fl">80</span>, <span class="fl">80</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="calculation-of-success-probabilities">Calculation of success probabilities<a class="anchor" aria-label="anchor" href="#calculation-of-success-probabilities"></a>
 </h2>
 <p>To calculate success probabilities for the different assumed
 dose-response models and the specified trial design we will apply the
-assessDesign function.</p>
+assessDesign function. For illustration purposes, the number of
+simulated trial results is reduced to 100 in this example.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">success_probabilities</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/assessDesign.html">assessDesign</a></span><span class="op">(</span></span>
 <span>  n_patients  <span class="op">=</span> <span class="va">n_patients</span>,</span>
 <span>  mods        <span class="op">=</span> <span class="va">mods</span>,</span>
 <span>  prior_list  <span class="op">=</span> <span class="va">prior_list</span>,</span>
-<span>  sd          <span class="op">=</span> <span class="va">sd_tot</span><span class="op">)</span></span>
+<span>  sd          <span class="op">=</span> <span class="va">sd_tot</span>,</span>
+<span>  n_sim       <span class="op">=</span> <span class="fl">100</span><span class="op">)</span> <span class="co"># speed up example run-time</span></span>
 <span></span>
 <span><span class="va">success_probabilities</span></span>
 <span><span class="co">#&gt; $linear</span></span>
 <span><span class="co">#&gt; Bayesian Multiple Comparison Procedure</span></span>
-<span><span class="co">#&gt;   Estimated Success Rate:  0.667 </span></span>
-<span><span class="co">#&gt;   N Simulations:           1000</span></span>
+<span><span class="co">#&gt;   Estimated Success Rate:  0.68 </span></span>
+<span><span class="co">#&gt;   N Simulations:           100</span></span>
 <span><span class="co">#&gt; Model Significance Frequencies</span></span>
 <span><span class="co">#&gt;      linear        emax exponential     sigEmax </span></span>
-<span><span class="co">#&gt;       0.667       0.596       0.225       0.584 </span></span>
+<span><span class="co">#&gt;        0.68        0.59        0.21        0.59 </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $emax</span></span>
 <span><span class="co">#&gt; Bayesian Multiple Comparison Procedure</span></span>
-<span><span class="co">#&gt;   Estimated Success Rate:  0.731 </span></span>
-<span><span class="co">#&gt;   N Simulations:           1000</span></span>
+<span><span class="co">#&gt;   Estimated Success Rate:  0.82 </span></span>
+<span><span class="co">#&gt;   N Simulations:           100</span></span>
 <span><span class="co">#&gt; Model Significance Frequencies</span></span>
 <span><span class="co">#&gt;      linear        emax exponential     sigEmax </span></span>
-<span><span class="co">#&gt;       0.731       0.260       0.680       0.218 </span></span>
+<span><span class="co">#&gt;        0.82        0.26        0.78        0.23 </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $exponential</span></span>
 <span><span class="co">#&gt; Bayesian Multiple Comparison Procedure</span></span>
-<span><span class="co">#&gt;   Estimated Success Rate:  0.666 </span></span>
-<span><span class="co">#&gt;   N Simulations:           1000</span></span>
+<span><span class="co">#&gt;   Estimated Success Rate:  0.63 </span></span>
+<span><span class="co">#&gt;   N Simulations:           100</span></span>
 <span><span class="co">#&gt; Model Significance Frequencies</span></span>
 <span><span class="co">#&gt;      linear        emax exponential     sigEmax </span></span>
-<span><span class="co">#&gt;       0.666       0.602       0.199       0.598 </span></span>
+<span><span class="co">#&gt;        0.63        0.61        0.16        0.60 </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $sigEmax1</span></span>
 <span><span class="co">#&gt; Bayesian Multiple Comparison Procedure</span></span>
-<span><span class="co">#&gt;   Estimated Success Rate:  0.814 </span></span>
-<span><span class="co">#&gt;   N Simulations:           1000</span></span>
+<span><span class="co">#&gt;   Estimated Success Rate:  0.82 </span></span>
+<span><span class="co">#&gt;   N Simulations:           100</span></span>
 <span><span class="co">#&gt; Model Significance Frequencies</span></span>
 <span><span class="co">#&gt;      linear        emax exponential     sigEmax </span></span>
-<span><span class="co">#&gt;       0.814       0.612       0.430       0.567 </span></span>
+<span><span class="co">#&gt;        0.82        0.63        0.52        0.58 </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $sigEmax2</span></span>
 <span><span class="co">#&gt; Bayesian Multiple Comparison Procedure</span></span>
-<span><span class="co">#&gt;   Estimated Success Rate:  0.767 </span></span>
-<span><span class="co">#&gt;   N Simulations:           1000</span></span>
+<span><span class="co">#&gt;   Estimated Success Rate:  0.84 </span></span>
+<span><span class="co">#&gt;   N Simulations:           100</span></span>
 <span><span class="co">#&gt; Model Significance Frequencies</span></span>
 <span><span class="co">#&gt;      linear        emax exponential     sigEmax </span></span>
-<span><span class="co">#&gt;       0.767       0.420       0.586       0.374 </span></span>
+<span><span class="co">#&gt;        0.84        0.43        0.73        0.37 </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; attr(,"avgSuccessRate")</span></span>
-<span><span class="co">#&gt; [1] 0.729</span></span>
+<span><span class="co">#&gt; [1] 0.758</span></span>
 <span><span class="co">#&gt; attr(,"placEff")</span></span>
 <span><span class="co">#&gt; [1] -12.8</span></span>
 <span><span class="co">#&gt; attr(,"maxEff")</span></span>
@@ -261,59 +259,60 @@ assessDesign function.</p>
 <span><span class="co">#&gt; [1] 60 80 80 80 80</span></span>
 <span><span class="co">#&gt; attr(,"priorESS")</span></span>
 <span><span class="co">#&gt;  Ctr DG_1 DG_2 DG_3 DG_4 </span></span>
-<span><span class="co">#&gt; 13.5  1.0  1.0  1.0  1.0</span></span></code></pre></div>
-<p>As alternative design we will evaluate a design with the same overall
-sample size but putting more patients on the highest dose group (and
-control).</p>
+<span><span class="co">#&gt; 20.6  1.0  1.0  1.0  1.0</span></span></code></pre></div>
+<p>As an alternative, we will evaluate a design with the same overall
+sample size but allocating more patients on the highest dose group and
+control.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">success_probabilities_uneq</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/assessDesign.html">assessDesign</a></span><span class="op">(</span></span>
 <span>  n_patients  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">80</span>, <span class="fl">60</span>, <span class="fl">60</span>, <span class="fl">60</span>, <span class="fl">120</span><span class="op">)</span>,</span>
 <span>  mods        <span class="op">=</span> <span class="va">mods</span>,</span>
 <span>  prior_list  <span class="op">=</span> <span class="va">prior_list</span>,</span>
-<span>  sd          <span class="op">=</span> <span class="va">sd_tot</span><span class="op">)</span></span>
+<span>  sd          <span class="op">=</span> <span class="va">sd_tot</span>,</span>
+<span>  n_sim       <span class="op">=</span> <span class="fl">100</span><span class="op">)</span> <span class="co"># speed up example run-time</span></span>
 <span><span class="va">success_probabilities_uneq</span></span>
 <span><span class="co">#&gt; $linear</span></span>
 <span><span class="co">#&gt; Bayesian Multiple Comparison Procedure</span></span>
-<span><span class="co">#&gt;   Estimated Success Rate:  0.808 </span></span>
-<span><span class="co">#&gt;   N Simulations:           1000</span></span>
+<span><span class="co">#&gt;   Estimated Success Rate:  0.8 </span></span>
+<span><span class="co">#&gt;   N Simulations:           100</span></span>
 <span><span class="co">#&gt; Model Significance Frequencies</span></span>
 <span><span class="co">#&gt;      linear        emax exponential     sigEmax </span></span>
-<span><span class="co">#&gt;       0.808       0.743       0.419       0.739 </span></span>
+<span><span class="co">#&gt;        0.80        0.76        0.50        0.75 </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $emax</span></span>
 <span><span class="co">#&gt; Bayesian Multiple Comparison Procedure</span></span>
 <span><span class="co">#&gt;   Estimated Success Rate:  0.84 </span></span>
-<span><span class="co">#&gt;   N Simulations:           1000</span></span>
+<span><span class="co">#&gt;   N Simulations:           100</span></span>
 <span><span class="co">#&gt; Model Significance Frequencies</span></span>
 <span><span class="co">#&gt;      linear        emax exponential     sigEmax </span></span>
-<span><span class="co">#&gt;       0.840       0.410       0.804       0.363 </span></span>
+<span><span class="co">#&gt;        0.84        0.39        0.83        0.34 </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $exponential</span></span>
 <span><span class="co">#&gt; Bayesian Multiple Comparison Procedure</span></span>
-<span><span class="co">#&gt;   Estimated Success Rate:  0.809 </span></span>
-<span><span class="co">#&gt;   N Simulations:           1000</span></span>
+<span><span class="co">#&gt;   Estimated Success Rate:  0.81 </span></span>
+<span><span class="co">#&gt;   N Simulations:           100</span></span>
 <span><span class="co">#&gt; Model Significance Frequencies</span></span>
 <span><span class="co">#&gt;      linear        emax exponential     sigEmax </span></span>
-<span><span class="co">#&gt;       0.809       0.758       0.386       0.758 </span></span>
+<span><span class="co">#&gt;        0.81        0.76        0.48        0.76 </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $sigEmax1</span></span>
 <span><span class="co">#&gt; Bayesian Multiple Comparison Procedure</span></span>
-<span><span class="co">#&gt;   Estimated Success Rate:  0.868 </span></span>
-<span><span class="co">#&gt;   N Simulations:           1000</span></span>
+<span><span class="co">#&gt;   Estimated Success Rate:  0.87 </span></span>
+<span><span class="co">#&gt;   N Simulations:           100</span></span>
 <span><span class="co">#&gt; Model Significance Frequencies</span></span>
 <span><span class="co">#&gt;      linear        emax exponential     sigEmax </span></span>
-<span><span class="co">#&gt;       0.868       0.718       0.608       0.687 </span></span>
+<span><span class="co">#&gt;        0.87        0.73        0.66        0.71 </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $sigEmax2</span></span>
 <span><span class="co">#&gt; Bayesian Multiple Comparison Procedure</span></span>
-<span><span class="co">#&gt;   Estimated Success Rate:  0.844 </span></span>
-<span><span class="co">#&gt;   N Simulations:           1000</span></span>
+<span><span class="co">#&gt;   Estimated Success Rate:  0.86 </span></span>
+<span><span class="co">#&gt;   N Simulations:           100</span></span>
 <span><span class="co">#&gt; Model Significance Frequencies</span></span>
 <span><span class="co">#&gt;      linear        emax exponential     sigEmax </span></span>
-<span><span class="co">#&gt;       0.844       0.567       0.736       0.514 </span></span>
+<span><span class="co">#&gt;        0.86        0.58        0.79        0.52 </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; attr(,"avgSuccessRate")</span></span>
-<span><span class="co">#&gt; [1] 0.8338</span></span>
+<span><span class="co">#&gt; [1] 0.836</span></span>
 <span><span class="co">#&gt; attr(,"placEff")</span></span>
 <span><span class="co">#&gt; [1] -12.8</span></span>
 <span><span class="co">#&gt; attr(,"maxEff")</span></span>
@@ -322,7 +321,7 @@ control).</p>
 <span><span class="co">#&gt; [1]  80  60  60  60 120</span></span>
 <span><span class="co">#&gt; attr(,"priorESS")</span></span>
 <span><span class="co">#&gt;  Ctr DG_1 DG_2 DG_3 DG_4 </span></span>
-<span><span class="co">#&gt; 13.5  1.0  1.0  1.0  1.0</span></span></code></pre></div>
+<span><span class="co">#&gt; 20.6  1.0  1.0  1.0  1.0</span></span></code></pre></div>
 <p>For this specific trial setting the adapted allocation ratio leads to
 increased success probabilities under all assumed dose response
 relationships.</p>
@@ -336,18 +335,19 @@ scenarios with a prior-data conflict.</p>
 <span>  mods        <span class="op">=</span> <span class="va">mods</span>,</span>
 <span>  prior_list  <span class="op">=</span> <span class="va">prior_list</span>,</span>
 <span>  sd          <span class="op">=</span> <span class="va">sd_tot</span>,</span>
-<span>  dr_means    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">12</span>,<span class="op">-</span><span class="fl">14</span>,<span class="op">-</span><span class="fl">15</span>,<span class="op">-</span><span class="fl">16</span>,<span class="op">-</span><span class="fl">17</span><span class="op">)</span><span class="op">)</span></span>
+<span>  dr_means    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">12</span>, <span class="op">-</span><span class="fl">14</span>, <span class="op">-</span><span class="fl">15</span>, <span class="op">-</span><span class="fl">16</span>, <span class="op">-</span><span class="fl">17</span><span class="op">)</span>,</span>
+<span>  n_sim       <span class="op">=</span> <span class="fl">100</span><span class="op">)</span> <span class="co"># speed up example run-time</span></span>
 <span><span class="va">success_probabilities</span></span>
 <span><span class="co">#&gt; $dose_resp</span></span>
 <span><span class="co">#&gt; Bayesian Multiple Comparison Procedure</span></span>
-<span><span class="co">#&gt;   Estimated Success Rate:  0.969 </span></span>
-<span><span class="co">#&gt;   N Simulations:           1000</span></span>
+<span><span class="co">#&gt;   Estimated Success Rate:  0.99 </span></span>
+<span><span class="co">#&gt;   N Simulations:           100</span></span>
 <span><span class="co">#&gt; Model Significance Frequencies</span></span>
 <span><span class="co">#&gt;      linear        emax exponential     sigEmax </span></span>
-<span><span class="co">#&gt;       0.969       0.890       0.871       0.861 </span></span>
+<span><span class="co">#&gt;        0.99        0.90        0.89        0.88 </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; attr(,"avgSuccessRate")</span></span>
-<span><span class="co">#&gt; [1] 0.969</span></span>
+<span><span class="co">#&gt; [1] 0.99</span></span>
 <span><span class="co">#&gt; attr(,"placEff")</span></span>
 <span><span class="co">#&gt; [1] -12</span></span>
 <span><span class="co">#&gt; attr(,"maxEff")</span></span>
@@ -356,7 +356,7 @@ scenarios with a prior-data conflict.</p>
 <span><span class="co">#&gt; [1] 60 80 80 80 80</span></span>
 <span><span class="co">#&gt; attr(,"priorESS")</span></span>
 <span><span class="co">#&gt;  Ctr DG_1 DG_2 DG_3 DG_4 </span></span>
-<span><span class="co">#&gt; 13.5  1.0  1.0  1.0  1.0</span></span></code></pre></div>
+<span><span class="co">#&gt; 20.6  1.0  1.0  1.0  1.0</span></span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>

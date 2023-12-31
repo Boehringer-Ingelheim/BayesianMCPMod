@@ -107,7 +107,7 @@ regular MCPMod for this specific vector of standard errors. For the actual evalu
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>mods</dt>
-<dd><p>An object of class "Mods" as specified in the DoseFinding package.</p></dd>
+<dd><p>An object of class 'Mods' as created by the function 'DoseFinding::Mods()'</p></dd>
 
 
 <dt>dose_levels</dt>
@@ -115,44 +115,44 @@ regular MCPMod for this specific vector of standard errors. For the actual evalu
 
 
 <dt>dose_weights</dt>
-<dd><p>Vector specifying weights for the different doses. Please note that in case this information is provided together with a prior (i.e. Option i) is planned) these two inputs should be provided on the same scale (e.g. patient numbers).  Default NULL</p></dd>
+<dd><p>Vector specifying weights for the different doses. Please note that in case this information is provided together with a prior (i.e. Option 1) is planned these two inputs should be provided on the same scale (e.g. patient numbers).  Default NULL</p></dd>
 
 
 <dt>prior_list</dt>
-<dd><p>A prior_list object, only required as input for Option i). Default NULL</p></dd>
+<dd><p>A list of objects of class 'normMix' as created with 'RBesT::mixnorm()'. Only required as input for Option 1. Default NULL</p></dd>
 
 
 <dt>sd_posterior</dt>
-<dd><p>A vector of positive values with information about the variability of the posterior distribution, only required for Option iii). Default NULL</p></dd>
+<dd><p>A vector of positive values with information about the variability of the posterior distribution, only required for Option 3. Default NULL</p></dd>
 
 
 <dt>se_new_trial</dt>
-<dd><p>A vector of positive values with information about the observed variability, only required for Option iv). Default NULL</p></dd>
+<dd><p>A vector of positive values with information about the observed variability, only required for Option 4. Default NULL</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     
 
-<p>Object of class ‘⁠optContr⁠ . A list containing entries contMat and muMat, and CorrMat. Specified in the DoseFinding package.</p>
+<p>An object of class 'optContr' as provided by the function 'DoseFinding::optContr()'.</p>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># example code</span></span></span>
-<span class="r-in"><span><span class="va">mods</span> <span class="op">&lt;-</span> <span class="fu">DoseFinding</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/DoseFinding/man/Mods.html" class="external-link">Mods</a></span><span class="op">(</span>linear      <span class="op">=</span> <span class="cn">NULL</span>,</span></span>
-<span class="r-in"><span>                          linlog      <span class="op">=</span> <span class="cn">NULL</span>,</span></span>
-<span class="r-in"><span>                          emax        <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">1.2</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>                          exponential <span class="op">=</span> <span class="fl">2</span>,</span></span>
-<span class="r-in"><span>                          doses       <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.5</span>, <span class="fl">2</span>,<span class="fl">4</span>, <span class="fl">8</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>                          maxEff      <span class="op">=</span> <span class="fl">6</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">dose_levels</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.5</span>, <span class="fl">2</span>, <span class="fl">4</span>, <span class="fl">8</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">sd_posterior</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2.8</span>,<span class="fl">3</span>,<span class="fl">2.5</span>,<span class="fl">3.5</span>,<span class="fl">4</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">dose_levels</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.5</span>, <span class="fl">2</span>, <span class="fl">4</span>, <span class="fl">8</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">mods</span> <span class="op">&lt;-</span> <span class="fu">DoseFinding</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/DoseFinding/man/Mods.html" class="external-link">Mods</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  linear      <span class="op">=</span> <span class="cn">NULL</span>,</span></span>
+<span class="r-in"><span>  linlog      <span class="op">=</span> <span class="cn">NULL</span>,</span></span>
+<span class="r-in"><span>  emax        <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">1.2</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  exponential <span class="op">=</span> <span class="fl">2</span>,</span></span>
+<span class="r-in"><span>  doses       <span class="op">=</span> <span class="va">dose_levels</span>,</span></span>
+<span class="r-in"><span>  maxEff      <span class="op">=</span> <span class="fl">6</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">sd_posterior</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2.8</span>, <span class="fl">3</span>, <span class="fl">2.5</span>, <span class="fl">3.5</span>, <span class="fl">4</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">contr_mat</span> <span class="op">&lt;-</span> <span class="fu">getContr</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  mods           <span class="op">=</span> <span class="va">mods</span>,</span></span>
-<span class="r-in"><span>  dose_levels    <span class="op">=</span> <span class="va">dose_levels</span>,</span></span>
-<span class="r-in"><span>  sd_posterior   <span class="op">=</span> <span class="va">sd_posterior</span><span class="op">)</span> </span></span>
+<span class="r-in"><span>  mods         <span class="op">=</span> <span class="va">mods</span>,</span></span>
+<span class="r-in"><span>  dose_levels  <span class="op">=</span> <span class="va">dose_levels</span>,</span></span>
+<span class="r-in"><span>  sd_posterior <span class="op">=</span> <span class="va">sd_posterior</span><span class="op">)</span> </span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
