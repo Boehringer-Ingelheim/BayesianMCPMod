@@ -10,7 +10,7 @@
 #' @param alpha_crit_val (Un-adjusted) Critical value to be used for the MCP testing step. Passed to the getCritProb() function for the calculation of adjusted critical values (on the probability scale). Default is 0.05.
 #' @param simple Boolean variable defining whether simplified fit will be applied. Passed to the getModelFits function. Default FALSE.
 #' @param reestimate Boolean variable defining whether critical value should be calculated with re-estimated contrasts (see getCritProb function for more details). Default FALSE
-#' @param contr Allows specification of a fixed contrasts matrix. Default NULL
+#' @param contr An object of class 'optContr' as created by the getContr() function. Allows specification of a fixed contrasts matrix. Default NULL
 #' @param dr_means A vector, allows specification of  individual (not model based) assumed effects per dose group. Default NULL
 #' 
 #' @return Returns success probabilities for the different assumed dose-response shapes, attributes also includes information around average success rate (across all assumed models) and prior Effective sample size
@@ -37,11 +37,13 @@
 #'   n_patients  = n_patients,
 #'   mods        = mods,
 #'   prior_list  = prior_list,
-#'   sd          = sd)
+#'   sd          = sd,
+#'   n_sim       = 1e2) # speed up exammple run time
 #' 
 #' success_probabilities
 #' 
 #' }
+#' 
 #' @export
 assessDesign <- function (
     
@@ -158,30 +160,31 @@ assessDesign <- function (
 #' 4) Frequentist approach+re-estimation:If only a se_new_trial (i.e. the estimated variability per dose group of a new trial) is provided, optimal contrast vectors are calculated from the
 #'    regular MCPMod for this specific vector of standard errors. For the actual evaluation this vector of standard errors is translated into a (diagonal) matrix of variances 
 #' 
-#' @param mods An object of class "Mods" as specified in the DoseFinding package.
+#' @param mods An object of class 'Mods' as created by the function 'DoseFinding::Mods()'
 #' @param dose_levels Vector containing the different dosage levels.
-#' @param dose_weights Vector specifying weights for the different doses. Please note that in case this information is provided together with a prior (i.e. Option i) is planned) these two inputs should be provided on the same scale (e.g. patient numbers).  Default NULL
-#' @param prior_list A prior_list object, only required as input for Option i). Default NULL
-#' @param sd_posterior A vector of positive values with information about the variability of the posterior distribution, only required for Option iii). Default NULL
-#' @param se_new_trial A vector of positive values with information about the observed variability, only required for Option iv). Default NULL
+#' @param dose_weights Vector specifying weights for the different doses. Please note that in case this information is provided together with a prior (i.e. Option 1) is planned these two inputs should be provided on the same scale (e.g. patient numbers).  Default NULL
+#' @param prior_list A list of objects of class 'normMix' as created with 'RBesT::mixnorm()'. Only required as input for Option 1. Default NULL
+#' @param sd_posterior A vector of positive values with information about the variability of the posterior distribution, only required for Option 3. Default NULL
+#' @param se_new_trial A vector of positive values with information about the observed variability, only required for Option 4. Default NULL
+
 #' 
 #' @examples
-#' # example code
-#' mods <- DoseFinding::Mods(linear      = NULL,
-#'                           linlog      = NULL,
-#'                           emax        = c(0.5, 1.2),
-#'                           exponential = 2,
-#'                           doses       = c(0, 0.5, 2,4, 8),
-#'                           maxEff      = 6)
 #' dose_levels  <- c(0, 0.5, 2, 4, 8)
-#' sd_posterior <- c(2.8,3,2.5,3.5,4)
+#' mods <- DoseFinding::Mods(
+#'   linear      = NULL,
+#'   linlog      = NULL,
+#'   emax        = c(0.5, 1.2),
+#'   exponential = 2,
+#'   doses       = dose_levels,
+#'   maxEff      = 6)
+#' sd_posterior <- c(2.8, 3, 2.5, 3.5, 4)
 #' 
 #' contr_mat <- getContr(
-#'   mods           = mods,
-#'   dose_levels    = dose_levels,
-#'   sd_posterior   = sd_posterior) 
+#'   mods         = mods,
+#'   dose_levels  = dose_levels,
+#'   sd_posterior = sd_posterior) 
 #' 
-#' @return Object of class ‘⁠optContr⁠ . A list containing entries contMat and muMat, and CorrMat. Specified in the DoseFinding package.
+#' @return An object of class 'optContr' as provided by the function 'DoseFinding::optContr()'.
 #' 
 #' @export
 getContr <- function (
@@ -323,8 +326,8 @@ getCritProb <- function (
 #' 
 #' @description Performs Bayesian MCP Test step and modeling in a combined fashion. See performBayesianMCP() function for MCP Test step and getModelFits() for the modelling step
 #' 
-#' @param posterior_list A getPosterior object with information about the (mixture) posterior distribution per dose group
-#' @param contr An object of class ‘⁠optContr' as specified by the getContr() function, contrast matrix to be used for the testing step.
+#' @param posterior_list An object of class 'postList' as created by getPosterior() containing information about the (mixture) posterior distribution per dose group
+#' @param contr An object of class 'optContr' as created by the getContr() function. It contains the contrast matrix to be used for the testing step.
 #' @param crit_prob_adj A getCritProb object, specifying the critical value to be used for the testing (on the probability scale).
 #' @param simple Boolean variable, defining whether simplified fit will be applied. Passed to the getModelFits() function. Default FALSE.
 #' @examples
@@ -468,7 +471,7 @@ addSignificance <- function (
 #' In order to obtain significant test decision we consider the maximum of the posterior probabilities across the different models. This maximum is compared with a (multiplicity adjusted) critical value (on the probability scale).
 #' @references Fleischer F, Bossert S, Deng Q, Loley C, Gierse J. 2022. Bayesian MCPMod. Pharmaceutical Statistics. 21(3): 654-670. doi:10.1002/pst.2193
 #' @param posterior_list An object derived with getPosterior with information about the (mixture) posterior distribution per dose group 
-#' @param contr An object of class ‘⁠optContr' as specified by the getContr() function, contrast matrix to be used for the testing step
+#' @param contr An object of class 'optContr' as created by the getContr() function. It contains the contrast matrix to be used for the testing step.
 #' @param crit_prob_adj A getCritProb object, specifying the critical value to be used for the testing (on the probability scale)
 #' 
 #' @examples

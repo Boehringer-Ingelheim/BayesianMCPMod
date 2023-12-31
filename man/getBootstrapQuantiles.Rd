@@ -41,16 +41,16 @@ posterior_list <- list(Ctrl = RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 1), sig
                        DG_2 = RBesT::mixnorm(comp1 = c(w = 1, m = 4, s = 1.5), sigma = 2) ,  
                        DG_3 = RBesT::mixnorm(comp1 = c(w = 1, m = 6, s = 1.2), sigma = 2) ,
                        DG_4 = RBesT::mixnorm(comp1 = c(w = 1, m = 6.5, s = 1.1), sigma = 2))
-models <- c("exponential", "linear")
-dose_levels <- c(0, 1, 2, 4, 8)
-fit <- getModelFits(models      = models,
-                    posterior   = posterior_list,
-                    dose_levels = dose_levels,
-                    simple      = TRUE)
+models         <- c("exponential", "linear")
+dose_levels    <- c(0, 1, 2, 4, 8)
+fit            <- getModelFits(models      = models,
+                               posterior   = posterior_list,
+                               dose_levels = dose_levels,
+                               simple      = TRUE)
                            
 getBootstrapQuantiles(model_fits = fit,
                       quantiles  = c(0.025, 0.5, 0.975),
-                      n_samples  = 100, # speeding up example run time
+                      n_samples  = 10, # speeding up example run time
                       doses      = c(0, 6, 8))
 }
 \references{

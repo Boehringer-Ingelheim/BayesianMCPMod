@@ -14,20 +14,20 @@ getContr(
 )
 }
 \arguments{
-\item{mods}{An object of class "Mods" as specified in the DoseFinding package.}
+\item{mods}{An object of class 'Mods' as created by the function 'DoseFinding::Mods()'}
 
 \item{dose_levels}{Vector containing the different dosage levels.}
 
-\item{dose_weights}{Vector specifying weights for the different doses. Please note that in case this information is provided together with a prior (i.e. Option i) is planned) these two inputs should be provided on the same scale (e.g. patient numbers).  Default NULL}
+\item{dose_weights}{Vector specifying weights for the different doses. Please note that in case this information is provided together with a prior (i.e. Option 1) is planned these two inputs should be provided on the same scale (e.g. patient numbers).  Default NULL}
 
-\item{prior_list}{A prior_list object, only required as input for Option i). Default NULL}
+\item{prior_list}{A list of objects of class 'normMix' as created with 'RBesT::mixnorm()'. Only required as input for Option 1. Default NULL}
 
-\item{sd_posterior}{A vector of positive values with information about the variability of the posterior distribution, only required for Option iii). Default NULL}
+\item{sd_posterior}{A vector of positive values with information about the variability of the posterior distribution, only required for Option 3. Default NULL}
 
-\item{se_new_trial}{A vector of positive values with information about the observed variability, only required for Option iv). Default NULL}
+\item{se_new_trial}{A vector of positive values with information about the observed variability, only required for Option 4. Default NULL}
 }
 \value{
-Object of class ‘⁠optContr⁠ . A list containing entries contMat and muMat, and CorrMat. Specified in the DoseFinding package.
+An object of class 'optContr' as provided by the function 'DoseFinding::optContr()'.
 }
 \description{
 This function calculates contrast vectors that are optimal for detecting certain alternatives via applying the function optContr() of the DoseFinding package.
@@ -46,19 +46,19 @@ regular MCPMod for this specific vector of standard errors. For the actual evalu
 }
 }
 \examples{
-# example code
-mods <- DoseFinding::Mods(linear      = NULL,
-                          linlog      = NULL,
-                          emax        = c(0.5, 1.2),
-                          exponential = 2,
-                          doses       = c(0, 0.5, 2,4, 8),
-                          maxEff      = 6)
 dose_levels  <- c(0, 0.5, 2, 4, 8)
-sd_posterior <- c(2.8,3,2.5,3.5,4)
+mods <- DoseFinding::Mods(
+  linear      = NULL,
+  linlog      = NULL,
+  emax        = c(0.5, 1.2),
+  exponential = 2,
+  doses       = dose_levels,
+  maxEff      = 6)
+sd_posterior <- c(2.8, 3, 2.5, 3.5, 4)
 
 contr_mat <- getContr(
-  mods           = mods,
-  dose_levels    = dose_levels,
-  sd_posterior   = sd_posterior) 
+  mods         = mods,
+  dose_levels  = dose_levels,
+  sd_posterior = sd_posterior) 
 
 }

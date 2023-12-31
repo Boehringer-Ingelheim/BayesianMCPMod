@@ -35,7 +35,7 @@ assessDesign(
 
 \item{reestimate}{Boolean variable defining whether critical value should be calculated with re-estimated contrasts (see getCritProb function for more details). Default FALSE}
 
-\item{contr}{Allows specification of a fixed contrasts matrix. Default NULL}
+\item{contr}{An object of class 'optContr' as created by the getContr() function. Allows specification of a fixed contrasts matrix. Default NULL}
 
 \item{dr_means}{A vector, allows specification of  individual (not model based) assumed effects per dose group. Default NULL}
 }
@@ -67,9 +67,11 @@ success_probabilities <- assessDesign(
   n_patients  = n_patients,
   mods        = mods,
   prior_list  = prior_list,
-  sd          = sd)
+  sd          = sd,
+  n_sim       = 1e2) # speed up exammple run time
 
 success_probabilities
 
 }
+
 }

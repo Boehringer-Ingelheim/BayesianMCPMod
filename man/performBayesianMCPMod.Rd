@@ -7,9 +7,9 @@
 performBayesianMCPMod(posterior_list, contr, crit_prob_adj, simple = FALSE)
 }
 \arguments{
-\item{posterior_list}{A getPosterior object with information about the (mixture) posterior distribution per dose group}
+\item{posterior_list}{An object of class 'postList' as created by getPosterior() containing information about the (mixture) posterior distribution per dose group}
 
-\item{contr}{An object of class ‘⁠optContr' as specified by the getContr() function, contrast matrix to be used for the testing step.}
+\item{contr}{An object of class 'optContr' as created by the getContr() function. It contains the contrast matrix to be used for the testing step.}
 
 \item{crit_prob_adj}{A getCritProb object, specifying the critical value to be used for the testing (on the probability scale).}
 

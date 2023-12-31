@@ -77,6 +77,7 @@ print.BayesianMCP <- function (
 }
 
 ## ModelFits ----------------------------------------------
+
 #' @title predict.modelFits
 #' @description This function performs model predictions based on the provided
 #' model and dose specifications 
@@ -101,7 +102,8 @@ print.BayesianMCP <- function (
 #'                                
 #' predict(fit, doses = c(0, 1, 3, 4, 6, 8))
 #' 
-#' @return a list with the model predictions for the specified models and doses  
+#' @return a list with the model predictions for the specified models and doses
+#' 
 #' @export
 predict.modelFits <- function (
     
