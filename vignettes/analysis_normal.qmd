@@ -15,14 +15,14 @@ vignette: >
   %\VignetteEngine{quarto::html}
   %\VignetteEncoding{UTF-8}
 ---
-
+  
 # ```{r, include = FALSE}
 # knitr::opts_chunk$set(
 #   collapse = TRUE,
 #   comment = "#>"
 # )
 # ```
-
+  
 ```{r setup}
 library(BayesianMCPMod)
 library(parallelly)
@@ -32,6 +32,12 @@ library(tidyverse)
 options(mc.cores = max(1, parallelly::availableCores() - 2))
 
 set.seed(7015)
+
+# source all R files in R/ (load custom functions)
+purrr::walk(
+  list.files("R", pattern = "*.R", full.names = TRUE),
+  source
+)
 ```
 
 # Background and data
@@ -66,7 +72,7 @@ prior_list <- lapply(dose_levels, function(dose_group) {
   RBesT::mixnorm(weak = c(w = 1, m = 0, s = 200)) # weakly informative normal distribution
 })
 
-names(prior_list) <- dose_level_names
+names(prior_list) <- c("Ctr", paste0("DG_", dose_levels[-1]))
 ```
 
 # Specifications for the new trial 
@@ -81,26 +87,47 @@ Note that the linear candidate model does not require a guesstimate.
 
 ```{r Pre-Specification of candidate models}
 exp_guesst  <- DoseFinding::guesst(
-  d     = 5,
-  p     = c(0.2),
-  model = "exponential",
-  Maxd  = max(dose_levels)
+  model = "exponential", 
+  d = 5, p = 0.2, Maxd = max(dose_levels)
 )
-
 emax_guesst <- DoseFinding::guesst(
-  d     = 2.5,
-  p     = c(0.9),
-  model = "emax"
+  model = "emax",
+  d = 2.5, p = 0.9
+)
+sigEmax_guesst <- DoseFinding::guesst(
+  model = "sigEmax",
+  d = c(2.5, 5), p = c(0.5, 0.95)
+)
+logistic_guesst <- DoseFinding::guesst(
+  model = "logistic",
+  d = c(5, 10), p = c(0.1, 0.85)
+)
+# TODO: figure out how to paramaterize a beta
+# beta_guesst <- DoseFinding::guesst(
+#   model = "betaMod",
+#   d = 0.4, p = 0.8, dMax = 0.8, Maxd = 1, scal = 1.2
+# )
+quadratic_guesst <- DoseFinding::guesst(
+  model = "quadratic",
+  d = 5, p = 0.9
 )
 
 mods <- DoseFinding::Mods(
   linear      = NULL,
-  emax        = emax_guesst,
   exponential = exp_guesst,
+  emax        = emax_guesst,
+  sigEmax     = sigEmax_guesst,
+  # TODO: need to implement linlog shape in getOptParams() 
+  # linlog      = NULL,
+  logistic    = logistic_guesst,
+  # beta        = beta_guesst,
+  quadratic   = quadratic_guesst,
   doses       = dose_levels,
   maxEff      = -1,
   placEff     = -12.8
 )
+
+plot(mods)
 ```
 
 We will use the trial with ct.gov number NCT00735709 as exemplary new trial 
@@ -135,7 +162,7 @@ posterior <- BayesianMCPMod::getPosterior(
   se_hat = new_trial$se
 )
 
-summary(posterior)
+knitr::kable(summary(posterior))
 ```
 
 # Execution of Bayesian MCPMod Test step
@@ -215,8 +242,8 @@ is approximated and reduced by a one-dimensional normal distribution.
 
 The actual fit (on this approximated posterior distribution) is then performed 
 using generalized least squares criterion. In contrast, for the full fit, the 
-non-linear optimization problem is addressed via the Nelder Mead algorithm 
-[@neldermead_2024]. 
+non-linear optimization problem is addressed via the Nelder-Mead algorithm 
+[@neldermead_2024] implemented by the `{nloptr}` package.
 
 The output of the fit includes information about the predicted effects for the 
 included dose levels, the generalized AIC, and the corresponding weights.
@@ -225,7 +252,7 @@ For the considered case, the simplified and the full fit are very similar.
 
 ```{r Model fitting}
 # Option a) Simplified approach by using approximated posterior distribution
-fit_simple <- getModelFits(
+fit_simple <- BayesianMCPMod::getModelFits(
   models      = names(mods),
   dose_levels = dose_levels,
   posterior   = posterior,
@@ -297,8 +324,8 @@ This code serves merely as an example and is not run in this vignette.
 
 ```{r, eval = FALSE}
 performBayesianMCPMod(
-      posterior_list   = posterior,
-      contr            = contr_mat, 
-      crit_prob_adj    = crit_pval,
-      simple           = FALSE)
+  posterior_list   = posterior,
+  contr            = contr_mat, 
+  crit_prob_adj    = crit_pval,
+  simple           = FALSE)
 ```

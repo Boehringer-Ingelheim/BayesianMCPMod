@@ -148,7 +148,7 @@ getModelFitOpt <- function (
               ub     <- c(Inf, Inf, 1.5 * max(dose_levels), 0.5 * max(dose_levels))
               expr_i <- quote(sum((post_combs$means[i, ] - (theta[1] + theta[2] / (1 + exp((theta[3] - dose_levels) / theta[4]))))^2 / (post_combs$vars[i, ])))},
             {
-              stop ("error")})
+              stop ("error: model shape not yet implemented")})
     
     simple_fit <- getModelFitSimple(
       model       = model,
