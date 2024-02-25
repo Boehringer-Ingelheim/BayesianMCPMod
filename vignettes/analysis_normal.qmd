@@ -1,10 +1,18 @@
 ---
 title: "Analysis Example of Bayesian MCPMod for Continuous Data"
-output: rmarkdown::html_vignette
-number_sections: true
+subtitle: "WORK IN PROGRESS"
+date: today
+format: 
+  html:
+    fig-height: 3.5
+    code-fold: show
+    self-contained: true
+    toc: true
+    number-sections: true
+    bibliography: references.bib
 vignette: >
   %\VignetteIndexEntry{Analysis Example of Bayesian MCPMod for Continuous Data}
-  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEngine{quarto::html}
   %\VignetteEncoding{UTF-8}
 ---
 
@@ -169,7 +177,8 @@ mods <- DoseFinding::Mods(
   placEff     = -12.8)
 ```
 
-We will use the trial with ct.gov number NCT00735709 as exemplary new trial.
+We will use the trial with ct.gov number NCT00735709 as exemplary new trial 
+[@nct00735709_2024a].
 
 ```{r new trial}
 new_trial  <- filter(
@@ -183,10 +192,11 @@ n_patients <- c(128, 124, 129, 122)
 
 # Combination of prior information and trial results
 
-As outlined in Fleischer et al. [Bayesian MCPMod. Pharmaceutical Statistics. 2022; 21(3): 654-670.], 
-in a first step the posterior is calculated combining the prior information with 
-the estimated results of the new trial. Via the summary function it is possible 
-to print out the summary information of the posterior distributions.
+As outlined in [@fleischer_2022], in a first step the posterior is calculated 
+combining the prior information with the estimated results of the new trial. 
+
+Via the summary function it is possible to print out the summary information of 
+the posterior distributions.
 
 ```{r Trial results}
 posterior <- getPosterior(
@@ -209,7 +219,7 @@ the actual error level for falsely declaring a significant trial in the Bayesian
 MCPMod is controlled by the specified alpha level. 
 
 A pseudo-optimal contrast matrix is generated based on the variability of the 
-posterior distribution (see Fleischer et al. 2022 for more details).
+posterior distribution (see [@fleischer_2022] for more details).
 
 ```{r Preparation of input for Bayesian MCPMod Test step}
 crit_pval <- getCritProb(
@@ -273,7 +283,8 @@ is approximated and reduced by a one-dimensional normal distribution.
 
 The actual fit (on this approximated posterior distribution) is then performed 
 using generalized least squares criterion. In contrast, for the full fit, the 
-non-linear optimization problem is addressed via the Nelder Mead algorithm. 
+non-linear optimization problem is addressed via the Nelder Mead algorithm 
+[@neldermead_2024]. 
 
 The output of the fit includes information about the predicted effects for the 
 included dose levels, the generalized AIC, and the corresponding weights.
@@ -296,7 +307,7 @@ fit <- getModelFits(
   simple      = FALSE)
 ```
 
-Via the predict() function, one can also receive estimates for dose levels that 
+Via the `predict()` function, one can also receive estimates for dose levels that 
 were not included in the trial.
 
 ```{r Predict}
@@ -326,7 +337,7 @@ plot(fit, cr_bands = TRUE)
 ```
 
 The bootstrap based quantiles can also be directly calculated via the 
-getBootstrapQuantiles() function.
+`getBootstrapQuantiles()` function.
 
 For this example, only 6 quantiles are bootstrapped for each model fit.
 
@@ -348,7 +359,7 @@ based 50% quantile shows the median fit of the random sampling and fitting proce
 # Additional note
 
 It is also possible to perform the testing and modeling step in a combined fashion 
-via the performBayesianMCPMod() function.
+via the `performBayesianMCPMod()` function.
 
 This code serves merely as an example and is not run in this vignette.
 
