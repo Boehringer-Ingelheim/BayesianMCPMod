@@ -16,28 +16,17 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
   
-# ```{r, include = FALSE}
-# knitr::opts_chunk$set(
-#   collapse = TRUE,
-#   comment = "#>"
-# )
-# ```
-  
 ```{r setup}
-library(BayesianMCPMod)
-library(parallelly)
-library(clinDR)
-library(tidyverse)
+#| message: false
+#| include: false
 
-options(mc.cores = max(1, parallelly::availableCores() - 2))
+library(BayesianMCPMod)
+library(RBesT)
+library(clinDR)
+library(dplyr)
+library(tibble)
 
 set.seed(7015)
-
-# source all R files in R/ (load custom functions)
-purrr::walk(
-  list.files("R", pattern = "*.R", full.names = TRUE),
-  source
-)
 ```
 
 # Background and data
@@ -63,12 +52,13 @@ Non-informative priors, often chosen for their neutrality, offer a baseline
 from which the trial data can speak more prominently. This approach is particularly 
 useful in early-stage research or when historical data is limited or not directly applicable.
 
+[TODO: make a uniform prior from -100 to 100]{.aside}
+
 ```{r Non-Informative Prior Specification}
 # Specifying non-informative priors for all dose groups
 dose_levels <- c(0, 2.5, 5, 10)
 
 prior_list <- lapply(dose_levels, function(dose_group) {
-  #TODO: make a uniform prior from -100 to 100
   RBesT::mixnorm(weak = c(w = 1, m = 0, s = 200)) # weakly informative normal distribution
 })
 
@@ -84,6 +74,10 @@ Since there are only 3 active dose levels we will limit the set of candidate
 models to a linear, an exponential, and an emax model.
 
 Note that the linear candidate model does not require a guesstimate.
+
+[TODO: figure out how to paramaterize a beta]{.aside}
+
+[TODO: need to implement linlog shape in getOptParams()]{.aside} 
 
 ```{r Pre-Specification of candidate models}
 exp_guesst  <- DoseFinding::guesst(
@@ -102,7 +96,6 @@ logistic_guesst <- DoseFinding::guesst(
   model = "logistic",
   d = c(5, 10), p = c(0.1, 0.85)
 )
-# TODO: figure out how to paramaterize a beta
 # beta_guesst <- DoseFinding::guesst(
 #   model = "betaMod",
 #   d = 0.4, p = 0.8, dMax = 0.8, Maxd = 1, scal = 1.2
@@ -117,7 +110,6 @@ mods <- DoseFinding::Mods(
   exponential = exp_guesst,
   emax        = emax_guesst,
   sigEmax     = sigEmax_guesst,
-  # TODO: need to implement linlog shape in getOptParams() 
   # linlog      = NULL,
   logistic    = logistic_guesst,
   # beta        = beta_guesst,
@@ -131,7 +123,7 @@ plot(mods)
 ```
 
 We will use the trial with ct.gov number NCT00735709 as exemplary new trial 
-[@nct00735709_2024a].
+[@nct00735709_2024a]. This dataset comes from the `{clinDR}` package.
 
 ```{r new trial}
 data("metaData")
@@ -179,14 +171,14 @@ A pseudo-optimal contrast matrix is generated based on the variability of the
 posterior distribution (see [@fleischer_2022] for more details).
 
 ```{r Preparation of input for Bayesian MCPMod Test step}
-crit_pval <- getCritProb(
+crit_pval <- BayesianMCPMod::getCritProb(
   mods           = mods,
   dose_levels    = dose_levels,
   se_new_trial   = new_trial$se,
   alpha_crit_val = 0.05
 )
 
-contr_mat <- getContr(
+contr_mat <- BayesianMCPMod::getContr(
   mods         = mods,
   dose_levels  = dose_levels,
   sd_posterior = summary(posterior)[, 2]
@@ -199,18 +191,18 @@ executed and the contrast specification above is used.
 
 ```{r , eval = FALSE}
 # i) the frequentist contrast
-contr_mat_prior <- getContr(
+contr_mat_prior <- BayesianMCPMod::getContr(
   mods           = mods,
   dose_levels    = dose_levels,
   dose_weights   = n_patients,
   prior_list     = prior_list)
 # ii) re-estimated frequentist contrasts
-contr_mat_prior <- getContr(
+contr_mat_prior <- BayesianMCPMod::getContr(
   mods           = mods,
   dose_levels    = dose_levels,
   se_new_trial   = new_trial$se)
 # iii)  Bayesian approach using number of patients for new trial and prior distribution
-contr_mat_prior <- getContr(
+contr_mat_prior <- BayesianMCPMod::getContr(
   mods           = mods,
   dose_levels    = dose_levels,
   dose_weights   = n_patients,
@@ -221,7 +213,7 @@ The Bayesian MCP testing step is then executed based on the posterior informatio
 the provided contrasts and the multiplicity adjusted critical value.  
 
 ```{r  Execution of Bayesian MCPMod Test step}
-BMCP_result <- performBayesianMCP(
+BMCP_result <- BayesianMCPMod::performBayesianMCP(
   posterior_list = posterior,
   contr          = contr_mat, 
   crit_prob_adj  = crit_pval)
@@ -243,12 +235,14 @@ is approximated and reduced by a one-dimensional normal distribution.
 The actual fit (on this approximated posterior distribution) is then performed 
 using generalized least squares criterion. In contrast, for the full fit, the 
 non-linear optimization problem is addressed via the Nelder-Mead algorithm 
-[@neldermead_2024] implemented by the `{nloptr}` package.
+[@neldermead_2024a] implemented by the `{nloptr}` package.
 
 The output of the fit includes information about the predicted effects for the 
 included dose levels, the generalized AIC, and the corresponding weights.
 
 For the considered case, the simplified and the full fit are very similar.
+
+[TODO: Debug error in getModelFits: 'Error in is.nloptr(ret) : at least one element in x0 > ub']{.aside}
 
 ```{r Model fitting}
 # Option a) Simplified approach by using approximated posterior distribution
@@ -259,24 +253,27 @@ fit_simple <- BayesianMCPMod::getModelFits(
   simple      = TRUE)
 
 # Option b) Making use of the complete posterior distribution
-fit <- getModelFits(
-  models      = names(mods),
-  dose_levels = dose_levels,
-  posterior   = posterior,
-  simple      = FALSE)
+# fit <- BayesianMCPMod::getModelFits(
+#   models      = names(mods),
+#   dose_levels = dose_levels,
+#   posterior   = posterior,
+#   simple      = FALSE)
+fit <- fit_simple
 ```
 
-Via the `predict()` function, one can also receive estimates for dose levels that 
+Via the `stats::predict()` function, one can also receive estimates for dose levels that 
 were not included in the trial.
 
 ```{r Predict}
-predict(fit, doses = c(0, 2.5, 4, 5, 7, 10))
+stats::predict(fit, doses = c(0, 2.5, 4, 5, 7, 10))
+stats::predict(fit_simple, doses = c(0, 2.5, 4, 5, 7, 10))
 ```
 
 It is possible to plot the fitted dose response models and an AIC based average 
 model (black lines).
 
 ```{r Plot simple vs fit}
+#| cache: true
 plot(fit_simple)
 plot(fit)
 ```
@@ -292,6 +289,7 @@ simplified fitting step and a prediction is performed.
 - These predictions are then used to identify and visualize the specified quantiles.
 
 ```{r Plot with bootstrap}
+#| cache: true
 plot(fit, cr_bands = TRUE)
 ```
 
@@ -301,7 +299,7 @@ The bootstrap based quantiles can also be directly calculated via the
 For this example, only 6 quantiles are bootstrapped for each model fit.
 
 ```{r Bootstrap}
-getBootstrapQuantiles(
+BayesianMCPMod::getBootstrapQuantiles(
   model_fits = fit,
   quantiles  = c(0.025, 0.5, 0.975),
   doses      = c(0, 2.5, 4, 5, 7, 10),
@@ -322,10 +320,12 @@ via the `performBayesianMCPMod()` function.
 
 This code serves merely as an example and is not run in this vignette.
 
+[TODO: debug error, see above about nloptr]{.aside}
+
 ```{r, eval = FALSE}
-performBayesianMCPMod(
-  posterior_list   = posterior,
-  contr            = contr_mat, 
-  crit_prob_adj    = crit_pval,
-  simple           = FALSE)
+# BayesianMCPMod::performBayesianMCPMod(
+#   posterior_list   = posterior,
+#   contr            = contr_mat, 
+#   crit_prob_adj    = crit_pval,
+#   simple           = FALSE)
 ```
