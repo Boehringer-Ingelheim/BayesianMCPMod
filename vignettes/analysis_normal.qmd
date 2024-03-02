@@ -96,24 +96,16 @@ logistic_guesst <- DoseFinding::guesst(
   model = "logistic",
   d = c(5, 10), p = c(0.1, 0.85)
 )
-# beta_guesst <- DoseFinding::guesst(
-#   model = "betaMod",
-#   d = 0.4, p = 0.8, dMax = 0.8, Maxd = 1, scal = 1.2
-# )
-quadratic_guesst <- DoseFinding::guesst(
-  model = "quadratic",
-  d = 5, p = 0.9
-)
 
 mods <- DoseFinding::Mods(
   linear      = NULL,
   exponential = exp_guesst,
   emax        = emax_guesst,
   sigEmax     = sigEmax_guesst,
-  # linlog      = NULL,
   logistic    = logistic_guesst,
-  # beta        = beta_guesst,
-  quadratic   = quadratic_guesst,
+  linInt      = c(0.5, 1, 1),
+  betaMod     = c(1, 1),
+  quadratic   = -0.1,
   doses       = dose_levels,
   maxEff      = -1,
   placEff     = -12.8
