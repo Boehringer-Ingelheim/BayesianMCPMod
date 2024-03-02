@@ -15,7 +15,51 @@ vignette: >
   %\VignetteEngine{quarto::html}
   %\VignetteEncoding{UTF-8}
 ---
-  
+
+```{r}
+#| include: false
+
+#' Display Parameters Table
+#'
+#' This function generates a markdown table displaying the names and values of parameters
+#' from a named list.
+#'
+#' @param named_list A named list where each name represents a parameter name and the list
+#'   element represents the parameter value. Date values in the list are automatically
+#'   converted to character strings for display purposes.
+#'
+#' @return Prints a markdown table with two columns: "Parameter Name" and "Parameter Values".
+#'   The function does not return a value but displays the table directly to the output.
+#'
+#' @importFrom knitr kable
+#' @examples
+#' params <- list("Start Date" = as.Date("2020-01-01"),
+#'                "End Date" = as.Date("2020-12-31"),
+#'                "Threshold" = 10)
+#' display_params_table(params)
+#'
+#' @export
+display_params_table <- function(named_list) {
+  display_table <- data.frame()
+
+  for (i in 1:length(named_list)) {
+    # dates will display as numeric by default, so convert to char first
+    if (class(named_list[[i]]) == "Date") {
+      named_list[[i]] = as.character(named_list[[i]])
+    }
+
+    display_table <- rbind(display_table, data.frame(I(list(named_list[[i]]))))
+  }
+
+  class(display_table[[1]]) <- "list"
+
+  knitr::kable(
+    cbind(names(named_list), display_table),
+    col.names = c("Parameter Name", "Parameter Values")
+  )
+}
+```
+
 ```{r}
 #| message: false
 #| include: false
@@ -217,7 +261,7 @@ BMCP_result <- BayesianMCPMod::performBayesianMCP(
   contr          = contr_mat, 
   crit_prob_adj  = crit_pval)
 
-BMCP_result
+display_params_table(BMCP_result[1,])
 ```
 
 The testing step is significant indicating a non-flat dose-response shape.
