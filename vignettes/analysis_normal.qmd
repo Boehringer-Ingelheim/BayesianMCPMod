@@ -52,10 +52,9 @@ Non-informative priors, often chosen for their neutrality, offer a baseline
 from which the trial data can speak more prominently. This approach is particularly 
 useful in early-stage research or when historical data is limited or not directly applicable.
 
-[TODO: make a uniform prior from -100 to 100]{.aside}
+[TODO: make a prior non-informative instead of weakly informative (i.e., uniform from -100 to 100)]{.aside}
 
 ```{r Non-Informative Prior Specification}
-# Specifying non-informative priors for all dose groups
 dose_levels <- c(0, 2.5, 5, 10)
 
 prior_list <- lapply(dose_levels, function(dose_group) {
@@ -112,6 +111,12 @@ mods <- DoseFinding::Mods(
 )
 
 plot(mods)
+```
+
+We can see the assumed treatment effects for the specified dose groups below:
+
+```{r}
+knitr::kable(DoseFinding::getResp(mods, doses = dose_levels))
 ```
 
 We will use the trial with ct.gov number NCT00735709 as exemplary new trial 
