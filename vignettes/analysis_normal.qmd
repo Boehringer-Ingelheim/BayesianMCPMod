@@ -1,0 +1,407 @@
+---
+title: "Analysis Example of Bayesian MCPMod for Continuous Data"
+subtitle: "WORK IN PROGRESS"
+date: today
+format: 
+  html:
+    fig-height: 3.5
+    code-fold: show
+    self-contained: true
+    toc: true
+    number-sections: true
+    bibliography: references.bib
+vignette: >
+  %\VignetteIndexEntry{Analysis Example of Bayesian MCPMod for Continuous Data}
+  %\VignetteEngine{quarto::html}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r}
+#| include: false
+
+#' Display Parameters Table
+#'
+#' This function generates a markdown table displaying the names and values of parameters
+#' from a named list.
+#'
+#' @param named_list A named list where each name represents a parameter name and the list
+#'   element represents the parameter value. Date values in the list are automatically
+#'   converted to character strings for display purposes.
+#'
+#' @return Prints a markdown table with two columns: "Parameter Name" and "Parameter Values".
+#'   The function does not return a value but displays the table directly to the output.
+#'
+#' @importFrom knitr kable
+#' @examples
+#' params <- list("Start Date" = as.Date("2020-01-01"),
+#'                "End Date" = as.Date("2020-12-31"),
+#'                "Threshold" = 10)
+#' display_params_table(params)
+#'
+#' @export
+display_params_table <- function(named_list) {
+  display_table <- data.frame()
+  
+  for (i in 1:length(named_list)) {
+    # dates will display as numeric by default, so convert to char first
+    if (class(named_list[[i]]) == "Date") {
+      named_list[[i]] = as.character(named_list[[i]])
+    }
+    
+    display_table <- rbind(display_table, data.frame(I(list(named_list[[i]]))))
+  }
+  
+  class(display_table[[1]]) <- "list"
+  
+  knitr::kable(
+    cbind(names(named_list), display_table),
+    col.names = c("Parameter Name", "Parameter Values")
+  )
+}
+```
+
+```{r}
+#| message: false
+#| include: false
+
+library(BayesianMCPMod)
+library(RBesT)
+library(clinDR)
+library(dplyr)
+library(tibble)
+library(reactable)
+
+set.seed(7015)
+```
+
+# Background and data
+
+In this vignette we will show the use of the Bayesian MCPMod package for 
+continuous distributed data. 
+
+Priors can be grounded in historical data, leveraging the `{RBesT}` package functions 
+to construct the informative priors. This approach allows for the synthesis of prior 
+knowledge with current data, enhancing the accuracy of trial evaluations.
+
+The focus of this vignette is more generic, however. We utilize a non-informative 
+prior for the Bayesian MCPMod evaluation of a single trial. 
+
+# Non-Informative Prior Specification
+
+Rather than constructing a complex mixture prior for the control group and 
+differentiating active groups with detailed priors, we will specify non-informative 
+priors across all dose groups. This simplification aims to underscore the 
+flexibility in prior selection and its impact on the Bayesian analysis framework.
+
+Non-informative priors, often chosen for their neutrality, offer a baseline 
+from which the trial data can speak more prominently. This approach is particularly 
+useful in early-stage research or when historical data is limited or not directly applicable.
+
+[TODO: make a prior non-informative instead of weakly informative (i.e., uniform from -100 to 100)]{.aside}
+
+```{r}
+dose_levels <- c(0, 2.5, 5, 10)
+
+prior_list <- lapply(dose_levels, function(dose_group) {
+  RBesT::mixnorm(weak = c(w = 1, m = 0, s = 200)) # weakly informative normal distribution
+})
+
+names(prior_list) <- c("Ctr", paste0("DG_", dose_levels[-1]))
+```
+
+# Specifications for the new trial 
+
+To be able to apply the Bayesian MCPMod approach, candidate models need to be 
+specified using functions from the R package DoseFinding.
+
+Since there are only 3 active dose levels we will limit the set of candidate 
+models to a linear, an exponential, and an emax model.
+
+Note that the linear candidate model does not require a guesstimate.
+
+[TODO: figure out how to paramaterize a beta]{.aside}
+
+[TODO: need to implement linlog shape in getOptParams()]{.aside} 
+
+```{r}
+exp_guesst  <- DoseFinding::guesst(
+  model = "exponential", 
+  d = 5, p = 0.2, Maxd = max(dose_levels)
+)
+emax_guesst <- DoseFinding::guesst(
+  model = "emax",
+  d = 2.5, p = 0.9
+)
+sigEmax_guesst <- DoseFinding::guesst(
+  model = "sigEmax",
+  d = c(2.5, 5), p = c(0.5, 0.95)
+)
+logistic_guesst <- DoseFinding::guesst(
+  model = "logistic",
+  d = c(5, 10), p = c(0.1, 0.85)
+)
+
+mods <- DoseFinding::Mods(
+  linear      = NULL,
+  exponential = exp_guesst,
+  emax        = emax_guesst,
+  sigEmax     = sigEmax_guesst,
+  logistic    = logistic_guesst,
+  linInt      = c(0.5, 1, 1),
+  betaMod     = c(1, 1),
+  quadratic   = -0.1,
+  doses       = dose_levels,
+  maxEff      = -1,
+  placEff     = -12.8
+)
+
+plot(mods)
+```
+
+We can see the assumed treatment effects for the specified dose groups below:
+
+```{r}
+knitr::kable(DoseFinding::getResp(mods, doses = dose_levels))
+```
+
+We will use the trial with ct.gov number NCT00735709 as exemplary new trial 
+[@nct00735709_2024a]. This dataset comes from the `{clinDR}` package.
+
+```{r}
+data("metaData")
+dataset <- dplyr::filter(tibble::tibble(metaData), bname == "BRINTELLIX")
+
+new_trial <- dplyr::filter(
+  dataset,
+  primtime == 8,
+  indication == "MAJOR DEPRESSIVE DISORDER",
+  protid == 5
+)
+
+n_patients <- c(128, 124, 129, 122)
+```
+
+# Combination of prior information and trial results
+
+As outlined in [@fleischer_2022], in a first step the posterior is calculated 
+combining the prior information with the estimated results of the new trial. 
+
+Via the summary function it is possible to print out the summary information of 
+the posterior distributions.
+
+```{r}
+posterior <- BayesianMCPMod::getPosterior(
+  prior_list = prior_list,
+  mu_hat = new_trial$rslt,
+  se_hat = new_trial$se
+)
+
+knitr::kable(summary(posterior))
+```
+
+# Execution of Bayesian MCPMod Test step
+
+For the execution of the testing step of Bayesian MCPMod a critical value on the 
+probability scale will be determined for a given alpha level.
+
+This critical value is calculated using the re-estimated contrasts for the 
+frequentist MCPMod to ensure that, when using non-informative priors, 
+the actual error level for falsely declaring a significant trial in the Bayesian 
+MCPMod is controlled by the specified alpha level. 
+
+A pseudo-optimal contrast matrix is generated based on the variability of the 
+posterior distribution (see [@fleischer_2022] for more details).
+
+```{r}
+crit_pval <- BayesianMCPMod::getCritProb(
+  mods           = mods,
+  dose_levels    = dose_levels,
+  se_new_trial   = new_trial$se,
+  alpha_crit_val = 0.05
+)
+
+contr_mat <- BayesianMCPMod::getContr(
+  mods         = mods,
+  dose_levels  = dose_levels,
+  sd_posterior = summary(posterior)[, 2]
+)
+```
+
+Please note that there are different ways to derive the contrasts.
+The following code shows the implementation of some of these ways but it is not 
+executed and the contrast specification above is used.
+
+```{r}
+#| eval: false
+
+# i) the frequentist contrast
+contr_mat_prior <- BayesianMCPMod::getContr(
+  mods           = mods,
+  dose_levels    = dose_levels,
+  dose_weights   = n_patients,
+  prior_list     = prior_list)
+# ii) re-estimated frequentist contrasts
+contr_mat_prior <- BayesianMCPMod::getContr(
+  mods           = mods,
+  dose_levels    = dose_levels,
+  se_new_trial   = new_trial$se)
+# iii)  Bayesian approach using number of patients for new trial and prior distribution
+contr_mat_prior <- BayesianMCPMod::getContr(
+  mods           = mods,
+  dose_levels    = dose_levels,
+  dose_weights   = n_patients,
+  prior_list     = prior_list)
+```
+
+The Bayesian MCP testing step is then executed based on the posterior information, 
+the provided contrasts and the multiplicity adjusted critical value.  
+
+```{r}
+BMCP_result <- BayesianMCPMod::performBayesianMCP(
+  posterior_list = posterior,
+  contr          = contr_mat, 
+  crit_prob_adj  = crit_pval)
+
+display_params_table(BMCP_result[1,])
+```
+
+The testing step is significant indicating a non-flat dose-response shape.
+In detail, all 3 models are significant and the p-value for the emax model 
+indicates deviation from the null hypothesis the most.
+
+# Model fitting and visualization of results
+
+In the model fitting step the posterior distribution is used as basis.
+Both simplified and full fitting are performed. 
+For the simplified fit, the multivariate normal distribution of the control group 
+is approximated and reduced by a one-dimensional normal distribution.
+
+The actual fit (on this approximated posterior distribution) is then performed 
+using generalized least squares criterion. In contrast, for the full fit, the 
+non-linear optimization problem is addressed via the Nelder-Mead algorithm 
+[@neldermead_2024a] implemented by the `{nloptr}` package.
+
+The output of the fit includes information about the predicted effects for the 
+included dose levels, the generalized AIC, and the corresponding weights.
+
+For the considered case, the simplified and the full fit are very similar, so we'll
+just present the full fit.
+
+```{r}
+# linInt, betaMod, quadratic are not yet supported
+supported_models <- names(mods)[!names(mods) %in% c("linInt", "betaMod", "quadratic")]
+
+# If simple = TRUE, uses approx posterior
+# Here we use complete posterior distribution
+fit <- BayesianMCPMod::getModelFits(
+  models      = supported_models,
+  dose_levels = dose_levels,
+  posterior   = posterior,
+  simple      = FALSE)
+```
+
+Via the `stats::predict()` function, one can also receive estimates for dose levels that 
+were not included in the trial.
+
+```{r}
+display_params_table(stats::predict(fit, doses = c(0, 2.5, 4, 5, 7, 10)))
+```
+
+It is possible to plot the fitted dose response models and an AIC based average 
+model (black lines).
+
+```{r}
+plot(fit)
+```
+
+To assess the uncertainty, one can additionally visualize credible bands 
+(orange shaded areas, default levels are 50% and 95%).
+
+These credible bands are calculated with a bootstrap method as follows:
+
+- Samples from the posterior distribution are drawn and for every sample the 
+simplified fitting step and a prediction is performed.
+
+- These predictions are then used to identify and visualize the specified quantiles.
+
+```{r}
+#| cache: true
+plot(fit, cr_bands = TRUE)
+```
+
+The bootstrap based quantiles can also be directly calculated via the 
+`getBootstrapQuantiles()` function.
+
+For this example, only 6 quantiles are bootstrapped for each model fit.
+
+```{r}
+bootstrap_quantiles <- BayesianMCPMod::getBootstrapQuantiles(
+  model_fits = fit,
+  quantiles  = c(0.025, 0.5, 0.975),
+  doses      = c(0, 2.5, 4, 5, 7, 10),
+  n_samples  = 6
+)
+```
+
+```{r}
+#| code-fold: true
+reactable::reactable(
+  data = bootstrap_quantiles, 
+  groupBy = "models", 
+  columns = list(
+    doses = colDef(
+      aggregate = "count", 
+      format = list(
+        aggregated = colFormat(suffix = " doses")
+      )
+    ),
+    "2.5%" = colDef(
+      aggregate = "mean", 
+      format = list(
+        aggregated = colFormat(prefix = "mean = ", digits = 2),
+        cell = colFormat(digits = 4)
+      )
+    ),
+    "50%" = colDef(
+      aggregate = "mean", 
+      format = list(
+        aggregated = colFormat(prefix = "mean = ", digits = 2),
+        cell = colFormat(digits = 4)
+      )
+    ),
+    "97.5%" = colDef(
+      aggregate = "mean", 
+      format = list(
+        aggregated = colFormat(prefix = "mean = ", digits = 2),
+        cell = colFormat(digits = 4)
+      )
+    )
+  )
+)
+```
+
+Technical note: The median quantile of the bootstrap based procedure is not 
+necessary similar to the main model fit, as they are derived via different procedures.
+
+The main fit, i.e. the black lines in the plot, show the best fit of a certain model 
+based on minimizing the residuals for the posterior distribution, while the bootstrap 
+based 50% quantile shows the median fit of the random sampling and fitting procedure. 
+
+# Additional note
+
+It is also possible to perform the testing and modeling step in a combined fashion 
+via the `performBayesianMCPMod()` function.
+
+This code serves merely as an example and is not run in this vignette.
+
+[TODO: debug error, see above about nloptr]{.aside}
+
+```{r}
+#| eval: false
+
+BayesianMCPMod::performBayesianMCPMod(
+  posterior_list   = posterior,
+  contr            = contr_mat,
+  crit_prob_adj    = crit_pval,
+  simple           = FALSE)
+```
