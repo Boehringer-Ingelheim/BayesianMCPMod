@@ -41,18 +41,18 @@ vignette: >
 #' @export
 display_params_table <- function(named_list) {
   display_table <- data.frame()
-
+  
   for (i in 1:length(named_list)) {
     # dates will display as numeric by default, so convert to char first
     if (class(named_list[[i]]) == "Date") {
       named_list[[i]] = as.character(named_list[[i]])
     }
-
+    
     display_table <- rbind(display_table, data.frame(I(list(named_list[[i]]))))
   }
-
+  
   class(display_table[[1]]) <- "list"
-
+  
   knitr::kable(
     cbind(names(named_list), display_table),
     col.names = c("Parameter Name", "Parameter Values")
@@ -69,6 +69,7 @@ library(RBesT)
 library(clinDR)
 library(dplyr)
 library(tibble)
+library(reactable)
 
 set.seed(7015)
 ```
@@ -283,41 +284,33 @@ non-linear optimization problem is addressed via the Nelder-Mead algorithm
 The output of the fit includes information about the predicted effects for the 
 included dose levels, the generalized AIC, and the corresponding weights.
 
-For the considered case, the simplified and the full fit are very similar.
-
-[TODO: Debug error in getModelFits: 'Error in is.nloptr(ret) : at least one element in x0 > ub']{.aside}
+For the considered case, the simplified and the full fit are very similar, so we'll
+just present the full fit.
 
 ```{r}
-# Option a) Simplified approach by using approximated posterior distribution
-fit_simple <- BayesianMCPMod::getModelFits(
-  models      = names(mods),
+# linInt, betaMod, quadratic are not yet supported
+supported_models <- names(mods)[!names(mods) %in% c("linInt", "betaMod", "quadratic")]
+
+# If simple = TRUE, uses approx posterior
+# Here we use complete posterior distribution
+fit <- BayesianMCPMod::getModelFits(
+  models      = supported_models,
   dose_levels = dose_levels,
   posterior   = posterior,
-  simple      = TRUE)
-
-# Option b) Making use of the complete posterior distribution
-# fit <- BayesianMCPMod::getModelFits(
-#   models      = names(mods),
-#   dose_levels = dose_levels,
-#   posterior   = posterior,
-#   simple      = FALSE)
-fit <- fit_simple
+  simple      = FALSE)
 ```
 
 Via the `stats::predict()` function, one can also receive estimates for dose levels that 
 were not included in the trial.
 
 ```{r}
-stats::predict(fit, doses = c(0, 2.5, 4, 5, 7, 10))
-stats::predict(fit_simple, doses = c(0, 2.5, 4, 5, 7, 10))
+display_params_table(stats::predict(fit, doses = c(0, 2.5, 4, 5, 7, 10)))
 ```
 
 It is possible to plot the fitted dose response models and an AIC based average 
 model (black lines).
 
 ```{r}
-#| cache: true
-plot(fit_simple)
 plot(fit)
 ```
 
@@ -342,11 +335,49 @@ The bootstrap based quantiles can also be directly calculated via the
 For this example, only 6 quantiles are bootstrapped for each model fit.
 
 ```{r}
-BayesianMCPMod::getBootstrapQuantiles(
+bootstrap_quantiles <- BayesianMCPMod::getBootstrapQuantiles(
   model_fits = fit,
   quantiles  = c(0.025, 0.5, 0.975),
   doses      = c(0, 2.5, 4, 5, 7, 10),
-  n_samples  = 6)
+  n_samples  = 6
+)
+```
+
+```{r}
+#| code-fold: true
+reactable::reactable(
+  data = bootstrap_quantiles, 
+  groupBy = "models", 
+  columns = list(
+    doses = colDef(
+      aggregate = "count", 
+      format = list(
+        aggregated = colFormat(suffix = " doses")
+      )
+    ),
+    "2.5%" = colDef(
+      aggregate = "mean", 
+      format = list(
+        aggregated = colFormat(prefix = "mean = ", digits = 2),
+        cell = colFormat(digits = 4)
+      )
+    ),
+    "50%" = colDef(
+      aggregate = "mean", 
+      format = list(
+        aggregated = colFormat(prefix = "mean = ", digits = 2),
+        cell = colFormat(digits = 4)
+      )
+    ),
+    "97.5%" = colDef(
+      aggregate = "mean", 
+      format = list(
+        aggregated = colFormat(prefix = "mean = ", digits = 2),
+        cell = colFormat(digits = 4)
+      )
+    )
+  )
+)
 ```
 
 Technical note: The median quantile of the bootstrap based procedure is not 
@@ -366,7 +397,7 @@ This code serves merely as an example and is not run in this vignette.
 [TODO: debug error, see above about nloptr]{.aside}
 
 ```{r}
-#| eval:false
+#| eval: false
 
 BayesianMCPMod::performBayesianMCPMod(
   posterior_list   = posterior,
