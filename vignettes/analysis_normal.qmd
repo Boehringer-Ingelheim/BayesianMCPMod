@@ -16,7 +16,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
   
-```{r setup}
+```{r}
 #| message: false
 #| include: false
 
@@ -54,7 +54,7 @@ useful in early-stage research or when historical data is limited or not directl
 
 [TODO: make a prior non-informative instead of weakly informative (i.e., uniform from -100 to 100)]{.aside}
 
-```{r Non-Informative Prior Specification}
+```{r}
 dose_levels <- c(0, 2.5, 5, 10)
 
 prior_list <- lapply(dose_levels, function(dose_group) {
@@ -78,7 +78,7 @@ Note that the linear candidate model does not require a guesstimate.
 
 [TODO: need to implement linlog shape in getOptParams()]{.aside} 
 
-```{r Pre-Specification of candidate models}
+```{r}
 exp_guesst  <- DoseFinding::guesst(
   model = "exponential", 
   d = 5, p = 0.2, Maxd = max(dose_levels)
@@ -122,7 +122,7 @@ knitr::kable(DoseFinding::getResp(mods, doses = dose_levels))
 We will use the trial with ct.gov number NCT00735709 as exemplary new trial 
 [@nct00735709_2024a]. This dataset comes from the `{clinDR}` package.
 
-```{r new trial}
+```{r}
 data("metaData")
 dataset <- dplyr::filter(tibble::tibble(metaData), bname == "BRINTELLIX")
 
@@ -144,7 +144,7 @@ combining the prior information with the estimated results of the new trial.
 Via the summary function it is possible to print out the summary information of 
 the posterior distributions.
 
-```{r Trial results}
+```{r}
 posterior <- BayesianMCPMod::getPosterior(
   prior_list = prior_list,
   mu_hat = new_trial$rslt,
@@ -167,7 +167,7 @@ MCPMod is controlled by the specified alpha level.
 A pseudo-optimal contrast matrix is generated based on the variability of the 
 posterior distribution (see [@fleischer_2022] for more details).
 
-```{r Preparation of input for Bayesian MCPMod Test step}
+```{r}
 crit_pval <- BayesianMCPMod::getCritProb(
   mods           = mods,
   dose_levels    = dose_levels,
@@ -186,7 +186,9 @@ Please note that there are different ways to derive the contrasts.
 The following code shows the implementation of some of these ways but it is not 
 executed and the contrast specification above is used.
 
-```{r , eval = FALSE}
+```{r}
+#| eval: false
+
 # i) the frequentist contrast
 contr_mat_prior <- BayesianMCPMod::getContr(
   mods           = mods,
@@ -209,7 +211,7 @@ contr_mat_prior <- BayesianMCPMod::getContr(
 The Bayesian MCP testing step is then executed based on the posterior information, 
 the provided contrasts and the multiplicity adjusted critical value.  
 
-```{r  Execution of Bayesian MCPMod Test step}
+```{r}
 BMCP_result <- BayesianMCPMod::performBayesianMCP(
   posterior_list = posterior,
   contr          = contr_mat, 
@@ -241,7 +243,7 @@ For the considered case, the simplified and the full fit are very similar.
 
 [TODO: Debug error in getModelFits: 'Error in is.nloptr(ret) : at least one element in x0 > ub']{.aside}
 
-```{r Model fitting}
+```{r}
 # Option a) Simplified approach by using approximated posterior distribution
 fit_simple <- BayesianMCPMod::getModelFits(
   models      = names(mods),
@@ -261,7 +263,7 @@ fit <- fit_simple
 Via the `stats::predict()` function, one can also receive estimates for dose levels that 
 were not included in the trial.
 
-```{r Predict}
+```{r}
 stats::predict(fit, doses = c(0, 2.5, 4, 5, 7, 10))
 stats::predict(fit_simple, doses = c(0, 2.5, 4, 5, 7, 10))
 ```
@@ -269,7 +271,7 @@ stats::predict(fit_simple, doses = c(0, 2.5, 4, 5, 7, 10))
 It is possible to plot the fitted dose response models and an AIC based average 
 model (black lines).
 
-```{r Plot simple vs fit}
+```{r}
 #| cache: true
 plot(fit_simple)
 plot(fit)
@@ -285,7 +287,7 @@ simplified fitting step and a prediction is performed.
 
 - These predictions are then used to identify and visualize the specified quantiles.
 
-```{r Plot with bootstrap}
+```{r}
 #| cache: true
 plot(fit, cr_bands = TRUE)
 ```
@@ -295,7 +297,7 @@ The bootstrap based quantiles can also be directly calculated via the
 
 For this example, only 6 quantiles are bootstrapped for each model fit.
 
-```{r Bootstrap}
+```{r}
 BayesianMCPMod::getBootstrapQuantiles(
   model_fits = fit,
   quantiles  = c(0.025, 0.5, 0.975),
@@ -319,10 +321,12 @@ This code serves merely as an example and is not run in this vignette.
 
 [TODO: debug error, see above about nloptr]{.aside}
 
-```{r, eval = FALSE}
-# BayesianMCPMod::performBayesianMCPMod(
-#   posterior_list   = posterior,
-#   contr            = contr_mat, 
-#   crit_prob_adj    = crit_pval,
-#   simple           = FALSE)
+```{r}
+#| eval:false
+
+BayesianMCPMod::performBayesianMCPMod(
+  posterior_list   = posterior,
+  contr            = contr_mat,
+  crit_prob_adj    = crit_pval,
+  simple           = FALSE)
 ```
