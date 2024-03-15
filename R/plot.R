@@ -118,16 +118,20 @@ plot.modelFits <- function (
   
   if (cr_bands) {
     
-    crB_data <- getBootstrapQuantiles(
+    bs_samples <- getBootstrapSamples(
       model_fits = model_fits,
       n_samples  = n_bs_smpl,
-      quantiles  = c(0.5, sort(unique(c(alpha_CrB / 2, 1 - alpha_CrB / 2)))),
       avg_fit    = avg_fit,
       doses      = dose_seq)
     
+    crB_data <- getBootstrapQuantiles(
+      bs_samples = bs_samples,
+      quantiles  = c(0.5, sort(unique(c(alpha_CrB / 2, 1 - alpha_CrB / 2)))))
+    colnames(crB_data) <- c("models", colnames(crB_data)[-1])
+    
     getInx <- function (alpha_CrB) {
       n        <- length(alpha_CrB)
-      inx_list <- lapply(seq_len(n), function (i) c(i, 2 * n - i + 1) + 3)
+      inx_list <- lapply(seq_len(n), function (i) c(i, 2 * n - i + 2) + 2)
       return (inx_list)}
     
   }
@@ -161,7 +165,7 @@ plot.modelFits <- function (
       loop_txt <- paste0(
         "ggplot2::geom_ribbon(
           data    = crB_data,
-          mapping = ggplot2::aes(x    = doses,
+          mapping = ggplot2::aes(x    = .data$dose,
                                  ymin = crB_data[, ", inx[1], "],
                                  ymax = crB_data[, ", inx[2], "]),
           fill    = acc_color,                    
@@ -176,7 +180,7 @@ plot.modelFits <- function (
     plts <- plts +
       ggplot2::geom_line(
         data    = crB_data,
-        mapping = ggplot2::aes(.data$doses, .data$`50%`),
+        mapping = ggplot2::aes(.data$dose, .data$`50%`),
         color   = acc_color)
     
   }
