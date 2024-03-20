@@ -410,36 +410,39 @@ The bootstrap based quantiles can also be directly calculated via the
 getBootstrapQuantiles() function. For this example, only 6 quantiles are
 bootstrapped for each model fit.</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/getBootstrapQuantiles.html">getBootstrapQuantiles</a></span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="va">bs_sample</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getBootstrapSamples.html">getBootstrapSamples</a></span><span class="op">(</span></span>
 <span>  model_fits <span class="op">=</span> <span class="va">fit</span>,</span>
-<span>  quantiles  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.025</span>, <span class="fl">0.5</span>, <span class="fl">0.975</span><span class="op">)</span>,</span>
 <span>  doses      <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">2.5</span>, <span class="fl">4</span>, <span class="fl">5</span>, <span class="fl">7</span>, <span class="fl">10</span><span class="op">)</span>,</span>
 <span>  n_samples  <span class="op">=</span> <span class="fl">6</span><span class="op">)</span></span>
-<span><span class="co">#&gt;    doses      models      2.5%       50%     97.5%</span></span>
-<span><span class="co">#&gt; 1    0.0      linear -13.69819 -12.90585 -12.06392</span></span>
-<span><span class="co">#&gt; 2    2.5      linear -14.09825 -13.73676 -12.96976</span></span>
-<span><span class="co">#&gt; 3    4.0      linear -14.33829 -14.23531 -13.51327</span></span>
-<span><span class="co">#&gt; 4    5.0      linear -14.58238 -14.47094 -13.87561</span></span>
-<span><span class="co">#&gt; 5    7.0      linear -15.26552 -14.91338 -14.57022</span></span>
-<span><span class="co">#&gt; 6   10.0      linear -16.29024 -15.86825 -15.25441</span></span>
-<span><span class="co">#&gt; 7    0.0        emax -12.16593 -11.41372 -10.54250</span></span>
-<span><span class="co">#&gt; 8    2.5        emax -15.50044 -14.96892 -14.43309</span></span>
-<span><span class="co">#&gt; 9    4.0        emax -15.50734 -15.09055 -14.61360</span></span>
-<span><span class="co">#&gt; 10   5.0        emax -15.50964 -15.14857 -14.67555</span></span>
-<span><span class="co">#&gt; 11   7.0        emax -15.52437 -15.25459 -14.72870</span></span>
-<span><span class="co">#&gt; 12  10.0        emax -15.53663 -15.33849 -14.76959</span></span>
-<span><span class="co">#&gt; 13   0.0 exponential -13.83941 -13.10680 -12.25959</span></span>
-<span><span class="co">#&gt; 14   2.5 exponential -14.11880 -13.73350 -12.95456</span></span>
-<span><span class="co">#&gt; 15   4.0 exponential -14.30400 -14.14889 -13.41520</span></span>
-<span><span class="co">#&gt; 16   5.0 exponential -14.45552 -14.40045 -13.74207</span></span>
-<span><span class="co">#&gt; 17   7.0 exponential -15.09842 -14.78558 -14.42385</span></span>
-<span><span class="co">#&gt; 18  10.0 exponential -16.19482 -15.82665 -15.15745</span></span>
-<span><span class="co">#&gt; 19   0.0      avgFit -12.16593 -11.41372 -10.54250</span></span>
-<span><span class="co">#&gt; 20   2.5      avgFit -15.50044 -14.96892 -14.43309</span></span>
-<span><span class="co">#&gt; 21   4.0      avgFit -15.50734 -15.09055 -14.61360</span></span>
-<span><span class="co">#&gt; 22   5.0      avgFit -15.50964 -15.14857 -14.67555</span></span>
-<span><span class="co">#&gt; 23   7.0      avgFit -15.52437 -15.25459 -14.72870</span></span>
-<span><span class="co">#&gt; 24  10.0      avgFit -15.53663 -15.33849 -14.76959</span></span></code></pre></div>
+<span></span>
+<span><span class="fu"><a href="../reference/getBootstrapQuantiles.html">getBootstrapQuantiles</a></span><span class="op">(</span></span>
+<span>  bs_sample <span class="op">=</span> <span class="va">bs_sample</span>,</span>
+<span>  quantiles <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.025</span>, <span class="fl">0.5</span>, <span class="fl">0.975</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;          model dose      2.5%       50%     97.5%</span></span>
+<span><span class="co">#&gt; 1       linear  0.0 -13.69819 -12.90585 -12.06392</span></span>
+<span><span class="co">#&gt; 2       linear  2.5 -14.09825 -13.73676 -12.96976</span></span>
+<span><span class="co">#&gt; 3       linear  4.0 -14.33829 -14.23531 -13.51327</span></span>
+<span><span class="co">#&gt; 4       linear  5.0 -14.58238 -14.47094 -13.87561</span></span>
+<span><span class="co">#&gt; 5       linear  7.0 -15.26552 -14.91338 -14.57022</span></span>
+<span><span class="co">#&gt; 6       linear 10.0 -16.29024 -15.86825 -15.25441</span></span>
+<span><span class="co">#&gt; 7         emax  0.0 -12.16593 -11.41372 -10.54250</span></span>
+<span><span class="co">#&gt; 8         emax  2.5 -15.50044 -14.96892 -14.43309</span></span>
+<span><span class="co">#&gt; 9         emax  4.0 -15.50734 -15.09055 -14.61360</span></span>
+<span><span class="co">#&gt; 10        emax  5.0 -15.50964 -15.14857 -14.67555</span></span>
+<span><span class="co">#&gt; 11        emax  7.0 -15.52437 -15.25459 -14.72870</span></span>
+<span><span class="co">#&gt; 12        emax 10.0 -15.53663 -15.33849 -14.76959</span></span>
+<span><span class="co">#&gt; 13 exponential  0.0 -13.83941 -13.10680 -12.25959</span></span>
+<span><span class="co">#&gt; 14 exponential  2.5 -14.11880 -13.73350 -12.95456</span></span>
+<span><span class="co">#&gt; 15 exponential  4.0 -14.30400 -14.14889 -13.41520</span></span>
+<span><span class="co">#&gt; 16 exponential  5.0 -14.45552 -14.40045 -13.74207</span></span>
+<span><span class="co">#&gt; 17 exponential  7.0 -15.09842 -14.78558 -14.42385</span></span>
+<span><span class="co">#&gt; 18 exponential 10.0 -16.19482 -15.82665 -15.15745</span></span>
+<span><span class="co">#&gt; 19      avgFit  0.0 -12.16593 -11.41372 -10.54250</span></span>
+<span><span class="co">#&gt; 20      avgFit  2.5 -15.50044 -14.96892 -14.43309</span></span>
+<span><span class="co">#&gt; 21      avgFit  4.0 -15.50734 -15.09055 -14.61360</span></span>
+<span><span class="co">#&gt; 22      avgFit  5.0 -15.50964 -15.14857 -14.67555</span></span>
+<span><span class="co">#&gt; 23      avgFit  7.0 -15.52437 -15.25459 -14.72870</span></span>
+<span><span class="co">#&gt; 24      avgFit 10.0 -15.53663 -15.33849 -14.76959</span></span></code></pre></div>
 <p>Technical note: The median quantile of the bootstrap based procedure
 is not necessary similar to the main model fit, as they are derived via
 different procedures. The main fit, i.e. the black lines in the plot,
