@@ -87,7 +87,7 @@
 <span><span class="co">#&gt; Loading required package: rstan</span></span>
 <span><span class="co">#&gt; Loading required package: StanHeaders</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; rstan version 2.32.3 (Stan version 2.26.1)</span></span>
+<span><span class="co">#&gt; rstan version 2.32.6 (Stan version 2.32.2)</span></span>
 <span><span class="co">#&gt; For execution on a local, multicore CPU with excess RAM we recommend calling</span></span>
 <span><span class="co">#&gt; options(mc.cores = parallel::detectCores()).</span></span>
 <span><span class="co">#&gt; To avoid recompilation of unchanged Stan programs, we recommend calling</span></span>
@@ -271,10 +271,10 @@ summary information of the posterior distributions.</p>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">posterior</span><span class="op">)</span></span>
 <span><span class="co">#&gt;           mean        sd      2.5%     50.0%      97.5%</span></span>
-<span><span class="co">#&gt; Ctr  -11.20818 0.7221914 -12.58446 -11.21909  -9.772728</span></span>
-<span><span class="co">#&gt; DG_1 -14.88087 0.7130817 -16.27848 -14.88087 -13.483253</span></span>
-<span><span class="co">#&gt; DG_2 -15.07988 0.7101057 -16.47166 -15.07988 -13.688099</span></span>
-<span><span class="co">#&gt; DG_3 -15.63631 0.7259755 -17.05920 -15.63631 -14.213428</span></span></code></pre></div>
+<span><span class="co">#&gt; Ctr  -11.18718 0.7234646 -12.58113 -11.19002  -9.766636</span></span>
+<span><span class="co">#&gt; DG_1 -14.88089 0.7130817 -16.27850 -14.88089 -13.483275</span></span>
+<span><span class="co">#&gt; DG_2 -15.07990 0.7101057 -16.47168 -15.07990 -13.688121</span></span>
+<span><span class="co">#&gt; DG_3 -15.63634 0.7259755 -17.05922 -15.63634 -14.213450</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="execution-of-bayesian-mcpmod-test-step">Execution of Bayesian MCPMod Test step<a class="anchor" aria-label="anchor" href="#execution-of-bayesian-mcpmod-test-step"></a>
@@ -335,12 +335,12 @@ critical value.</p>
 <span><span class="co">#&gt;      sign crit_prob_adj max_post_prob post_probs.linear post_probs.emax</span></span>
 <span><span class="co">#&gt; [1,]    1     0.9740992     0.9999999          0.999946       0.9999999</span></span>
 <span><span class="co">#&gt;      post_probs.exponential</span></span>
-<span><span class="co">#&gt; [1,]              0.9977525</span></span>
+<span><span class="co">#&gt; [1,]              0.9977794</span></span>
 <span><span class="co">#&gt; attr(,"successRate")</span></span>
 <span><span class="co">#&gt; [1] 1</span></span>
 <span><span class="co">#&gt; attr(,"ess_avg")</span></span>
 <span><span class="co">#&gt;   Ctr  DG_1  DG_2  DG_3 </span></span>
-<span><span class="co">#&gt; 182.8 186.6 188.2 180.0</span></span></code></pre></div>
+<span><span class="co">#&gt; 181.8 186.6 188.2 180.0</span></span></code></pre></div>
 <p>The testing step is significant indicating a non-flat dose-response
 shape. In detail, all 3 models are significant and the p-value for the
 emax model indicates deviation from the null hypothesis the most.</p>
@@ -379,13 +379,13 @@ levels that were not included in the trial.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">fit</span>, doses <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">2.5</span>, <span class="fl">4</span>, <span class="fl">5</span>, <span class="fl">7</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; $linear</span></span>
-<span><span class="co">#&gt; [1] -12.45164 -13.42980 -14.01669 -14.40796 -15.19049 -16.36428</span></span>
+<span><span class="co">#&gt; [1] -12.44807 -13.42703 -14.01440 -14.40598 -15.18915 -16.36389</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $emax</span></span>
-<span><span class="co">#&gt; [1] -11.26103 -14.80511 -15.13330 -15.25663 -15.40757 -15.52847</span></span>
+<span><span class="co">#&gt; [1] -11.24452 -14.80537 -15.13351 -15.25676 -15.40753 -15.52827</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $exponential</span></span>
-<span><span class="co">#&gt; [1] -12.63685 -13.39493 -13.89741 -14.25396 -15.02282 -16.33036</span></span>
+<span><span class="co">#&gt; [1] -12.63381 -13.39266 -13.89564 -14.25255 -15.02219 -16.33104</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; attr(,"doses")</span></span>
 <span><span class="co">#&gt; [1]  0.0  2.5  4.0  5.0  7.0 10.0</span></span></code></pre></div>
@@ -416,30 +416,30 @@ bootstrapped for each model fit.</p>
 <span>  doses      <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">2.5</span>, <span class="fl">4</span>, <span class="fl">5</span>, <span class="fl">7</span>, <span class="fl">10</span><span class="op">)</span>,</span>
 <span>  n_samples  <span class="op">=</span> <span class="fl">6</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    doses      models      2.5%       50%     97.5%</span></span>
-<span><span class="co">#&gt; 1    0.0      linear -13.71090 -13.25547 -12.42521</span></span>
-<span><span class="co">#&gt; 2    2.5      linear -14.10668 -13.96894 -13.21531</span></span>
-<span><span class="co">#&gt; 3    4.0      linear -14.41836 -14.31556 -13.68429</span></span>
-<span><span class="co">#&gt; 4    5.0      linear -14.70835 -14.47499 -13.99695</span></span>
-<span><span class="co">#&gt; 5    7.0      linear -15.28834 -14.91412 -14.59219</span></span>
-<span><span class="co">#&gt; 6   10.0      linear -16.16594 -15.76323 -15.25024</span></span>
-<span><span class="co">#&gt; 7    0.0        emax -12.24147 -11.63126 -11.14827</span></span>
-<span><span class="co">#&gt; 8    2.5        emax -15.50140 -14.96796 -14.43057</span></span>
-<span><span class="co">#&gt; 9    4.0        emax -15.50741 -15.08902 -14.61232</span></span>
-<span><span class="co">#&gt; 10   5.0        emax -15.50942 -15.14749 -14.67527</span></span>
-<span><span class="co">#&gt; 11   7.0        emax -15.52389 -15.25450 -14.72992</span></span>
-<span><span class="co">#&gt; 12  10.0        emax -15.53627 -15.33849 -14.77223</span></span>
-<span><span class="co">#&gt; 13   0.0 exponential -13.85080 -13.42746 -12.59875</span></span>
-<span><span class="co">#&gt; 14   2.5 exponential -14.12705 -13.96579 -13.20024</span></span>
-<span><span class="co">#&gt; 15   4.0 exponential -14.34893 -14.26736 -13.59893</span></span>
-<span><span class="co">#&gt; 16   5.0 exponential -14.59880 -14.41223 -13.88183</span></span>
-<span><span class="co">#&gt; 17   7.0 exponential -15.14510 -14.78707 -14.46881</span></span>
-<span><span class="co">#&gt; 18  10.0 exponential -16.07985 -15.73569 -15.15372</span></span>
-<span><span class="co">#&gt; 19   0.0      avgFit -12.24147 -11.63126 -11.14827</span></span>
-<span><span class="co">#&gt; 20   2.5      avgFit -15.50140 -14.96796 -14.43057</span></span>
-<span><span class="co">#&gt; 21   4.0      avgFit -15.50741 -15.08902 -14.61232</span></span>
-<span><span class="co">#&gt; 22   5.0      avgFit -15.50942 -15.14749 -14.67527</span></span>
-<span><span class="co">#&gt; 23   7.0      avgFit -15.52389 -15.25450 -14.72992</span></span>
-<span><span class="co">#&gt; 24  10.0      avgFit -15.53627 -15.33849 -14.77223</span></span></code></pre></div>
+<span><span class="co">#&gt; 1    0.0      linear -13.69819 -12.90585 -12.06392</span></span>
+<span><span class="co">#&gt; 2    2.5      linear -14.09825 -13.73676 -12.96976</span></span>
+<span><span class="co">#&gt; 3    4.0      linear -14.33829 -14.23531 -13.51327</span></span>
+<span><span class="co">#&gt; 4    5.0      linear -14.58238 -14.47094 -13.87561</span></span>
+<span><span class="co">#&gt; 5    7.0      linear -15.26552 -14.91338 -14.57022</span></span>
+<span><span class="co">#&gt; 6   10.0      linear -16.29024 -15.86825 -15.25441</span></span>
+<span><span class="co">#&gt; 7    0.0        emax -12.16593 -11.41372 -10.54250</span></span>
+<span><span class="co">#&gt; 8    2.5        emax -15.50044 -14.96892 -14.43309</span></span>
+<span><span class="co">#&gt; 9    4.0        emax -15.50734 -15.09055 -14.61360</span></span>
+<span><span class="co">#&gt; 10   5.0        emax -15.50964 -15.14857 -14.67555</span></span>
+<span><span class="co">#&gt; 11   7.0        emax -15.52437 -15.25459 -14.72870</span></span>
+<span><span class="co">#&gt; 12  10.0        emax -15.53663 -15.33849 -14.76959</span></span>
+<span><span class="co">#&gt; 13   0.0 exponential -13.83941 -13.10680 -12.25959</span></span>
+<span><span class="co">#&gt; 14   2.5 exponential -14.11880 -13.73350 -12.95456</span></span>
+<span><span class="co">#&gt; 15   4.0 exponential -14.30400 -14.14889 -13.41520</span></span>
+<span><span class="co">#&gt; 16   5.0 exponential -14.45552 -14.40045 -13.74207</span></span>
+<span><span class="co">#&gt; 17   7.0 exponential -15.09842 -14.78558 -14.42385</span></span>
+<span><span class="co">#&gt; 18  10.0 exponential -16.19482 -15.82665 -15.15745</span></span>
+<span><span class="co">#&gt; 19   0.0      avgFit -12.16593 -11.41372 -10.54250</span></span>
+<span><span class="co">#&gt; 20   2.5      avgFit -15.50044 -14.96892 -14.43309</span></span>
+<span><span class="co">#&gt; 21   4.0      avgFit -15.50734 -15.09055 -14.61360</span></span>
+<span><span class="co">#&gt; 22   5.0      avgFit -15.50964 -15.14857 -14.67555</span></span>
+<span><span class="co">#&gt; 23   7.0      avgFit -15.52437 -15.25459 -14.72870</span></span>
+<span><span class="co">#&gt; 24  10.0      avgFit -15.53663 -15.33849 -14.76959</span></span></code></pre></div>
 <p>Technical note: The median quantile of the bootstrap based procedure
 is not necessary similar to the main model fit, as they are derived via
 different procedures. The main fit, i.e. the black lines in the plot,
