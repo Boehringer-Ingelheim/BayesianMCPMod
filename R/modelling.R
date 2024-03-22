@@ -147,7 +147,14 @@ getModelFitOpt <- function (
               lb     <- c(-Inf, -Inf, 0.001 * max(dose_levels), 0.01 * max(dose_levels))
               ub     <- c(Inf, Inf, 1.5 * max(dose_levels), 0.5 * max(dose_levels))
               expr_i <- quote(sum((post_combs$means[i, ] - (theta[1] + theta[2] / (1 + exp((theta[3] - dose_levels) / theta[4]))))^2 / (post_combs$vars[i, ])))},
-            {
+            "beta"   = {
+              lb     <- c(-Inf, -Inf, 0.05, 0.05)
+              ub     <- c(Inf, Inf, 4, 4)
+              scal   <- attr(mod,"scal")
+              #Dummy code we need the information from attr(mod,"scal") which is by default 1.2*max(dose_levels)
+              #if(scal=NULL)(scal<-1.2*max(dose_levels))
+              expr_i <- quote(sum((post_combs$means[i, ]-(theta[1]+theta[2]*(((theta[3]+theta[4])^(theta[3]+theta[4]))/((theta[3]^theta[3])*(theta[4]^theta[4])))*(dose_levels/scal)^(theta[3])*((1-dose_levels/scal)^(theta[4]) )))))}
+             {
               stop ("error: model shape not yet implemented")})
     
     simple_fit <- getModelFitSimple(
