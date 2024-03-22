@@ -147,7 +147,7 @@ getModelFitOpt <- function (
               lb     <- c(-Inf, -Inf, 0.001 * max(dose_levels), 0.01 * max(dose_levels))
               ub     <- c(Inf, Inf, 1.5 * max(dose_levels), 0.5 * max(dose_levels))
               expr_i <- quote(sum((post_combs$means[i, ] - (theta[1] + theta[2] / (1 + exp((theta[3] - dose_levels) / theta[4]))))^2 / (post_combs$vars[i, ])))},
-            "beta"   = {
+            "betaMod"   = {
               lb     <- c(-Inf, -Inf, 0.05, 0.05)
               ub     <- c(Inf, Inf, 4, 4)
               scal   <- attr(mod,"scal")
