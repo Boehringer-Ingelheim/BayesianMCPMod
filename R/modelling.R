@@ -67,7 +67,7 @@ getModelFits <- function (
   attr(model_fits, "posterior") <- posterior
   class(model_fits)             <- "modelFits"
   
- 
+  
   return (model_fits)
   
 }
@@ -153,9 +153,8 @@ getModelFitOpt <- function (
               scal   <- attr(mod,"scal")
               #Dummy code we need the information from attr(mod,"scal") which is by default 1.2*max(dose_levels)
               #if(scal=NULL)(scal<-1.2*max(dose_levels))
-              expr_i <- quote(sum((post_combs$means[i, ]-(theta[1]+theta[2]*(((theta[3]+theta[4])^(theta[3]+theta[4]))/((theta[3]^theta[3])*(theta[4]^theta[4])))*(dose_levels/scal)^(theta[3])*((1-dose_levels/scal)^(theta[4]) )))))}
-             {
-              stop ("error: model shape not yet implemented")})
+              expr_i <- quote(sum((post_combs$means[i, ]-(theta[1]+theta[2]*(((theta[3]+theta[4])^(theta[3]+theta[4]))/((theta[3]^theta[3])*(theta[4]^theta[4])))*(dose_levels/scal)^(theta[3])*((1-dose_levels/scal)^(theta[4]))))))},
+              stop ("error: model shape not yet implemented"))
     
     simple_fit <- getModelFitSimple(
       model       = model,
@@ -193,7 +192,7 @@ getModelFitOpt <- function (
   
   param_list <- getOptParams(model, dose_levels, posterior)
   post_combs <- getPostCombsI(posterior)
-
+  
   fit <- nloptr::nloptr(
     eval_f = optFun,
     x0     = param_list$params$x0,
