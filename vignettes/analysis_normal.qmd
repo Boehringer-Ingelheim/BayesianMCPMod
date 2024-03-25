@@ -41,22 +41,32 @@ vignette: >
 #' @export
 display_params_table <- function(named_list) {
   display_table <- data.frame()
-  
+  value_names <- data.frame()
   for (i in 1:length(named_list)) {
     # dates will display as numeric by default, so convert to char first
     if (class(named_list[[i]]) == "Date") {
       named_list[[i]] = as.character(named_list[[i]])
     }
-    
-    display_table <- rbind(display_table, data.frame(I(list(named_list[[i]]))))
+    if (!is.null(names(named_list[[i]]))) {
+      value_names <- rbind(value_names, paste(names(named_list[[i]]), collapse = ', '))
+    }
+    values <- data.frame(I(list(named_list[[i]])))
+    display_table <- rbind(display_table, values)
   }
   
   class(display_table[[1]]) <- "list"
   
-  knitr::kable(
-    cbind(names(named_list), display_table),
-    col.names = c("Parameter Name", "Parameter Values")
-  )
+  if (nrow(value_names) == 0) {
+    knitr::kable(
+      cbind(names(named_list), display_table),
+      col.names = c("Name", "Value")
+    )
+  } else {
+    knitr::kable(
+      cbind(names(named_list), value_names, display_table),
+      col.names = c("Name", "Value Labels", "Value")
+    )
+  }
 }
 ```
 
@@ -89,15 +99,13 @@ prior for the Bayesian MCPMod evaluation of a single trial.
 # Non-Informative Prior Specification
 
 Rather than constructing a complex mixture prior for the control group and 
-differentiating active groups with detailed priors, we will specify non-informative 
+differentiating active groups with detailed priors, we will specify weakly-informative 
 priors across all dose groups. This simplification aims to underscore the 
 flexibility in prior selection and its impact on the Bayesian analysis framework.
 
-Non-informative priors, often chosen for their neutrality, offer a baseline 
+Weakly-informative priors, often chosen for their neutrality, offer a baseline 
 from which the trial data can speak more prominently. This approach is particularly 
 useful in early-stage research or when historical data is limited or not directly applicable.
-
-[TODO: make a prior non-informative instead of weakly informative (i.e., uniform from -100 to 100)]{.aside}
 
 ```{r}
 dose_levels <- c(0, 2.5, 5, 10)
@@ -114,14 +122,15 @@ names(prior_list) <- c("Ctr", paste0("DG_", dose_levels[-1]))
 To be able to apply the Bayesian MCPMod approach, candidate models need to be 
 specified using functions from the R package DoseFinding.
 
-Since there are only 3 active dose levels we will limit the set of candidate 
-models to a linear, an exponential, and an emax model.
+In a real life scenario, we would typically only include a few candidate models, maybe 4 or 5. 
+
+For the purpose of the exposition, we will generate a variety of models to demonstrate
+different approaches to the problem. Model shapes can be parameterized using `DoseFinding::guesstimate`
+as well as directly providing parameters
 
 Note that the linear candidate model does not require a guesstimate.
 
-[TODO: figure out how to paramaterize a beta]{.aside}
-
-[TODO: need to implement linlog shape in getOptParams()]{.aside} 
+[**Note:** The LinLog model is rarely used and not currently supported by `{BayesianMCPMod}`.]{.aside}
 
 ```{r}
 exp_guesst  <- DoseFinding::guesst(
@@ -140,22 +149,71 @@ logistic_guesst <- DoseFinding::guesst(
   model = "logistic",
   d = c(5, 10), p = c(0.1, 0.85)
 )
+```
 
+In the code above, the models are specified using `DoseFinding::guesst` function. 
+The `d` option usually takes a single value (a dose level), and the corresponding `p` 
+for the maximum effect achieved at `d`. 
+
+In some cases, you need to provide more information. For instance, sigEmax requires a pair of `d` and `p`, and 
+exponential requires the specification of the maximum dose for the trial. 
+
+[See the help files for more details by typing `?DoseFinding::guesst` in your console.]{.aside}
+
+The output of this function ius a parameterization of the dose-response model. For example, the 
+parameters for the `sigEmax_guesst` are `r sigEmax_guesst` and would correspond to the last 
+two parameters in the `DoseFinding::sigEmax` function, e.g.,
+
+```{r}
+DoseFinding::sigEmax(
+  dose = c(2.5, 5), 
+  e0 = 0, # placebo effect
+  eMax = 1, # max effect
+  ed50 = sigEmax_guesst[["ed50"]], # dose that yields half of eMax
+  h = sigEmax_guesst[["h"]] # Hill parameter (steepness at ed50)
+)
+```
+
+So essentially what's happening here is that `{DoseFinding}` is providing an abstraction
+so you just have to worry about the essential parameters for each dose-response shape.
+
+You can also specify the models directly (without using `DoseFinding::guesst`).
+
+For example, the betaMod model only requires `delta1` and `delta2` parameters (`scale` is assumed to be `1.2`),
+and the quadratic model only requires a `delta2` parameter.
+
+```{r}
+betaMod_params <- c(delta1 = 1, delta2 = 1)
+quadratic_params <- c(delta2 = -0.1)
+```
+
+For a more in-depth explanation of the various dose-response model shapes and how they are
+parameterized, refer to the model-specific functions in the `{DoseFinding}` package.
+
+Now, we can go ahead and create a `Mods` object, which will be used in the remainder
+of the vignette.
+
+```{r}
 mods <- DoseFinding::Mods(
   linear      = NULL,
   exponential = exp_guesst,
   emax        = emax_guesst,
   sigEmax     = sigEmax_guesst,
   logistic    = logistic_guesst,
-  linInt      = c(0.5, 1, 1),
-  betaMod     = c(1, 1),
-  quadratic   = -0.1,
+  betaMod     = betaMod_params,
+  quadratic   = quadratic_params,
   doses       = dose_levels,
   maxEff      = -1,
   placEff     = -12.8
 )
 
 plot(mods)
+```
+The `mods` object also contains the model parameters, which can be helpful for 
+understanding how the guesstimates are translated into the parameter scale. 
+
+```{r}
+display_params_table(mods)
 ```
 
 We can see the assumed treatment effects for the specified dose groups below:
