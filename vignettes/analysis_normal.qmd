@@ -119,6 +119,8 @@ names(prior_list) <- c("Ctr", paste0("DG_", dose_levels[-1]))
 
 # Specifications for the new trial 
 
+## Specifying dose-response model shapes
+
 To be able to apply the Bayesian MCPMod approach, candidate models need to be 
 specified using functions from the R package DoseFinding.
 
@@ -174,13 +176,15 @@ DoseFinding::sigEmax(
 )
 ```
 
-So essentially what's happening here is that `{DoseFinding}` is providing an abstraction
-so you just have to worry about the essential parameters for each dose-response shape.
+Essentially what's happening here is that `{DoseFinding}` is providing you an abstraction
+such that you do not have to worry about the essential parameters for each dose-response shape,
+but just the ones that are relatable in a clinical context, such as the dose (`d`) 
+and the maximum effect (`p`) at `d`.
 
-You can also specify the models directly (without using `DoseFinding::guesst`).
+Of course, you can also specify the models directly on the parameter scale (without using `DoseFinding::guesst`).
 
-For example, the betaMod model only requires `delta1` and `delta2` parameters (`scale` is assumed to be `1.2`),
-and the quadratic model only requires a `delta2` parameter.
+For example, you can get a betaMod model by specifying `delta1` and `delta2` 
+parameters (`scale` is assumed to be `1.2`), or a quadratic model with the `delta2` parameter.
 
 ```{r}
 betaMod_params <- c(delta1 = 1, delta2 = 1)
@@ -196,12 +200,15 @@ of the vignette.
 ```{r}
 mods <- DoseFinding::Mods(
   linear      = NULL,
+  # guesstimate scale
   exponential = exp_guesst,
   emax        = emax_guesst,
   sigEmax     = sigEmax_guesst,
   logistic    = logistic_guesst,
+  # parameter scale
   betaMod     = betaMod_params,
   quadratic   = quadratic_params,
+  # Options for all models
   doses       = dose_levels,
   maxEff      = -1,
   placEff     = -12.8
@@ -209,28 +216,30 @@ mods <- DoseFinding::Mods(
 
 plot(mods)
 ```
-The `mods` object also contains the model parameters, which can be helpful for 
-understanding how the guesstimates are translated into the parameter scale. 
+The `mods` object we just created above contains the full model parameters, which can be helpful for 
+understanding how the guesstimates are translated onto the parameter scale. 
 
 ```{r}
 display_params_table(mods)
 ```
 
-We can see the assumed treatment effects for the specified dose groups below:
+And we can see the assumed treatment effects for the specified dose groups below:
 
 ```{r}
 knitr::kable(DoseFinding::getResp(mods, doses = dose_levels))
 ```
 
-We will use the trial with ct.gov number NCT00735709 as exemplary new trial 
-[@nct00735709_2024a]. This dataset comes from the `{clinDR}` package.
+## Trial data for the example
+
+We will use the trial with ct.gov number NCT00735709 as our new trial data
+[@nct00735709_2024a]. This dataset comes from the `{clinDR}` package. Make sure
+you have it installed before running the code below.
 
 ```{r}
 data("metaData")
-dataset <- dplyr::filter(tibble::tibble(metaData), bname == "BRINTELLIX")
 
-new_trial <- dplyr::filter(
-  dataset,
+trial_data <- dplyr::filter(
+  dplyr::filter(tibble::tibble(metaData), bname == "BRINTELLIX"),
   primtime == 8,
   indication == "MAJOR DEPRESSIVE DISORDER",
   protid == 5
@@ -241,11 +250,12 @@ n_patients <- c(128, 124, 129, 122)
 
 # Combination of prior information and trial results
 
-As outlined in [@fleischer_2022], in a first step the posterior is calculated 
-combining the prior information with the estimated results of the new trial. 
+As outlined in [@fleischer_2022], in the first step the posterior is calculated 
+by combining the prior information with the estimated results of the new trial. 
 
-Via the summary function it is possible to print out the summary information of 
-the posterior distributions.
+Via the summary function, it is possible to print out the summary information of 
+the posterior distributions. Remember that our `prior_list` object is defined above
+using a weakly-informative prior.
 
 ```{r}
 posterior <- BayesianMCPMod::getPosterior(
