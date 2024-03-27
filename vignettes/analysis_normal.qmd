@@ -111,7 +111,7 @@ useful in early-stage research or when historical data is limited or not directl
 dose_levels <- c(0, 2.5, 5, 10)
 
 prior_list <- lapply(dose_levels, function(dose_group) {
-  RBesT::mixnorm(weak = c(w = 1, m = 0, s = 200)) # weakly informative normal distribution
+  RBesT::mixnorm(weak = c(w = 1, m = 0, s = 200), sigma = 10) # weakly informative normal distribution
 })
 
 names(prior_list) <- c("Ctr", paste0("DG_", dose_levels[-1]))
@@ -170,7 +170,7 @@ two parameters in the `DoseFinding::sigEmax` function, e.g.,
 DoseFinding::sigEmax(
   dose = c(2.5, 5), 
   e0 = 0, # placebo effect
-  eMax = 1, # max effect
+  eMax = -1, # max effect
   ed50 = sigEmax_guesst[["ed50"]], # dose that yields half of eMax
   h = sigEmax_guesst[["h"]] # Hill parameter (steepness at ed50)
 )
@@ -251,7 +251,7 @@ n_patients <- c(128, 124, 129, 122)
 # Combination of prior information and trial results
 
 As outlined in [@fleischer_2022], in the first step the posterior is calculated 
-by combining the prior information with the estimated results of the new trial. 
+by combining the prior information with the estimated results of the trial. 
 
 Via the summary function, it is possible to print out the summary information of 
 the posterior distributions. Remember that our `prior_list` object is defined above
@@ -260,8 +260,9 @@ using a weakly-informative prior.
 ```{r}
 posterior <- BayesianMCPMod::getPosterior(
   prior_list = prior_list,
-  mu_hat = new_trial$rslt,
-  se_hat = new_trial$se
+  mu_hat = trial_data$rslt,
+  se_hat = trial_data$se,
+  calc_ess = TRUE
 )
 
 knitr::kable(summary(posterior))
@@ -273,7 +274,7 @@ For the execution of the testing step of Bayesian MCPMod a critical value on the
 probability scale will be determined for a given alpha level.
 
 This critical value is calculated using the re-estimated contrasts for the 
-frequentist MCPMod to ensure that, when using non-informative priors, 
+frequentist MCPMod to ensure that, when using weakly-informative priors, 
 the actual error level for falsely declaring a significant trial in the Bayesian 
 MCPMod is controlled by the specified alpha level. 
 
@@ -284,7 +285,7 @@ posterior distribution (see [@fleischer_2022] for more details).
 crit_pval <- BayesianMCPMod::getCritProb(
   mods           = mods,
   dose_levels    = dose_levels,
-  se_new_trial   = new_trial$se,
+  se_new_trial   = trial_data$se,
   alpha_crit_val = 0.05
 )
 
@@ -312,7 +313,7 @@ contr_mat_prior <- BayesianMCPMod::getContr(
 contr_mat_prior <- BayesianMCPMod::getContr(
   mods           = mods,
   dose_levels    = dose_levels,
-  se_new_trial   = new_trial$se)
+  se_new_trial   = trial_data$se)
 # iii)  Bayesian approach using number of patients for new trial and prior distribution
 contr_mat_prior <- BayesianMCPMod::getContr(
   mods           = mods,
