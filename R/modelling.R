@@ -56,14 +56,14 @@ getModelFits <- function (
   checkmate::check_class(posterior, "postList")
   checkmate::check_logical(simple)
   
-  models      <- unique(gsub("\\d", "", models))
-  
+  model_names      <- unique(gsub("\\d", "", names(models)))
+
   getModelFit <- ifelse(simple, getModelFitSimple, getModelFitOpt)
-  model_fits  <- lapply(models, getModelFit, dose_levels, posterior)
+  model_fits  <- lapply(model_names, getModelFit, dose_levels, posterior, list("scal" = attr(models, "scal")))
   
   model_fits  <- addModelWeights(model_fits)
   
-  names(model_fits)             <- models
+  names(model_fits)             <- model_names
   attr(model_fits, "posterior") <- posterior
   class(model_fits)             <- "modelFits"
   
@@ -77,7 +77,8 @@ getModelFitSimple <- function (
     
   model,
   dose_levels,
-  posterior
+  posterior,
+  addArgs = NULL
   
 ) {
   
@@ -110,7 +111,8 @@ getModelFitOpt <- function (
     
   model,
   dose_levels,
-  posterior
+  posterior,
+  addArgs = NULL
   
 ) {
   
@@ -118,43 +120,55 @@ getModelFitOpt <- function (
     
     model,
     dose_levels,
-    posterior
+    posterior,
+    addArgs = NULL
     
   ) {
-    
-    switch (model,
-            "emax" = {
-              lb     <- c(-Inf, -Inf, 0.001 * max(dose_levels))
-              ub     <- c(Inf, Inf, 1.5 * max(dose_levels))
-              expr_i <- quote(sum((post_combs$means[i, ] - (theta[1] + (theta[2] * dose_levels) / (theta[3] + dose_levels)))^2 / (post_combs$vars[i, ])))},
-            "sigEmax" = {
-              lb     <- c(-Inf, -Inf, 0.001 * max(dose_levels), 0.5)
-              ub     <- c(Inf, Inf, 1.5 * max(dose_levels), 10)
-              expr_i <- quote(sum((post_combs$means[i, ] - (theta[1] + (theta[2] * dose_levels^theta[4]) / (theta[3]^theta[4] + dose_levels^theta[4])))^2 / (post_combs$vars[i, ])))},
-            "exponential" = {
-              lb     <- c(-Inf, -Inf, 0.1 * max(dose_levels))
-              ub     <- c(Inf, Inf, 2 * max(dose_levels))
-              expr_i <- quote(sum((post_combs$means[i, ] - (theta[1] + theta[2] * (exp(dose_levels / theta[3]) - 1)))^2 / (post_combs$vars[i, ])))},
-            "quadratic" = {
-              lb     <- NULL
-              ub     <- c(Inf, Inf, 0)
-              expr_i <- quote(sum((post_combs$means[i, ] - (theta[1] + theta[2] * dose_levels + theta[3] * dose_levels^2))^2 / (post_combs$vars[i, ])))},
-            "linear" = {
-              lb     <- NULL
-              ub     <- NULL
-              expr_i <- quote(sum((post_combs$means[i, ] - (theta[1] + theta[2] * dose_levels))^2 / (post_combs$vars[i, ])))},
-            "logistic" = {
-              lb     <- c(-Inf, -Inf, 0.001 * max(dose_levels), 0.01 * max(dose_levels))
-              ub     <- c(Inf, Inf, 1.5 * max(dose_levels), 0.5 * max(dose_levels))
-              expr_i <- quote(sum((post_combs$means[i, ] - (theta[1] + theta[2] / (1 + exp((theta[3] - dose_levels) / theta[4]))))^2 / (post_combs$vars[i, ])))},
-            "betaMod"   = {
-              lb     <- c(-Inf, -Inf, 0.05, 0.05)
-              ub     <- c(Inf, Inf, 4, 4)
-              scal   <- attr(mod,"scal")
-              #Dummy code we need the information from attr(mod,"scal") which is by default 1.2*max(dose_levels)
-              #if(scal=NULL)(scal<-1.2*max(dose_levels))
-              expr_i <- quote(sum((post_combs$means[i, ]-(theta[1]+theta[2]*(((theta[3]+theta[4])^(theta[3]+theta[4]))/((theta[3]^theta[3])*(theta[4]^theta[4])))*(dose_levels/scal)^(theta[3])*((1-dose_levels/scal)^(theta[4]))))))},
-              stop ("error: model shape not yet implemented"))
+    switch (
+      model,
+      "emax" = {
+        lb     <- c(-Inf, -Inf, 0.001 * max(dose_levels))
+        ub     <- c(Inf, Inf, 1.5 * max(dose_levels))
+        expr_i <- quote(sum((post_combs$means[i, ] - (theta[1] + (theta[2] * dose_levels) / (theta[3] + dose_levels)))^2 / (post_combs$vars[i, ])))
+      },
+      "sigEmax" = {
+        lb     <- c(-Inf, -Inf, 0.001 * max(dose_levels), 0.5)
+        ub     <- c(Inf, Inf, 1.5 * max(dose_levels), 10)
+        expr_i <- quote(sum((post_combs$means[i, ] - (theta[1] + (theta[2] * dose_levels^theta[4]) / (theta[3]^theta[4] + dose_levels^theta[4])))^2 / (post_combs$vars[i, ])))
+      },
+      "exponential" = {
+        lb     <- c(-Inf, -Inf, 0.1 * max(dose_levels))
+        ub     <- c(Inf, Inf, 2 * max(dose_levels))
+        expr_i <- quote(sum((post_combs$means[i, ] - (theta[1] + theta[2] * (exp(dose_levels / theta[3]) - 1)))^2 / (post_combs$vars[i, ])))
+      },
+      "quadratic" = {
+        lb     <- NULL
+        ub     <- c(Inf, Inf, 0)
+        expr_i <- quote(sum((post_combs$means[i, ] - (theta[1] + theta[2] * dose_levels + theta[3] * dose_levels^2))^2 / (post_combs$vars[i, ])))
+      },
+      "linear" = {
+        lb     <- NULL
+        ub     <- NULL
+        expr_i <- quote(sum((post_combs$means[i, ] - (theta[1] + theta[2] * dose_levels))^2 / (post_combs$vars[i, ])))
+      },
+      "logistic" = {
+        lb     <- c(-Inf, -Inf, 0.001 * max(dose_levels), 0.01 * max(dose_levels))
+        ub     <- c(Inf, Inf, 1.5 * max(dose_levels), 0.5 * max(dose_levels))
+        expr_i <- quote(sum((post_combs$means[i, ] - (theta[1] + theta[2] / (1 + exp((theta[3] - dose_levels) / theta[4]))))^2 / (post_combs$vars[i, ])))
+      },
+      "betaMod" = {
+        lb     <- c(-Inf, -Inf, 0.05, 0.05)
+        ub     <- c(Inf, Inf, 4, 4)
+        scal   <- ifelse(is.null(addArgs), 1.2 * max(dose_levels), addArgs[["scal"]])
+        expr_i <- substitute(
+          sum(
+            (post_combs$means[i, ] - (theta[1] + theta[2] * (((theta[3] + theta[4])^(theta[3] + theta[4])) / ((theta[3] ^ theta[3]) * (theta[4]^theta[4]))) * (dose_levels / scal)^(theta[3]) * ((1 - dose_levels / scal)^(theta[4]))))
+          ), 
+          list(scal = scal)
+        )
+      },
+      stop(paste("error:", model, "shape not yet implemented"))
+    )
     
     simple_fit <- getModelFitSimple(
       model       = model,
@@ -201,7 +215,8 @@ getModelFitOpt <- function (
     opts   = param_list$opts,
     dose_levels = dose_levels,
     post_combs  = post_combs,
-    expr_i      = param_list$expr_i)
+    expr_i      = param_list$expr_i
+  )
   
   names(fit$solution) <- param_list$c_names
   
@@ -264,7 +279,7 @@ predictModelFit <- function (
       model_fit$coeffs["eMax"],
       model_fit$coeffs["ed50"],
       model_fit$coeffs["delta"])},
-    {stop("error")})
+    {stop(paste("error:", model_fit$model, "shape not yet implemented"))})
   
   return (pred_vals)
   

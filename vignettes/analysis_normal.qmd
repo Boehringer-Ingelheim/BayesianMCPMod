@@ -12,8 +12,10 @@ format:
     bibliography: references.bib
 vignette: >
   %\VignetteIndexEntry{Analysis Example of Bayesian MCPMod for Continuous Data}
-  %\VignetteEngine{quarto::html}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{quarto::html}
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r}
@@ -86,17 +88,18 @@ set.seed(7015)
 
 # Background and data
 
-In this vignette we will show the use of the Bayesian MCPMod package for 
-continuous distributed data. 
+In this vignette we will show the use of the `{BayesianMCPMod}` package for the analysis
+of a phase 2 dose-finding trial.
 
-Priors can be grounded in historical data, leveraging the `{RBesT}` package functions 
-to construct the informative priors. This approach allows for the synthesis of prior 
-knowledge with current data, enhancing the accuracy of trial evaluations.
+Since we're working in the Bayesian framework, we need to specify a prior.
 
-The focus of this vignette is more generic, however. We utilize a non-informative 
-prior for the Bayesian MCPMod evaluation of a single trial. 
+Ideally, priors are grounded in historical data. This approach allows for the synthesis of 
+prior knowledge with current data, enhancing the accuracy of trial evaluations.
 
-# Non-Informative Prior Specification
+The focus of this vignette is more generic, however. We utilize a weakly-informative 
+prior for the Bayesian MCPMod evaluation of a phase 2 trial.
+
+# Weakly-Informative Prior Specification
 
 Rather than constructing a complex mixture prior for the control group and 
 differentiating active groups with detailed priors, we will specify weakly-informative 
@@ -106,12 +109,14 @@ flexibility in prior selection and its impact on the Bayesian analysis framework
 Weakly-informative priors, often chosen for their neutrality, offer a baseline 
 from which the trial data can speak more prominently. This approach is particularly 
 useful in early-stage research or when historical data is limited or not directly applicable.
+It also allows one to add in external data when/if it becomes available.
 
 ```{r}
 dose_levels <- c(0, 2.5, 5, 10)
 
 prior_list <- lapply(dose_levels, function(dose_group) {
-  RBesT::mixnorm(weak = c(w = 1, m = 0, s = 200), sigma = 10) # weakly informative normal distribution
+  # weakly informative normal distribution
+  RBesT::mixnorm(weak = c(w = 1, m = 0, s = 200), sigma = 10) 
 })
 
 names(prior_list) <- c("Ctr", paste0("DG_", dose_levels[-1]))
@@ -126,15 +131,20 @@ specified using functions from the R package DoseFinding.
 
 In a real life scenario, we would typically only include a few candidate models, maybe 4 or 5. 
 
-For the purpose of the exposition, we will generate a variety of models to demonstrate
-different approaches to the problem. Model shapes can be parameterized using `DoseFinding::guesstimate`
-as well as directly providing parameters
+For the purpose of the exposition, we will generate a greater variety of models to demonstrate
+different approaches to the problem. Model shapes can be parameterized using guesstimates
+based on limited information as well as directly providing the appropriate distribution parameters.
 
-Note that the linear candidate model does not require a guesstimate.
+Note that the linear candidate model does not require parameterization.
 
 [**Note:** The LinLog model is rarely used and not currently supported by `{BayesianMCPMod}`.]{.aside}
 
+In the code below, the models are "guesstimated" using the `DoseFinding::guesst` function. 
+The `d` option usually takes a single value (a dose level), and the corresponding `p` 
+for the maximum effect achieved at `d`. 
+
 ```{r}
+# Guesstimate estimation
 exp_guesst  <- DoseFinding::guesst(
   model = "exponential", 
   d = 5, p = 0.2, Maxd = max(dose_levels)
@@ -153,22 +163,19 @@ logistic_guesst <- DoseFinding::guesst(
 )
 ```
 
-In the code above, the models are specified using `DoseFinding::guesst` function. 
-The `d` option usually takes a single value (a dose level), and the corresponding `p` 
-for the maximum effect achieved at `d`. 
+In some cases, you need to provide more information. For instance, `sigEmax` 
+requires a pair of `d` and `p` values, and `exponential` requires the specification of 
+the maximum dose for the trial (`Maxd`). 
 
-In some cases, you need to provide more information. For instance, sigEmax requires a pair of `d` and `p`, and 
-exponential requires the specification of the maximum dose for the trial. 
+See the help files for model specifications by typing `?DoseFinding::guesst` in your console.
 
-[See the help files for more details by typing `?DoseFinding::guesst` in your console.]{.aside}
-
-The output of this function ius a parameterization of the dose-response model. For example, the 
+The output of this function is a parameterization of the dose-response model. For example, the 
 parameters for the `sigEmax_guesst` are `r sigEmax_guesst` and would correspond to the last 
 two parameters in the `DoseFinding::sigEmax` function, e.g.,
 
 ```{r}
 DoseFinding::sigEmax(
-  dose = c(2.5, 5), 
+  dose = c(2.5, 5), # dose levels
   e0 = 0, # placebo effect
   eMax = -1, # max effect
   ed50 = sigEmax_guesst[["ed50"]], # dose that yields half of eMax
@@ -176,10 +183,10 @@ DoseFinding::sigEmax(
 )
 ```
 
-Essentially what's happening here is that `{DoseFinding}` is providing you an abstraction
-such that you do not have to worry about the essential parameters for each dose-response shape,
-but just the ones that are relatable in a clinical context, such as the dose (`d`) 
-and the maximum effect (`p`) at `d`.
+Essentially `{DoseFinding}` is providing an abstraction that allows us to use 
+clinically meaningful and relatable variables to specify the model shape. This makes
+it much easier to go from discussions within the trial team to the implementation of
+the MCPMod framework.
 
 Of course, you can also specify the models directly on the parameter scale (without using `DoseFinding::guesst`).
 
@@ -191,8 +198,8 @@ betaMod_params <- c(delta1 = 1, delta2 = 1)
 quadratic_params <- c(delta2 = -0.1)
 ```
 
-For a more in-depth explanation of the various dose-response model shapes and how they are
-parameterized, refer to the model-specific functions in the `{DoseFinding}` package.
+Again, you can reference the `{DoseFinding}` package's help files for how to parameterize
+the dose-response models.
 
 Now, we can go ahead and create a `Mods` object, which will be used in the remainder
 of the vignette.
@@ -216,6 +223,7 @@ mods <- DoseFinding::Mods(
 
 plot(mods)
 ```
+
 The `mods` object we just created above contains the full model parameters, which can be helpful for 
 understanding how the guesstimates are translated onto the parameter scale. 
 
@@ -231,9 +239,11 @@ knitr::kable(DoseFinding::getResp(mods, doses = dose_levels))
 
 ## Trial data for the example
 
-We will use the trial with ct.gov number NCT00735709 as our new trial data
-[@nct00735709_2024a]. This dataset comes from the `{clinDR}` package. Make sure
-you have it installed before running the code below.
+We will use the trial with ct.gov number NCT00735709 as our phase 2 trial data
+that we'd like to apply the Bayesian MCPMod approach to [@nct00735709_2024a].
+
+This dataset comes from the `{clinDR}` package. Make sure you have it installed 
+before running the code below.
 
 ```{r}
 data("metaData")
@@ -250,8 +260,8 @@ n_patients <- c(128, 124, 129, 122)
 
 # Combination of prior information and trial results
 
-As outlined in [@fleischer_2022], in the first step the posterior is calculated 
-by combining the prior information with the estimated results of the trial. 
+In the first step of Bayesian MCPMod, the posterior is calculated by combining 
+the prior information with the estimated results of the trial [@fleischer_2022]. 
 
 Via the summary function, it is possible to print out the summary information of 
 the posterior distributions. Remember that our `prior_list` object is defined above
@@ -268,15 +278,15 @@ posterior <- BayesianMCPMod::getPosterior(
 knitr::kable(summary(posterior))
 ```
 
-# Execution of Bayesian MCPMod Test step
+# Execution of the Bayesian MCPMod test step
 
-For the execution of the testing step of Bayesian MCPMod a critical value on the 
-probability scale will be determined for a given alpha level.
+For the execution of the testing step of Bayesian MCPMod, a critical value on the 
+probability scale is determined for a given alpha level.
 
 This critical value is calculated using the re-estimated contrasts for the 
 frequentist MCPMod to ensure that, when using weakly-informative priors, 
-the actual error level for falsely declaring a significant trial in the Bayesian 
-MCPMod is controlled by the specified alpha level. 
+the actual error level for falsely declaring a significant trial in is controlled 
+by the specified alpha level. 
 
 A pseudo-optimal contrast matrix is generated based on the variability of the 
 posterior distribution (see [@fleischer_2022] for more details).
@@ -330,18 +340,36 @@ BMCP_result <- BayesianMCPMod::performBayesianMCP(
   posterior_list = posterior,
   contr          = contr_mat, 
   crit_prob_adj  = crit_pval)
+```
 
-display_params_table(BMCP_result[1,])
+Summary information
+
+```{r}
+display_params_table(BMCP_result[1, c(1:3)])
+```
+
+Effective sample size (ESS) for each dose group
+
+```{r}
+display_params_table(attr(BMCP_result, "ess_avg"))
+```
+
+Posterior probabilities for each model shape
+
+```{r}
+display_params_table((BMCP_result[1, c(4:ncol(BMCP_result))]))
 ```
 
 The testing step is significant indicating a non-flat dose-response shape.
-In detail, all 3 models are significant and the p-value for the emax model 
-indicates deviation from the null hypothesis the most.
+Further, all models are significant and the p-value for the `emax` model 
+indicates the greatest deviation from the null hypothesis.
 
 # Model fitting and visualization of results
 
 In the model fitting step the posterior distribution is used as basis.
+
 Both simplified and full fitting are performed. 
+
 For the simplified fit, the multivariate normal distribution of the control group 
 is approximated and reduced by a one-dimensional normal distribution.
 
@@ -357,13 +385,10 @@ For the considered case, the simplified and the full fit are very similar, so we
 just present the full fit.
 
 ```{r}
-# linInt, betaMod, quadratic are not yet supported
-supported_models <- names(mods)[!names(mods) %in% c("linInt", "betaMod", "quadratic")]
-
 # If simple = TRUE, uses approx posterior
 # Here we use complete posterior distribution
 fit <- BayesianMCPMod::getModelFits(
-  models      = supported_models,
+  models      = mods,
   dose_levels = dose_levels,
   posterior   = posterior,
   simple      = FALSE)
