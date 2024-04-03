@@ -4,7 +4,7 @@ pkgdown_sha: ~
 articles:
   Simulation_Example: Simulation_Example.html
   analysis_normal: analysis_normal.html
-last_built: 2024-03-20T08:40Z
+last_built: 2024-04-03T21:20Z
 urls:
   reference: https://boehringer-ingelheim.github.io/BayesianMCPMod/reference
   article: https://boehringer-ingelheim.github.io/BayesianMCPMod/articles
