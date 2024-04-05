@@ -15,12 +15,23 @@ test_that("test getBootstrapBands", {
     posterior   = posterior_list,
     simple      = FALSE)
   
-  result <- getBootstrapQuantiles(fit, quantiles = c(0.025,0.5, 0.975), doses = c(0, 1,2,3,4,6,8))
+  bs_samples <- getBootstrapSamples(model_fits = fit,
+                                    doses      = c(0, 1,2,3,4,6,8))
+  
+  result <- getBootstrapQuantiles(bs_samples, quantiles = c(0.025,0.5, 0.975))
   expect_type(result, "list")
   
-  result_2 <- getBootstrapQuantiles(fit, n_samples = 1e2, quantiles = c(0.1, 0.9), avg_fit = FALSE, doses = c(1, 2, 3))
+  bs_samples_2 <- getBootstrapSamples(model_fits = fit,
+                                      n_samples  = 1e2,
+                                      avg_fit    = FALSE,
+                                      doses      = c(1, 2, 3))
+  
+  result_2 <- getBootstrapQuantiles(bs_samples_2, quantiles = c(0.1, 0.9))
   expect_type(result_2, "list")
+  
+  bs_samples_3 <- getBootstrapSamples(model_fits = fit,
+                                      doses      = NULL)
 
-  result_3 <- getBootstrapQuantiles(fit, quantiles = c(0.025,0.5, 0.975), doses = NULL)
+  result_3 <- getBootstrapQuantiles(bs_samples_3, quantiles = c(0.025,0.5, 0.975))
   expect_type(result_3, "list")
 })

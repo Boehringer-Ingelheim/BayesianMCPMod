@@ -262,11 +262,14 @@ plot(fit, cr_bands = TRUE)
 The bootstrap based quantiles can also be directly calculated via the getBootstrapQuantiles() function.
 For this example, only 6 quantiles are bootstrapped for each model fit.
 ```{r Bootstrap}
-getBootstrapQuantiles(
+bs_sample <- getBootstrapSamples(
   model_fits = fit,
-  quantiles  = c(0.025, 0.5, 0.975),
   doses      = c(0, 2.5, 4, 5, 7, 10),
   n_samples  = 6)
+
+getBootstrapQuantiles(
+  bs_sample = bs_sample,
+  quantiles = c(0.025, 0.5, 0.975))
 ```
 Technical note: The median quantile of the bootstrap based procedure is not necessary similar to the main model fit, as they are derived via different procedures.
 The main fit, i.e. the black lines in the plot, show the best fit of a certain model based on minimizing the residuals for the posterior distribution, while the bootstrap based 50% quantile shows the median fit of the random sampling and fitting procedure. 

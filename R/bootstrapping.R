@@ -1,14 +1,12 @@
-#' @title getBootstrapQuantiles
+#' @title getBootstrapSamples
 #'
-#' @description A function for the calculation of credible intervals to assess the uncertainty for the model fit. 
-#' Hereby the credible intervals are calculated as follows.
+#' @description A function for the calculation of bootstrapped model predictions. 
 #' Samples from the posterior distribution are drawn (via the RBesT function rmix()) and for every sample the simplified fitting step (see getModelFits() function) and a prediction is performed. 
 #' These fits are then used to identify the specified quantiles. 
 #' This approach can be considered as the Bayesian equivalent of the frequentist bootstrap approach described in O'Quigley et al. (2017).
 #' Instead of drawing n bootstrap samples from the sampling distribution of the trial dose-response estimates, here the samples are directly taken from the posterior distribution.
 #' @references O'Quigley J, Iasonos A, Bornkamp B. 2017. Handbook of Methods for Designing, Monitoring, and Analyzing Dose-Finding Trials (1st ed.). Chapman and Hall/CRC. doi:10.1201/9781315151984
 #' @param model_fits An object of class modelFits, i.e. information about fitted models & corresponding model coefficients as well as the posterior distribution that was the basis for the model fitting 
-#' @param quantiles A vector of quantiles that should be evaluated 
 #' @param n_samples Number of samples that should be drawn as basis for the bootstrapped quantiles
 #' @param doses A vector of doses for which a prediction should be performed
 #' @param avg_fit Boolean variable, defining whether an average fit (based on generalized AIC weights) should be performed in addition to the individual models. Default TRUE.
@@ -25,22 +23,21 @@
 #'                                posterior   = posterior_list,
 #'                                dose_levels = dose_levels,
 #'                                simple      = TRUE)
-#'                            
-#' getBootstrapQuantiles(model_fits = fit,
-#'                       quantiles  = c(0.025, 0.5, 0.975),
-#'                       n_samples  = 10, # speeding up example run time
-#'                       doses      = c(0, 6, 8))
-#' @return  A data frame with entries doses, models, and quantiles 
+#'                                
+#' getBootstrapSamples(model_fits = fit,
+#'                     n_samples  = 10, # speeding up example run time
+#'                     doses      = c(0, 6, 8))
+#' 
+#' @return  A data frame with columns for model, dose, and bootstrapped samples 
 #' 
 #' @export
-getBootstrapQuantiles <- function (
-
+getBootstrapSamples <- function (
+    
   model_fits,
-  quantiles,
   n_samples = 1e3,
   doses     = NULL,
   avg_fit   = TRUE
-
+  
 ) {
   
   mu_hat_samples <- sapply(attr(model_fits, "posterior"),
@@ -49,7 +46,6 @@ getBootstrapQuantiles <- function (
   
   dose_levels    <- model_fits[[1]]$dose_levels
   model_names    <- names(model_fits)
-  quantile_probs <- sort(unique(quantiles))
   
   if (is.null(doses)) {
     
@@ -96,22 +92,74 @@ getBootstrapQuantiles <- function (
     
   }
   
-  sort_indx <- order(rep(seq_along(model_names), length(doses)))
-  quant_mat <- t(apply(X      = preds[sort_indx, ],
-                       MARGIN = 1,
-                       FUN    = stats::quantile,
-                       probs  = quantile_probs))
+  bs_samples <- as.data.frame(preds[order(rep(seq_along(model_names), length(doses))), ])
+  colnames(bs_samples) <- paste0("preds_", seq_len(n_samples))
   
-  cr_bounds_data <- cbind(
-    doses  = doses,
-    models = rep(
+  bs_samples_data <- cbind(
+    model = rep(
       x    = factor(model_names,
                     levels = c("linear", "emax", "exponential",
                                "sigEmax", "logistic", "quadratic",
                                "avgFit")),
       each = length(doses)),
-    as.data.frame(quant_mat))
+    dose  = doses,
+    bs_samples)
+  
+  # tidyr::pivot_longer(bs_samples_data, cols = contains("preds"))
+  
+  return (bs_samples_data)
+  
+}
 
-  return (cr_bounds_data)
+#' @title getBootstrapQuantiles
+#'
+#' @description Calculates quantiles from bootstrapped dose predictions.
+#' Can be used to derive credible intervals to assess the uncertainty for the model fit.
+#' @param bs_samples An object of class bootstrappedSample as created by getBootstrapSamples
+#' @param quantiles A vector of quantiles that should be evaluated 
+#'
+#' @examples
+#' posterior_list <- list(Ctrl = RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 1), sigma = 2),
+#'                        DG_1 = RBesT::mixnorm(comp1 = c(w = 1, m = 3, s = 1.2), sigma = 2),
+#'                        DG_2 = RBesT::mixnorm(comp1 = c(w = 1, m = 4, s = 1.5), sigma = 2) ,  
+#'                        DG_3 = RBesT::mixnorm(comp1 = c(w = 1, m = 6, s = 1.2), sigma = 2) ,
+#'                        DG_4 = RBesT::mixnorm(comp1 = c(w = 1, m = 6.5, s = 1.1), sigma = 2))
+#' models         <- c("exponential", "linear")
+#' dose_levels    <- c(0, 1, 2, 4, 8)
+#' fit            <- getModelFits(models      = models,
+#'                                posterior   = posterior_list,
+#'                                dose_levels = dose_levels,
+#'                                simple      = TRUE)
+#'                                
+#' bs_samples     <- getBootstrapSamples(model_fits = fit,
+#'                                       n_samples  = 10, # speeding up example run time
+#'                                       doses      = c(0, 6, 8))
+#'                            
+#' getBootstrapQuantiles(bs_samples = bs_samples,
+#'                       quantiles  = c(0.025, 0.5, 0.975))
+#' @return  A data frame with entries doses, models, and quantiles 
+#' 
+#' @export
+getBootstrapQuantiles <- function (
+
+  bs_samples,
+  quantiles
+
+) {
+  
+  quantile_probs <- sort(unique(quantiles))
+  
+  bs_quantiles <- t(apply(X      = bs_samples[, -c(1, 2)],
+                          MARGIN = 1,
+                          FUN    = stats::quantile,
+                          probs  = quantile_probs))
+  
+  bs_quantiles_data <- cbind(
+    bs_samples[, c(1, 2)],
+    as.data.frame(bs_quantiles))
+
+  return (bs_quantiles_data)
 
 }
+
+

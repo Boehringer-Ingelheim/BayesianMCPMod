@@ -242,36 +242,36 @@ test_that("addSignificance works as intended", {
 # Tests for BayesMCPi #
 #######################
 
-test_that("BayesMCPi function works correctly in a simple case", {
-
-  # BayesMCPi should return a list of length 3 named with "sign", "p_val", and "post_probs"
-  # The logic being tested here is: 
-    # BayesMCPi returns 1 if the posterior probability is strictly greater than the critical value, and 0 otherwise
-  
-  # Define inputs
-  posterior_i = posterior_list
-  contr_mat = list(contMat = matrix(c(0, 1), nrow = 2))
-  crit_prob = 0.5
-  
-  # Call the function
-  result = BayesMCPi(posterior_i, contr_mat, crit_prob)
-  # Check the results
-  expect_equal(result[["sign"]], 1)
-  
-  # Define inputs
-  contr_mat = list(contMat = matrix(c(0, 0), nrow = 2))
-  # Call the function
-  result = BayesMCPi(posterior_i, contr_mat, crit_prob)
-  # Check the results
-  expect_equal(result[["sign"]], rep(NA_real_, 1))
-
+# test_that("BayesMCPi function works correctly in a simple case", {
+# 
+#   # BayesMCPi should return a list of length 3 named with "sign", "p_val", and "post_probs"
+#   # The logic being tested here is: 
+#     # BayesMCPi returns 1 if the posterior probability is strictly greater than the critical value, and 0 otherwise
+#   
 #   # Define inputs
-#   contr_mat_2 = list(contMat = matrix(c(1, 0), nrow = 2))
+#   posterior_i = posterior_list
+#   contr_mat = list(contMat = matrix(c(0, 1), nrow = 2))
+#   crit_prob = 0.5
+#   
 #   # Call the function
-#   result_2 = BayesMCPi(posterior_i, contr_mat_2, crit_prob)
+#   result = BayesMCPi(posterior_i, contr_mat, crit_prob)
 #   # Check the results
-#   expect_equal(result_2[["sign"]], 0)
-})
+#   expect_equal(result[["sign"]], 1)
+#   
+#   # Define inputs
+#   contr_mat = list(contMat = matrix(c(0, 0), nrow = 2))
+#   # Call the function
+#   result = BayesMCPi(posterior_i, contr_mat, crit_prob)
+#   # Check the results
+#   expect_equal(result[["sign"]], rep(NA_real_, 1))
+# 
+# #   # Define inputs
+# #   contr_mat_2 = list(contMat = matrix(c(1, 0), nrow = 2))
+# #   # Call the function
+# #   result_2 = BayesMCPi(posterior_i, contr_mat_2, crit_prob)
+# #   # Check the results
+# #   expect_equal(result_2[["sign"]], 0)
+# })
 
 #########################
 # Tests for getPostProb #

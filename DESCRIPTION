@@ -1,7 +1,7 @@
 Package: BayesianMCPMod
 Title: Simulate, Evaluate, and Analyze Dose Finding Trials with Bayesian
     MCPMod
-Version: 1.0.0
+Version: 1.0.1
 Authors@R: c(
     person("Boehringer Ingelheim Pharma GmbH & Co. KG", role = c("cph", "fnd")),
     person("Stephan", "Wojciekowski", , "stephan.wojciekowski@boehringer-ingelheim.com", role = c("aut", "cre")),
@@ -9,7 +9,7 @@ Authors@R: c(
     person("Steven", "Brooks", , "steven.brooks@boehringer-ingelheim.com", role = "ctb"),
     person("Sebastian", "Bossert", , "sebastian.bossert@boehringer-ingelheim.com", role = "aut")
   )
-Description: Bayesian MCPMod (Fleischer et al. (2022) 
+Description: Bayesian MCPMod (Fleischer et al. (2022)
     <doi:10.1002/pst.2193>) is an innovative method that improves the
     traditional MCPMod by systematically incorporating historical data,
     such as previous placebo group data. This R package offers functions
@@ -48,7 +48,7 @@ VignetteBuilder:
     knitr
 Config/testthat/edition: 3
 Encoding: UTF-8
+Language: en-US
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
-Language: en-US

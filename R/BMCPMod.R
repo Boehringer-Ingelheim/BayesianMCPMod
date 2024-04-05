@@ -322,7 +322,7 @@ getCritProb <- function (
 
 #' @title performBayesianMCPMod
 #' 
-#' @description Performs Bayesian MCP Test step and modeling in a combined fashion. See performBayesianMCP() function for MCP Test step and getModelFits() for the modelling step
+#' @description Performs Bayesian MCP Test step and modeling in a combined fashion. See performBayesianMCP() function for MCP Test step and getModelFits() for the modeling step
 #' 
 #' @param posterior_list An object of class 'postList' as created by getPosterior() containing information about the (mixture) posterior distribution per dose group
 #' @param contr An object of class 'optContr' as created by the getContr() function. It contains the contrast matrix to be used for the testing step.
