@@ -8,40 +8,7 @@ print.BayesianMCPMod <- function (
   
 ) {
   
-  model_names <- colnames(x$BayesianMCP)[
-    grepl("post_probs.", colnames(x$BayesianMCP))] |>
-    sub(pattern = "post_probs.", replacement = "", x = _) |>
-    gsub(pattern = "\\d", replacement = "", x = _) |>
-    unique(x = _)
-  
-  model_success <- colMeans(do.call(rbind, lapply(x$Mod, function (y) {
-    
-    if (!is.null(y)) {
-      
-      sapply(y, function (z) z$significant)
-      
-    } else {
-      
-      model_signs        <- rep(FALSE, length(model_names))
-      names(model_signs) <- model_names
-      
-      return (model_signs)
-      
-    }
-    
-  })))
-  
   print(x$BayesianMCP)
-  cat("\n")
-  cat("Model Significance Frequencies\n")
-  print(model_success, ...)
-  
-  if (any(!is.na(attr(x$BayesianMCP, "ess_avg")))) {
-    
-    cat("Average Posterior ESS\n")
-    print(attr(x$BayesianMCP, "ess_avg"), ...)
-    
-  }
   
 }
 
@@ -57,6 +24,8 @@ print.BayesianMCP <- function (
   
   n_sim <- nrow(x)
   
+  model_successes <- getModelSuccesses(x)
+  
   cat("Bayesian Multiple Comparison Procedure\n")
   
   if (n_sim == 1L) {
@@ -71,6 +40,17 @@ print.BayesianMCP <- function (
     
     cat("  Estimated Success Rate: ", attr(x, "successRate"), "\n")
     cat("  N Simulations:          ", n_sim)
+    
+  }
+  
+  cat("\n")
+  cat("Model Significance Frequencies\n")
+  print(model_successes, ...)
+  
+  if (any(!is.na(attr(x, "ess_avg")))) {
+    
+    cat("Average Posterior ESS\n")
+    print(attr(x, "ess_avg"), ...)
     
   }
   

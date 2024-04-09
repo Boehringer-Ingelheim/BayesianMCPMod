@@ -384,12 +384,6 @@ performBayesianMCPMod <- function (
     
   }
   
-  if (inherits(posterior_list,  "postList")) {
-    
-    posterior_list <- list(posterior_list)
-    
-  }
-  
   if (inherits(contr, "optContr")) {
     
     model_shapes <- colnames(contr$contMat)
@@ -548,8 +542,23 @@ performBayesianMCP <- function(
       
     })))
   
-  
   return (b_mcp)
+  
+}
+
+getModelSuccesses <- function (b_mcp) {
+  
+  stopifnot(inherits(b_mcp, "BayesianMCP"))
+  
+  model_indices <- grepl("post_probs.", colnames(b_mcp))
+  model_names   <- colnames(b_mcp)[model_indices] |>
+    sub(pattern = "post_probs.", replacement = "", x = _)
+  
+  model_successes <- colMeans(b_mcp[, model_indices] > b_mcp[, "crit_prob_adj"])
+  
+  names(model_successes) <- model_names
+  
+  return (model_successes)
   
 }
 
