@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">BayesianMCPMod</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.2</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -336,9 +336,7 @@ critical value.</p>
 <span><span class="co">#&gt; [1,]    1     0.9740992     0.9999999          0.999946       0.9999999</span></span>
 <span><span class="co">#&gt;      post_probs.exponential</span></span>
 <span><span class="co">#&gt; [1,]              0.9977794</span></span>
-<span><span class="co">#&gt; attr(,"successRate")</span></span>
-<span><span class="co">#&gt; [1] 1</span></span>
-<span><span class="co">#&gt; attr(,"ess_avg")</span></span>
+<span><span class="co">#&gt; attr(,"essAvg")</span></span>
 <span><span class="co">#&gt;   Ctr  DG_1  DG_2  DG_3 </span></span>
 <span><span class="co">#&gt; 181.8 186.6 188.2 180.0</span></span></code></pre></div>
 <p>The testing step is significant indicating a non-flat dose-response
@@ -396,17 +394,18 @@ based average model (black lines).</p>
 <p><img src="analysis_normal_files/figure-html/Plot%20simple%20vs%20fit-1.png" width="700"></p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span></code></pre></div>
-<p><img src="analysis_normal_files/figure-html/Plot%20simple%20vs%20fit-2.png" width="700">
-To assess the uncertainty, one can additionally visualize credible bands
-(orange shaded areas, default levels are 50% and 95%). These credible
-bands are calculated with a bootstrap method as follows: Samples from
-the posterior distribution are drawn and for every sample the simplified
-fitting step and a prediction is performed. These predictions are then
-used to identify and visualize the specified quantiles.</p>
+<p><img src="analysis_normal_files/figure-html/Plot%20simple%20vs%20fit-2.png" width="700"></p>
+<p>To assess the uncertainty, one can additionally visualize credible
+bands (orange shaded areas, default levels are 50% and 95%). These
+credible bands are calculated with a bootstrap method as follows:
+Samples from the posterior distribution are drawn and for every sample
+the simplified fitting step and a prediction is performed. These
+predictions are then used to identify and visualize the specified
+quantiles.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit</span>, cr_bands <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="analysis_normal_files/figure-html/Plot%20with%20bootstrap-1.png" width="700">
-The bootstrap based quantiles can also be directly calculated via the
+<p><img src="analysis_normal_files/figure-html/Plot%20with%20bootstrap-1.png" width="700"></p>
+<p>The bootstrap based quantiles can also be directly calculated via the
 getBootstrapQuantiles() function. For this example, only 6 quantiles are
 bootstrapped for each model fit.</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
