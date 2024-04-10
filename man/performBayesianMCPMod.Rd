@@ -19,7 +19,7 @@ performBayesianMCPMod(posterior_list, contr, crit_prob_adj, simple = FALSE)
 Bayesian MCP test result as well as modelling result.
 }
 \description{
-Performs Bayesian MCP Test step and modeling in a combined fashion. See performBayesianMCP() function for MCP Test step and getModelFits() for the modelling step
+Performs Bayesian MCP Test step and modeling in a combined fashion. See performBayesianMCP() function for MCP Test step and getModelFits() for the modeling step
 }
 \examples{
 mods <- DoseFinding::Mods(linear      = NULL,

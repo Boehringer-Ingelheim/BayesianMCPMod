@@ -24,33 +24,33 @@ print.BayesianMCP <- function (
   
   n_sim <- nrow(x)
   
-  model_successes <- getModelSuccesses(x)
-  
   cat("Bayesian Multiple Comparison Procedure\n")
   
   if (n_sim == 1L) {
     
-    attr(x, "crit_prob_adj") <- NULL
-    attr(x, "success_rate")  <- NULL
-    class(x) <- NULL
+    attr(x, "critProbAdj") <- NULL
+    attr(x, "successRate") <- NULL
+    class(x)               <- NULL
     
     print.default(x, ...)
     
+    # if (any(!is.na(attr(x, "essAvg")))) {
+    #   
+    #   cat("Average Posterior ESS\n")
+    #   print(attr(x, "essAvg"), ...)
+    #   
+    # }
+    
   } else {
+    
+    model_successes <- getModelSuccesses(x)
     
     cat("  Estimated Success Rate: ", attr(x, "successRate"), "\n")
     cat("  N Simulations:          ", n_sim)
     
-  }
-  
-  cat("\n")
-  cat("Model Significance Frequencies\n")
-  print(model_successes, ...)
-  
-  if (any(!is.na(attr(x, "ess_avg")))) {
-    
-    cat("Average Posterior ESS\n")
-    print(attr(x, "ess_avg"), ...)
+    cat("\n")
+    cat("Model Significance Frequencies\n")
+    print(model_successes, ...)
     
   }
   

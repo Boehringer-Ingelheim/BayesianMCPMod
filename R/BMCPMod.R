@@ -409,7 +409,7 @@ performBayesianMCPMod <- function (
     
     if (b_mcp[i, 1]) {
       
-      sign_models <- b_mcp[i, -c(1, 2)] > attr(b_mcp, "crit_prob_adj")
+      sign_models <- b_mcp[i, -c(1, 2)] > attr(b_mcp, "critProbAdj")
       
       model_fits  <- getModelFits(
         models      = model_shapes,
@@ -530,10 +530,10 @@ performBayesianMCP <- function(
     
   }
   
-  class(b_mcp)                 <- "BayesianMCP"
-  attr(b_mcp, "crit_prob_adj") <- crit_prob_adj
-  attr(b_mcp, "successRate")   <- mean(b_mcp[, 1])
-  attr(b_mcp, "ess_avg")       <- ifelse(
+  class(b_mcp)               <- "BayesianMCP"
+  attr(b_mcp, "critProbAdj") <- crit_prob_adj
+  attr(b_mcp, "successRate") <- mean(b_mcp[, 1])
+  attr(b_mcp, "essAvg")      <- ifelse(
     test = is.na(attr(posterior_list[[1]], "ess")),
     yes  = numeric(0),
     no   = rowMeans(sapply(posterior_list, function (posteriors) {
