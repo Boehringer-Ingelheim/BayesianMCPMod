@@ -48,33 +48,54 @@ print.BayesianMCPMod <- function (
 ## BayesianMCP --------------------------------------------
 
 #' @export
-print.BayesianMCP <- function (
-    
-  x,
-  ...
+print.BayesianMCP <- function(x, ...) {
+  cat("Bayesian Multiple Comparison Procedure\n\n")
   
-) {
+  cat("Summary:\n")
+  cat("  Sign:", x[1, "sign"], "\n")
+  cat("  Critical Probability:", x[1, "crit_prob_adj"], "\n")
+  cat("  Maximum Posterior Probability:", x[1, "max_post_prob"], "\n\n")
   
-  n_sim <- nrow(x)
+  cat("Effective Sample Size (ESS) per Dose Group:\n")
+  print(attr(x, "ess_avg"), row.names = FALSE)
+  cat("\n")
   
-  cat("Bayesian Multiple Comparison Procedure\n")
+  cat("Posterior Probabilities for Model Shapes:\n")
+  model_probs <- x[1, grep("^post_probs\\.", colnames(x))]
+  model_names <- gsub("post_probs\\.", "", names(model_probs))
+  model_df <- data.frame(Model = model_names, Probability = unlist(model_probs))
+  print(model_df, row.names = FALSE)
   
-  if (n_sim == 1L) {
-    
-    attr(x, "crit_prob_adj") <- NULL
-    attr(x, "success_rate")  <- NULL
-    class(x) <- NULL
-    
-    print.default(x, ...)
-    
-  } else {
-    
-    cat("  Estimated Success Rate: ", attr(x, "successRate"), "\n")
-    cat("  N Simulations:          ", n_sim)
-    
-  }
-  
+  invisible(x)
 }
+# print.BayesianMCP <- function (
+    #     
+#   x,
+#   ...
+#   
+# ) {
+#   
+#   n_sim <- nrow(x)
+#   
+#   cat("Bayesian Multiple Comparison Procedure\n")
+#   
+#   if (n_sim == 1L) {
+#     
+#     attr(x, "crit_prob_adj") <- NULL
+#     attr(x, "success_rate")  <- NULL
+#     class(x) <- NULL
+#     
+#     print.default(x, ...)
+#     
+#   } else {
+#     
+#     cat("  Estimated Success Rate: ", attr(x, "successRate"), "\n")
+#     cat("  N Simulations:          ", n_sim)
+#     
+#   }
+#   
+# }
+
 
 ## ModelFits ----------------------------------------------
 
@@ -111,7 +132,7 @@ predict.modelFits <- function (
   ...
   
 ) {
-
+  
   predictions <- lapply(object, predictModelFit, doses = doses)
   attr(predictions, "doses") <- doses
   
