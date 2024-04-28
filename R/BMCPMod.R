@@ -322,7 +322,7 @@ getCritProb <- function (
 
 #' @title performBayesianMCPMod
 #' 
-#' @description Performs Bayesian MCP Test step and modeling in a combined fashion. See performBayesianMCP() function for MCP Test step and getModelFits() for the modelling step
+#' @description Performs Bayesian MCP Test step and modeling in a combined fashion. See performBayesianMCP() function for MCP Test step and getModelFits() for the modeling step
 #' 
 #' @param posterior_list An object of class 'postList' as created by getPosterior() containing information about the (mixture) posterior distribution per dose group
 #' @param contr An object of class 'optContr' as created by the getContr() function. It contains the contrast matrix to be used for the testing step.
@@ -361,7 +361,7 @@ getCritProb <- function (
 #'                       crit_prob_adj  = critVal,
 #'                       simple         = FALSE)
 #' 
-#' @return Bayesian MCP test result as well as modelling result.
+#' @return Bayesian MCP test result as well as modeling result.
 #' 
 #' @export
 performBayesianMCPMod <- function (
@@ -405,7 +405,7 @@ performBayesianMCPMod <- function (
     stop ("Argument 'contr' must be of type 'optContr'")
     
   }
-  
+
   b_mcp <- performBayesianMCP(
     posterior_list = posterior_list,
     contr          = contr,
@@ -414,7 +414,7 @@ performBayesianMCPMod <- function (
   fits_list <- lapply(seq_along(posterior_list), function (i) {
     
     if (b_mcp[i, 1]) {
-      
+
       sign_models <- b_mcp[i, -c(1, 2)] > attr(b_mcp, "crit_prob_adj")
       
       model_fits  <- getModelFits(
