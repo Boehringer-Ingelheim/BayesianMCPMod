@@ -5,21 +5,21 @@ date: today
 format: 
   html:
     fig-height: 3.5
-    code-fold: show
     self-contained: true
     toc: true
     number-sections: true
     bibliography: references.bib
 vignette: >
   %\VignetteIndexEntry{Analysis Example of Bayesian MCPMod for Continuous Data}
-  %\VignetteEncoding{UTF-8}
-  %\VignetteEngine{quarto::html}
-editor_options: 
-  chunk_output_type: console
+    %\VignetteEncoding{UTF-8}
+    %\VignetteEngine{quarto::html}
 ---
 
 ```{r}
-#| include: false
+#| code-summary: setup
+#| code-fold: true
+#| message: false
+#| warning: false
 
 #' Display Parameters Table
 #'
@@ -56,6 +56,18 @@ display_params_table <- function(named_list) {
     display_table <- rbind(display_table, values)
   }
   
+  round_numeric <- function(x, digits = 3) {
+    if (is.numeric(x)) {
+      return(round(x, digits))
+    } else {
+      return(x)
+    }
+  }
+  
+  display_table[1] <- lapply(display_table[1], function(sublist) {
+    lapply(sublist, round_numeric)
+  })
+  
   class(display_table[[1]]) <- "list"
   
   if (nrow(value_names) == 0) {
@@ -70,11 +82,6 @@ display_params_table <- function(named_list) {
     )
   }
 }
-```
-
-```{r}
-#| message: false
-#| include: false
 
 library(BayesianMCPMod)
 library(RBesT)

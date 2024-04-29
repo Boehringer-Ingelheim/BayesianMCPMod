@@ -34,13 +34,13 @@
 #' 
 #' @export
 getBootstrapQuantiles <- function (
-
+    
   model_fits,
   quantiles,
   n_samples = 1e3,
   doses     = NULL,
   avg_fit   = TRUE
-
+  
 ) {
   
   mu_hat_samples <- sapply(attr(model_fits, "posterior"),
@@ -105,13 +105,10 @@ getBootstrapQuantiles <- function (
   cr_bounds_data <- cbind(
     doses  = doses,
     models = rep(
-      x    = factor(model_names,
-                    levels = c("linear", "emax", "exponential",
-                               "sigEmax", "logistic", "quadratic",
-                               "avgFit")),
+      x    = factor(model_names, levels = model_names),
       each = length(doses)),
     as.data.frame(quant_mat))
-
+  
   return (cr_bounds_data)
-
+  
 }
