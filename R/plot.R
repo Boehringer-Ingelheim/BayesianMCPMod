@@ -87,11 +87,8 @@ plot.modelFits <- function (
   gg_data <- data.frame(
     doses  = rep(dose_seq, length(model_names)),
     fits   = as.vector(preds_models),
-    models = rep(factor(model_names,
-                           levels = c("linear", "emax", "exponential",
-                                      "sigEmax", "logistic", "quadratic",
-                                      "avgFit")),
-                    each = plot_res))
+    models = rep(factor(model_names, levels = model_names),
+                 each = plot_res))
   
   if (gAIC) {
     
@@ -150,7 +147,7 @@ plot.modelFits <- function (
         x = -Inf, y = Inf, hjust = "inward", vjust = "inward",
         size = 3)
       
-      }
+    }
     }
   
   if (cr_bands) {
@@ -195,7 +192,7 @@ plot.modelFits <- function (
         width   = 0,
         alpha   = 0.5)
       
-      }
+    }
     } + 
     ## Posterior Medians
     ggplot2::geom_point(
