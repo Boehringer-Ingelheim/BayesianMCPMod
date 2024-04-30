@@ -105,3 +105,63 @@ test_that("getPostCombsI returns an object with correct attributes", {
   expect_equal(result$weights, 4)
   expect_true(all(result$vars == c(4, 4)))
 })
+
+test_that("getPriorMix works correctly", {
+  
+  # function call without parameters
+  expect_error(createPriorMix())
+  
+  # test createPriorMix function
+  prior_mix <- createPriorMix(prior_list_covmat)
+  expect_type(prior_mix, "list")
+  expect_length(prior_mix, 3)
+  
+})
+
+test_that("mvpostmix works correctly", {
+  
+  prior_mix <- createPriorMix(prior_list_covmat)
+  
+  # test mvpostmix function
+  expect_error(mvpostmix(prior_mix, mu_hat, se_hat_vector))
+  expect_no_error(mvpostmix(prior_mix, mu_hat, se_hat_matrix))
+  posterior <- mvpostmix(prior_mix, mu_hat, se_hat_matrix)
+  expect_type(posterior, "list")
+  expect_length(posterior, 3)
+  
+})
+
+test_that("getPosteriorOutput works correctly", {
+  
+  # create posterior with matrix
+  prior_mix <- createPriorMix(prior_list_covmat)
+  
+  posterior <- mvpostmix(
+    priormix = prior_mix,
+    mu_hat   = mu_hat,
+    se_hat    = se_hat_matrix)
+  
+  # create posterior with vector
+  posterior_vector <- getPosteriorI(
+    prior_list = prior_list_covmat,
+    mu_hat = mu_hat,
+    se_hat = se_hat_vector,
+    calc_ess = FALSE
+  )
+  
+  # test getPosteriorOutput function
+  posterior_list <- getPosteriorOutput(posterior, prior_list_covmat, calc_ess)
+  expect_type(posterior_list, "list")
+  expect_s3_class(posterior_list, "postList")
+  
+  lapply(1:(length(dose_levels_covmat)-1), function(x) {
+    expect_equal(posterior$covmat$Comp1[row(posterior$covmat$Comp1) + x == col(posterior$covmat$Comp1)], posterior$covmat$Comp1[row(posterior$covmat$Comp1) == col(posterior$covmat$Comp1) + x])
+    expect_equal(length(which(posterior$covmat$Comp1[row(posterior$covmat$Comp1) + x == col(posterior$covmat$Comp1)] >= 0)), length(posterior$covmat$Comp1[row(posterior$covmat$Comp1) + x == col(posterior$covmat$Comp1)]))
+  })
+  
+  # compare posterior result object with matrix to object with vector
+  expect_length(posterior_list, length(posterior_vector))
+  expect_type(posterior_list, typeof(posterior_vector))
+  expect_s3_class(posterior_list, S3Class(posterior_vector))
+  
+})

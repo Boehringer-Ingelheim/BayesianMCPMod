@@ -154,3 +154,38 @@ crit_pval = getCritProb(
 #   alpha_crit_val = alpha_crit_val,
 #   simple = TRUE
 # )
+
+# Create covmat test case
+mu_hat <- c(10, 20, 30, 40, 50)
+se_hat_vector <- matrix(c(2.45, 1.76, 2.19, 2.94, 1.66), nrow = 5, ncol = 1)
+
+se_hat_matrix <- matrix(c(2.45, 0.01, 0.01, 0.01, 0.01,
+                          0.01, 1.76, 0.01, 0.01, 0.01,
+                          0.01, 0.01, 2.19, 0.01, 0.01,
+                          0.01, 0.01, 0.01, 2.94, 0.01,
+                          0.01, 0.01, 0.01, 0.01, 1.66), nrow = 5, ncol = 5)
+
+data("metaData")
+
+dataset_covmat <- filter(as.data.frame(metaData), bname == "BRINTELLIX")
+
+histcontrol_covmat <- filter(
+  dataset_covmat,
+  dose       == 0,
+  primtime   == 8,
+  indication == "MAJOR DEPRESSIVE DISORDER",
+  protid     != 5)
+
+hist_data_covmat <- data.frame(
+  trial = histcontrol_covmat$nctno,
+  est   = histcontrol_covmat$rslt,
+  se    = histcontrol_covmat$se,
+  sd    = histcontrol_covmat$sd,
+  n     = histcontrol_covmat$sampsize)
+
+dose_levels_covmat <- c(0, 2.5, 5, 7.5, 10)
+
+prior_list_covmat <- getPriorList(
+  hist_data     = hist_data_covmat,
+  dose_levels   = dose_levels_covmat,
+  robust_weight = 0.3)
