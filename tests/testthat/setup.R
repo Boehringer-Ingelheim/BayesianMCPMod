@@ -189,3 +189,10 @@ prior_list_covmat <- getPriorList(
   hist_data     = hist_data_covmat,
   dose_levels   = dose_levels_covmat,
   robust_weight = 0.3)
+
+posterior_covmat <- getPosterior(
+  prior_list = prior_list_covmat,
+  mu_hat     = mu_hat,
+  se_hat     = se_hat_matrix,
+  calc_ess   = FALSE
+)
