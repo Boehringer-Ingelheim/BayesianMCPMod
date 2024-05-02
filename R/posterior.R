@@ -51,10 +51,10 @@ getPosterior <- function(
       
       prior_mix <- createPriorMix(prior_list)
       
-      posterior <- mvpostmix(
+      posterior <- DoseFinding::mvpostmix(
         priormix  = prior_mix,
         mu_hat    = mu_hat,
-        se_hat    = se_hat)
+        S_hat    = se_hat)
       
       posterior_list <- getPosteriorOutput(
         posterior_list = posterior, 
@@ -232,65 +232,6 @@ createPriorMix <- function(prior) {
   return(prior_mix)
   
 }
-
-mvpostmix <- function(
-    
-  priormix, 
-  mu_hat, 
-  se_hat
-  
-) {
-  
-  checkmate::check_list(priormix, names = "named", any.missing = FALSE, null.ok = FALSE)
-  checkmate::check_vector(mu_hat, any.missing = FALSE, null.ok = FALSE)
-  checkmate::check_double(mu_hat, null.ok = FALSE, lower = -Inf, upper = Inf)
-  checkmate::check_matrix(se_hat, any.missing = FALSE, null.ok = FALSE)
-  checkmate::check_double(se_hat, null.ok = FALSE, lower = -Inf, upper = Inf)
-  
-  logSumExp <- function(lx){
-    
-    lm <- max(lx)
-    lm + log(sum(exp(lx - lm)))
-    
-  }
-  
-  dataPrec <- solve(se_hat)
-  priorPrec <- lapply(priormix[[3]], solve)
-  postPrec <- lapply(priorPrec, function(x) x + dataPrec)
-  SigmaPred <- lapply(priormix[[3]], function(x) x + se_hat)
-  
-  lw <- numeric(length(priormix[[1]]))
-  postmix <- vector("list", 3)
-  names(postmix) <- c("weights", "mean", "covmat")
-  
-  for(i in 1:3)
-    postmix[[i]] <- vector("list", length(lw))
-  
-  ## The posterior distribution is a mixture of multivariate normals with updated mixture weights.
-  ## Posterior weights are updated based on the prior predictive (marginal) probabilities of the data under each
-  ## component of the mixture. 
-  ## In the case of a MVN likelihood with known covariance and MVN priors for the mean the 
-  ## prior predictive distributions are MVN distribution with mean vectors equal to the prior components' mean vectors 
-  ## and covariance matrices which are the sum of the prior components' covariance matrices and the "known" covariance 
-  ## matrix of the data (for which S_hat is plugged in here)
-  for(i in 1:length(lw)){
-    
-    lw[i] <- log(priormix[[1]][[i]]) +mvtnorm::dmvnorm(mu_hat, priormix[[2]][[i]], SigmaPred[[i]], log = TRUE)
-    postmix[[2]][[i]] <- solve(priorPrec[[i]] + dataPrec) %*% (priorPrec[[i]] %*% priormix[[2]][[i]] + dataPrec %*% mu_hat)
-    postmix[[3]][[i]] <- solve(priorPrec[[i]] + dataPrec)
-    
-  }
-  
-  postmix[[1]] <- as.list(exp(lw - logSumExp(lw)))
-  
-  names_comps <- c("comp1", "comp2", "comp3", "robust")
-  
-  for(i in 1:3)
-    names(postmix[[i]]) <- names_comps[1:length(lw)]
-  
-  postmix
-  
-}
  
 getPosteriorOutput <- function(
     
@@ -312,10 +253,10 @@ getPosteriorOutput <- function(
   
   pos_data_frame <- as.data.frame(ctr_data)
   
-  posterior_ctr <- mixnorm(unlist(pos_data_frame$comp1), 
-                           unlist(pos_data_frame$comp2), 
-                           unlist(pos_data_frame$comp3), 
-                           unlist(pos_data_frame$robust), 
+  posterior_ctr <- mixnorm(unlist(pos_data_frame$Comp1), 
+                           unlist(pos_data_frame$Comp2), 
+                           unlist(pos_data_frame$Comp3), 
+                           unlist(pos_data_frame$Comp4), 
                            sigma = sigma(prior_list$Ctr))
   
   colnames(posterior_ctr)[4] <- "robust"
