@@ -252,6 +252,7 @@ It is possible to plot the fitted dose response models and an AIC based average 
 plot(fit_simple)
 plot(fit)
 ```
+
 To assess the uncertainty, one can additionally visualize credible bands (orange shaded areas, default levels are 50% and 95%).
 These credible bands are calculated with a bootstrap method as follows:
 Samples from the posterior distribution are drawn and for every sample the simplified fitting step and a prediction is performed.
@@ -259,6 +260,7 @@ These predictions are then used to identify and visualize the specified quantile
 ```{r Plot with bootstrap}
 plot(fit, cr_bands = TRUE)
 ```
+
 The bootstrap based quantiles can also be directly calculated via the getBootstrapQuantiles() function.
 For this example, only 6 quantiles are bootstrapped for each model fit.
 ```{r Bootstrap}

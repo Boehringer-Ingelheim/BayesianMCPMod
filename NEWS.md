@@ -2,7 +2,7 @@
 
 - Re-submission of the 'BayesianMCPMod' package
 - Removed a test that occasionally failed on the fedora CRAN test system
-- Fixed a bug that would return wrong bootstrapped quantiles in getBootstrappedQuantiles()
+- Fixed a bug that would return wrong bootstrapped quantiles in getBootstrapQuantiles()
 - Added getBootstrapSamples(), a separate function for bootstrapping samples
 
 ## BayesianMCPMod 1.0.0 (31-Dec-2023)

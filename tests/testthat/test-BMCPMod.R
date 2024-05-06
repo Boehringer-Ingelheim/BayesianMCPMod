@@ -29,7 +29,7 @@ test_that("base case input throws no error and has correct properties", {
   
   # assessDesign result (in this base case) should have crit_prob = 1 - alpha_crit_val
   expect_equal(
-    attr(eval_design$linear$BayesianMCP, "crit_prob"),
+    attr(eval_design$linear$BayesianMCP, "critProb"),
     1 - alpha_crit_val
   )
   
@@ -180,11 +180,11 @@ test_that("performBayesianMCP returns the right type of object under normal case
   )
 
   expect_true(
-    attr(b_mcp, "crit_prob_adj") == crit_pval
+    attr(b_mcp, "critProbAdj") == crit_pval
   )
   
   expect_type(
-    attr(b_mcp, "ess_avg"), "logical"
+    attr(b_mcp, "essAvg"), "logical"
   )
 
   expect_type(
