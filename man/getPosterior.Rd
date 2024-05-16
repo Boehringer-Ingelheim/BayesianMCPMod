@@ -8,7 +8,7 @@ getPosterior(
   prior_list,
   data = NULL,
   mu_hat = NULL,
-  se_hat = NULL,
+  S_hat = NULL,
   calc_ess = FALSE
 )
 }
@@ -20,9 +20,9 @@ Also a simulateData object can be provided.}
 
 \item{mu_hat}{vector of estimated mean values (per dose group).}
 
-\item{se_hat}{vector of estimated standard deviations (per dose group).}
-
 \item{calc_ess}{boolean variable, indicating whether effective sample size should be calculated. Default FALSE}
+
+\item{se_hat}{vector of estimated standard deviations (per dose group).}
 }
 \value{
 posterior_list, a posterior list object is returned with information about (mixture) posterior distribution per dose group
