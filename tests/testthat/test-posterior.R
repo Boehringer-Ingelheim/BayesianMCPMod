@@ -136,10 +136,10 @@ test_that("getPosteriorOutput works correctly", {
   # create posterior with matrix
   prior_mix <- createPriorMix(prior_list_covmat)
   
-  posterior <- mvpostmix(
+  posterior <- DoseFinding::mvpostmix(
     priormix = prior_mix,
     mu_hat   = mu_hat,
-    se_hat    = se_hat_matrix)
+    S_hat    = se_hat_matrix)
   
   # create posterior with vector
   posterior_vector <- getPosteriorI(
@@ -150,14 +150,31 @@ test_that("getPosteriorOutput works correctly", {
   )
   
   # test getPosteriorOutput function
-  posterior_list <- getPosteriorOutput(posterior, prior_list_covmat, calc_ess)
+  posterior_list <- postmix2RBesT(posterior, prior_list_covmat, calc_ess = FALSE)
   expect_type(posterior_list, "list")
   expect_s3_class(posterior_list, "postList")
   
   lapply(1:(length(dose_levels_covmat)-1), function(x) {
-    expect_equal(posterior$covmat$Comp1[row(posterior$covmat$Comp1) + x == col(posterior$covmat$Comp1)], posterior$covmat$Comp1[row(posterior$covmat$Comp1) == col(posterior$covmat$Comp1) + x])
-    expect_equal(length(which(posterior$covmat$Comp1[row(posterior$covmat$Comp1) + x == col(posterior$covmat$Comp1)] >= 0)), length(posterior$covmat$Comp1[row(posterior$covmat$Comp1) + x == col(posterior$covmat$Comp1)]))
+    
+    expect_equal(posterior$covmat$Comp1[row(posterior$covmat$Comp1) + x == col(posterior$covmat$Comp1)], 
+                 posterior$covmat$Comp1[row(posterior$covmat$Comp1)     == col(posterior$covmat$Comp1) + x])
+    
+    expect_equal(length(which(posterior$covmat$Comp1[row(posterior$covmat$Comp1) + x == col(posterior$covmat$Comp1)] >= 0)),
+                 length(posterior$covmat$Comp1[row(posterior$covmat$Comp1) + x       == col(posterior$covmat$Comp1)]))
+    
   })
+  
+  lapply(seq_along(prior_list), function(i) {
+    
+    sapply(seq_along(posterior$weights), function(j) {
+        
+      expect_in(prior_list[[i]]["m",], prior_mix[[2]][[j]][i])
+        
+    })
+      
+  })
+  
+  expect_equal(length(posterior$weights), prod(lengths(prior_list_covmat)/nrow(prior_list_covmat$Ctr)))
   
   # compare posterior result object with matrix to object with vector
   expect_length(posterior_list, length(posterior_vector))
