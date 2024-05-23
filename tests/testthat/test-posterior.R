@@ -111,8 +111,8 @@ test_that("getPriorMix works correctly", {
   # function call without parameters
   expect_error(createPriorMix())
   
-  # test createPriorMix function
-  prior_mix <- createPriorMix(prior_list_covmat)
+  # test priorList2priorMix function
+  prior_mix <- priorList2priorMix(prior_list_covmat)
   expect_type(prior_mix, "list")
   expect_length(prior_mix, 3)
   
@@ -120,12 +120,12 @@ test_that("getPriorMix works correctly", {
 
 test_that("mvpostmix works correctly", {
   
-  prior_mix <- createPriorMix(prior_list_covmat)
+  prior_mix <- priorList2priorMix(prior_list_covmat)
   
   # test mvpostmix function
-  expect_error(mvpostmix(prior_mix, mu_hat, se_hat_vector))
-  expect_no_error(mvpostmix(prior_mix, mu_hat, se_hat_matrix))
-  posterior <- mvpostmix(prior_mix, mu_hat, se_hat_matrix)
+  expect_error(DoseFinding::mvpostmix(prior_mix, mu_hat, se_hat_vector))
+  expect_no_error(DoseFinding::mvpostmix(prior_mix, mu_hat, se_hat_matrix))
+  posterior <- DoseFinding::mvpostmix(prior_mix, mu_hat, se_hat_matrix)
   expect_type(posterior, "list")
   expect_length(posterior, 3)
   
@@ -134,7 +134,7 @@ test_that("mvpostmix works correctly", {
 test_that("getPosteriorOutput works correctly", {
   
   # create posterior with matrix
-  prior_mix <- createPriorMix(prior_list_covmat)
+  prior_mix <- priorList2priorMix(prior_list_covmat)
   
   posterior <- DoseFinding::mvpostmix(
     priormix = prior_mix,
@@ -149,8 +149,8 @@ test_that("getPosteriorOutput works correctly", {
     calc_ess = FALSE
   )
   
-  # test getPosteriorOutput function
-  posterior_list <- postmix2RBesT(posterior, prior_list_covmat, calc_ess = FALSE)
+  # test postMix2posteriorList function
+  posterior_list <- postMix2posteriorList(posterior, prior_list_covmat, calc_ess = FALSE)
   expect_type(posterior_list, "list")
   expect_s3_class(posterior_list, "postList")
   
@@ -166,15 +166,16 @@ test_that("getPosteriorOutput works correctly", {
   
   lapply(seq_along(prior_list), function(i) {
     
-    sapply(seq_along(posterior$weights), function(j) {
+    expect_equal(length(posterior_weight[[i]]), length(posterior_mean[[i]]))
+    expect_equal(length(posterior_mean[[i]]), length(posterior_sd[[i]]))
+    
+    sapply(seq_along(posterior_weight[[i]]), function(j) {
         
-      expect_in(prior_list[[i]]["m",], prior_mix[[2]][[j]][i])
+      expect_length(combined_vectors[[i]][[j]], 3)
         
     })
       
   })
-  
-  expect_equal(length(posterior$weights), prod(lengths(prior_list_covmat)/nrow(prior_list_covmat$Ctr)))
   
   # compare posterior result object with matrix to object with vector
   expect_length(posterior_list, length(posterior_vector))
