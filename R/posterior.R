@@ -231,42 +231,59 @@ postMix2posteriorList <- function (
   checkmate::assert_list(posterior_list, names = "named", any.missing = FALSE, null.ok = FALSE)
   checkmate::assert_list(prior_list, names = "named", any.missing = FALSE, null.ok = FALSE)
   
+  getIndx       <- function (x, y) which(comp_mat_ind[, x] == comp_indx[[x]][y])
+  
+  createMapping <- function (prior_list) {
+    
+    n_comps   <- unlist(lapply(prior_list, ncol))
+    comp_indx <- lapply(seq_along(prior_list), function (x) seq_len(n_comps[x]))
+    
+    return (comp_indx)
+    
+  }
+  
   # create mapping
-  args <- createMapping(prior_list)
-  comp_ind <- do.call("expand.grid", args) 
+  comp_indx    <- createMapping(prior_list)
+  comp_mat_ind <- do.call("expand.grid", comp_indx)
   
   # map posterior information
-  posterior_weight <- lapply(1:length(prior_list), 
-                             function (x) sapply(1:length(args[[x]]), 
-                             function (y) sum(unlist(posterior$weights[which(comp_ind[ ,x]==args[[x]][y])])))) 
+  posterior_weight <- lapply(seq_along(prior_list), function (x)
+    sapply(seq_along(comp_indx[[x]]), function (y)
+      sum(unlist(posterior_list$weights[getIndx(x, y)])))) 
   
-  posterior_mean   <- lapply(1:length(prior_list), 
-                             function (x) sapply(1:length(args[[x]]), 
-                             function (y) (Reduce("+", posterior$mean[which(comp_ind[ ,x]==args[[x]][y])]) / length(posterior$mean[which(comp_ind[,x]==args[[x]][y])]))[x, ]))
+  posterior_mean <- lapply(seq_along(prior_list), function (x)
+    sapply(seq_along(comp_indx[[x]]), function (y)
+      mean(do.call(cbind, posterior_list$mean[getIndx(x, y)])[x, ])))
   
-  posterior_sd     <- lapply(1:length(prior_list), 
-                             function (x) sapply(1:length(args[[x]]), 
-                             function (y) (Reduce("+", lapply(posterior$covmat, diag)[which(comp_ind[ ,x]==args[[x]][y])]) / length(lapply(posterior$covmat, diag)[which(comp_ind[ ,x]==args[[x]][y])]))[x])) 
+  posterior_sd <- lapply(seq_along(prior_list), function (x)
+    sapply(seq_along(comp_indx[[x]]), function (y)
+      mean(do.call(rbind, lapply(posterior_list$covmat, diag)[getIndx(x, y)])[, x])))
   
-  combined_vectors <- mapply(function(x, y, z) Map(c, x, y, z), posterior_weight, posterior_mean, posterior_sd, SIMPLIFY = FALSE)
+  combined_vectors <- mapply(function (x, y, z)
+    Map(c, x, y, z), posterior_weight, posterior_mean, posterior_sd,
+    SIMPLIFY = FALSE)
   
   # create posterior list
-  posterior_output <- lapply(1:length(combined_vectors), 
-                             function(x) do.call(RBesT::mixnorm, c(combined_vectors[[x]], sigma = sigma(prior_list[[x]]))))
+  posterior_list_RBesT <- lapply(seq_along(combined_vectors), function (x)
+    do.call(RBesT::mixnorm,
+            c(combined_vectors[[x]], sigma = sigma(prior_list[[x]]))))
 
-  # TODO: talk about
-  #colnames(posterior_output$Ctr)[max(length(colnames(posterior_output$Ctr)))] <- "robust"
+  ## fix component names
+  names(posterior_list_RBesT) <- names(prior_list)
+  comp_names <- lapply(prior_list, colnames)
+  for (i in seq_along(posterior_list_RBesT)) {
+    
+    colnames(posterior_list_RBesT[[i]]) <- comp_names[[i]]
+    
+  }
+  rm(i)
   
-  names(posterior_output) <- c("Ctr", paste0("DG_",
-                                             seq_along(posterior_output[-1])))
+  ## set attributes
+  class(posterior_list_RBesT) <- "postList"
+  attr(posterior_list_RBesT, "ess") <- calcEss(calc_ess, posterior_list_RBesT)
+  attr(posterior_list_RBesT, "covariance matrices") <- posterior_list$covmat
   
-  class(posterior_output) <- "postList"
-  
-  attr(posterior_output, "ess") <- calcEss(calc_ess, posterior_output)
-  
-  attr(posterior_output, "full covariance matrices") <- posterior_list$covmat
-  
-  return(posterior_output)
+  return (posterior_list_RBesT)
   
 }
 
@@ -289,12 +306,3 @@ calcEss <- function(calc_ess, posterior_output) {
   
 }
 
-createMapping <- function(prior_list) {
-  
-  n_dg     <- length(prior_list)
-  n_comps  <- unlist(lapply(prior_list, ncol))
-  args     <- lapply(1:n_dg, function (x) 1:n_comps[x])
-  
-  return(args)
-  
-}

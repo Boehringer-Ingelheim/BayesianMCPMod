@@ -158,13 +158,13 @@ crit_pval = getCritProb(
 # Create covmat test case
 mixnorm_test <- mixnorm(comp1=c(0.2,2,3), comp2=c(0.2,5,6), comp3=c(0.2,8,9), comp4=c(0.2,11,12), robust=c(0.2,14,15), sigma=9.734)
 
-mixnorm_DG1 <- mixnorm(comp1=c(0.5,2,3), comp2=c(0.5,3,6), sigma=9.651)
+mixnorm_DG1  <- mixnorm(comp1=c(0.5,2,3), comp2=c(0.5,3,6), sigma=9.651)
 
-mixnorm_DG2 <- mixnorm(comp1=c(1,8,2), sigma=9.932)
+mixnorm_DG2  <- mixnorm(comp1=c(1,8,2), sigma=9.932)
 
-mixnorm_DG3 <- mixnorm(comp1=c(1/3,6,8), comp2=c(1/3,7,9), comp3=c(1/3,0.5,1), sigma=9.134)
+mixnorm_DG3  <- mixnorm(comp1=c(1/3,6,8), comp2=c(1/3,7,9), comp3=c(1/3,0.5,1), sigma=9.134)
 
-mixnorm_DG4 <- mixnorm(comp1=c(1/4,10,3), comp2=c(1/4,3,6), comp3=c(1/4,4,7), comp4=c(1/4,9,8), sigma=9.236)
+mixnorm_DG4  <- mixnorm(comp1=c(1/4,10,3), comp2=c(1/4,3,6), comp3=c(1/4,4,7), comp4=c(1/4,9,8), sigma=9.236)
 
 prior_list <- vector("list", 5)
 prior_list[[1]] <- mixnorm_test
@@ -178,11 +178,11 @@ names(prior_list) <- c("Ctr","DG_1","DG_2","DG_3","DG_4")
 mu_hat <- c(10, 20, 30, 40, 50)
 se_hat_vector <- matrix(c(3.11, 1.76, 0.38, 0.93, 1.66), nrow = 5, ncol = 1)
 
-se_hat_matrix <- matrix(c(3.11, 0.01, 0.01, 0.01, 0.01,
-                          0.01, 1.76, 0.01, 0.01, 0.01,
-                          0.01, 0.01, 0.38, 0.01, 0.01,
-                          0.01, 0.01, 0.01, 0.93, 0.01,
-                          0.01, 0.01, 0.01, 0.01, 1.66), nrow = 5, ncol = 5)
+se_hat_matrix <- matrix(c(3.11, 0.00, 0.00, 0.00, 0.00,
+                          0.00, 1.76, 0.00, 0.00, 0.00,
+                          0.00, 0.00, 0.38, 0.00, 0.00,
+                          0.00, 0.00, 0.00, 0.93, 0.00,
+                          0.00, 0.00, 0.00, 0.00, 1.66), nrow = 5, ncol = 5)
 
 data("metaData")
 
