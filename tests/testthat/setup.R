@@ -164,7 +164,7 @@ mixnorm_DG2  <- mixnorm(comp1=c(1,8,2), sigma=9.932)
 
 mixnorm_DG3  <- mixnorm(comp1=c(1/3,6,8), comp2=c(1/3,7,9), comp3=c(1/3,0.5,1), sigma=9.134)
 
-mixnorm_DG4  <- mixnorm(comp1=c(1/4,10,3), comp2=c(1/4,3,6), comp3=c(1/4,4,7), comp4=c(1/4,9,8), sigma=9.236)
+mixnorm_DG4  <- mixnorm(comp1=c(1/3,10,3), comp2=c(1/3,3,6), comp3=c(1/3,4,7), sigma=9.236)
 
 prior_list <- vector("list", 5)
 prior_list[[1]] <- mixnorm_test
@@ -184,33 +184,8 @@ se_hat_matrix <- matrix(c(3.11, 0.00, 0.00, 0.00, 0.00,
                           0.00, 0.00, 0.00, 0.93, 0.00,
                           0.00, 0.00, 0.00, 0.00, 1.66), nrow = 5, ncol = 5)
 
-data("metaData")
-
-dataset_covmat <- filter(as.data.frame(metaData), bname == "BRINTELLIX")
-
-histcontrol_covmat <- filter(
-  dataset_covmat,
-  dose       == 0,
-  primtime   == 8,
-  indication == "MAJOR DEPRESSIVE DISORDER",
-  protid     != 5)
-
-hist_data_covmat <- data.frame(
-  trial = histcontrol_covmat$nctno,
-  est   = histcontrol_covmat$rslt,
-  se    = histcontrol_covmat$se,
-  sd    = histcontrol_covmat$sd,
-  n     = histcontrol_covmat$sampsize)
-
-dose_levels_covmat <- c(0, 2.5, 5, 7.5, 10)
-
-prior_list_covmat <- getPriorList(
-  hist_data     = hist_data_covmat,
-  dose_levels   = dose_levels_covmat,
-  robust_weight = 0.3)
-
-posterior_covmat <- getPosterior(
-  prior_list = prior_list_covmat,
+posterior <- getPosterior(
+  prior_list = prior_list,
   mu_hat     = mu_hat,
   S_hat      = se_hat_matrix,
   calc_ess   = FALSE
