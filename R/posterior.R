@@ -145,7 +145,7 @@ getPosteriorI <- function(
   class(post_list) <- "postList"
   
   attr(post_list, "ess") <- calcEss(calc_ess, post_list)
-  
+  #SB: The following line is not correct and needs to be changed by using the se information from the post_list object
   attr(post_list, "full covariance matrices") <- replicate(length(prior_list)-1, diag(c(se_hat)), simplify = FALSE)
   #names(attr(post_list, "full covariance matrices")) <- c("comp1", "comp2", "comp3", "robust")
   

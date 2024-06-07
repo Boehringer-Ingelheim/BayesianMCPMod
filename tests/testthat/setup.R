@@ -185,6 +185,12 @@ se_hat_matrix <- matrix(c(3.11, 0.00, 0.00, 0.00, 0.00,
                           0.00, 0.00, 0.00, 0.93, 0.00,
                           0.00, 0.00, 0.00, 0.00, 1.66), nrow = 5, ncol = 5)
 
+#se_hat_matrix <- matrix(c(3.11, 0.10, 0.20, 0.00, 0.00,
+ #                         0.10, 1.76, 0.00, 0.00, 0.00,
+   #                       0.20, 0.00, 0.38, 0.00, 0.00,
+    #                      0.00, 0.00, 0.00, 0.93, 0.00,
+      #                    0.00, 0.00, 0.00, 0.00, 1.66), nrow = 5, ncol = 5)
+#We also need to include tests for cases with of diagonal elements
 posterior <- getPosterior(
   prior_list = prior_list,
   mu_hat     = mu_hat,
