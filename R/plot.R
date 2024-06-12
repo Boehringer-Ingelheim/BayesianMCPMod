@@ -103,7 +103,9 @@ plot.modelFits <- function (
         gsub("quadratic",  "quad", x = _) |>
         gsub("linear",      "lin", x = _) |>
         gsub("logistic",    "log", x = _) |>
-        gsub("sigEmax",    "sigE", x = _)
+        gsub("sigEmax",    "sigE", x = _) |>
+        gsub("betaMod",    "betaM", x = _)|>
+        gsub("quadratic",    "quad", x = _)
       
       label_avg  <- paste0(paste_names, "=", round(mod_weights, 1),
                            collapse = ", ")

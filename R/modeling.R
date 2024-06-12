@@ -164,8 +164,8 @@ getModelFitOpt <- function (
         scal   <- ifelse(is.null(addArgs), 1.2 * max(dose_levels), addArgs[["scal"]]) #for betaMod shape
         expr_i <- substitute(
           sum(
-            (post_combs$means[i, ] - (theta[1] + theta[2] * (((theta[3] + theta[4])^(theta[3] + theta[4])) / ((theta[3] ^ theta[3]) * (theta[4]^theta[4]))) * (dose_levels / scal)^(theta[3]) * ((1 - dose_levels / scal)^(theta[4]))))
-          ), 
+              ((post_combs$means[i, ] - (theta[1] + theta[2] * (((theta[3] + theta[4])^(theta[3] + theta[4])) / ((theta[3] ^ theta[3]) * (theta[4]^theta[4]))) * (dose_levels / scal)^(theta[3]) * ((1 - dose_levels / scal)^(theta[4]))))^2 / (post_combs$vars[i, ])))
+          , 
           list(scal = scal)
         )
       },
@@ -179,7 +179,7 @@ getModelFitOpt <- function (
     
     param_list <- list(
       expr_i  = expr_i,
-      opts    = list("algorithm" = "NLOPT_LN_NELDERMEAD", maxeval = 1e3),
+      opts    = list("algorithm" = "NLOPT_LN_NELDERMEAD", maxeval = 1e3), #,stopval=0
       params  = list(
         x0 = simple_fit$coeffs,
         lb = lb,
