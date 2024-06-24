@@ -154,24 +154,12 @@ the maximum dose for the trial (`Maxd`).
 
 [See the help files for model specifications by typing `?DoseFinding::guesst` in your console]{.aside}
 
-The output of this function is a parameterization of the dose-response model. For example, the 
-parameters for the `sigEmax_guesst` are `r sigEmax_guesst` and would correspond to the last 
-two parameters in the `DoseFinding::sigEmax` function, e.g.,
 
-```{r}
-DoseFinding::sigEmax(
-  dose = c(2.5, 5), # dose levels
-  e0 = 0, # placebo effect
-  eMax = -1, # max effect
-  ed50 = sigEmax_guesst[["ed50"]], # dose that yields half of eMax
-  h = sigEmax_guesst[["h"]] # Hill parameter (steepness at ed50)
-)
-```
 
 Of course, you can also specify the models directly on the parameter scale (without using `DoseFinding::guesst`).
 
 For example, you can get a betaMod model by specifying `delta1` and `delta2` 
-parameters (`scale` is assumed to be `1.2`), or a quadratic model with the `delta2` parameter.
+parameters (`scale` is assumed to be `1.2` of the maximum dose), or a quadratic model with the `delta2` parameter.
 
 ```{r}
 betaMod_params <- c(delta1 = 1, delta2 = 1)
@@ -253,7 +241,7 @@ knitr::kable(summary(posterior))
 The testing step of Bayesian MCPMod is executed using a critical value on the 
 probability scale and a pseudo-optimal contrast matrix. 
 
-The critical value is calculated using re-estimated contrasts for frequentist 
+The critical value is calculated using (re-estimated) contrasts for frequentist 
 MCPMod to ensure error control when using weakly-informative priors.
 
 A pseudo-optimal contrast matrix is generated based on the variability of the 
