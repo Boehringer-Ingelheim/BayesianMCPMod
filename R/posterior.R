@@ -47,7 +47,27 @@ getPosterior <- function(
   
   if (!is.null(mu_hat) && !is.null(S_hat) && is.null(data)) {
     
-    if (dim(S_hat)[2] > 1 && dim(S_hat)[2] == length(prior_list)) {
+    if (is.matrix(S_hat)) {
+      
+      is_matrix_S_hat <- TRUE
+      
+    } else if (is.vector(S_hat)) {
+      
+      is_matrix_S_hat <- FALSE
+      
+      se_hat <- S_hat
+      rm(S_hat)
+      
+    } else {
+      
+      stop("S_hat has to be either a vector or matrix")
+      
+    }
+    
+    if (is_matrix_S_hat) {
+      
+      stopifnot("dim of S_hat must equal length of prior list" =
+                  dim(S_hat)[2] == length(prior_list))
       
       prior_mix <- priorList2priorMix(prior_list)
       
@@ -61,12 +81,12 @@ getPosterior <- function(
         prior_list     = prior_list, 
         calc_ess       = calc_ess)
       
-    } else if (dim(S_hat)[2] == 1) {
+    } else if (!is_matrix_S_hat) {
       
       posterior_list <- getPosteriorI(
         prior_list = prior_list,
         mu_hat     = mu_hat,
-        se_hat     = S_hat,
+        se_hat     = se_hat,
         calc_ess   = calc_ess)
       
     }
@@ -144,10 +164,18 @@ getPosteriorI <- function(
   names(post_list) <- names(prior_list)
   class(post_list) <- "postList"
   
+  comp_indx    <- createMapping(prior_list)
+  comp_mat_ind <- do.call("expand.grid", comp_indx)
+  
   attr(post_list, "ess") <- calcEss(calc_ess, post_list)
-  #SB: The following line is not correct and needs to be changed by using the se information from the post_list object
-  attr(post_list, "full covariance matrices") <- replicate(length(prior_list)-1, diag(c(se_hat)), simplify = FALSE)
-  #names(attr(post_list, "full covariance matrices")) <- c("comp1", "comp2", "comp3", "robust")
+  
+  diagonals <- lapply(seq_along(comp_mat_ind[, 1]), function(x) {
+    
+    lapply(seq_along(comp_mat_ind[x, ]), function(y) return(post_list[[y]]["s", comp_mat_ind[x,y]]))
+    
+  })
+  
+  attr(post_list, "full covariance matrices") <- lapply(seq_along(diagonals), function(x) diag(diagonals[[x]]))
   
   return (post_list)
   
@@ -233,15 +261,6 @@ postMix2posteriorList <- function (
   
   getIndx       <- function (x, y) which(comp_mat_ind[, x] == comp_indx[[x]][y])
   
-  createMapping <- function (prior_list) {
-    
-    n_comps   <- unlist(lapply(prior_list, ncol))
-    comp_indx <- lapply(seq_along(prior_list), function (x) seq_len(n_comps[x]))
-    
-    return (comp_indx)
-    
-  }
-  
   # create mapping
   comp_indx    <- createMapping(prior_list)
   comp_mat_ind <- do.call("expand.grid", comp_indx)
@@ -260,7 +279,7 @@ postMix2posteriorList <- function (
       mean(do.call(rbind, lapply(posterior_list$covmat, diag)[getIndx(x, y)])[, x])))
   
   combined_vectors <- mapply(function (x, y, z)
-    Map(c, x, y, z), posterior_weight, posterior_mean, posterior_sd,
+    Map(c, x, y, z), posterior_weight, posterior_mean, lapply(posterior_sd, sqrt),
     SIMPLIFY = FALSE)
   
   # create posterior list
@@ -281,7 +300,14 @@ postMix2posteriorList <- function (
   ## set attributes
   class(posterior_list_RBesT) <- "postList"
   attr(posterior_list_RBesT, "ess") <- calcEss(calc_ess, posterior_list_RBesT)
-  attr(posterior_list_RBesT, "covariance matrices") <- posterior_list$covmat
+  
+  diagonals <- lapply(seq_along(comp_mat_ind[, 1]), function(x) {
+    
+    lapply(seq_along(comp_mat_ind[x, ]), function(y) return(posterior_list_RBesT[[y]]["s", comp_mat_ind[x,y]]))
+    
+  })
+  
+  attr(posterior_list_RBesT, "covariance matrices") <- lapply(seq_along(diagonals), function(x) diag(diagonals[[x]]))
   
   return (posterior_list_RBesT)
   
@@ -306,3 +332,11 @@ calcEss <- function(calc_ess, posterior_output) {
   
 }
 
+createMapping <- function (prior_list) {
+  
+  n_comps   <- unlist(lapply(prior_list, ncol))
+  comp_indx <- lapply(seq_along(prior_list), function (x) seq_len(n_comps[x]))
+  
+  return (comp_indx)
+  
+}
