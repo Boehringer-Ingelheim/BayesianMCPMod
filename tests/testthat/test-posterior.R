@@ -1,3 +1,23 @@
+# Function to test if covariance matrix is symmerical
+test_covmatrix_symmetry <- function (
+      
+    posterior,
+    mu_hat
+  
+  ) {
+
+  lapply(1:(length(mu_hat)-1), function(x) {
+    
+    expect_equal(posterior$covmat$Comp1[row(posterior$covmat$Comp1) + x == col(posterior$covmat$Comp1)], 
+                 posterior$covmat$Comp1[row(posterior$covmat$Comp1)     == col(posterior$covmat$Comp1) + x])
+    
+    expect_equal(length(posterior$covmat$Comp1[row(posterior$covmat$Comp1) + x == col(posterior$covmat$Comp1)]),
+                 length(posterior$covmat$Comp1[row(posterior$covmat$Comp1) + x       == col(posterior$covmat$Comp1)]))
+    
+  })
+
+}
+
 test_that("getPosterior works correctly", {
   dummy_data <- getModelData(data, names(mods)[1])
   
@@ -106,35 +126,22 @@ test_that("getPostCombsI returns an object with correct attributes", {
   expect_true(all(result$vars == c(4, 4)))
 })
 
-test_that("getPriorMix works correctly", {
+test_that("priorList2priorMix works correctly", {
   
   # function call without parameters
-  expect_error(createPriorMix())
+  expect_error(priorList2priorMix())
   
   # test priorList2priorMix function
-  prior_mix <- priorList2priorMix(prior_list_covmat)
+  prior_mix <- priorList2priorMix(prior_list)
   expect_type(prior_mix, "list")
   expect_length(prior_mix, 3)
   
 })
 
-test_that("mvpostmix works correctly", {
-  
-  prior_mix <- priorList2priorMix(prior_list_covmat)
-  
-  # test mvpostmix function
-  expect_error(DoseFinding::mvpostmix(prior_mix, mu_hat, se_hat_vector))
-  expect_no_error(DoseFinding::mvpostmix(prior_mix, mu_hat, se_hat_matrix))
-  posterior <- DoseFinding::mvpostmix(prior_mix, mu_hat, se_hat_matrix)
-  expect_type(posterior, "list")
-  expect_length(posterior, 3)
-  
-})
-
-test_that("getPosteriorOutput works correctly", {
+test_that("postMix2posteriorList works correctly", {
   
   # create posterior with matrix
-  prior_mix <- priorList2priorMix(prior_list_covmat)
+  prior_mix <- priorList2priorMix(prior_list)
   
   posterior <- DoseFinding::mvpostmix(
     priormix = prior_mix,
@@ -142,44 +149,77 @@ test_that("getPosteriorOutput works correctly", {
     S_hat    = se_hat_matrix)
   
   # create posterior with vector
-  posterior_vector <- getPosteriorI(
-    prior_list = prior_list_covmat,
+  posterior_vector <- getPosterior(
+    prior_list = prior_list,
     mu_hat = mu_hat,
-    se_hat = se_hat_vector,
+    S_hat = se_hat_vector,
     calc_ess = FALSE
   )
   
-  # test postMix2posteriorList function
-  posterior_list <- postMix2posteriorList(posterior, prior_list_covmat, calc_ess = FALSE)
+  ### test postMix2posteriorList function - se_hat_matrix only zeros
+  posterior_list <- postMix2posteriorList(posterior, prior_list, calc_ess = FALSE)
   expect_type(posterior_list, "list")
   expect_s3_class(posterior_list, "postList")
   
-  lapply(1:(length(dose_levels_covmat)-1), function(x) {
-    
-    expect_equal(posterior$covmat$Comp1[row(posterior$covmat$Comp1) + x == col(posterior$covmat$Comp1)], 
-                 posterior$covmat$Comp1[row(posterior$covmat$Comp1)     == col(posterior$covmat$Comp1) + x])
-    
-    expect_equal(length(which(posterior$covmat$Comp1[row(posterior$covmat$Comp1) + x == col(posterior$covmat$Comp1)] >= 0)),
-                 length(posterior$covmat$Comp1[row(posterior$covmat$Comp1) + x       == col(posterior$covmat$Comp1)]))
-    
-  })
-  
-  lapply(seq_along(prior_list), function(i) {
-    
-    expect_equal(length(posterior_weight[[i]]), length(posterior_mean[[i]]))
-    expect_equal(length(posterior_mean[[i]]), length(posterior_sd[[i]]))
-    
-    sapply(seq_along(posterior_weight[[i]]), function(j) {
-        
-      expect_length(combined_vectors[[i]][[j]], 3)
-        
-    })
-      
-  })
+  test_covmatrix_symmetry(posterior, mu_hat)
   
   # compare posterior result object with matrix to object with vector
   expect_length(posterior_list, length(posterior_vector))
+  expect_length(attr(posterior_list, "covariance matrices"), length(attr(posterior_vector, "full covariance matrices")))
   expect_type(posterior_list, typeof(posterior_vector))
   expect_s3_class(posterior_list, S3Class(posterior_vector))
+  
+
+  ### test postMix2posteriorList function - se_hat_matrix not only zeros
+  mvpostmix_noZero <- DoseFinding::mvpostmix(
+    priormix = prior_mix,
+    mu_hat   = mu_hat,
+    S_hat    = se_hat_matrix2)
+  
+  posterior_noZero <- getPosterior(
+  prior_list = prior_list,
+  mu_hat     = mu_hat,
+  S_hat      = se_hat_matrix2,
+  calc_ess   = FALSE
+  )
+
+  expect_type(posterior_noZero, "list")
+  expect_s3_class(posterior_noZero, "postList")
+  
+  test_covmatrix_symmetry(mvpostmix_noZero, mu_hat)
+  
+  # compare posterior result object with matrix to object with vector
+  expect_length(posterior_noZero, length(posterior_vector))
+  expect_length(attr(posterior_noZero, "covariance matrices"), length(attr(posterior_vector, "full covariance matrices")))
+  expect_type(posterior_noZero, typeof(posterior_vector))
+  expect_s3_class(posterior_noZero, S3Class(posterior_vector))
+
+
+  ### test similarity of results for posterior from a matrix compared to posterior from a vector with square roots
+  se_hat <- c(1, 2, 3, 4, 5)
+  S_hat  <- diag(se_hat)
+  
+  posterior_matrix_S <- getPosterior(
+    prior_list = prior_list,
+    mu_hat     = mu_hat,
+    S_hat      = S_hat,
+    calc_ess   = FALSE
+  )
+  
+  posterior_vector_se <- getPosterior(
+    prior_list = prior_list,
+    mu_hat     = mu_hat,
+    S_hat      = sqrt(se_hat),
+    calc_ess   = FALSE
+  )
+  
+  expect_equal(posterior_matrix_S$Ctr, posterior_vector_se$Ctr)
+  expect_equal(posterior_matrix_S$DG_1, posterior_vector_se$DG_1)
+  expect_equal(posterior_matrix_S$DG_2, posterior_vector_se$DG_2)
+  expect_equal(posterior_matrix_S$DG_3, posterior_vector_se$DG_3)
+  expect_equal(posterior_matrix_S$DG_4, posterior_vector_se$DG_4)
+
+  
+  
   
 })

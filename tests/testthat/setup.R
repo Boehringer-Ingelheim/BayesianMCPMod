@@ -176,24 +176,31 @@ prior_list[[5]] <- mixnorm_DG4
 names(prior_list) <- c("Ctr","DG_1","DG_2","DG_3","DG_4")
 
 mu_hat <- c(10, 20, 30, 40, 50)
-se_hat_vector <- matrix(c(3.11, 1.76, 0.38, 0.93, 1.66), nrow = 5, ncol = 1)
-#se_hat_vector <- matrix(c(sqrt(3.11), sqrt(1.76), sqrt(0.38), sqrt(0.93), sqrt(1.66)), nrow = 5, ncol = 1)
-#Please note that a match between the two approaches is only there in case we are using the sqrt. TBD whether this is what we want (and need a good documentation) or whether the sqrt (or ^2) is calculated internally 
-se_hat_matrix <- matrix(c(3.11, 0.00, 0.00, 0.00, 0.00,
-                          0.00, 1.76, 0.00, 0.00, 0.00,
-                          0.00, 0.00, 0.38, 0.00, 0.00,
-                          0.00, 0.00, 0.00, 0.93, 0.00,
-                          0.00, 0.00, 0.00, 0.00, 1.66), nrow = 5, ncol = 5)
+se_hat_vector <- c(1.0, 3.0, 5.0, 9.0, 6.0)
+se_hat_vector_sqrt <- c(sqrt(1), sqrt(3), sqrt(5), sqrt(9), sqrt(6))
+ 
+se_hat_matrix <- matrix(c(1.00, 0.00, 0.00, 0.00, 0.00,
+                          0.00, 3.00, 0.00, 0.00, 0.00,
+                          0.00, 0.00, 5.00, 0.00, 0.00,
+                          0.00, 0.00, 0.00, 9.00, 0.00,
+                          0.00, 0.00, 0.00, 0.00, 6.00), nrow = 5, ncol = 5)
 
-#se_hat_matrix <- matrix(c(3.11, 0.10, 0.20, 0.00, 0.00,
- #                         0.10, 1.76, 0.00, 0.00, 0.00,
-   #                       0.20, 0.00, 0.38, 0.00, 0.00,
-    #                      0.00, 0.00, 0.00, 0.93, 0.00,
-      #                    0.00, 0.00, 0.00, 0.00, 1.66), nrow = 5, ncol = 5)
-#We also need to include tests for cases with of diagonal elements
+se_hat_matrix2 <- matrix(c(1.00, 0.10, 0.20, 0.30, 0.40,
+                           0.10, 3.00, 0.10, 0.20, 0.30,
+                           0.20, 0.10, 5.00, 0.10, 0.20,
+                           0.30, 0.20, 0.10, 9.00, 0.10,
+                           0.40, 0.30, 0.20, 0.10, 6.00), nrow = 5, ncol = 5)
+
 posterior <- getPosterior(
   prior_list = prior_list,
   mu_hat     = mu_hat,
   S_hat      = se_hat_matrix,
+  calc_ess   = FALSE
+)
+
+posterior_noZero <- getPosterior(
+  prior_list = prior_list,
+  mu_hat     = mu_hat,
+  S_hat      = se_hat_matrix2,
   calc_ess   = FALSE
 )
