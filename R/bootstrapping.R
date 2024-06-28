@@ -6,7 +6,9 @@
 #' This approach can be considered as the Bayesian equivalent of the frequentist bootstrap approach described in O'Quigley et al. (2017).
 #' Instead of drawing n bootstrap samples from the sampling distribution of the trial dose-response estimates, here the samples are directly taken from the posterior distribution.
 #' @references O'Quigley J, Iasonos A, Bornkamp B. 2017. Handbook of Methods for Designing, Monitoring, and Analyzing Dose-Finding Trials (1st ed.). Chapman and Hall/CRC. doi:10.1201/9781315151984
+#'
 #' @param model_fits An object of class modelFits, i.e. information about fitted models & corresponding model coefficients as well as the posterior distribution that was the basis for the model fitting
+#' @param quantiles A vector of quantiles that should be evaluated
 #' @param n_samples Number of samples that should be drawn as basis for the bootstrapped quantiles
 #' @param doses A vector of doses for which a prediction should be performed
 #' @param avg_fit Boolean variable, defining whether an average fit (based on generalized AIC weights) should be performed in addition to the individual models. Default TRUE.
@@ -25,15 +27,17 @@
 #'                                simple      = TRUE)
 #'
 #' getBootstrapSamples(model_fits = fit,
+#'                     quantiles  = c(0.025, 0.5, 0.975),
 #'                     n_samples  = 10, # speeding up example run time
 #'                     doses      = c(0, 6, 8))
 #'
 #' @return  A data frame with columns for model, dose, and bootstrapped samples
 #'
 #' @export
-getBootstrapSamples <- function (
+getBootstrapQuantiles <- function (
 
   model_fits,
+  quantiles,
   n_samples = 1e3,
   doses     = NULL,
   avg_fit   = TRUE
@@ -46,6 +50,7 @@ getBootstrapSamples <- function (
 
   dose_levels    <- model_fits[[1]]$dose_levels
   model_names    <- names(model_fits)
+  quantile_probs <- sort(unique(quantiles))
 
   if (is.null(doses)) {
 
@@ -92,20 +97,21 @@ getBootstrapSamples <- function (
 
   }
 
-  bs_samples <- as.data.frame(preds[order(rep(seq_along(model_names), length(doses))), ])
-  colnames(bs_samples) <- paste0("preds_", seq_len(n_samples))
+  sort_indx <- order(rep(seq_along(model_names), length(doses)))
+  quant_mat <- t(apply(X      = preds[sort_indx, ],
+                       MARGIN = 1,
+                       FUN    = stats::quantile,
+                       probs  = quantile_probs))
 
-  bs_samples_data <- cbind(
+
+  cr_bounds_data <- cbind(
     doses  = doses,
     models = rep(
       x    = factor(model_names, levels = model_names),
-      each = length(doses))
-  )
-    # as.data.frame(preds))
+      each = length(doses)),
+    as.data.frame(quant_mat))
 
-  # tidyr::pivot_longer(bs_samples_data, cols = contains("preds"))
-
-  return (bs_samples_data)
+  return (cr_bounds_data)
 
 }
 
@@ -138,26 +144,26 @@ getBootstrapSamples <- function (
 #' @return  A data frame with entries doses, models, and quantiles
 #'
 #' @export
-getBootstrapQuantiles <- function (
-
-  bs_samples,
-  quantiles
-
-) {
-
-  quantile_probs <- sort(unique(quantiles))
-
-  bs_quantiles <- t(apply(X      = bs_samples[, -c(1, 2)],
-                          MARGIN = 1,
-                          FUN    = stats::quantile,
-                          probs  = quantile_probs))
-
-  bs_quantiles_data <- cbind(
-    bs_samples[, c(1, 2)],
-    as.data.frame(bs_quantiles))
-
-  return (bs_quantiles_data)
-
-}
+# getBootstrapQuantiles <- function (
+#
+#   bs_samples,
+#   quantiles
+#
+# ) {
+#
+#   quantile_probs <- sort(unique(quantiles))
+#
+#   bs_quantiles <- t(apply(X      = bs_samples[, -c(1, 2)],
+#                           MARGIN = 1,
+#                           FUN    = stats::quantile,
+#                           probs  = quantile_probs))
+#
+#   bs_quantiles_data <- cbind(
+#     bs_samples[, c(1, 2)],
+#     as.data.frame(bs_quantiles))
+#
+#   return (bs_quantiles_data)
+#
+# }
 
 
