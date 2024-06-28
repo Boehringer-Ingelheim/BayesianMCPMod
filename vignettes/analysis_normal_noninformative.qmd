@@ -1,6 +1,5 @@
 ---
 title: "Analysis Example of Bayesian MCPMod for Continuous Data"
-date: today
 format: 
   html:
     fig-height: 3.5
@@ -13,6 +12,17 @@ vignette: >
     %\VignetteEncoding{UTF-8}
     %\VignetteEngine{quarto::html}
 ---
+
+```{r setup}
+library(BayesianMCPMod)
+library(RBesT)
+library(clinDR)
+library(dplyr)
+library(tibble)
+library(reactable)
+
+set.seed(7015)
+```
 
 ```{r}
 #| code-summary: setup
@@ -81,15 +91,6 @@ display_params_table <- function(named_list) {
     )
   }
 }
-
-library(BayesianMCPMod)
-library(RBesT)
-library(clinDR)
-library(dplyr)
-library(tibble)
-library(reactable)
-
-set.seed(7015)
 ```
 
 # Introduction 
