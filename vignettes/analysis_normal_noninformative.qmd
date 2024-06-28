@@ -225,7 +225,7 @@ In the first step of Bayesian MCPMod, the posterior is calculated by combining
 the prior information with the estimated results of the trial [@fleischer_2022]. 
 
 ```{r}
-posterior <- BayesianMCPMod::getPosterior(
+posterior <- getPosterior(
   prior_list = prior_list,
   mu_hat = trial_data$rslt,
   se_hat = trial_data$se,
@@ -247,14 +247,14 @@ A pseudo-optimal contrast matrix is generated based on the variability of the
 posterior distribution (see [@fleischer_2022] for more details).
 
 ```{r}
-crit_pval <- BayesianMCPMod::getCritProb(
+crit_pval <- getCritProb(
   mods           = mods,
   dose_levels    = dose_levels,
   se_new_trial   = trial_data$se,
   alpha_crit_val = 0.05
 )
 
-contr_mat <- BayesianMCPMod::getContr(
+contr_mat <- getContr(
   mods         = mods,
   dose_levels  = dose_levels,
   sd_posterior = summary(posterior)[, 2]
@@ -269,18 +269,18 @@ executed and the contrast specification above is used.
 #| eval: false
 
 # i) the frequentist contrast
-contr_mat_prior <- BayesianMCPMod::getContr(
+contr_mat_prior <- getContr(
   mods           = mods,
   dose_levels    = dose_levels,
   dose_weights   = n_patients,
   prior_list     = prior_list)
 # ii) re-estimated frequentist contrasts
-contr_mat_prior <- BayesianMCPMod::getContr(
+contr_mat_prior <- getContr(
   mods           = mods,
   dose_levels    = dose_levels,
   se_new_trial   = trial_data$se)
 # iii)  Bayesian approach using number of patients for new trial and prior distribution
-contr_mat_prior <- BayesianMCPMod::getContr(
+contr_mat_prior <- getContr(
   mods           = mods,
   dose_levels    = dose_levels,
   dose_weights   = n_patients,
@@ -290,7 +290,7 @@ contr_mat_prior <- BayesianMCPMod::getContr(
 The Bayesian MCP testing step is then executed:  
 
 ```{r}
-BMCP_result <- BayesianMCPMod::performBayesianMCP(
+BMCP_result <- performBayesianMCP(
   posterior_list = posterior,
   contr          = contr_mat, 
   crit_prob_adj  = crit_pval)
@@ -329,7 +329,7 @@ present the full fit.
 ```{r}
 # If simple = TRUE, uses approx posterior
 # Here we use complete posterior distribution
-fit <- BayesianMCPMod::getModelFits(
+fit <- getModelFits(
   models      = mods,
   dose_levels = dose_levels,
   posterior   = posterior,
@@ -368,7 +368,7 @@ The bootstrap based quantiles can also be directly calculated via the
 For this example, only 6 quantiles are bootstrapped for each model fit.
 
 ```{r}
-bootstrap_quantiles <- BayesianMCPMod::getBootstrapQuantiles(
+bootstrap_quantiles <- getBootstrapQuantiles(
   model_fits = fit,
   quantiles  = c(0.025, 0.5, 0.975),
   doses      = c(0, 2.5, 4, 5, 7, 10),
@@ -403,7 +403,7 @@ but this is not run here.
 
 ```{r}
 #| eval: false
-BayesianMCPMod::performBayesianMCPMod(
+performBayesianMCPMod(
   posterior_list   = posterior,
   contr            = contr_mat,
   crit_prob_adj    = crit_pval,

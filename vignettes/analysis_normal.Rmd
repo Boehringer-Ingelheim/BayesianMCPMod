@@ -264,7 +264,7 @@ plot(fit, cr_bands = TRUE)
 The bootstrap based quantiles can also be directly calculated via the getBootstrapQuantiles() function.
 For this example, only 6 quantiles are bootstrapped for each model fit.
 ```{r Bootstrap}
-BayesianMCPMod::getBootstrapQuantiles(
+getBootstrapQuantiles(
   model_fits = fit,
   quantiles  = c(0.025, 0.5, 0.975),
   doses      = c(0, 2.5, 4, 5, 7, 10),
