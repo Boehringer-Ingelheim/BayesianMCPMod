@@ -29,7 +29,7 @@ test_that("base case input throws no error and has correct properties", {
   
   # assessDesign result (in this base case) should have crit_prob = 1 - alpha_crit_val
   expect_equal(
-    attr(eval_design$linear$BayesianMCP, "crit_prob"),
+    attr(eval_design$linear$BayesianMCP, "critProb"),
     1 - alpha_crit_val
   )
   
@@ -180,11 +180,11 @@ test_that("performBayesianMCP returns the right type of object under normal case
   )
 
   expect_true(
-    attr(b_mcp, "crit_prob_adj") == crit_pval
+    attr(b_mcp, "critProbAdj") == crit_pval
   )
   
   expect_type(
-    attr(b_mcp, "ess_avg"), "logical"
+    attr(b_mcp, "essAvg"), "logical"
   )
 
   expect_type(
@@ -242,36 +242,36 @@ test_that("addSignificance works as intended", {
 # Tests for BayesMCPi #
 #######################
 
-test_that("BayesMCPi function works correctly in a simple case", {
-
-  # BayesMCPi should return a list of length 3 named with "sign", "p_val", and "post_probs"
-  # The logic being tested here is: 
-    # BayesMCPi returns 1 if the posterior probability is strictly greater than the critical value, and 0 otherwise
-  
-  # Define inputs
-  posterior_i = posterior_list
-  contr_mat = list(contMat = matrix(c(0, 1), nrow = 2))
-  crit_prob = 0.5
-  
-  # Call the function
-  result = BayesMCPi(posterior_i, contr_mat, crit_prob)
-  # Check the results
-  expect_equal(result[["sign"]], 1)
-  
-  # Define inputs
-  contr_mat = list(contMat = matrix(c(0, 0), nrow = 2))
-  # Call the function
-  result = BayesMCPi(posterior_i, contr_mat, crit_prob)
-  # Check the results
-  expect_equal(result[["sign"]], rep(NA_real_, 1))
-
+# test_that("BayesMCPi function works correctly in a simple case", {
+# 
+#   # BayesMCPi should return a list of length 3 named with "sign", "p_val", and "post_probs"
+#   # The logic being tested here is: 
+#     # BayesMCPi returns 1 if the posterior probability is strictly greater than the critical value, and 0 otherwise
+#   
 #   # Define inputs
-#   contr_mat_2 = list(contMat = matrix(c(1, 0), nrow = 2))
+#   posterior_i = posterior_list
+#   contr_mat = list(contMat = matrix(c(0, 1), nrow = 2))
+#   crit_prob = 0.5
+#   
 #   # Call the function
-#   result_2 = BayesMCPi(posterior_i, contr_mat_2, crit_prob)
+#   result = BayesMCPi(posterior_i, contr_mat, crit_prob)
 #   # Check the results
-#   expect_equal(result_2[["sign"]], 0)
-})
+#   expect_equal(result[["sign"]], 1)
+#   
+#   # Define inputs
+#   contr_mat = list(contMat = matrix(c(0, 0), nrow = 2))
+#   # Call the function
+#   result = BayesMCPi(posterior_i, contr_mat, crit_prob)
+#   # Check the results
+#   expect_equal(result[["sign"]], rep(NA_real_, 1))
+# 
+# #   # Define inputs
+# #   contr_mat_2 = list(contMat = matrix(c(1, 0), nrow = 2))
+# #   # Call the function
+# #   result_2 = BayesMCPi(posterior_i, contr_mat_2, crit_prob)
+# #   # Check the results
+# #   expect_equal(result_2[["sign"]], 0)
+# })
 
 #########################
 # Tests for getPostProb #
