@@ -1,0 +1,163 @@
+---
+title: "Simulation Example of Bayesian MCPMod for Continuous Data"
+output: rmarkdown::html_vignette
+number_sections: true
+vignette: >
+  %\VignetteIndexEntry{Simulation Example of Bayesian MCPMod for Continuous Data}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(BayesianMCPMod)
+library(clinDR)
+library(dplyr)
+
+set.seed(7015)
+```
+
+# Background and data
+
+In this vignette, we will show the use of the Bayesian MCPMod package for trial planning for continuous distributed data. 
+As in [the analysis example vignette](analysis_normal.html), we focus on the indication MDD and make use of historical data that is included in the clinDR package. 
+More specifically, trial results for BRINTELLIX will be utilized to establish an informative prior for the control group.
+
+# Calculation of a MAP prior
+In a first step, a meta analytic predictive prior will be calculated using historical data from 5 trials with main endpoint Change from baseline in MADRS score after 8 weeks.
+Please note that only information from the control group will be integrated leading to an informative mixture prior for the control group, while for the active groups a non-informative prior will be specified.
+
+```{r Historical Data}
+data("metaData")
+testdata    <- as.data.frame(metaData)
+dataset     <- filter(testdata, bname == "BRINTELLIX")
+histcontrol <- filter(dataset, dose == 0, primtime == 8, indication == "MAJOR DEPRESSIVE DISORDER")
+
+hist_data <- data.frame(
+  trial = histcontrol$nctno,
+  est   = histcontrol$rslt,
+  se    = histcontrol$se,
+  sd    = histcontrol$sd,
+  n     = histcontrol$sampsize)
+
+sd_tot <- with(hist_data, sum(sd * n) / sum(n))
+```
+We will make use of the same getPriorList() function as in the [analysis example vignette](analysis_normal.html) to create a MAP prior.
+```{r Setting Prior without execution, eval = FALSE}
+dose_levels <- c(0, 2.5, 5, 10, 20)
+
+prior_list  <- getPriorList(
+  hist_data     = hist_data,
+  dose_levels   = dose_levels,
+  robust_weight = 0.3)
+```
+```{r Setting Prior, echo = FALSE}
+dose_levels <- c(0, 2.5, 5, 10, 20)
+
+prior_list  <- list(
+  Ctr  = RBesT::mixnorm(
+    comp1  = c(w = 0.446213, m = -12.774661, s = 1.393130),
+    comp1  = c(w = 0.253787, m = 3.148116,   s = 3.148116),
+    robust = c(w = 0.3,      m = 9.425139,   s = 9.425139),
+    sigma = sd_tot),
+  DG_1 = RBesT::mixnorm(
+    comp1 = c(w = 1, m = -12.816875, n = 1),
+    sigma = sd_tot,
+    param = "mn"),
+  DG_2 = RBesT::mixnorm(
+    comp1 = c(w = 1, m = -12.816875, n = 1),
+    sigma = sd_tot,
+    param = "mn"),
+  DG_3 = RBesT::mixnorm(
+    comp1 = c(w = 1, m = -12.816875, n = 1),
+    sigma = sd_tot,
+    param = "mn"),
+  DG_4 = RBesT::mixnorm(
+    comp1 = c(w = 1, m = -12.816875, n = 1),
+    sigma = sd_tot,
+    param = "mn")
+)
+```
+
+# Specification of new trial design 
+
+For the hypothetical new trial, we plan with 4 active dose levels \eqn{2.5, 5, 10, 20} and we specify a broad set of potential dose-response relationships, including a linear, an exponential, an emax and 2 sigEMax models.  
+Furthermore, we assume a maximum effect of -3 on top of control (i.e. assuming that active treatment can reduce the MADRS score after 8 weeks by up to 15.8) and plan a trial with 80 patients for all active groups and 60 patients for control.
+```{r}
+exp     <- DoseFinding::guesst(
+  d     = 5,
+  p     = c(0.2),
+  model = "exponential",
+  Maxd  = max(dose_levels))
+
+emax    <- DoseFinding::guesst(
+  d     = 2.5,
+  p     = c(0.9),
+  model = "emax")
+
+sigemax <- DoseFinding::guesst(
+  d     = c(2.5, 5),
+  p     = c(0.1, 0.6),
+  model = "sigEmax")
+
+sigemax2 <- DoseFinding::guesst(
+  d     = c(2, 4),
+  p     = c(0.3, 0.8),
+  model = "sigEmax")
+
+mods <- DoseFinding::Mods(
+  linear      = NULL,
+  emax        = emax,
+  exponential = exp,
+  sigEmax     = rbind(sigemax, sigemax2),
+  doses       = dose_levels,
+  maxEff      = -3,
+  placEff     = -12.8)
+
+n_patients <- c(60, 80, 80, 80, 80)
+```
+
+# Calculation of success probabilities
+
+To calculate success probabilities for the different assumed dose-response models and the specified trial design we will apply the assessDesign function. 
+For illustration purposes, the number of simulated trial results is reduced to 100 in this example.
+```{r}
+success_probabilities <- assessDesign(
+  n_patients  = n_patients,
+  mods        = mods,
+  prior_list  = prior_list,
+  sd          = sd_tot,
+  n_sim       = 100) # speed up example run-time
+
+success_probabilities
+```
+As an alternative, we will evaluate a design with the same overall sample size but allocating more patients on the highest dose group and control.
+```{r}
+success_probabilities_uneq <- assessDesign(
+  n_patients  = c(80, 60, 60, 60, 120),
+  mods        = mods,
+  prior_list  = prior_list,
+  sd          = sd_tot,
+  n_sim       = 100) # speed up example run-time
+success_probabilities_uneq
+```
+For this specific trial setting the adapted allocation ratio leads to increased success probabilities under all assumed dose response relationships.
+
+Instead of specifying the assumed effects via the models it is also possible to directly specify the effects for the individual dose levels via the dr_means input.
+This allows e.g. also the simulation of scenarios with a prior-data conflict.
+```{r}
+success_probabilities <- assessDesign(
+  n_patients  = c(60, 80, 80, 80, 80),
+  mods        = mods,
+  prior_list  = prior_list,
+  sd          = sd_tot,
+  dr_means    = c(-12, -14, -15, -16, -17),
+  n_sim       = 100) # speed up example run-time
+success_probabilities
+```
