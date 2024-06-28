@@ -1,6 +1,5 @@
 ---
 title: "Analysis Example of Bayesian MCPMod for Continuous Data"
-subtitle: "WORK IN PROGRESS"
 date: today
 format: 
   html:
