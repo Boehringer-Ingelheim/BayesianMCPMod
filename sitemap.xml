@@ -13,6 +13,9 @@
     <loc>https://boehringer-ingelheim.github.io/BayesianMCPMod/articles/analysis_normal.html</loc>
   </url>
   <url>
+    <loc>https://boehringer-ingelheim.github.io/BayesianMCPMod/articles/analysis_normal_noninformative.html</loc>
+  </url>
+  <url>
     <loc>https://boehringer-ingelheim.github.io/BayesianMCPMod/articles/index.html</loc>
   </url>
   <url>
@@ -29,9 +32,6 @@
   </url>
   <url>
     <loc>https://boehringer-ingelheim.github.io/BayesianMCPMod/reference/getBootstrapQuantiles.html</loc>
-  </url>
-  <url>
-    <loc>https://boehringer-ingelheim.github.io/BayesianMCPMod/reference/getBootstrapSamples.html</loc>
   </url>
   <url>
     <loc>https://boehringer-ingelheim.github.io/BayesianMCPMod/reference/getContr.html</loc>
