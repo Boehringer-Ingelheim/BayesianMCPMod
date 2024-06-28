@@ -82,6 +82,7 @@ display_params_table <- function(named_list) {
   }
 }
 
+library(BayesianMCPMod)
 library(RBesT)
 library(clinDR)
 library(dplyr)
