@@ -41,6 +41,10 @@ jobs:
           extra-packages: any::rcmdcheck
           needs: check
 
+      - name: Install BayesianMCPMod
+        shell: bash
+        run: R CMD INSTALL --preclean .
+
       - uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: true
