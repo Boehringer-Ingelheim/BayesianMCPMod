@@ -1,4 +1,4 @@
-#' @title getBootstrapSamples
+#' @title getBootstrapQuantiles
 #'
 #' @description A function for the calculation of bootstrapped model predictions.
 #' Samples from the posterior distribution are drawn (via the RBesT function rmix()) and for every sample the simplified fitting step (see getModelFits() function) and a prediction is performed.
@@ -26,7 +26,7 @@
 #'                                dose_levels = dose_levels,
 #'                                simple      = TRUE)
 #'
-#' getBootstrapSamples(model_fits = fit,
+#' getBootstrapQuantiles(model_fits = fit,
 #'                     quantiles  = c(0.025, 0.5, 0.975),
 #'                     n_samples  = 10, # speeding up example run time
 #'                     doses      = c(0, 6, 8))
@@ -115,55 +115,5 @@ getBootstrapQuantiles <- function (
 
 }
 
-#' @title getBootstrapQuantiles
-#'
-#' @description Calculates quantiles from bootstrapped dose predictions.
-#' Can be used to derive credible intervals to assess the uncertainty for the model fit.
-#' @param bs_samples An object of class bootstrappedSample as created by getBootstrapSamples
-#' @param quantiles A vector of quantiles that should be evaluated
-#'
-#' @examples
-#' posterior_list <- list(Ctrl = RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 1), sigma = 2),
-#'                        DG_1 = RBesT::mixnorm(comp1 = c(w = 1, m = 3, s = 1.2), sigma = 2),
-#'                        DG_2 = RBesT::mixnorm(comp1 = c(w = 1, m = 4, s = 1.5), sigma = 2) ,
-#'                        DG_3 = RBesT::mixnorm(comp1 = c(w = 1, m = 6, s = 1.2), sigma = 2) ,
-#'                        DG_4 = RBesT::mixnorm(comp1 = c(w = 1, m = 6.5, s = 1.1), sigma = 2))
-#' models         <- c("exponential", "linear")
-#' dose_levels    <- c(0, 1, 2, 4, 8)
-#' fit            <- getModelFits(models      = models,
-#'                                posterior   = posterior_list,
-#'                                dose_levels = dose_levels,
-#'                                simple      = TRUE)
-#'
-#' bs_samples     <- getBootstrapSamples(model_fits = fit,
-#'                                       n_samples  = 10, # speeding up example run time
-#'                                       doses      = c(0, 6, 8))
-#'
-#' getBootstrapQuantiles(bs_samples = bs_samples,
-#'                       quantiles  = c(0.025, 0.5, 0.975))
-#' @return  A data frame with entries doses, models, and quantiles
-#'
-#' @export
-# getBootstrapQuantiles <- function (
-#
-#   bs_samples,
-#   quantiles
-#
-# ) {
-#
-#   quantile_probs <- sort(unique(quantiles))
-#
-#   bs_quantiles <- t(apply(X      = bs_samples[, -c(1, 2)],
-#                           MARGIN = 1,
-#                           FUN    = stats::quantile,
-#                           probs  = quantile_probs))
-#
-#   bs_quantiles_data <- cbind(
-#     bs_samples[, c(1, 2)],
-#     as.data.frame(bs_quantiles))
-#
-#   return (bs_quantiles_data)
-#
-# }
 
 

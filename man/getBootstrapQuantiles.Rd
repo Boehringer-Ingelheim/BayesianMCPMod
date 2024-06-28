@@ -2,7 +2,7 @@
 % Please edit documentation in R/bootstrapping.R
 \name{getBootstrapQuantiles}
 \alias{getBootstrapQuantiles}
-\title{getBootstrapSamples}
+\title{getBootstrapQuantiles}
 \usage{
 getBootstrapQuantiles(
   model_fits,
@@ -46,7 +46,7 @@ fit            <- getModelFits(models      = models,
                                dose_levels = dose_levels,
                                simple      = TRUE)
 
-getBootstrapSamples(model_fits = fit,
+getBootstrapQuantiles(model_fits = fit,
                     quantiles  = c(0.025, 0.5, 0.975),
                     n_samples  = 10, # speeding up example run time
                     doses      = c(0, 6, 8))
