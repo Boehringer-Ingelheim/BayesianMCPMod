@@ -14,7 +14,8 @@ vignette: >
 ---
 
 ```{r setup}
-library(BayesianMCPMod)
+devtools::load_all()
+#library(BayesianMCPMod)
 library(RBesT)
 library(clinDR)
 library(dplyr)
