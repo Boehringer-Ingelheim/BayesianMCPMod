@@ -2,6 +2,17 @@
 title: "Simulation Example of Bayesian MCPMod for Continuous Data"
 output: rmarkdown::html_vignette
 number_sections: true
+format: 
+  html:
+    fig-height: 3.5
+    self-contained: true
+    toc: true
+    number-sections: true
+    bibliography: references.bib
+    code-summary: setup
+    #code-fold: true
+    message: false
+    warning: false
 vignette: >
   %\VignetteIndexEntry{Analysis Example of Bayesian MCPMod for Continuous Data}
   %\VignetteEngine{knitr::rmarkdown}
@@ -15,7 +26,12 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
+```{r}
+#| code-summary: setup
+#| code-fold: true
+#| message: false
+#| warning: false
+
 devtools::load_all()
 #library(BayesianMCPMod)
 library(clinDR)

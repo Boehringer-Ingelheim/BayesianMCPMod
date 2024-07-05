@@ -8,7 +8,7 @@ format:
     number-sections: true
     bibliography: references.bib
     code-summary: setup
-    code-fold: true
+    #code-fold: true
     message: false
     warning: false
 vignette: >
@@ -18,7 +18,13 @@ vignette: >
 ---
 
 
-```{r setup}
+
+```{r}
+#| code-summary: setup
+#| code-fold: true
+#| message: false
+#| warning: false
+
 devtools::load_all()
 #library(BayesianMCPMod)
 library(RBesT)
@@ -28,9 +34,6 @@ library(tibble)
 library(reactable)
 
 set.seed(7015)
-```
-
-```{r}
 
 #' Display Parameters Table
 #'
