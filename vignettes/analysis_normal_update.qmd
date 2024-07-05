@@ -7,6 +7,10 @@ format:
     toc: true
     number-sections: true
     bibliography: references.bib
+    code-summary: setup
+    code-fold: true
+    message: false
+    warning: false
 vignette: >
   %\VignetteIndexEntry{Analysis Example of Bayesian MCPMod for Continuous Data}
     %\VignetteEncoding{UTF-8}
@@ -27,10 +31,6 @@ set.seed(7015)
 ```
 
 ```{r}
-#| code-summary: setup
-#| code-fold: true
-#| message: false
-#| warning: false
 
 #' Display Parameters Table
 #'
