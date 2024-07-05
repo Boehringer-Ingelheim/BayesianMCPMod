@@ -306,7 +306,7 @@ the prior information with the estimated results of the trial [@fleischer_2022].
 posterior <- getPosterior(
   prior_list = prior_list,
   mu_hat = trial_data$rslt,
-  se_hat = trial_data$se,
+  se_hat = trial_data$se,         # se_hat to be updatet to s_hat in final!?
   calc_ess = TRUE
 )
 
