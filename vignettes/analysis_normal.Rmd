@@ -162,7 +162,7 @@ As outlined in Fleischer et al. [Bayesian MCPMod. Pharmaceutical Statistics. 202
 posterior <- getPosterior(
   prior    = prior_list,
   mu_hat   = new_trial$rslt,
-  se_hat   = new_trial$se,
+  S_hat    = new_trial$se,
   calc_ess = TRUE)
 
 summary(posterior)
