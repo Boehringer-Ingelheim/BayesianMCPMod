@@ -16,31 +16,29 @@ print.BayesianMCPMod <- function (
 
 #' @export
 print.BayesianMCP <- function(x, ...) {
-  cat("Bayesian Multiple Comparison Procedure\n\n")
-
-  cat("Summary:\n")
-  cat("  Sign:", x[1, "sign"], "\n")
-  cat("  Critical Probability:", x[1, "crit_prob_adj"], "\n")
-  cat("  Maximum Posterior Probability:", x[1, "max_post_prob"], "\n\n")
+  #cat("Bayesian Multiple Comparison Procedure\n\n")
   n_sim <- nrow(x)
-  cat("Effective Sample Size (ESS) per Dose Group:\n")
-  print(attr(x, "ess_avg"), row.names = FALSE)
-  cat("\n")
-
-  cat("Posterior Probabilities for Model Shapes:\n")
-  model_probs <- x[1, grep("^post_probs\\.", colnames(x))]
-  model_names <- gsub("post_probs\\.", "", names(model_probs))
-  model_df <- data.frame(Model = model_names, Probability = unlist(model_probs))
-  print(model_df, row.names = FALSE)
-
+  #cat("Effective Sample Size (ESS) per Dose Group:\n")
+  #print(attr(x, "ess_avg"), row.names = FALSE)
+  #cat("\n")
   cat("Bayesian Multiple Comparison Procedure\n")
 
   if (n_sim == 1L) {
 
+    cat("Summary:\n")
+    cat("  Sign:", x[1, "sign"], "\n")
+    cat("  Critical Probability:", x[1, "crit_prob_adj"], "\n")
+    cat("  Maximum Posterior Probability:", x[1, "max_post_prob"], "\n\n")
+    
     attr(x, "critProbAdj") <- NULL
     attr(x, "successRate") <- NULL
     class(x)               <- NULL
-
+    cat("Posterior Probabilities for Model Shapes:\n")
+    model_probs <- x[1, grep("^post_probs\\.", colnames(x))]
+    model_names <- gsub("post_probs\\.", "", names(model_probs))
+    model_df <- data.frame(Model = model_names, Probability = unlist(model_probs))
+    print(model_df, row.names = FALSE)
+    
     print.default(x, ...)
 
     # if (any(!is.na(attr(x, "essAvg")))) {
