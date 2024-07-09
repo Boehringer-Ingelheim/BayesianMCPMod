@@ -1,5 +1,5 @@
 ---
-title: "Vignette BayesianMCPMod"
+title: "Comparison Vignette BayesianMCPMod"
 subtitle: "WORK IN PROGRESS"
 date: today
 format: 
@@ -196,8 +196,8 @@ library(MCPModPack)
 library(kableExtra)
 library(data.table)
 library(here)
-# invisible(here("functions_simulations.R"))
-# source("functions_simulations.R")
+#invisible(here("functions_simulations.R"))
+#source("functions_simulations.R")
 
 set.seed(7015)
 ```
@@ -238,7 +238,7 @@ exp.g <- guesst(d=doses.sim[2],p=0.05,model="exponential", Maxd=max.dose)
 logit.g <- guesst(d=c(doses.sim[2],doses.sim[3]),p=c(0.1,0.9),"logistic",Maxd=max.dose) 
 sigEmax.g <- guesst(d=c(doses.sim[2],doses.sim[3]),p=c(0.15,0.75), model = "sigEmax") 
 quad.g <- guesst(d=doses.sim[2],p=0.35,model="quadratic")
-beta.g <- guesst(d=doses.sim[2],p=0.2,model="betaMod", dMax=5.5, scal=8.6, Maxd=max.dose)
+beta.g <- guesst(d=doses.sim[2],p=0.2,model="betaMod", dMax=5.5, scal=9.6, Maxd=max.dose)
 
 ### define models to be tested in MCPMod
 models <- Mods(linear=NULL, 
@@ -252,7 +252,7 @@ models <- Mods(linear=NULL,
                placEff = plc.guess, 
                maxEff = expectedEffect_fix,
                direction = "increasing",
-               addArgs = list(scal=8.6) # SB: Please add this to all Mods where we are using the beta model 
+               addArgs = list(scal=9.6) # SB: Please add this to all Mods where we are using the beta model 
 )
 
 alpha <- 0.05
@@ -325,7 +325,7 @@ non_monotonic_models <- Mods(linear=NULL,
 plot(non_monotonic_models,main = "non monotonic Scenario")
 
 
-variability_scenario <- c("linear","exponential", "emax",  "logistic", "sigEmax")
+variability_scenario <- c("linear","exponential", "emax")
 
 kable(t(as.data.table(cbind(doses_var, Nsample_var))))%>%
     kable_classic(full_width = TRUE)%>%
@@ -334,8 +334,6 @@ kable(t(as.data.table(cbind(doses_var, Nsample_var))))%>%
 var_models <- Mods(linear=NULL, 
                exponential = exp.g,
                emax = emax.g,
-               logistic=logit.g,
-               sigEmax = sigEmax.g,
                doses = doses_var,
                placEff = plc.guess, 
                maxEff = expectedEffect_fix,
@@ -370,7 +368,7 @@ non_monotonic_modelsPack = list(linear = NA,
               emax = 0.6666667 ,
               sigEmax =  c(1.528629, 4.087463),
               quadratic = -0.09688711 ,
-              betaMod(dose = doses.sim, e0 = plc.guess, eMax = 5.5, delta1 = 1, delta2 = 0.2, scal= 8.6))
+              betaMod(dose = doses.sim, e0 = plc.guess, eMax = 5.5, delta1 = 1, delta2 = 0.2, scal= 9.6))
 
 var_modelsPack = list(linear = NA,
               exponential = 4.447149,
@@ -683,7 +681,7 @@ sim_models_non_monotonic_quadratic = list(quadratic = -0.09688711,
                   sd = rep(sd.sim, length(doses.sim)),
                   placebo_effect = plc.guess)
 
-sim_models_non_monotonic_beta = list( betaMod(dose = doses.sim, e0 = plc.guess, eMax = 5.5, delta1 = 1, delta2 = 0.2, scal= 8.6),
+sim_models_non_monotonic_beta = list( betaMod(dose = doses.sim, e0 = plc.guess, eMax = 5.5, delta1 = 1, delta2 = 0.2, scal= 9.6),
                   max_effect = c(0.05,0.1,0.2,0.3,0.5),
                   sd = rep(sd.sim, length(doses.sim)),
                   placebo_effect = plc.guess)
@@ -1022,15 +1020,7 @@ sim_models_var_emax = list(emax = 0.6666667,
                   sd = rep(sd.sim_var, length(doses_var)),
                   placebo_effect = plc.guess)
 
-sim_models_var_sigemax = list(sigemax =  c(1.528629, 4.087463),
-                  max_effect = c(0.05,0.1,0.2,0.3,0.5),
-                  sd = rep(sd.sim_var, length(doses_var)),
-                  placebo_effect = plc.guess)
 
-sim_models_var_logistic = list(logistic = c(1.5, 0.2275598),
-                  max_effect = c(0.05,0.1,0.2,0.3,0.5),
-                  sd = rep(sd.sim_var, length(doses_var)),
-                  placebo_effect = plc.guess)
 
 # Simulation parameters
 sim_parameters_var = list(n = Nsample_var, 
@@ -1043,22 +1033,18 @@ sim_parameters_var = list(n = Nsample_var,
 power_var_linear <- func_sim(var_modelsPack, sim_models_var_linear, sim_parameters_var)
 power_var_exp <- func_sim(var_modelsPack, sim_models_var_exp, sim_parameters_var)
 power_var_emax <- func_sim(var_modelsPack, sim_models_var_emax, sim_parameters_var)
-power_var_sigemax <- func_sim(var_modelsPack, sim_models_var_sigemax, sim_parameters_var)
-power_var_logistic <- func_sim(var_modelsPack, sim_models_var_logistic, sim_parameters_var)
 
 results_var_MCP <- data.table(
   Max_eff = c(0.05, 0.1, 0.2, 0.3, 0.5),
   Linear = power_var_linear$sim_results$power,
   Exponential = power_var_exp$sim_results$power,
-  Emax = power_var_emax$sim_results$power,
-  Logistic = power_var_logistic$sim_results$power,
-  sigEmax = power_var_sigemax$sim_results$power
+  Emax = power_var_emax$sim_results$power
 )
 
 kable(results_var_MCP)%>%
   kable_classic(full_width = TRUE)%>%
-    add_header_above(c("Power results different expected effects" = 6), font_size = 15, bold = TRUE)%>%
-    add_header_above(c("Variability scenario" = 6), font_size = 15, bold = TRUE)
+    add_header_above(c("Power results different expected effects" = 4), font_size = 15, bold = TRUE)%>%
+    add_header_above(c("Variability scenario" = 4), font_size = 15, bold = TRUE)
 
 
 ```
@@ -1069,14 +1055,11 @@ kable(results_var_MCP)%>%
 sim_models_var_linear$max_effect <- expectedEffect_fix
 sim_models_var_exp$max_effect <- expectedEffect_fix
 sim_models_var_emax$max_effect <- expectedEffect_fix
-sim_models_var_sigemax$max_effect <- expectedEffect_fix
-sim_models_var_logistic$max_effect <- expectedEffect_fix
+
 
 # store results
 power_var_nsample_linear <- vector()
 power_var_nsample_exp <- vector()
-power_var_nsample_logistic <- vector()
-power_var_nsample_sigemax <- vector()
 power_var_nsample_emax <- vector()
 
 # Loop over nsample values
@@ -1096,11 +1079,6 @@ for (i in seq_along(nsample_list_var)) {
   power_nsample_emax <- func_sim(var_modelsPack, sim_models_var_emax, sim_parameters_var)
   power_var_nsample_emax[i] <-power_nsample_emax$sim_results$power
   
-  power_nsample_sigemax <- func_sim(var_modelsPack, sim_models_var_sigemax, sim_parameters_var)
-  power_var_nsample_sigemax[i] <- power_nsample_sigemax$sim_results$power
-  
-  power_nsample_logistic <- func_sim(var_modelsPack, sim_models_var_logistic, sim_parameters_var)
-  power_var_nsample_logistic[i] <- power_nsample_logistic$sim_results$power
   
 }
 
@@ -1109,15 +1087,13 @@ results_var_MCP_nsample <- data.table(
   N_sample = c("(40,20,20,20,40)","(30,30,30,30,30)", "(48,24,24,24,48)","(36,36,36,36,36)"),
   Linear = power_var_nsample_linear,
   Exponential = power_var_nsample_exp,
-  Emax = power_var_nsample_emax,
-  sigEmax = power_var_nsample_sigemax,
-  Logistic = power_var_nsample_logistic
+  Emax = power_var_nsample_emax
 )
 
 kable(results_var_MCP_nsample)%>%
   kable_classic(full_width = TRUE)%>%
-    add_header_above(c("Power results different sample sizes" = 6), font_size = 15, bold = TRUE)%>%
-    add_header_above(c("Variability scenario" = 6), font_size = 15, bold = TRUE)
+    add_header_above(c("Power results different sample sizes" = 4), font_size = 15, bold = TRUE)%>%
+    add_header_above(c("Variability scenario" = 4), font_size = 15, bold = TRUE)
 
 ```
 
@@ -1493,8 +1469,6 @@ results_list_Bay_var <- purrr::map(c(0.05,0.1,0.2,0.3,0.5), function(i) {
 var_models <- Mods(linear = NULL, 
                    exponential = exp.g,
                    emax = emax.g,
-                   logistic=logit.g,
-                   sigEmax = sigEmax.g,
                    doses = doses_var,
                    placEff = plc.guess, 
                    maxEff = i,
@@ -1533,8 +1507,6 @@ results_list_nsample_Bay_var <- list()
 var_models <- Mods(linear=NULL,
                    exponential = exp.g,
                    emax = emax.g,
-                   logistic=logit.g,
-                   sigEmax = sigEmax.g,
                    doses = doses_var,
                    placEff = plc.guess, 
                    maxEff = expectedEffect_fix,
@@ -1677,8 +1649,6 @@ results_var_max_eff <- data.table(
   linear = as.vector(variability_Bay$result_table$linear)-as.vector(results_var_MCP$Linear),
   exponential =  as.vector(variability_Bay$result_table$exponential)-as.vector(results_var_MCP$Exponential),
   emax =  as.vector(variability_Bay$result_table$emax)-as.vector(results_var_MCP$Emax),
-  logistic =  as.vector(variability_Bay$result_table$logistic)-as.vector(results_var_MCP$Logistic),
-  sigemax =  as.vector(variability_Bay$result_table$sigEmax)-as.vector(results_var_MCP$sigEmax),
   expectedEffect = expectedEffect
 )
 
@@ -1752,8 +1722,6 @@ results_var_nsample <- data.table(
   linear = as.vector(var_nsample_Bay$result_table$linear)-as.vector(results_var_MCP_nsample$Linear),
   exponential =  as.vector(var_nsample_Bay$result_table$exponential)-as.vector(results_var_MCP_nsample$Exponential),
   emax =  as.vector(var_nsample_Bay$result_table$emax)-as.vector(results_var_MCP_nsample$Emax),
-  logistic =  as.vector(var_nsample_Bay$result_table$logistic)-as.vector(results_var_MCP_nsample$Logistic),
-  sigemax =  as.vector(var_nsample_Bay$result_table$sigEmax)-as.vector(results_var_MCP_nsample$sigEmax),
   nsample_vector = nsample_vector
 )
 
@@ -2013,7 +1981,7 @@ non_monotonic_models <- Mods(linear=NULL,
                              placEff = plc.guess,
                              maxEff = expectedEffect_fix,
                              direction = "increasing",
-                             addArgs = list(scal=8.6))
+                             addArgs = list(scal=9.6))
 
   #optimal contrasts
 contM <- getContr(mods = non_monotonic_models,
@@ -2119,8 +2087,6 @@ results_list_nsim_Bay_var <- list()
 var_models <- Mods(linear=NULL,
                    exponential = exp.g,
                    emax = emax.g,
-                   logistic=logit.g,
-                   sigEmax = sigEmax.g,
                    doses = doses_var,
                    placEff = plc.guess,
                    maxEff = expectedEffect_fix,
@@ -2155,18 +2121,14 @@ results_nsim_Bay_var <- extract_success_rates_nsim(results_list_nsim_Bay_var, va
 results_list_nsim_MCP_var = list(
   power_var_nsim_linear = vector(),
   power_var_nsim_exp = vector(),
-  power_var_nsim_emax= vector(),
-  power_var_nsim_sigemax = vector(),
-  power_var_nsim_logistic = vector())
+  power_var_nsim_emax= vector())
 
 # assume maximum effect = 0.2
 sim_models_var_linear$max_effect <- expectedEffect_fix
 sim_models_var_exp$max_effect <- expectedEffect_fix
 sim_models_var_emax$max_effect <- expectedEffect_fix
-sim_models_var_sigemax$max_effect <- expectedEffect_fix
-sim_models_var_logistic$max_effect <- expectedEffect_fix
 
-
+sim_parameters_var$n <- Nsample_var
 
 # Loop over the n_sim_values
 for (i in n_sim_values) {
@@ -2182,14 +2144,6 @@ for (i in n_sim_values) {
   power_nsim_emax <- func_sim(var_modelsPack, sim_models_var_emax, sim_parameters_var)
   results_list_nsim_MCP_var$power_var_nsim_emax[as.character(i)] <- power_nsim_emax$sim_results$power
   
-  power_nsim_sigemax <- func_sim(var_modelsPack, sim_models_var_sigemax, sim_parameters_var)
-  results_list_nsim_MCP_var$power_var_nsim_sigemax[as.character(i)] <- power_nsim_sigemax$sim_results$power
-  
-  power_nsim_logistic <- func_sim(var_modelsPack, sim_models_var_logistic, sim_parameters_var)
-  results_list_nsim_MCP_var$power_var_nsim_logistic[as.character(i)] <- power_nsim_logistic$sim_results$power
-  
-  
-  
 }
 ```
 
@@ -2199,21 +2153,15 @@ results_nsim_var <- data.table(
   MCP_linear = results_list_nsim_MCP_var$power_var_nsim_linear,
   MCP_exp = results_list_nsim_MCP_var$power_var_nsim_exp,
   MCP_emax = results_list_nsim_MCP_var$power_var_nsim_emax,
-  MCP_sigemax = results_list_nsim_MCP_var$power_var_nsim_sigemax,
-  MCP_logistic = results_list_nsim_MCP_var$power_var_nsim_logistic,
   Bay_linear = results_nsim_Bay_var$Bay_linear,
   Bay_exp = results_nsim_Bay_var$Bay_exponential,
-  Bay_emax = results_nsim_Bay_var$Bay_emax,
-  Bay_sigemax = results_nsim_Bay_var$Bay_sigEmax,
-  Bay_logistic = results_nsim_Bay_var$Bay_logistic
+  Bay_emax = results_nsim_Bay_var$Bay_emax
 )
 
 results_nsim_diff_var <- data.table(
   linear = results_nsim_var$Bay_linear - results_nsim_var$MCP_linear,
   exponential = results_nsim_var$Bay_exp - results_nsim_var$MCP_exp,
   emax = results_nsim_var$Bay_emax - results_nsim_var$MCP_emax,
-  sigemax = results_nsim_var$Bay_sigemax - results_nsim_var$MCP_sigemax,
-  logistic = results_nsim_var$Bay_logistic - results_nsim_var$MCP_logistic,
   n_sim = n_sim_values
   )
 
