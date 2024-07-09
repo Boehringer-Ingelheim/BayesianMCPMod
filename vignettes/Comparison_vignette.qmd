@@ -1,5 +1,5 @@
 ---
-title: "Comparison frequentist & Bayesian"
+title: "Vignette BayesianMCPMod"
 subtitle: "WORK IN PROGRESS"
 date: today
 format: 
@@ -173,6 +173,16 @@ print_result_Bay_nsample <- function(results, scenario, variable) {
   list(result_table = result_table, kable_result = kable_result)
 }
 
+plot_power_deviation <- function(data, x, xlab){
+  plot <- ggplot2::ggplot(data, aes(x = x, y = value, color = variable, group = variable))+
+    geom_point()+
+    geom_line() +
+    geom_hline(aes(yintercept = 0), linetype = 2)+
+    scale_color_manual(name = "assumed true model", values = c("linear" = "red", "exponential" = "blue", "emax" = "darkgreen", "logistic" = "orange", "sigemax" = "purple", "beta" = "deepskyblue", "quadratic" = "deeppink"))+
+    labs(x = xlab, y = "power deviation")+
+    theme_classic()
+  return(plot)
+}
 
 
 library(BayesianMCPMod)
@@ -185,9 +195,9 @@ library(DoseFinding)
 library(MCPModPack)
 library(kableExtra)
 library(data.table)
-#library(here)
-#invisible(here("functions_simulations.R"))
-#source("functions_simulations.R")
+library(here)
+# invisible(here("functions_simulations.R"))
+# source("functions_simulations.R")
 
 set.seed(7015)
 ```
@@ -310,7 +320,7 @@ non_monotonic_models <- Mods(linear=NULL,
                placEff = plc.guess, 
                maxEff = expectedEffect_fix,
                direction = "increasing",
-               addArgs = list(scal=8.6)
+               addArgs = list(scal=9.6)
 )
 plot(non_monotonic_models,main = "non monotonic Scenario")
 
@@ -568,11 +578,11 @@ power_monotonic_emax <- func_sim(monotonic_modelsPack, sim_models_monotonic_emax
 
 results_monotonic_MCP <- data.table(
   Max_eff = c(0.05, 0.1, 0.2, 0.3, 0.5),
-  Linear = power_monotonic_linear$sim_results$power,
-  Exponential = power_monotonic_exp$sim_results$power,
-  Emax = power_monotonic_emax$sim_results$power,
-  Logistic = power_monotonic_logistic$sim_results$power,
-  sigEmax = power_monotonic_sigemax$sim_results$power,
+  Linear = c(power_monotonic_linear$sim_results$power),
+  Exponential = c(power_monotonic_exp$sim_results$power),
+  Emax = c(power_monotonic_emax$sim_results$power),
+  Logistic = c(power_monotonic_logistic$sim_results$power),
+  sigEmax = c(power_monotonic_sigemax$sim_results$power),
   Average = c(sum(power_monotonic_linear$sim_results$power[1], power_monotonic_exp$sim_results$power[1], power_monotonic_emax$sim_results$power[1], power_monotonic_logistic$sim_results$power[1], power_monotonic_sigemax$sim_results$power[1])/5,
               sum(power_monotonic_linear$sim_results$power[2], power_monotonic_exp$sim_results$power[2], power_monotonic_emax$sim_results$power[2], power_monotonic_logistic$sim_results$power[2], power_monotonic_sigemax$sim_results$power[2])/5,
               sum(power_monotonic_linear$sim_results$power[3], power_monotonic_exp$sim_results$power[3],power_monotonic_emax$sim_results$power[3], power_monotonic_logistic$sim_results$power[3], power_monotonic_sigemax$sim_results$power[3])/5,
@@ -682,24 +692,101 @@ sim_models_non_monotonic_beta = list( betaMod(dose = doses.sim, e0 = plc.guess, 
 power_non_monotonic_linear <- func_sim(non_monotonic_modelsPack, sim_models_non_monotonic_linear, sim_parameters) 
 power_non_monotonic_emax <- func_sim(non_monotonic_modelsPack, sim_models_non_monotonic_emax, sim_parameters) 
 power_non_monotonic_sigemax <- func_sim(non_monotonic_modelsPack, sim_models_non_monotonic_sigemax, sim_parameters) 
-power_non_monotonic_quadratic <- func_sim(non_monotonic_modelsPack, sim_models_non_monotonic_quadratic, sim_parameters) 
+#power_non_monotonic_quadratic <- func_sim(non_monotonic_modelsPack, sim_models_non_monotonic_quadratic, sim_parameters) 
 #power_non_monotonic_beta <- func_sim(sim_models_non_monotonic_beta, sim_parameters) 
 
+
+    
+
+```
+### quadratic with DoseFinding package
+```{r}
+set.seed(7015)
+mvt_control <- mvtnorm.control(maxpts = 30000, abseps = 0.001, releps = 0)
+doses <- c(0,1,2,4,8)
+allocation <- c(1,1,1,1,1)
+alpha <- 0.05
+addArgs <- list(off = 0.08, scal = 9.6)
+
+resp_mod_list <- list(quadratic = -0.09688711)
+cand_mod_list <- list(linear = NULL, emax = 0.6666667, quadratic = -0.09688711, betaMod = rbind(c(1, 0.2)), sigEmax = rbind(c(1.528629, 4.087463)))
+mods <- do.call(Mods, append(cand_mod_list, 
+        list(maxEff = 1, doses = doses, placEff = 0, addArgs = addArgs)))
+cont_mat <- optContr(mods, w = allocation)
+
+grd <- expand.grid(max_eff = c(0.05,0.1,0.2,0.3,0.5), sd = c(0.4), n_total = c(200))
+power_list <- vector("list", nrow(grd))
+dat_n <- t(sapply(grd$n_total, function(n) round(n*allocation/sum(allocation))))
+colnames(dat_n) <- paste0("D", doses)
+for (i in 1:nrow(grd)) {
+  ######
+  mods <- do.call(Mods, append(resp_mod_list, list(maxEff = grd$max_eff[i], doses = doses,
+  placEff = 0, addArgs = addArgs)))
+  n <- dat_n[i, ]
+  power_list[[i]] <- powMCT(cont_mat, alpha, mods, n, grd$sd[i], control = mvt_control)
+}
+power_df <- as.data.frame(do.call("rbind", power_list))
+mu <- getResp(mods)
+parList <- attr(mu, 'parList')
+mod_nams <- DoseFinding:::getModNams(parList)
+colnames(power_df) <- mod_nams
+power_df[['mean power']] <- apply(power_df, 1, mean)
+result <- cbind(grd, power_df, dat_n)
+power_non_monotonic_quadratic <- result$`quadratic (delta=-0.09688711)`
+
+```
+### beta with DoseFinding package
+```{r}
+set.seed(7015)
+mvt_control <- mvtnorm.control(maxpts = 30000, abseps = 0.001, releps = 0)
+doses <- c(0,1,2,4,8)
+allocation <- c(1,1,1,1,1)
+alpha <- 0.05
+addArgs <- list(off = 0.08, scal = 9.6)
+
+resp_mod_list <- list(betaMod = rbind(c(1, 0.2)))
+cand_mod_list <- list(linear = NULL, emax = 0.6666667, quadratic = -0.09688711, betaMod = rbind(c(1, 0.2)), sigEmax = rbind(c(1.528629, 4.087463)))
+mods <- do.call(Mods, append(cand_mod_list, 
+        list(maxEff = 1, doses = doses, placEff = 0, addArgs = addArgs)))
+cont_mat <- optContr(mods, w = allocation)
+
+grd <- expand.grid(max_eff = c(0.05,0.1,0.2,0.3,0.5), sd = c(0.4), n_total = c(200))
+power_list <- vector("list", nrow(grd))
+dat_n <- t(sapply(grd$n_total, function(n) round(n*allocation/sum(allocation))))
+colnames(dat_n) <- paste0("D", doses)
+for (i in 1:nrow(grd)) {
+  ######
+  mods <- do.call(Mods, append(resp_mod_list, list(maxEff = grd$max_eff[i], doses = doses,
+  placEff = 0, addArgs = addArgs)))
+  n <- dat_n[i, ]
+  power_list[[i]] <- powMCT(cont_mat, alpha, mods, n, grd$sd[i], control = mvt_control)
+}
+power_df <- as.data.frame(do.call("rbind", power_list))
+mu <- getResp(mods)
+parList <- attr(mu, 'parList')
+mod_nams <- DoseFinding:::getModNams(parList)
+colnames(power_df) <- mod_nams
+power_df[['mean power']] <- apply(power_df, 1, mean)
+result <- cbind(grd, power_df, dat_n)
+power_non_monotonic_beta <- result$`betaMod (delta1=1,delta2=0.2,scal=9.6)`
+```
+
+
+```{r}
 #linear, emax, sigemax, quadratic
 results_non_monotonic_MCP <- data.table(
   Max_eff = c(0.05, 0.1, 0.2, 0.3, 0.5),
   Linear = power_non_monotonic_linear$sim_results$power,
   Emax = power_non_monotonic_emax$sim_results$power,
   sigEmax = power_non_monotonic_sigemax$sim_results$power,
-  quadratic = power_non_monotonic_quadratic$sim_results$power)
+  quadratic = power_non_monotonic_quadratic,
+  beta = power_non_monotonic_beta)
 
 
 kable(results_non_monotonic_MCP)%>%
   kable_classic(full_width = TRUE)%>%
-    add_header_above(c("Power results different expected effects" = 5), font_size = 15, bold = TRUE)%>%
-    add_header_above(c("Non-monotonic scenario" = 5), font_size = 15, bold = TRUE)
-    
-
+    add_header_above(c("Power results different expected effects" = 6), font_size = 15, bold = TRUE)%>%
+    add_header_above(c("Non-monotonic scenario" = 6), font_size = 15, bold = TRUE)
 ```
 
 ### Nsample
@@ -718,6 +805,7 @@ power_non_monotonic_nsample_linear <- vector()
 power_non_monotonic_nsample_emax <- vector()
 power_non_monotonic_nsample_quadratic <- vector()
 power_non_monotonic_nsample_sigemax <- vector()
+power_non_monotonic_nsample_beta <- vector()
 
 # Loop over nsample values
 for (i in seq_along(nsample_list)) {
@@ -736,29 +824,181 @@ for (i in seq_along(nsample_list)) {
   power_nsample_sigemax <- func_sim(non_monotonic_modelsPack, sim_models_non_monotonic_sigemax, sim_parameters)
   power_non_monotonic_nsample_sigemax[i] <- power_nsample_sigemax$sim_results$power
   
-   power_nsample_quadratic <- func_sim(non_monotonic_modelsPack, sim_models_non_monotonic_quadratic, sim_parameters)
-  power_non_monotonic_nsample_quadratic[i] <- power_nsample_quadratic$sim_results$power
+   #power_nsample_quadratic <- func_sim(non_monotonic_modelsPack, sim_models_non_monotonic_quadratic, sim_parameters)
+   #power_non_monotonic_nsample_quadratic[i] <- power_nsample_quadratic$sim_results$power
   
   
 }
 
+
+
+
+
+```
+
+### quadratic with DoseFinding
+
+```{r}
+#allocation = c(1,1,1,1,1)
+set.seed(7015)
+mvt_control <- mvtnorm.control(maxpts = 30000, abseps = 0.001, releps = 0)
+doses <- c(0,1,2,4,8)
+allocation <- c(1,1,1,1,1)
+alpha <- 0.05
+addArgs <- list(off = 0.08, scal = 9.6)
+
+resp_mod_list <- list(quadratic = -0.09688711)
+cand_mod_list <- list(linear = NULL, emax = 0.6666667, quadratic = -0.09688711, betaMod = rbind(c(1, 0.2)), sigEmax = rbind(c(1.528629, 4.087463)))
+mods <- do.call(Mods, append(cand_mod_list, 
+        list(maxEff = 1, doses = doses, placEff = 0, addArgs = addArgs)))
+cont_mat <- optContr(mods, w = allocation)
+
+grd <- expand.grid(max_eff = c(0.2), sd = c(0.4), n_total = c(150,180))
+power_list <- vector("list", nrow(grd))
+dat_n <- t(sapply(grd$n_total, function(n) round(n*allocation/sum(allocation))))
+colnames(dat_n) <- paste0("D", doses)
+for (i in 1:nrow(grd)) {
+  ######
+  mods <- do.call(Mods, append(resp_mod_list, list(maxEff = grd$max_eff[i], doses = doses,
+  placEff = 0, addArgs = addArgs)))
+  n <- dat_n[i, ]
+  power_list[[i]] <- powMCT(cont_mat, alpha, mods, n, grd$sd[i], control = mvt_control)
+}
+power_df <- as.data.frame(do.call("rbind", power_list))
+mu <- getResp(mods)
+parList <- attr(mu, 'parList')
+mod_nams <- DoseFinding:::getModNams(parList)
+colnames(power_df) <- mod_nams
+power_df[['mean power']] <- apply(power_df, 1, mean)
+result <- cbind(grd, power_df, dat_n)
+power_non_monotonic_nsample_quadratic[2] <- result$`quadratic (delta=-0.09688711)`[1]
+power_non_monotonic_nsample_quadratic[4] <- result$`quadratic (delta=-0.09688711)`[2]
+
+# allocation = c(2,1,1,1,2)
+mvt_control <- mvtnorm.control(maxpts = 30000, abseps = 0.001, releps = 0)
+doses <- c(0,1,2,4,8)
+allocation <- c(2,1,1,1,2)
+alpha <- 0.05
+addArgs <- list(off = 0.08, scal = 9.6)
+
+resp_mod_list <- list(quadratic = -0.09688711)
+cand_mod_list <- list(linear = NULL, emax = 0.6666667, quadratic = -0.09688711, betaMod = rbind(c(1, 0.2)), sigEmax = rbind(c(1.528629, 4.087463)))
+mods <- do.call(Mods, append(cand_mod_list, 
+        list(maxEff = 1, doses = doses, placEff = 0, addArgs = addArgs)))
+cont_mat <- optContr(mods, w = allocation)
+
+grd <- expand.grid(max_eff = c(0.2), sd = c(0.4), n_total = c(140,168))
+power_list <- vector("list", nrow(grd))
+dat_n <- t(sapply(grd$n_total, function(n) round(n*allocation/sum(allocation))))
+colnames(dat_n) <- paste0("D", doses)
+for (i in 1:nrow(grd)) {
+  ######
+  mods <- do.call(Mods, append(resp_mod_list, list(maxEff = grd$max_eff[i], doses = doses,
+  placEff = 0, addArgs = addArgs)))
+  n <- dat_n[i, ]
+  power_list[[i]] <- powMCT(cont_mat, alpha, mods, n, grd$sd[i], control = mvt_control)
+}
+power_df <- as.data.frame(do.call("rbind", power_list))
+mu <- getResp(mods)
+parList <- attr(mu, 'parList')
+mod_nams <- DoseFinding:::getModNams(parList)
+colnames(power_df) <- mod_nams
+power_df[['mean power']] <- apply(power_df, 1, mean)
+result <- cbind(grd, power_df, dat_n)
+power_non_monotonic_nsample_quadratic[1] <- result$`quadratic (delta=-0.09688711)`[1]
+power_non_monotonic_nsample_quadratic[3] <- result$`quadratic (delta=-0.09688711)`[2]
+```
+
+### beta with DoseFinding
+
+```{r}
+#allocation = c(1,1,1,1,1)
+set.seed(7015)
+mvt_control <- mvtnorm.control(maxpts = 30000, abseps = 0.001, releps = 0)
+doses <- c(0,1,2,4,8)
+allocation <- c(1,1,1,1,1)
+alpha <- 0.05
+addArgs <- list(off = 0.08, scal = 9.6)
+
+resp_mod_list <- list(betaMod = rbind(c(1, 0.2)))
+cand_mod_list <- list(linear = NULL, emax = 0.6666667, quadratic = -0.09688711, betaMod = rbind(c(1, 0.2)), sigEmax = rbind(c(1.528629, 4.087463)))
+mods <- do.call(Mods, append(cand_mod_list, 
+        list(maxEff = 1, doses = doses, placEff = 0, addArgs = addArgs)))
+cont_mat <- optContr(mods, w = allocation)
+
+grd <- expand.grid(max_eff = c(0.2), sd = c(0.4), n_total = c(150,180))
+power_list <- vector("list", nrow(grd))
+dat_n <- t(sapply(grd$n_total, function(n) round(n*allocation/sum(allocation))))
+colnames(dat_n) <- paste0("D", doses)
+for (i in 1:nrow(grd)) {
+  ######
+  mods <- do.call(Mods, append(resp_mod_list, list(maxEff = grd$max_eff[i], doses = doses,
+  placEff = 0, addArgs = addArgs)))
+  n <- dat_n[i, ]
+  power_list[[i]] <- powMCT(cont_mat, alpha, mods, n, grd$sd[i], control = mvt_control)
+}
+power_df <- as.data.frame(do.call("rbind", power_list))
+mu <- getResp(mods)
+parList <- attr(mu, 'parList')
+mod_nams <- DoseFinding:::getModNams(parList)
+colnames(power_df) <- mod_nams
+power_df[['mean power']] <- apply(power_df, 1, mean)
+result <- cbind(grd, power_df, dat_n)
+power_non_monotonic_nsample_beta[2] <- result$`betaMod (delta1=1,delta2=0.2,scal=9.6)`[1]
+power_non_monotonic_nsample_beta[4] <- result$`betaMod (delta1=1,delta2=0.2,scal=9.6)`[2]
+
+# allocation = c(2,1,1,1,2)
+mvt_control <- mvtnorm.control(maxpts = 30000, abseps = 0.001, releps = 0)
+doses <- c(0,1,2,4,8)
+allocation <- c(2,1,1,1,2)
+alpha <- 0.05
+addArgs <- list(off = 0.08, scal = 9.6)
+
+resp_mod_list <- list(betaMod = rbind(c(1, 0.2)))
+cand_mod_list <- list(linear = NULL, emax = 0.6666667, quadratic = -0.09688711, betaMod = rbind(c(1, 0.2)), sigEmax = rbind(c(1.528629, 4.087463)))
+mods <- do.call(Mods, append(cand_mod_list, 
+        list(maxEff = 1, doses = doses, placEff = 0, addArgs = addArgs)))
+cont_mat <- optContr(mods, w = allocation)
+
+grd <- expand.grid(max_eff = c(0.2), sd = c(0.4), n_total = c(140,168))
+power_list <- vector("list", nrow(grd))
+dat_n <- t(sapply(grd$n_total, function(n) round(n*allocation/sum(allocation))))
+colnames(dat_n) <- paste0("D", doses)
+for (i in 1:nrow(grd)) {
+  ######
+  mods <- do.call(Mods, append(resp_mod_list, list(maxEff = grd$max_eff[i], doses = doses,
+  placEff = 0, addArgs = addArgs)))
+  n <- dat_n[i, ]
+  power_list[[i]] <- powMCT(cont_mat, alpha, mods, n, grd$sd[i], control = mvt_control)
+}
+power_df <- as.data.frame(do.call("rbind", power_list))
+mu <- getResp(mods)
+parList <- attr(mu, 'parList')
+mod_nams <- DoseFinding:::getModNams(parList)
+colnames(power_df) <- mod_nams
+power_df[['mean power']] <- apply(power_df, 1, mean)
+result <- cbind(grd, power_df, dat_n)
+power_non_monotonic_nsample_beta[1] <- result$`betaMod (delta1=1,delta2=0.2,scal=9.6)`[1]
+power_non_monotonic_nsample_beta[3] <- result$`betaMod (delta1=1,delta2=0.2,scal=9.6)`[2]
+```
+
+
+```{r}
 results_non_monotonic_MCP_nsample <- data.table(
   N_sample = c("(40,20,20,20,40)","(30,30,30,30,30)", "(48,24,24,24,48)","(36,36,36,36,36)"),
   Linear = power_non_monotonic_nsample_linear,
   Emax = power_non_monotonic_nsample_emax,
   sigEmax = power_non_monotonic_nsample_sigemax,
-  quadratic = power_non_monotonic_nsample_quadratic
+  quadratic = power_non_monotonic_nsample_quadratic,
+  beta = power_non_monotonic_nsample_beta
 )
 
 
 kable(results_non_monotonic_MCP_nsample)%>%
   kable_classic(full_width = TRUE)%>%
-    add_header_above(c("Power results different sample sizes" = 5), font_size = 15, bold = TRUE)%>%
-    add_header_above(c("Non-monotonic scenario" = 5), font_size = 15, bold = TRUE)
+    add_header_above(c("Power results different sample sizes" = 6), font_size = 15, bold = TRUE)%>%
+    add_header_above(c("Non-monotonic scenario" = 6), font_size = 15, bold = TRUE)
     
-
-
-
 ```
 
 ## variability
@@ -958,6 +1198,19 @@ Now we assume an fix maximum effect of 0.2 and different sample sizes.
 # Define the list of sample sizes
 nsample_list = list(20*c(2,1,1,1,2),30*c(1,1,1,1,1), 24*c(2,1,1,1,2),36*c(1,1,1,1,1))
 
+#optimal contrasts
+#allocation c(1,1,1,1,1)
+contM <- getContr(mods = min_models, 
+                  dose_levels = doses.sim, 
+                  prior_list = uninf_prior_list, 
+                  dose_weights = c(1,1,1,1,1))
+
+#allocation c(2,1,1,1,2)
+contM_2 <- getContr(mods = min_models, 
+                  dose_levels = doses.sim, 
+                  prior_list = uninf_prior_list, 
+                  dose_weights = c(2,1,1,1,2))
+contrasts_list = list(contM_2, contM, contM_2, contM)
 
 # Initialize list to store results
 results_list_nsample_min_Bay <- list()
@@ -970,12 +1223,7 @@ min_models <- Mods(linear=NULL,
                      placEff = plc.guess, 
                      maxEff = expectedEffect_fix,
                      direction = "increasing")
-  #optimal contrasts
-contM <- getContr(mods = min_models, 
-                  dose_levels = doses.sim, 
-                  prior_list = uninf_prior_list, 
-                  dose_weights = c(1,1,1,1,1))
-
+  
 # Loop over nsample values
 for (i in seq_along(nsample_list)) {
   
@@ -988,7 +1236,7 @@ success_probabilities_min <- assessDesign(
   sd          = sd.sim,
   n_sim       = n_sim,
   alpha_crit_val = alpha, 
-  contr = contM)
+  contr = contrasts_list[[i]])
 
 
 # Store result in list
@@ -1054,6 +1302,7 @@ results_monotonic_Bay <- extract_success_rates(results_list_Bay_monotonic, monot
 
 monotonic_Bay <- print_result_Bay_max_eff(results_monotonic_Bay, c(monotonic_scenario, "average"), expectedEffect)
   
+
 monotonic_Bay$kable_result
 
 
@@ -1075,11 +1324,19 @@ monotonic_models <- Mods(linear=NULL,
                          maxEff = expectedEffect_fix,
                          direction = "increasing")
  
-# optimal contrasts
+#optimal contrasts
+#allocation c(1,1,1,1,1)
 contM <- getContr(mods = monotonic_models, 
                   dose_levels = doses.sim, 
                   prior_list = uninf_prior_list, 
-                  dose_weights = c(1,1,1,1,1))  
+                  dose_weights = c(1,1,1,1,1))
+
+#allocation c(2,1,1,1,2)
+contM_2 <- getContr(mods = monotonic_models, 
+                  dose_levels = doses.sim, 
+                  prior_list = uninf_prior_list, 
+                  dose_weights = c(2,1,1,1,2))
+contrasts_list = list(contM_2, contM, contM_2, contM)
 
 # Loop over nsample values
 for (i in seq_along(nsample_list)) {
@@ -1093,7 +1350,7 @@ success_probabilities_monotonic <- assessDesign(
   sd          = sd.sim,
   n_sim       = n_sim,
   alpha_crit_val = alpha, 
-  contr = contM)
+  contr = contrasts_list[[i]])
 
 
 # Store result in list
@@ -1127,7 +1384,7 @@ results_list_Bay_non_monotonic <- purrr::map(c(0.05,0.1,0.2,0.3,0.5), function(i
                                placEff = plc.guess, 
                                maxEff = i,
                                direction = "increasing",
-                               addArgs = list(scal=8.6))
+                               addArgs = list(scal=9.6))
                  
   #optimal contrasts
 contM <- getContr(mods = non_monotonic_models, 
@@ -1172,13 +1429,20 @@ non_monotonic_models <- Mods(linear=NULL,
                              placEff = plc.guess, 
                              maxEff = expectedEffect_fix,
                              direction = "increasing",
-                             addArgs = list(scal=8.6))
+                             addArgs = list(scal=9.6))
  
   #optimal contrasts
 contM <- getContr(mods = non_monotonic_models, 
                   dose_levels = doses.sim, 
                   prior_list = uninf_prior_list, 
                   dose_weights = c(1,1,1,1,1))
+
+contM_2 <- getContr(mods = non_monotonic_models, 
+                  dose_levels = doses.sim, 
+                  prior_list = uninf_prior_list, 
+                  dose_weights = c(2,1,1,1,2))
+
+contrasts_list = list(contM_2, contM, contM_2, contM)
   
 # Loop over nsample values
 for (i in seq_along(nsample_list)) {
@@ -1192,7 +1456,7 @@ success_probabilities_non_monotonic <- assessDesign(
   sd          = sd.sim,
   n_sim       = n_sim,
   alpha_crit_val = alpha, 
-  contr = contM)
+  contr = contrasts_list[[i]])
 
 
 # Store result in list
@@ -1276,10 +1540,17 @@ var_models <- Mods(linear=NULL,
                    maxEff = expectedEffect_fix,
                    direction = "increasing")
 
+#optimal contrasts
 contM <- getContr(mods = var_models, 
                   dose_levels = doses_var, 
                   prior_list = var_uninf_prior_list, 
                   dose_weights = c(1,1,1,1))
+
+contM_2 <- getContr(mods = var_models, 
+                  dose_levels = doses_var, 
+                  prior_list = var_uninf_prior_list, 
+                  dose_weights = c(2,1,1,2))
+contrasts_list = list(contM_2, contM, contM_2, contM)
 
 # Loop over nsample values
 for (i in seq_along(nsample_list_var)) {
@@ -1293,7 +1564,7 @@ success_probabilities_var <- assessDesign(
   sd          = sd.sim_var,
   n_sim       = n_sim,
   alpha_crit_val = alpha, 
-  contr = contM)
+  contr = contrasts_list[[i]])
 
 
 # Store result in list
@@ -1336,6 +1607,15 @@ var_nsample_Bay$kable_result
 ## maximum effect
 ### minimal scenario
 ```{r}
+#table with results
+kable(results_min_MCP)%>%
+  kable_classic(full_width = TRUE)%>%
+    add_header_above(c("Power results different expected effects " = 5), font_size = 15, bold = TRUE)%>%
+    add_header_above(c("MCPModPack " = 5), font_size = 15, bold = TRUE)
+    
+minimal_Bay$kable_result
+
+#difference of power values
 results_min_max_eff <- data.table(
   linear = as.vector(minimal_Bay$result_table$linear)-as.vector(results_min_MCP$Linear),
   exponential = as.vector(minimal_Bay$result_table$exponential)-as.vector(results_min_MCP$Exponential),
@@ -1345,16 +1625,14 @@ results_min_max_eff <- data.table(
 
 results_min_max_eff <- melt(results_min_max_eff, id.vars = "expectedEffect")
 
-plot_minimal <- ggplot2::ggplot(results_min_max_eff, aes(x = expectedEffect, y = value, color = variable, group = variable))+
-  geom_point()+
-  geom_line() +
-  geom_hline(aes(yintercept = 0), linetype = 2)+
-  scale_color_manual(name = "assumed true model", values = c("linear" = "red", "exponential" = "blue", "emax" = "green"))+
-  labs(x = "assumed maximum effects", y = "power deviation")+
-  ylim(c(-0.1, 0.1))+
-  theme_classic()
+plot_minimal <- plot_power_deviation(results_min_max_eff, results_min_max_eff$expectedEffect, "assumed maximum effect")
 plot_minimal
 ```
+```{r}
+
+```
+
+
 ### monotonic scenario
 ```{r}
 results_monotonic_max_eff <- data.table(
@@ -1368,16 +1646,11 @@ results_monotonic_max_eff <- data.table(
 
 results_monotonic_max_eff <- melt(results_monotonic_max_eff, id.vars = "expectedEffect")
 
-plot_monotonic <- ggplot2::ggplot(results_monotonic_max_eff, aes(x = expectedEffect, y = value, color = variable, group = variable))+
-  geom_point()+
-  geom_line() +
-  geom_hline(aes(yintercept = 0), linetype = 2)+
-  scale_color_manual(name = "assumed true model", values = c("linear" = "red", "exponential" = "blue", "emax" = "green", "logistic" = "orange", "sigemax" = "purple"))+
-  labs(x = "assumed maximum effects", y = "power deviation")+
-  ylim(c(-0.1, 0.1))+
-  theme_classic()
+plot_monotonic <- plot_power_deviation(results_monotonic_max_eff, results_monotonic_max_eff$expectedEffect, "assumed maximum effect")
 plot_monotonic
 ```
+
+
 
 ### non - monotonic scenario
 
@@ -1387,19 +1660,13 @@ results_non_monotonic_max_eff <- data.table(
   emax = as.vector(non_monotonic_Bay$result_table$emax)-as.vector(results_non_monotonic_MCP$Emax),
   sigemax = as.vector(non_monotonic_Bay$result_table$sigEmax)-as.vector(results_non_monotonic_MCP$sigEmax),
   quadratic = as.vector(non_monotonic_Bay$result_table$quadratic)-as.vector(results_non_monotonic_MCP$quadratic),
+  beta = as.vector(non_monotonic_Bay$result_table$beta)-as.vector(results_non_monotonic_MCP$beta),
   expectedEffect = expectedEffect
   )
 
 results_non_monotonic_max_eff <- melt(results_non_monotonic_max_eff, id.vars = "expectedEffect")
 
-plot_non_monotonic <- ggplot2::ggplot(results_non_monotonic_max_eff, aes(x = expectedEffect, y = value, color = variable, group = variable))+
-  geom_point()+
-  geom_line() +
-  geom_hline(aes(yintercept = 0), linetype = 2)+
-  scale_color_manual(name = "assumed true model", values = c("linear" = "red", "quadratic" = "blue", "emax" = "green", "logistic" = "orange", "sigemax" = "purple"))+
-  labs(x = "assumed maximum effects", y = "power deviation")+
-  theme_classic()
-
+plot_non_monotonic <- plot_power_deviation(results_non_monotonic_max_eff, results_non_monotonic_max_eff$expectedEffect, "assumed maximum effect")
 plot_non_monotonic
 ```
 
@@ -1417,14 +1684,7 @@ results_var_max_eff <- data.table(
 
 results_var_max_eff <- melt(results_var_max_eff, id.vars = "expectedEffect")
 
-plot_var <- ggplot2::ggplot(results_var_max_eff, aes(x = expectedEffect, y = value, color = variable, group = variable))+
-  geom_point()+
-  geom_line() +
-  geom_hline(aes(yintercept = 0), linetype = 2)+
-  scale_color_manual(name = "assumed true model", values = c("linear" = "red", "exponential" = "blue", "emax" = "green", "logistic" = "orange", "sigemax" = "purple"))+
-  labs(x = "assumed maximum effects", y = "power deviation")+
-  theme_classic()
-
+plot_var <- plot_power_deviation(results_var_max_eff, results_var_max_eff$expectedEffect, "assumed maximum effect")
 plot_var
 ```
 ## Nsample
@@ -1445,13 +1705,7 @@ results_min_nsample <- data.table(
 
 results_min_nsample <- melt(results_min_nsample, id.vars = "nsample_vector")
 
-plot_minimal_nsample <- ggplot2::ggplot(results_min_nsample, aes(x = nsample_vector, y = value, color = variable, group = variable))+
-  geom_point()+
-  geom_line() +
-  geom_hline(aes(yintercept = 0), linetype = 2)+
-  scale_color_manual(name = "assumed true model", values = c("linear" = "red", "exponential" = "blue", "emax" = "green"))+
-  labs(x = "sample sizes", y = "power deviation")+
-  theme_classic()
+plot_minimal_nsample <- plot_power_deviation(results_min_nsample, results_min_nsample$nsample_vector, "sample sizes")
 plot_minimal_nsample
 
 ```
@@ -1470,13 +1724,7 @@ results_monotonic_nsample <- data.table(
 
 results_monotonic_nsample <- melt(results_monotonic_nsample, id.vars = "nsample_vector")
 
-plot_monotonic_nsample <- ggplot2::ggplot(results_monotonic_nsample, aes(x = nsample_vector, y = value, color = variable, group = variable))+
-  geom_point()+
-  geom_line() +
-  geom_hline(aes(yintercept = 0), linetype = 2)+
-  scale_color_manual(name = "assumed true model", values = c("linear" = "red", "exponential" = "blue", "emax" = "green", "logistic" = "orange", "sigemax" = "purple"))+
-  labs(x = "sample sizes", y = "power deviation")+
-  theme_classic()
+plot_monotonic_nsample <- plot_power_deviation(results_monotonic_nsample, results_monotonic_nsample$nsample_vector, "sample sizes")
 plot_monotonic_nsample
 ```
 ### non-monotonic scenario
@@ -1487,18 +1735,13 @@ results_non_monotonic_nsample <- data.table(
   emax = as.vector(non_monotonic_nsample_Bay$result_table$emax)-as.vector(results_non_monotonic_MCP_nsample$Emax),
   sigemax = as.vector(non_monotonic_nsample_Bay$result_table$sigEmax)-as.vector(results_non_monotonic_MCP_nsample$sigEmax),
   quadratic = as.vector(non_monotonic_nsample_Bay$result_table$quadratic)-as.vector(results_non_monotonic_MCP_nsample$quadratic),
+  beta = as.vector(non_monotonic_nsample_Bay$result_table$betaMod) - as.vector(results_non_monotonic_MCP_nsample$beta),
   nsample_vector = nsample_vector
   )
 
 results_non_monotonic_nsample <- melt(results_non_monotonic_nsample, id.vars = "nsample_vector")
 
-plot_non_monotonic_nsample <- ggplot2::ggplot(results_non_monotonic_nsample, aes(x = nsample_vector, y = value, color = variable, group = variable))+
-  geom_point()+
-  geom_line() +
-  geom_hline(aes(yintercept = 0), linetype = 2)+
-  scale_color_manual(name = "assumed true model", values = c("linear" = "red", "quadratic" = "blue", "emax" = "green", "logistic" = "orange", "sigemax" = "purple"))+
-  labs(x = "sample sizes", y = "power deviation")+
-  theme_classic()
+plot_non_monotonic_nsample <- plot_power_deviation(results_non_monotonic_nsample, results_non_monotonic_nsample$nsample_vector, "sample sizes")
 plot_non_monotonic_nsample
 ```
 
@@ -1516,13 +1759,8 @@ results_var_nsample <- data.table(
 
 results_var_nsample <- melt(results_var_nsample, id.vars = "nsample_vector")
 
-plot_var_nsample <- ggplot2::ggplot(results_var_nsample, aes(x = nsample_vector, y = value, color = variable, group = variable))+
-  geom_point()+
-  geom_line() +
-  geom_hline(aes(yintercept = 0), linetype = 2)+
-  scale_color_manual(name = "assumed true model", values = c("linear" = "red", "exponential" = "blue", "emax" = "green", "logistic" = "orange", "sigemax" = "purple"))+
-  labs(x = "sample sizes", y = "power deviation")+
-  theme_classic()
+
+plot_var_nsample <- plot_power_deviation(results_var_nsample, results_var_nsample$nsample_vector, "sample sizes")
 plot_var_nsample
 ```
 
@@ -1641,20 +1879,14 @@ results_nsim <- data.table(
 
 results_nsim_diff <- data.table(
   linear = results_nsim$Bay_linear - results_nsim$MCP_linear,
-  exp = results_nsim$Bay_exp - results_nsim$MCP_exp,
+  exponential = results_nsim$Bay_exp - results_nsim$MCP_exp,
   emax = results_nsim$Bay_emax - results_nsim$MCP_emax,
   n_sim = n_sim_values
 )
 
 results_nsim_diff <- melt(results_nsim_diff, id.vars = "n_sim")
 
-plot_nsim <- ggplot2::ggplot(results_nsim_diff, aes(x = n_sim, y = value, color = variable, group = variable))+
-  geom_point()+
-  geom_line() +
-  geom_hline(aes(yintercept = 0), linetype = 2)+
-  scale_color_manual(name = "assumed true model", values = c("linear" = "red", "exp" = "blue", "emax" = "green"))+
-  labs(x = "nsim", y = "power deviation")+
-  theme_classic()
+plot_nsim <- plot_power_deviation(results_nsim_diff, results_nsim_diff$n_sim, "nsim")
 plot_nsim
 ```
 ### monotonic scenario
@@ -1754,7 +1986,7 @@ results_nsim_monotonic <- data.table(
 
 results_nsim_diff_monotonic <- data.table(
   linear = results_nsim_monotonic$Bay_linear - results_nsim_monotonic$MCP_linear,
-  exp = results_nsim_monotonic$Bay_exp - results_nsim_monotonic$MCP_exp,
+  exponential = results_nsim_monotonic$Bay_exp - results_nsim_monotonic$MCP_exp,
   emax = results_nsim_monotonic$Bay_emax - results_nsim_monotonic$MCP_emax,
   logistic = results_nsim_monotonic$Bay_logistic - results_nsim_monotonic$MCP_logistic,
   sigemax = results_nsim_monotonic$Bay_sigemax - results_nsim_monotonic$MCP_sigemax,
@@ -1763,13 +1995,7 @@ results_nsim_diff_monotonic <- data.table(
 
 results_nsim_diff_monotonic <- melt(results_nsim_diff_monotonic, id.vars = "n_sim")
 
-plot_nsim_monotonic <- ggplot2::ggplot(results_nsim_diff_monotonic, aes(x = n_sim, y = value, color = variable, group = variable))+
-  geom_point()+
-  geom_line() +
-  geom_hline(aes(yintercept = 0), linetype = 2)+
-  scale_color_manual(name = "assumed true model", values = c("linear" = "red", "exp" = "blue", "emax" = "green", "logistic" = "orange", "sigemax" = "purple"))+
-  labs(x = "nsim", y = "power deviation")+
-  theme_classic()
+plot_nsim_monotonic <-  plot_power_deviation(results_nsim_diff_monotonic, results_nsim_diff_monotonic$n_sim, "nsim")
 plot_nsim_monotonic
 ```
 ### non - monotonic scenario
@@ -1844,8 +2070,8 @@ for (i in n_sim_values) {
   power_nsim_sigemax <- func_sim(non_monotonic_modelsPack, sim_models_non_monotonic_sigemax, sim_parameters)
   results_list_nsim_MCP_non_monotonic$power_non_monotonic_nsim_sigemax[as.character(i)] <- power_nsim_sigemax$sim_results$power
 
-  power_nsim_quadratic <- func_sim(non_monotonic_modelsPack, sim_models_non_monotonic_quadratic, sim_parameters)
-  results_list_nsim_MCP_non_monotonic$power_non_monotonic_nsim_quadratic[as.character(i)] <- power_nsim_quadratic$sim_results$power
+  #power_nsim_quadratic <- func_sim(non_monotonic_modelsPack, sim_models_non_monotonic_quadratic, sim_parameters)
+  #results_list_nsim_MCP_non_monotonic$power_non_monotonic_nsim_quadratic[as.character(i)] <- power_nsim_quadratic$sim_results$power
 
   #power_nsim_beta <- func_sim(sim_models_non_monotonic_beta, sim_parameters)
   #results_list_nsim_MCP_non_monotonic$power_non_monotonic_nsim_beta[as.character(i)] <- power_nsim_beta$sim_results$power
@@ -1871,20 +2097,14 @@ results_nsim_diff_non_monotonic <- data.table(
   linear = results_nsim_non_monotonic$Bay_linear - results_nsim_non_monotonic$MCP_linear,
   emax = results_nsim_non_monotonic$Bay_emax - results_nsim_non_monotonic$MCP_emax,
   sigemax =results_nsim_non_monotonic$Bay_sigemax - results_nsim_non_monotonic$MCP_sigemax,
-  quadratic = results_nsim_non_monotonic$Bay_quadratic - results_nsim_non_monotonic$MCP_quadratic,
+  #quadratic = results_nsim_non_monotonic$Bay_quadratic - results_nsim_non_monotonic$MCP_quadratic,
   n_sim = n_sim_values
 )
 
 
 results_nsim_diff_non_monotonic <- melt(results_nsim_diff_non_monotonic, id.vars = "n_sim")
 
-plot_nsim_non_monotonic <- ggplot2::ggplot(results_nsim_diff_non_monotonic, aes(x = n_sim, y = value, color = variable, group = variable))+
-  geom_point()+
-  geom_line() +
-  geom_hline(aes(yintercept = 0), linetype = 2)+
-  scale_color_manual(name = "assumed true model", values = c("linear" = "red", "quadratic" = "blue", "emax" = "green", "logistic" = "orange", "sigemax" = "purple"))+
-  labs(x = "nsim", y = "power deviation")+
-  theme_classic()
+plot_nsim_non_monotonic <-  plot_power_deviation(results_nsim_diff_non_monotonic, results_nsim_diff_non_monotonic$n_sim, "nsim")
 plot_nsim_non_monotonic
 
 ```
@@ -1894,41 +2114,41 @@ plot_nsim_non_monotonic
 ```{r}
 
 # Initialize list to store results
-# results_list_nsim_Bay_var <- list()
-# 
-# var_models <- Mods(linear=NULL,
-#                    exponential = exp.g,
-#                    emax = emax.g,
-#                    logistic=logit.g,
-#                    sigEmax = sigEmax.g,
-#                    doses = doses_var,
-#                    placEff = plc.guess,
-#                    maxEff = expectedEffect_fix,
-#                    direction = "increasing")
-# 
-# contM <- getContr(mods = var_models,
-#                   dose_levels = doses_var,
-#                   prior_list = var_uninf_prior_list,
-#                   dose_weights = c(1,1,1,1))
-# 
-# # Loop over the n_sim_values
-# for (i in n_sim_values) {
-#   # Run the simulation with the current n_sim value
-#   success_probabilities <- assessDesign(
-#     n_patients  = Nsample_var,
-#     mods        = var_models,
-#     prior_list  = uninf_prior_list,
-#     sd          = sd.sim_var,
-#     n_sim       = i,
-#     alpha_crit_val = alpha,
-#     contr = contM)
-# 
-#   # Store the results in the list
-#   results_list_nsim_Bay_var[[as.character(i)]] <- success_probabilities
-# }
-# 
-# 
-# results_nsim_Bay_var <- extract_success_rates_nsim(results_list_nsim_Bay_var, variability_scenario, n_sim_values)
+results_list_nsim_Bay_var <- list()
+
+var_models <- Mods(linear=NULL,
+                   exponential = exp.g,
+                   emax = emax.g,
+                   logistic=logit.g,
+                   sigEmax = sigEmax.g,
+                   doses = doses_var,
+                   placEff = plc.guess,
+                   maxEff = expectedEffect_fix,
+                   direction = "increasing")
+
+contM <- getContr(mods = var_models,
+                  dose_levels = doses_var,
+                  prior_list = var_uninf_prior_list,
+                  dose_weights = c(1,1,1,1))
+
+# Loop over the n_sim_values
+for (i in n_sim_values) {
+  # Run the simulation with the current n_sim value
+  success_probabilities <- assessDesign(
+    n_patients  = Nsample_var,
+    mods        = var_models,
+    prior_list  = var_uninf_prior_list,
+    sd          = sd.sim_var,
+    n_sim       = i,
+    alpha_crit_val = alpha,
+    contr = contM)
+
+  # Store the results in the list
+  results_list_nsim_Bay_var[[as.character(i)]] <- success_probabilities
+}
+
+
+results_nsim_Bay_var <- extract_success_rates_nsim(results_list_nsim_Bay_var, variability_scenario, n_sim_values)
 ```
 
 ```{r, warning=FALSE}
@@ -1974,19 +2194,38 @@ for (i in n_sim_values) {
 ```
 
 ```{r}
-# results_nsim_var <- data.table(
-#   MCP_linear = results_list_nsim_MCP_var$power_var_nsim_linear,
-#   MCP_exp = results_list_nsim_MCP_var$power_var_nsim_exp,
-#   MCP_emax = results_list_nsim_MCP_var$power_var_nsim_emax,
-#   MCP_sigemax = results_list_nsim_MCP_var$power_var_nsim_sigemax,
-#   MCP_logistic = results_list_nsim_MCP_var$power_var_nsim_logistic,
-#   Bay_linear = results_nsim_Bay_var$Bay_linear
-# )
+#safe results in data.table for plot
+results_nsim_var <- data.table(
+  MCP_linear = results_list_nsim_MCP_var$power_var_nsim_linear,
+  MCP_exp = results_list_nsim_MCP_var$power_var_nsim_exp,
+  MCP_emax = results_list_nsim_MCP_var$power_var_nsim_emax,
+  MCP_sigemax = results_list_nsim_MCP_var$power_var_nsim_sigemax,
+  MCP_logistic = results_list_nsim_MCP_var$power_var_nsim_logistic,
+  Bay_linear = results_nsim_Bay_var$Bay_linear,
+  Bay_exp = results_nsim_Bay_var$Bay_exponential,
+  Bay_emax = results_nsim_Bay_var$Bay_emax,
+  Bay_sigemax = results_nsim_Bay_var$Bay_sigEmax,
+  Bay_logistic = results_nsim_Bay_var$Bay_logistic
+)
+
+results_nsim_diff_var <- data.table(
+  linear = results_nsim_var$Bay_linear - results_nsim_var$MCP_linear,
+  exponential = results_nsim_var$Bay_exp - results_nsim_var$MCP_exp,
+  emax = results_nsim_var$Bay_emax - results_nsim_var$MCP_emax,
+  sigemax = results_nsim_var$Bay_sigemax - results_nsim_var$MCP_sigemax,
+  logistic = results_nsim_var$Bay_logistic - results_nsim_var$MCP_logistic,
+  n_sim = n_sim_values
+  )
+
+results_nsim_diff_var <- melt(results_nsim_diff_var, id.vars = "n_sim")
+
+plot_nsim_var <-  plot_power_deviation(results_nsim_diff_var, results_nsim_diff_var$n_sim, "nsim")
+plot_nsim_var
 ```
 
 
 
 ```{r}
-save(results_list_nsim_Bay, results_nsim_Bay, results_list_nsim_MCP, results_nsim_Bay_monotonic, results_nsim_Bay_non_monotonic, results_min_MCP, results_monotonic_MCP, results_non_monotonic_MCP, results_var_MCP, results_min_MCP_nsample, results_monotonic_MCP_nsample, results_non_monotonic_MCP_nsample, results_var_MCP_nsample, results_min_Bay, results_min_Bay_nsample, results_monotonic_Bay, results_monotonic_Bay_nsample, results_non_monotonic_Bay, results_non_monotonic_Bay_nsample, results_variability_Bay, results_variability_Bay_nsample,
-     file = "n_sim_data.RData")
+# save(results_nsim_Bay, results_list_nsim_MCP, results_nsim_monotonic, results_nsim_non_monotonic, results_nsim_var,  results_min_MCP, results_monotonic_MCP, results_non_monotonic_MCP, results_var_MCP, results_min_MCP_nsample, results_monotonic_MCP_nsample, results_non_monotonic_MCP_nsample, results_var_MCP_nsample, results_min_Bay, results_min_Bay_nsample, results_monotonic_Bay, results_monotonic_Bay_nsample, results_non_monotonic_Bay, results_non_monotonic_Bay_nsample, results_variability_Bay, results_variability_Bay_nsample,
+#      file = "simulation_data.RData")
 ```
