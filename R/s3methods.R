@@ -39,7 +39,7 @@ print.BayesianMCP <- function(x, ...) {
     model_df <- data.frame(Model = model_names, Probability = unlist(model_probs))
     print(model_df, row.names = FALSE)
     
-    print.default(x, ...)
+   # print.default(x, ...)
 
     # if (any(!is.na(attr(x, "essAvg")))) {
     #
