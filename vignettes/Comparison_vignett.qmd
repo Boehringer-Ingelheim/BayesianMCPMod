@@ -707,7 +707,7 @@ alpha <- 0.05
 addArgs <- list(off = 0.08, scal = 9.6)
 
 resp_mod_list <- list(quadratic = -0.09688711)
-cand_mod_list <- list(linear = NULL, emax = 0.6666667, quadratic = -0.09688711, betaMod = rbind(c(1, 0.2)), sigEmax = rbind(c(1.528629, 4.087463)))
+cand_mod_list <- list(linear = NULL, emax = 0.6666667, quadratic = -0.09688711, betaMod = rbind(c(1.396434, 1.040978)), sigEmax = rbind(c(1.528629, 4.087463)))
 mods <- do.call(Mods, append(cand_mod_list, 
         list(maxEff = 1, doses = doses, placEff = 0, addArgs = addArgs)))
 cont_mat <- optContr(mods, w = allocation)
@@ -742,8 +742,8 @@ allocation <- c(1,1,1,1,1)
 alpha <- 0.05
 addArgs <- list(off = 0.08, scal = 9.6)
 
-resp_mod_list <- list(betaMod = rbind(c(1, 0.2)))
-cand_mod_list <- list(linear = NULL, emax = 0.6666667, quadratic = -0.09688711, betaMod = rbind(c(1, 0.2)), sigEmax = rbind(c(1.528629, 4.087463)))
+resp_mod_list <- list(betaMod = rbind(c(1.396434, 1.040978)))
+cand_mod_list <- list(linear = NULL, emax = 0.6666667, quadratic = -0.09688711, betaMod = rbind(c(1.396434, 1.040978)), sigEmax = rbind(c(1.528629, 4.087463)))
 mods <- do.call(Mods, append(cand_mod_list, 
         list(maxEff = 1, doses = doses, placEff = 0, addArgs = addArgs)))
 cont_mat <- optContr(mods, w = allocation)
@@ -766,7 +766,7 @@ mod_nams <- DoseFinding:::getModNams(parList)
 colnames(power_df) <- mod_nams
 power_df[['mean power']] <- apply(power_df, 1, mean)
 result <- cbind(grd, power_df, dat_n)
-power_non_monotonic_beta <- result$`betaMod (delta1=1,delta2=0.2,scal=9.6)`
+power_non_monotonic_beta <- result$`betaMod (delta1=1.396434,delta2=1.040978,scal=9.6)`
 ```
 
 
@@ -846,7 +846,7 @@ alpha <- 0.05
 addArgs <- list(off = 0.08, scal = 9.6)
 
 resp_mod_list <- list(quadratic = -0.09688711)
-cand_mod_list <- list(linear = NULL, emax = 0.6666667, quadratic = -0.09688711, betaMod = rbind(c(1, 0.2)), sigEmax = rbind(c(1.528629, 4.087463)))
+cand_mod_list <- list(linear = NULL, emax = 0.6666667, quadratic = -0.09688711, betaMod = rbind(c(1.396434, 1.040978)), sigEmax = rbind(c(1.528629, 4.087463)))
 mods <- do.call(Mods, append(cand_mod_list, 
         list(maxEff = 1, doses = doses, placEff = 0, addArgs = addArgs)))
 cont_mat <- optContr(mods, w = allocation)
@@ -880,7 +880,7 @@ alpha <- 0.05
 addArgs <- list(off = 0.08, scal = 9.6)
 
 resp_mod_list <- list(quadratic = -0.09688711)
-cand_mod_list <- list(linear = NULL, emax = 0.6666667, quadratic = -0.09688711, betaMod = rbind(c(1, 0.2)), sigEmax = rbind(c(1.528629, 4.087463)))
+cand_mod_list <- list(linear = NULL, emax = 0.6666667, quadratic = -0.09688711, betaMod = rbind(c(1.396434, 1.040978)), sigEmax = rbind(c(1.528629, 4.087463)))
 mods <- do.call(Mods, append(cand_mod_list, 
         list(maxEff = 1, doses = doses, placEff = 0, addArgs = addArgs)))
 cont_mat <- optContr(mods, w = allocation)
@@ -918,8 +918,8 @@ allocation <- c(1,1,1,1,1)
 alpha <- 0.05
 addArgs <- list(off = 0.08, scal = 9.6)
 
-resp_mod_list <- list(betaMod = rbind(c(1, 0.2)))
-cand_mod_list <- list(linear = NULL, emax = 0.6666667, quadratic = -0.09688711, betaMod = rbind(c(1, 0.2)), sigEmax = rbind(c(1.528629, 4.087463)))
+resp_mod_list <- list(betaMod = rbind(c(1.396434, 1.040978)))
+cand_mod_list <- list(linear = NULL, emax = 0.6666667, quadratic = -0.09688711, betaMod = rbind(c(1.396434, 1.040978)), sigEmax = rbind(c(1.528629, 4.087463)))
 mods <- do.call(Mods, append(cand_mod_list, 
         list(maxEff = 1, doses = doses, placEff = 0, addArgs = addArgs)))
 cont_mat <- optContr(mods, w = allocation)
@@ -942,8 +942,8 @@ mod_nams <- DoseFinding:::getModNams(parList)
 colnames(power_df) <- mod_nams
 power_df[['mean power']] <- apply(power_df, 1, mean)
 result <- cbind(grd, power_df, dat_n)
-power_non_monotonic_nsample_beta[2] <- result$`betaMod (delta1=1,delta2=0.2,scal=9.6)`[1]
-power_non_monotonic_nsample_beta[4] <- result$`betaMod (delta1=1,delta2=0.2,scal=9.6)`[2]
+power_non_monotonic_nsample_beta[2] <- result$`betaMod (delta1=1.396434,delta2=1.040978,scal=9.6)`[1]
+power_non_monotonic_nsample_beta[4] <- result$`betaMod (delta1=1.396434,delta2=1.040978,scal=9.6)`[2]
 
 # allocation = c(2,1,1,1,2)
 mvt_control <- mvtnorm.control(maxpts = 30000, abseps = 0.001, releps = 0)
@@ -952,8 +952,8 @@ allocation <- c(2,1,1,1,2)
 alpha <- 0.05
 addArgs <- list(off = 0.08, scal = 9.6)
 
-resp_mod_list <- list(betaMod = rbind(c(1, 0.2)))
-cand_mod_list <- list(linear = NULL, emax = 0.6666667, quadratic = -0.09688711, betaMod = rbind(c(1, 0.2)), sigEmax = rbind(c(1.528629, 4.087463)))
+resp_mod_list <- list(betaMod = rbind(c(1.396434, 1.040978)))
+cand_mod_list <- list(linear = NULL, emax = 0.6666667, quadratic = -0.09688711, betaMod = rbind(c(1.396434, 1.040978)), sigEmax = rbind(c(1.528629, 4.087463)))
 mods <- do.call(Mods, append(cand_mod_list, 
         list(maxEff = 1, doses = doses, placEff = 0, addArgs = addArgs)))
 cont_mat <- optContr(mods, w = allocation)
@@ -976,8 +976,8 @@ mod_nams <- DoseFinding:::getModNams(parList)
 colnames(power_df) <- mod_nams
 power_df[['mean power']] <- apply(power_df, 1, mean)
 result <- cbind(grd, power_df, dat_n)
-power_non_monotonic_nsample_beta[1] <- result$`betaMod (delta1=1,delta2=0.2,scal=9.6)`[1]
-power_non_monotonic_nsample_beta[3] <- result$`betaMod (delta1=1,delta2=0.2,scal=9.6)`[2]
+power_non_monotonic_nsample_beta[1] <- result$`betaMod (delta1=1.396434,delta2=1.040978,scal=9.6)`[1]
+power_non_monotonic_nsample_beta[3] <- result$`betaMod (delta1=1.396434,delta2=1.040978,scal=9.6)`[2]
 ```
 
 
