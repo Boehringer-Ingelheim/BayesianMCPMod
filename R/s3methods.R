@@ -41,12 +41,12 @@ print.BayesianMCP <- function(x, ...) {
     
    # print.default(x, ...)
 
-    # if (any(!is.na(attr(x, "essAvg")))) {
-    #
-    #   cat("Average Posterior ESS\n")
-    #   print(attr(x, "essAvg"), ...)
-    #
-    # }
+    if (any(!is.na(attr(x, "essAvg")))) {
+
+      cat("Average Posterior ESS\n")
+      print(attr(x, "essAvg"), ...)
+
+    }
 
   } else {
 
