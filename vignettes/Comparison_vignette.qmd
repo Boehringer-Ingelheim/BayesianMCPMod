@@ -183,7 +183,15 @@ plot_power_deviation <- function(data, x, xlab){
   return(plot)
 }
 
-
+# parallel----------------------------------------------
+chunkVector <- function (x, n_chunks) {
+  if (n_chunks <= 1) {
+    chunk_list <- list(x)
+  } else {
+    chunk_list <- unname(split(x, cut(seq_along(x), n_chunks, labels = FALSE)))
+  }
+  return(chunk_list)
+}
 
 library(BayesianMCPMod)
 library(RBesT)
@@ -195,6 +203,12 @@ library(DoseFinding)
 library(MCPModPack)
 library(kableExtra)
 library(data.table)
+library(doFuture)
+library(doRNG)
+
+registerDoFuture()
+plan(multisession)
+
 
 
 set.seed(7015)
@@ -383,9 +397,9 @@ var_modelsPack = list(linear = NA,
 # assumed dose - response model
 sim_models_min_linear = list(linear = NA,
                              exponential = 4.447149,
-                  max_effect = c(0.05,0.1,0.2,0.3,0.5),
-                  sd = rep(sd.sim, length(doses.sim)),
-                  placebo_effect = plc.guess)
+                             max_effect = c(0.05,0.1,0.2,0.3,0.5),
+                             sd = rep(sd.sim, length(doses.sim)),
+                             placebo_effect = plc.guess)
 
 sim_models_min_exp = list(exponential = 4.447149,
                   max_effect = c(0.05,0.1,0.2,0.3,0.5),
@@ -420,30 +434,40 @@ sim_result = MCPModSimulation(endpoint_type = "Normal",
                                  sim_parameters = sim_parameters)
 }
 
-# Simulation for different assumed models
-power_min_linear <- func_sim(min_modelsPack, sim_models_min_linear, sim_parameters) 
-power_min_exp <- func_sim(min_modelsPack, sim_models_min_exp, sim_parameters)
-power_min_emax <- func_sim(min_modelsPack,sim_models_min_emax, sim_parameters)
+
+list_models <- list(sim_models_min_linear, sim_models_min_exp, sim_models_min_emax)
+chunks <- chunkVector(seq_along(list_models), getDoParWorkers())
+
+results_list_min <- foreach(k = chunks, .combine = c) %dorng% {
+  
+  lapply(k, function (i) {
+    
+    func_sim(min_modelsPack, list_models[[i]], sim_parameters) 
+    
+  })
+  
+}
+
 
 
 
 #store results
 results_min_MCP <- data.table(
   Max_eff = c(0.05, 0.1, 0.2, 0.3, 0.5),
-  Linear = c(power_min_linear$sim_results$power),
-  Exponential = c(power_min_exp$sim_results$power),
-  Emax = c(power_min_emax$sim_results$power),
-  Average = c(sum(power_min_linear$sim_results$power[1], power_min_exp$sim_results$power[1], power_min_emax$sim_results$power[1])/3,
-              sum(power_min_linear$sim_results$power[2], power_min_exp$sim_results$power[2], power_min_emax$sim_results$power[2])/3,
-              sum(power_min_linear$sim_results$power[3], power_min_exp$sim_results$power[3], power_min_emax$sim_results$power[3])/3,
-              sum(power_min_linear$sim_results$power[4], power_min_exp$sim_results$power[4], power_min_emax$sim_results$power[4])/3,
-              sum(power_min_linear$sim_results$power[5], power_min_exp$sim_results$power[5], power_min_emax$sim_results$power[5])/3)
-)
+  Linear = c(results_list_min[[1]]$sim_results$power),
+  Exponential = c(results_list_min[[2]]$sim_results$power),
+  Emax = c(results_list_min[[3]]$sim_results$power))
+  # Average = c(sum(power_min_linear$sim_results$power[1], power_min_exp$sim_results$power[1], power_min_emax$sim_results$power[1])/3,
+  #             sum(power_min_linear$sim_results$power[2], power_min_exp$sim_results$power[2], power_min_emax$sim_results$power[2])/3,
+  #             sum(power_min_linear$sim_results$power[3], power_min_exp$sim_results$power[3], power_min_emax$sim_results$power[3])/3,
+  #             sum(power_min_linear$sim_results$power[4], power_min_exp$sim_results$power[4], power_min_emax$sim_results$power[4])/3,
+  #             sum(power_min_linear$sim_results$power[5], power_min_exp$sim_results$power[5], power_min_emax$sim_results$power[5])/3)
+
 
 kable(results_min_MCP)%>%
   kable_classic(full_width = TRUE)%>%
-    add_header_above(c("Power results different expected effects " = 5), font_size = 15, bold = TRUE)%>%
-    add_header_above(c("Minimal scenario " = 5), font_size = 15, bold = TRUE)
+    add_header_above(c("Power results different expected effects " = 4), font_size = 15, bold = TRUE)%>%
+    add_header_above(c("Minimal scenario " = 4), font_size = 15, bold = TRUE)
     
 
 
@@ -482,6 +506,10 @@ sim_parameters = list(n = Nsample,
 power_min_nsample_linear <- vector()
 power_min_nsample_exp <- vector()
 power_min_nsample_emax <- vector()
+
+
+
+
 
 # Loop over nsample values
 for (i in seq_along(nsample_list)) {
@@ -564,27 +592,32 @@ sim_parameters = list(n = Nsample,
 
 # Initialize list to store results
 results_list_monotonic <- list()
-  
-# perform simulations
-power_monotonic_linear <- func_sim(monotonic_modelsPack, sim_models_monotonic_linear, sim_parameters) 
-power_monotonic_exp <- func_sim(monotonic_modelsPack, sim_models_monotonic_exp, sim_parameters)
-power_monotonic_logistic <- func_sim(monotonic_modelsPack, sim_models_monotonic_logistic, sim_parameters)
-power_monotonic_sigemax <- func_sim(monotonic_modelsPack, sim_models_monotonic_sigemax, sim_parameters)
-power_monotonic_emax <- func_sim(monotonic_modelsPack, sim_models_monotonic_emax, sim_parameters)
 
+list_models <- list(sim_models_monotonic_linear, sim_models_monotonic_exp, sim_models_monotonic_logistic, sim_models_monotonic_sigemax, sim_models_monotonic_emax)
+chunks <- chunkVector(seq_along(list_models), getDoParWorkers())
+
+results_list_monotonic <- foreach(k = chunks, .combine = c) %dorng% {
+  
+  lapply(k, function (i) {
+    
+    func_sim(monotonic_modelsPack, list_models[[i]], sim_parameters) 
+    
+  })
+  
+}
+  
 
 results_monotonic_MCP <- data.table(
   Max_eff = c(0.05, 0.1, 0.2, 0.3, 0.5),
-  Linear = c(power_monotonic_linear$sim_results$power),
-  Exponential = c(power_monotonic_exp$sim_results$power),
-  Emax = c(power_monotonic_emax$sim_results$power),
-  Logistic = c(power_monotonic_logistic$sim_results$power),
-  sigEmax = c(power_monotonic_sigemax$sim_results$power),
-  Average = c(sum(power_monotonic_linear$sim_results$power[1], power_monotonic_exp$sim_results$power[1], power_monotonic_emax$sim_results$power[1], power_monotonic_logistic$sim_results$power[1], power_monotonic_sigemax$sim_results$power[1])/5,
-              sum(power_monotonic_linear$sim_results$power[2], power_monotonic_exp$sim_results$power[2], power_monotonic_emax$sim_results$power[2], power_monotonic_logistic$sim_results$power[2], power_monotonic_sigemax$sim_results$power[2])/5,
-              sum(power_monotonic_linear$sim_results$power[3], power_monotonic_exp$sim_results$power[3],power_monotonic_emax$sim_results$power[3], power_monotonic_logistic$sim_results$power[3], power_monotonic_sigemax$sim_results$power[3])/5,
-              sum(power_monotonic_linear$sim_results$power[4], power_monotonic_exp$sim_results$power[4],power_monotonic_emax$sim_results$power[4], power_monotonic_logistic$sim_results$power[4], power_monotonic_sigemax$sim_results$power[4])/5,
-              sum(power_monotonic_linear$sim_results$power[5], power_monotonic_exp$sim_results$power[5],power_monotonic_emax$sim_results$power[5], power_monotonic_logistic$sim_results$power[5], power_monotonic_sigemax$sim_results$power[5])/5)
+  Linear = c(results_list_monotonic[[1]]$sim_results$power),
+  Emax = c(results_list_monotonic[[2]]$sim_results$power),
+  Logistic = c(results_list_monotonic[[3]]$sim_results$power),
+  sigEmax = c(results_list_monotonic[[4]]$sim_results$power)
+  # Average = c(sum(power_monotonic_linear$sim_results$power[1], power_monotonic_exp$sim_results$power[1], power_monotonic_emax$sim_results$power[1], power_monotonic_logistic$sim_results$power[1], power_monotonic_sigemax$sim_results$power[1])/5,
+  #             sum(power_monotonic_linear$sim_results$power[2], power_monotonic_exp$sim_results$power[2], power_monotonic_emax$sim_results$power[2], power_monotonic_logistic$sim_results$power[2], power_monotonic_sigemax$sim_results$power[2])/5,
+  #             sum(power_monotonic_linear$sim_results$power[3], power_monotonic_exp$sim_results$power[3],power_monotonic_emax$sim_results$power[3], power_monotonic_logistic$sim_results$power[3], power_monotonic_sigemax$sim_results$power[3])/5,
+  #             sum(power_monotonic_linear$sim_results$power[4], power_monotonic_exp$sim_results$power[4],power_monotonic_emax$sim_results$power[4], power_monotonic_logistic$sim_results$power[4], power_monotonic_sigemax$sim_results$power[4])/5,
+  #             sum(power_monotonic_linear$sim_results$power[5], power_monotonic_exp$sim_results$power[5],power_monotonic_emax$sim_results$power[5], power_monotonic_logistic$sim_results$power[5], power_monotonic_sigemax$sim_results$power[5])/5)
 )
 
 kable(results_monotonic_MCP)%>%
@@ -701,7 +734,7 @@ kable(results_monotonic_MCP_nsample)%>%
 ```
 ### linear with DoseFinding package
 ```{r}
-set.seed(7015)
+
 mvt_control <- mvtnorm.control(maxpts = 30000, abseps = 0.001, releps = 0)
 doses <- c(0,1,2,4,8)
 allocation <- c(1,1,1,1,1)
@@ -738,7 +771,7 @@ power_non_monotonic_linear <- result$linear
 
 ### emax with DoseFinding package
 ```{r}
-set.seed(7015)
+
 mvt_control <- mvtnorm.control(maxpts = 30000, abseps = 0.001, releps = 0)
 doses <- c(0,1,2,4,8)
 allocation <- c(1,1,1,1,1)
@@ -774,7 +807,7 @@ power_non_monotonic_emax <- result$`emax (ED50=0.6666667)`
 
 ### sigemax with DoseFinding package
 ```{r}
-set.seed(7015)
+
 mvt_control <- mvtnorm.control(maxpts = 30000, abseps = 0.001, releps = 0)
 doses <- c(0,1,2,4,8)
 allocation <- c(1,1,1,1,1)
@@ -811,7 +844,7 @@ power_non_monotonic_sigemax <- result$`sigEmax (ED50=1.528629,h=4.087463)`
 
 ### quadratic with DoseFinding package
 ```{r}
-set.seed(7015)
+
 mvt_control <- mvtnorm.control(maxpts = 30000, abseps = 0.001, releps = 0)
 doses <- c(0,1,2,4,8)
 allocation <- c(1,1,1,1,1)
@@ -847,7 +880,7 @@ power_non_monotonic_quadratic <- result$`quadratic (delta=-0.09688711)`
 ```
 ### beta with DoseFinding package
 ```{r}
-set.seed(7015)
+
 mvt_control <- mvtnorm.control(maxpts = 30000, abseps = 0.001, releps = 0)
 doses <- c(0,1,2,4,8)
 allocation <- c(1,1,1,1,1)
@@ -943,8 +976,7 @@ power_non_monotonic_nsample_beta <- vector()
 ```
 ### linear with DoseFinding
 ```{r}
-#allocation = c(1,1,1,1,1)
-set.seed(7015)
+# allocation = c(1,1,1,1,1)
 mvt_control <- mvtnorm.control(maxpts = 30000, abseps = 0.001, releps = 0)
 doses <- c(0,1,2,4,8)
 allocation <- c(1,1,1,1,1)
@@ -1017,7 +1049,6 @@ power_non_monotonic_nsample_linear[3] <- result$linear[2]
 ### emax with DoseFinding
 ```{r}
 #allocation = c(1,1,1,1,1)
-set.seed(7015)
 mvt_control <- mvtnorm.control(maxpts = 30000, abseps = 0.001, releps = 0)
 doses <- c(0,1,2,4,8)
 allocation <- c(1,1,1,1,1)
@@ -1090,7 +1121,6 @@ power_non_monotonic_nsample_emax[3] <- result$`emax (ED50=0.6666667)`[2]
 ### sigemax with DoseFinding
 ```{r}
 #allocation = c(1,1,1,1,1)
-set.seed(7015)
 mvt_control <- mvtnorm.control(maxpts = 30000, abseps = 0.001, releps = 0)
 doses <- c(0,1,2,4,8)
 allocation <- c(1,1,1,1,1)
@@ -1164,7 +1194,6 @@ power_non_monotonic_nsample_sigemax[3] <- result$`sigEmax (ED50=1.528629,h=4.087
 
 ```{r}
 #allocation = c(1,1,1,1,1)
-set.seed(7015)
 mvt_control <- mvtnorm.control(maxpts = 30000, abseps = 0.001, releps = 0)
 doses <- c(0,1,2,4,8)
 allocation <- c(1,1,1,1,1)
@@ -1237,7 +1266,6 @@ power_non_monotonic_nsample_quadratic[3] <- result$`quadratic (delta=-0.09688711
 
 ```{r}
 #allocation = c(1,1,1,1,1)
-set.seed(7015)
 mvt_control <- mvtnorm.control(maxpts = 30000, abseps = 0.001, releps = 0)
 doses <- c(0,1,2,4,8)
 allocation <- c(1,1,1,1,1)
@@ -1356,16 +1384,27 @@ sim_parameters_var = list(n = Nsample_var,
                       nsims = n_sim)
 
 # perform Simulations
-power_var_linear <- func_sim(var_modelsPack, sim_models_var_linear, sim_parameters_var)
-power_var_exp <- func_sim(var_modelsPack, sim_models_var_exp, sim_parameters_var)
-power_var_emax <- func_sim(var_modelsPack, sim_models_var_emax, sim_parameters_var)
+
+list_models <- list(sim_models_var_linear, sim_models_var_exp, sim_models_var_emax)
+chunks <- chunkVector(seq_along(list_models), getDoParWorkers())
+
+results_list_var <- foreach(k = chunks, .combine = c) %dorng% {
+  
+  lapply(k, function (i) {
+    
+    func_sim(var_modelsPack, list_models[[i]], sim_parameters_var) 
+    
+  })
+  
+}
+  
 
 # store results
 results_var_MCP <- data.table(
   Max_eff = c(0.05, 0.1, 0.2, 0.3, 0.5),
-  Linear = power_var_linear$sim_results$power,
-  Exponential = power_var_exp$sim_results$power,
-  Emax = power_var_emax$sim_results$power
+  Linear = results_list_var[[1]]$sim_results$power,
+  Exponential = results_list_var[[2]]$sim_results$power,
+  Emax = results_list_var[[3]]$sim_results$power
 )
 
 kable(results_var_MCP)%>%
