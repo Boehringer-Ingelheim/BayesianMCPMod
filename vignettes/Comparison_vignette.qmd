@@ -109,7 +109,7 @@ extract_success_rates_nsample <- function(results_list, models) {
     for (model in models) {
       success_rate <- c(success_rate, attr(results_list[[i]][[model]]$BayesianMCP,"successRate"))
     }
-    success_rates[[paste0("Bay_", names(results_list)[i])]] <- c(success_rate,  attr(results_list[[i]],"avgSuccessRate"))
+    success_rates[[paste0("Bay_", i )]] <- c(success_rate,  attr(results_list[[i]],"avgSuccessRate"))
   }
 
   return(success_rates)
@@ -156,10 +156,10 @@ print_result_Bay_max_eff <- function(results, scenario, variable) {
 print_result_Bay_nsample <- function(results, scenario, variable) {
 
   result_table <- t(data.table(
-    Bay_1 = results$`Bay_nsample_c(40, 20, 20, 20, 40)`,
-    Bay_2 = results$`Bay_nsample_c(30, 30, 30, 30, 30)`,
-    Bay_3 = results$`Bay_nsample_c(48, 24, 24, 24, 48)`,
-    Bay_4 = results$`Bay_nsample_c(36, 36, 36, 36, 36)`))
+    Bay_1 = results$Bay_1,
+    Bay_2 = results$Bay_2,
+    Bay_3 = results$Bay_3,
+    Bay_4 = results$Bay_4))
 
   result_table <- as.data.table(result_table)
   names(result_table) <- scenario
@@ -179,9 +179,60 @@ plot_power_deviation <- function(data, x, xlab){
     geom_hline(aes(yintercept = 0), linetype = 2)+
     scale_color_manual(name = "assumed true model", values = c("linear" = "red", "exponential" = "blue", "emax" = "darkgreen", "logistic" = "orange", "sigemax" = "purple", "beta" = "deepskyblue", "quadratic" = "deeppink"))+
     labs(x = xlab, y = "power deviation")+
+    #ylim(0.2, 0.2)+         with higher n_sim!!!!!!!!!!!!
     theme_classic()
   return(plot)
 }
+
+#plot all max effects in one plot
+
+plot_max_eff <- function(results_MCP, results_Bay, scenario){
+  
+transformed_MCP <- t(results_MCP)
+transformed_MCP <- as.data.table(transformed_MCP)
+transformed_MCP  <- transformed_MCP[-c(1),] 
+
+data <- data.table(
+  Bay_0.05 = results_Bay$Bay_0.05,
+  Bay_0.1 = results_Bay$Bay_0.1,
+  Bay_0.2 = results_Bay$Bay_0.2,
+  Bay_0.3 = results_Bay$Bay_0.3,
+  Bay_0.5 = results_Bay$Bay_0.5,
+  MCP_0.05 = transformed_MCP$V1,
+  MCP_0.1 = transformed_MCP$V2,
+  MCP_0.2 = transformed_MCP$V3,
+  MCP_0.3 = transformed_MCP$V4,
+  MCP_0.5 = transformed_MCP$V5,
+  scenario = c(scenario, "average")
+)
+
+
+  
+
+  plot_max_eff <- ggplot(data = data)+
+    geom_point(mapping = aes(x= data$scenario, y = data$Bay_0.05, colour = "MCPMod", shape = "0.05"), data = data, position = position_nudge(x = -0.15))+
+    geom_point(mapping = aes(x= data$scenario, y = data$MCP_0.05, colour = "BayesianMCPMod", shape = "0.05"), data = data, position = position_nudge(x = 0.15))+
+    geom_point(mapping = aes(x= data$scenario, y = data$MCP_0.1, colour = "MCPMod", shape = "0.1"), data = data, position = position_nudge(x = -0.15))+
+    geom_point(mapping = aes(x= scenario, y = data$Bay_0.1, colour = "BayesianMCPMod", shape = "0.1"), data = data, position = position_nudge(x = 0.15))+
+    geom_point(mapping = aes(x= scenario, y = data$MCP_0.2, colour = "MCPMod", shape = "0.2"), data = data, position = position_nudge(x = -0.15))+
+    geom_point(mapping = aes(x= scenario, y = data$Bay_0.2, colour = "BayesianMCPMod", shape = "0.2"), data = data, position = position_nudge(x = 0.15))+
+    geom_point(mapping = aes(x= scenario, y = data$MCP_0.3, colour = "MCPMod", shape = "0.3"), data = data, position = position_nudge(x = -0.15))+
+    geom_point(mapping = aes(x= scenario, y = data$Bay_0.3, colour = "BayesianMCPMod", shape = "0.3"), data = data, position = position_nudge(x = 0.15))+
+    geom_point(mapping = aes(x= scenario, y = data$MCP_0.5, colour = "MCPMod", shape = "0.5"), data = data, position = position_nudge(x = -0.15))+
+    geom_point(mapping = aes(x= scenario, y = data$Bay_0.5, colour = "BayesianMCPMod", shape = "0.5"), data = data, position = position_nudge(x = 0.15))+
+    scale_color_manual(name = "Legend", values = c("MCPMod" = 'blue', "BayesianMCPMod" = "red"))+
+    scale_shape_manual(name = "Expected effects", values = c("0.05" = 0, "0.1" = 1, "0.2" = 2, "0.3" = 3, "0.5" = 5))+
+    ylim(0, 1)+
+    ylab("power")+
+    xlab("assumed true model")+
+    labs(title = "All scenarios with different assumed maximum effects")+
+    theme_bw()
+
+  plot_max_eff
+
+}
+
+
 
 # parallel----------------------------------------------
 chunkVector <- function (x, n_chunks) {
@@ -438,7 +489,7 @@ sim_result = MCPModSimulation(endpoint_type = "Normal",
 list_models <- list(sim_models_min_linear, sim_models_min_exp, sim_models_min_emax)
 chunks <- chunkVector(seq_along(list_models), getDoParWorkers())
 
-results_list_min <- foreach(k = chunks, .combine = c) %dorng% {
+results_list_min <- foreach(k = chunks, .combine = c)  %dorng% {
   
   lapply(k, function (i) {
     
@@ -453,21 +504,21 @@ results_list_min <- foreach(k = chunks, .combine = c) %dorng% {
 
 #store results
 results_min_MCP <- data.table(
-  Max_eff = c(0.05, 0.1, 0.2, 0.3, 0.5),
-  Linear = c(results_list_min[[1]]$sim_results$power),
-  Exponential = c(results_list_min[[2]]$sim_results$power),
-  Emax = c(results_list_min[[3]]$sim_results$power))
-  # Average = c(sum(power_min_linear$sim_results$power[1], power_min_exp$sim_results$power[1], power_min_emax$sim_results$power[1])/3,
-  #             sum(power_min_linear$sim_results$power[2], power_min_exp$sim_results$power[2], power_min_emax$sim_results$power[2])/3,
-  #             sum(power_min_linear$sim_results$power[3], power_min_exp$sim_results$power[3], power_min_emax$sim_results$power[3])/3,
-  #             sum(power_min_linear$sim_results$power[4], power_min_exp$sim_results$power[4], power_min_emax$sim_results$power[4])/3,
-  #             sum(power_min_linear$sim_results$power[5], power_min_exp$sim_results$power[5], power_min_emax$sim_results$power[5])/3)
+  max_eff = c(0.05, 0.1, 0.2, 0.3, 0.5),
+  linear = c(result_list_min[[1]]),
+  exponential = c(results_list_min[[2]]$sim_results$power),
+  emax = c(results_list_min[[3]]$sim_results$power),
+  Average = c(sum(results_list_min[[1]]$sim_results$power[1], results_list_min[[2]]$sim_results$power[1], results_list_min[[3]]$sim_results$power[1])/3,
+               sum(results_list_min[[1]]$sim_results$power[2], results_list_min[[2]]$sim_results$power[2], results_list_min[[3]]$sim_results$power[2])/3,
+               sum(results_list_min[[1]]$sim_results$power[3], results_list_min[[2]]$sim_results$power[3], results_list_min[[3]]$sim_results$power[3])/3,
+               sum(results_list_min[[1]]$sim_results$power[4], results_list_min[[2]]$sim_results$power[4], results_list_min[[3]]$sim_results$power[4])/3,
+               sum(results_list_min[[1]]$sim_results$power[5], results_list_min[[2]]$sim_results$power[5], results_list_min[[3]]$sim_results$power[5])/3))
 
 
 kable(results_min_MCP)%>%
   kable_classic(full_width = TRUE)%>%
-    add_header_above(c("Power results different expected effects " = 4), font_size = 15, bold = TRUE)%>%
-    add_header_above(c("Minimal scenario " = 4), font_size = 15, bold = TRUE)
+    add_header_above(c("Power results different expected effects " = 5), font_size = 15, bold = TRUE)%>%
+    add_header_above(c("Minimal scenario " = 5), font_size = 15, bold = TRUE)
     
 
 
@@ -511,37 +562,71 @@ power_min_nsample_emax <- vector()
 
 
 
-# Loop over nsample values
-for (i in seq_along(nsample_list)) {
-  
-  # Update nsample in simulation parameters
-  sim_parameters$n <- nsample_list[[i]]
-  
-  # Set max_effect to 0.2
-  min_modelsPack$max_effect <- expectedEffect_fix
-  
-  # power values for different assumed true models
-  power_nsample_linear <- func_sim(min_modelsPack, sim_models_min_linear, sim_parameters)
-  power_min_nsample_linear[i] <- power_nsample_linear$sim_results$power
-  
-  power_nsample_exp <- func_sim(min_modelsPack, sim_models_min_exp, sim_parameters)
-  power_min_nsample_exp[i] <-power_nsample_exp$sim_results$power
-  
-  power_nsample_emax <- func_sim(min_modelsPack, sim_models_min_emax, sim_parameters)
-  power_min_nsample_emax[i] <- power_nsample_exp$sim_results$power
+# # Loop over nsample values
+# for (i in seq_along(nsample_list)) {
+#   
+#   # Update nsample in simulation parameters
+#   sim_parameters$n <- nsample_list[[i]]
+#   
+#   # Set max_effect to 0.2
+#   min_modelsPack$max_effect <- expectedEffect_fix
+#   
+#   # power values for different assumed true models
+#   power_nsample_linear <- func_sim(min_modelsPack, sim_models_min_linear, sim_parameters)
+#   power_min_nsample_linear[i] <- power_nsample_linear$sim_results$power
+#   
+#   power_nsample_exp <- func_sim(min_modelsPack, sim_models_min_exp, sim_parameters)
+#   power_min_nsample_exp[i] <-power_nsample_exp$sim_results$power
+#   
+#   power_nsample_emax <- func_sim(min_modelsPack, sim_models_min_emax, sim_parameters)
+#   power_min_nsample_emax[i] <- power_nsample_exp$sim_results$power
+#   
+# }
+# Set max_effect to 0.2
+min_modelsPack$max_effect <- expectedEffect_fix
+#list of different samole sizes
+nsample_list = list(20*c(2,1,1,1,2),30*c(1,1,1,1,1), 24*c(2,1,1,1,2),36*c(1,1,1,1,1),
+                    20*c(2,1,1,1,2),30*c(1,1,1,1,1), 24*c(2,1,1,1,2),36*c(1,1,1,1,1),
+                    20*c(2,1,1,1,2),30*c(1,1,1,1,1), 24*c(2,1,1,1,2),36*c(1,1,1,1,1))
+
+list_models <- list(sim_models_min_linear,sim_models_min_linear,sim_models_min_linear,sim_models_min_linear,
+                    sim_models_min_exp, sim_models_min_exp,sim_models_min_exp,sim_models_min_exp,
+                    sim_models_min_emax, sim_models_min_emax, sim_models_min_emax, sim_models_min_emax)
+
+#ind_tasks <- 1:12
+
+chunks <- chunkVector(seq_along(list_models), getDoParWorkers())
+
+results_list_min_nsample <- foreach(k = chunks, .combine = c, .export = c(as.character(min_modelsPack), as.character(nsample_list)))  %dorng% {
+  lapply(k, function (i) {
+    sim_parameters = list(n = nsample_list[[i]], 
+                      doses = doses.sim,
+                      dropout_rate = 0.0, 
+                      go_threshold = 0.1, 
+                      nsims = n_sim)
+    
+    func_sim(min_modelsPack, list_models[[i]], sim_parameters) 
+    
+  })
   
 }
+
+
+
+
+
+
 
 # store results
 results_min_MCP_nsample <- data.table(
   N_sample = c("(40,20,20,20,40)","(30,30,30,30,30)", "(48,24,24,24,48)","(36,36,36,36,36)"),
-  Linear = c(power_min_nsample_linear),
-  Exponential = c(power_min_nsample_exp),
-  Emax = c(power_min_nsample_emax),
-  Average = c(sum(power_min_nsample_linear[1], power_min_nsample_exp[1], power_min_nsample_emax[1])/3,
-              sum(power_min_nsample_linear[2], power_min_nsample_exp[2], power_min_nsample_emax[2])/3,
-              sum(power_min_nsample_linear[3], power_min_nsample_exp[3], power_min_nsample_emax[3])/3,
-              sum(power_min_nsample_linear[4], power_min_nsample_exp[4], power_min_nsample_emax[4])/3)
+  Linear = c(results_list_min_nsample[[1]]$sim_results$power, results_list_min_nsample[[2]]$sim_results$power, results_list_min_nsample[[3]]$sim_results$power, results_list_min_nsample[[4]]$sim_results$power),
+  Exponential = c(results_list_min_nsample[[5]]$sim_results$power, results_list_min_nsample[[6]]$sim_results$power, results_list_min_nsample[[7]]$sim_results$power, results_list_min_nsample[[8]]$sim_results$power),
+  Emax = c(results_list_min_nsample[[9]]$sim_results$power, results_list_min_nsample[[10]]$sim_results$power, results_list_min_nsample[[11]]$sim_results$power, results_list_min_nsample[[12]]$sim_results$power),
+  Average = c(sum(results_list_min_nsample[[1]]$sim_results$power, results_list_min_nsample[[5]]$sim_results$power, results_list_min_nsample[[9]]$sim_results$power)/3,
+              sum(results_list_min_nsample[[2]]$sim_results$power, results_list_min_nsample[[6]]$sim_results$power, results_list_min_nsample[[10]]$sim_results$power)/3,
+              sum(results_list_min_nsample[[3]]$sim_results$power, results_list_min_nsample[[7]]$sim_results$power, results_list_min_nsample[[11]]$sim_results$power)/3,
+              sum(results_list_min_nsample[[4]]$sim_results$power, results_list_min_nsample[[8]]$sim_results$power, results_list_min_nsample[[12]]$sim_results$power)/3)
 )
 
 kable(results_min_MCP_nsample)%>%
@@ -593,7 +678,7 @@ sim_parameters = list(n = Nsample,
 # Initialize list to store results
 results_list_monotonic <- list()
 
-list_models <- list(sim_models_monotonic_linear, sim_models_monotonic_exp, sim_models_monotonic_logistic, sim_models_monotonic_sigemax, sim_models_monotonic_emax)
+list_models <- list(sim_models_monotonic_linear, sim_models_monotonic_exp, sim_models_monotonic_emax, sim_models_monotonic_logistic, sim_models_monotonic_sigemax)
 chunks <- chunkVector(seq_along(list_models), getDoParWorkers())
 
 results_list_monotonic <- foreach(k = chunks, .combine = c) %dorng% {
@@ -608,16 +693,17 @@ results_list_monotonic <- foreach(k = chunks, .combine = c) %dorng% {
   
 
 results_monotonic_MCP <- data.table(
-  Max_eff = c(0.05, 0.1, 0.2, 0.3, 0.5),
-  Linear = c(results_list_monotonic[[1]]$sim_results$power),
-  Emax = c(results_list_monotonic[[2]]$sim_results$power),
-  Logistic = c(results_list_monotonic[[3]]$sim_results$power),
-  sigEmax = c(results_list_monotonic[[4]]$sim_results$power)
-  # Average = c(sum(power_monotonic_linear$sim_results$power[1], power_monotonic_exp$sim_results$power[1], power_monotonic_emax$sim_results$power[1], power_monotonic_logistic$sim_results$power[1], power_monotonic_sigemax$sim_results$power[1])/5,
-  #             sum(power_monotonic_linear$sim_results$power[2], power_monotonic_exp$sim_results$power[2], power_monotonic_emax$sim_results$power[2], power_monotonic_logistic$sim_results$power[2], power_monotonic_sigemax$sim_results$power[2])/5,
-  #             sum(power_monotonic_linear$sim_results$power[3], power_monotonic_exp$sim_results$power[3],power_monotonic_emax$sim_results$power[3], power_monotonic_logistic$sim_results$power[3], power_monotonic_sigemax$sim_results$power[3])/5,
-  #             sum(power_monotonic_linear$sim_results$power[4], power_monotonic_exp$sim_results$power[4],power_monotonic_emax$sim_results$power[4], power_monotonic_logistic$sim_results$power[4], power_monotonic_sigemax$sim_results$power[4])/5,
-  #             sum(power_monotonic_linear$sim_results$power[5], power_monotonic_exp$sim_results$power[5],power_monotonic_emax$sim_results$power[5], power_monotonic_logistic$sim_results$power[5], power_monotonic_sigemax$sim_results$power[5])/5)
+  max_eff = c(0.05, 0.1, 0.2, 0.3, 0.5),
+  linear = c(results_list_monotonic[[1]]$sim_results$power),
+  exp = c(results_list_monotonic[[2]]$sim_results$power),
+  emax = c(results_list_monotonic[[3]]$sim_results$power),
+  logistic = c(results_list_monotonic[[4]]$sim_results$power),
+  sigEmax = c(results_list_monotonic[[5]]$sim_results$power),
+  Average = c((sum(results_list_monotonic[[1]]$sim_results$power[1], results_list_monotonic[[2]]$sim_results$power[1], results_list_monotonic[[3]]$sim_results$power[1], results_list_monotonic[[4]]$sim_results$power[1], results_list_monotonic[[5]]$sim_results$power[1])/5),
+  (sum(results_list_monotonic[[1]]$sim_results$power[2], results_list_monotonic[[2]]$sim_results$power[2], results_list_monotonic[[3]]$sim_results$power[2], results_list_monotonic[[4]]$sim_results$power[2], results_list_monotonic[[5]]$sim_results$power[2])/5),
+              (sum(results_list_monotonic[[1]]$sim_results$power[3], results_list_monotonic[[2]]$sim_results$power[3], results_list_monotonic[[3]]$sim_results$power[3], results_list_monotonic[[4]]$sim_results$power[3], results_list_monotonic[[5]]$sim_results$power[3])/5),
+(sum(results_list_monotonic[[1]]$sim_results$power[4], results_list_monotonic[[2]]$sim_results$power[4], results_list_monotonic[[3]]$sim_results$power[4], results_list_monotonic[[4]]$sim_results$power[4], results_list_monotonic[[5]]$sim_results$power[4])/5),
+(sum(results_list_monotonic[[1]]$sim_results$power[5], results_list_monotonic[[2]]$sim_results$power[5], results_list_monotonic[[3]]$sim_results$power[5], results_list_monotonic[[4]]$sim_results$power[5], results_list_monotonic[[5]]$sim_results$power[5])/5))
 )
 
 kable(results_monotonic_MCP)%>%
@@ -919,17 +1005,23 @@ power_non_monotonic_beta <- result$`betaMod (delta1=1.396434,delta2=1.040978,sca
 #linear, emax, sigemax, quadratic
 results_non_monotonic_MCP <- data.table(
   Max_eff = c(0.05, 0.1, 0.2, 0.3, 0.5),
-  Linear = power_non_monotonic_linear,
-  Emax = power_non_monotonic_emax,
+  linear = power_non_monotonic_linear,
+  emax = power_non_monotonic_emax,
   sigEmax = power_non_monotonic_sigemax,
   quadratic = power_non_monotonic_quadratic,
-  beta = power_non_monotonic_beta)
+  beta = power_non_monotonic_beta,
+  average = c((sum(power_non_monotonic_linear[1],power_non_monotonic_emax[1], power_non_monotonic_sigemax[1], power_non_monotonic_quadratic[1], power_non_monotonic_beta[1])/5),
+    (sum(power_non_monotonic_linear[2],power_non_monotonic_emax[2], power_non_monotonic_sigemax[2], power_non_monotonic_quadratic[2], power_non_monotonic_beta[2])/5),
+    (sum(power_non_monotonic_linear[3],power_non_monotonic_emax[3], power_non_monotonic_sigemax[3], power_non_monotonic_quadratic[3], power_non_monotonic_beta[3])/5),
+    (sum(power_non_monotonic_linear[4],power_non_monotonic_emax[4], power_non_monotonic_sigemax[4], power_non_monotonic_quadratic[4], power_non_monotonic_beta[4])/5),
+    (sum(power_non_monotonic_linear[5],power_non_monotonic_emax[5], power_non_monotonic_sigemax[5], power_non_monotonic_quadratic[5], power_non_monotonic_beta[5])/5))
+  )
 
 
 kable(results_non_monotonic_MCP)%>%
   kable_classic(full_width = TRUE)%>%
-    add_header_above(c("Power results different expected effects" = 6), font_size = 15, bold = TRUE)%>%
-    add_header_above(c("Non-monotonic scenario" = 6), font_size = 15, bold = TRUE)
+    add_header_above(c("Power results different expected effects" = 7), font_size = 15, bold = TRUE)%>%
+    add_header_above(c("Non-monotonic scenario" = 7), font_size = 15, bold = TRUE)
 ```
 
 ### Nsample
@@ -1402,15 +1494,20 @@ results_list_var <- foreach(k = chunks, .combine = c) %dorng% {
 # store results
 results_var_MCP <- data.table(
   Max_eff = c(0.05, 0.1, 0.2, 0.3, 0.5),
-  Linear = results_list_var[[1]]$sim_results$power,
-  Exponential = results_list_var[[2]]$sim_results$power,
-  Emax = results_list_var[[3]]$sim_results$power
+  linear = results_list_var[[1]]$sim_results$power,
+  exponential = results_list_var[[2]]$sim_results$power,
+  emax = results_list_var[[3]]$sim_results$power,
+  average = c((sum(results_list_var[[1]]$sim_results$power[1], results_list_var[[2]]$sim_results$power[1],results_list_var[[3]]$sim_results$power[1])/3),
+              (sum(results_list_var[[1]]$sim_results$power[2], results_list_var[[2]]$sim_results$power[2],results_list_var[[3]]$sim_results$power[2])/3),
+              (sum(results_list_var[[1]]$sim_results$power[3], results_list_var[[2]]$sim_results$power[3],results_list_var[[3]]$sim_results$power[3])/3),
+              (sum(results_list_var[[1]]$sim_results$power[4], results_list_var[[2]]$sim_results$power[4],results_list_var[[3]]$sim_results$power[4])/3),
+              (sum(results_list_var[[1]]$sim_results$power[5], results_list_var[[2]]$sim_results$power[5],results_list_var[[3]]$sim_results$power[5])/3))
 )
 
 kable(results_var_MCP)%>%
   kable_classic(full_width = TRUE)%>%
-    add_header_above(c("Power results different expected effects" = 4), font_size = 15, bold = TRUE)%>%
-    add_header_above(c("Variability scenario" = 4), font_size = 15, bold = TRUE)
+    add_header_above(c("Power results different expected effects" = 5), font_size = 15, bold = TRUE)%>%
+    add_header_above(c("Variability scenario" = 5), font_size = 15, bold = TRUE)
 
 
 ```
@@ -1493,17 +1590,60 @@ First we assume a fix sample size of 40 patients per group and different maximum
 # list to store results
 results_list_Bay_min <- list()
 
-# Simulation with different maximum effects
-results_list_Bay_min <- purrr::map( c(0.05,0.1,0.2,0.3,0.5), function(i) {
-  min_models <- Mods(linear=NULL, 
+# # Simulation with different maximum effects
+# results_list_Bay_min <- purrr::map( c(0.05,0.1,0.2,0.3,0.5), function(i) {
+#   min_models <- Mods(linear=NULL, 
+#                      exponential = exp.g,
+#                      emax = emax.g,
+#                      doses = doses.sim,
+#                      placEff = plc.guess, 
+#                      maxEff = i,
+#                      direction = "increasing")
+#   #optimal contrasts
+#   contM <- getContr(mods = min_models, 
+#                     dose_levels = doses.sim, 
+#                     prior_list = uninf_prior_list, 
+#                     dose_weights = c(1,1,1,1,1))
+# 
+#  # Simulation step
+#   success_probabilities_min <- assessDesign(
+#     n_patients  = Nsample,
+#     mods        = min_models,
+#     prior_list  = uninf_prior_list,
+#     sd          = sd.sim,
+#     n_sim       = n_sim,
+#     alpha_crit_val = alpha, 
+#     contr = contM)
+# 
+#   # Store result in list
+#   results_list_Bay_min[[paste0("max_effect_", expectedEffect[i])]] <- success_probabilities_min
+# })
+# 
+# 
+# results_min_Bay <- extract_success_rates(results_list_Bay_min, min_scenario)
+
+
+
+# parallel -------------------------------------------------------------------------------------
+
+list_max_eff <- as.list(c(0.05,0.1,0.2,0.3,0.5))
+chunks <- chunkVector(seq_along(list_max_eff), getDoParWorkers())
+
+
+  
+results_list_Bay_min <- foreach(k = chunks, .combine = c) %dorng% {
+  
+  lapply(k, function (i) {
+    
+     min_models <- Mods(linear=NULL, 
                      exponential = exp.g,
                      emax = emax.g,
                      doses = doses.sim,
                      placEff = plc.guess, 
-                     maxEff = i,
+                     maxEff = list_max_eff[[i]],
                      direction = "increasing")
   #optimal contrasts
-  contM <- getContr(mods = min_models, 
+contM <- getContr(mods = min_models, 
                     dose_levels = doses.sim, 
                     prior_list = uninf_prior_list, 
                     dose_weights = c(1,1,1,1,1))
@@ -1516,13 +1656,12 @@ results_list_Bay_min <- purrr::map( c(0.05,0.1,0.2,0.3,0.5), function(i) {
     sd          = sd.sim,
     n_sim       = n_sim,
     alpha_crit_val = alpha, 
-    contr = contM)
-
-  # Store result in list
-  results_list_Bay_min[[paste0("max_effect_", expectedEffect[i])]] <- success_probabilities_min
-})
-
-
+    contr = contM) 
+    
+  })
+  
+}
+  
 results_min_Bay <- extract_success_rates(results_list_Bay_min, min_scenario)
 
 minimal_Bay <- print_result_Bay_max_eff(results_min_Bay, c(min_scenario, "average"), expectedEffect)
@@ -1566,12 +1705,35 @@ min_models <- Mods(linear=NULL,
                      maxEff = expectedEffect_fix,
                      direction = "increasing")
   
-# Loop over nsample values
-for (i in seq_along(nsample_list)) {
-  
+# # Loop over nsample values
+# for (i in seq_along(nsample_list)) {
+#   
+# 
+#   # Simulations 
+#   success_probabilities_min <- assessDesign(
+#     n_patients  = nsample_list[[i]],
+#     mods        = min_models,
+#     prior_list  = uninf_prior_list,
+#     sd          = sd.sim,
+#     n_sim       = n_sim,
+#     alpha_crit_val = alpha, 
+#     contr = contrasts_list[[i]])
+# 
+# 
+# # Store result in list
+#   results_list_nsample_min_Bay[[paste0("nsample_", nsample_list[i])]] <- success_probabilities_min
+#   
+# }
+# parallel -------------------------------------------------------
 
-  # Simulations 
-  success_probabilities_min <- assessDesign(
+
+chunks <- chunkVector(seq_along(nsample_list), getDoParWorkers())
+  
+results_list_nsample_min_Bay <- foreach(k = chunks, .combine = c, .export = c(as.character(min_models), as.character(contrasts_list)))  %dorng% {
+  
+  lapply(k, function (i) {
+    
+      success_probabilities_min <- assessDesign(
     n_patients  = nsample_list[[i]],
     mods        = min_models,
     prior_list  = uninf_prior_list,
@@ -1579,13 +1741,10 @@ for (i in seq_along(nsample_list)) {
     n_sim       = n_sim,
     alpha_crit_val = alpha, 
     contr = contrasts_list[[i]])
-
-
-# Store result in list
-  results_list_nsample_min_Bay[[paste0("nsample_", nsample_list[i])]] <- success_probabilities_min
-  
+    
+  })
 }
-
+  
 
 results_min_Bay_nsample <- extract_success_rates_nsample(results_list_nsample_min_Bay, min_scenario)
   
@@ -1606,16 +1765,59 @@ minimal_nsample_Bay$kable_result
 results_list_Bay_monotonic <- list()
 
 
-results_list_Bay_monotonic <- purrr::map(c(0.05,0.1,0.2,0.3,0.5), function(i) {
+# results_list_Bay_monotonic <- purrr::map(c(0.05,0.1,0.2,0.3,0.5), function(i) {
+#   
+#  monotonic_models <- Mods(linear=NULL, 
+#                          exponential = exp.g,
+#                          emax = emax.g,
+#                          logistic=logit.g,
+#                          sigEmax = sigEmax.g,
+#                          doses = doses.sim,
+#                          placEff = plc.guess, 
+#                          maxEff = i,
+#                          direction = "increasing")
+#        
+#   # optimal contrasts
+#   contM <- getContr(mods = monotonic_models, 
+#                     dose_levels = doses.sim, 
+#                     prior_list = uninf_prior_list, 
+#                     dose_weights = c(1,1,1,1,1))
+#   
+#   # perform Simulations
+#   success_probabilities_monotonic <- assessDesign(
+#     n_patients  = Nsample,
+#     mods        = monotonic_models,
+#     prior_list  = uninf_prior_list,
+#     sd          = sd.sim,
+#     n_sim       = n_sim,
+#     alpha_crit_val = alpha, 
+#     contr = contM)
+# 
+# 
+# # Store result in list
+#   results_list_Bay_monotonic[[paste0("max_effect_", expectedEffect[i])]] <- success_probabilities_monotonic
+#   
+# })
+
+# parallel ----------------------------------------
+
+list_max_eff <- as.list(c(0.05,0.1,0.2,0.3,0.5))
+chunks <- chunkVector(seq_along(list_max_eff), getDoParWorkers())
+
+
   
- monotonic_models <- Mods(linear=NULL, 
+results_list_Bay_monotonic <- foreach(k = chunks, .combine = c) %dorng% {
+  
+  lapply(k, function (i) {
+    
+    monotonic_models <- Mods(linear=NULL, 
                          exponential = exp.g,
                          emax = emax.g,
                          logistic=logit.g,
                          sigEmax = sigEmax.g,
                          doses = doses.sim,
                          placEff = plc.guess, 
-                         maxEff = i,
+                         maxEff = list_max_eff[[i]],
                          direction = "increasing")
        
   # optimal contrasts
@@ -1633,12 +1835,14 @@ results_list_Bay_monotonic <- purrr::map(c(0.05,0.1,0.2,0.3,0.5), function(i) {
     n_sim       = n_sim,
     alpha_crit_val = alpha, 
     contr = contM)
+    
 
-
-# Store result in list
-  results_list_Bay_monotonic[[paste0("max_effect_", expectedEffect[i])]] <- success_probabilities_monotonic
+    
+  })
   
-})
+}
+  
+
 ##power results in vector for tables
 results_monotonic_Bay <- extract_success_rates(results_list_Bay_monotonic, monotonic_scenario)
 
@@ -1682,25 +1886,43 @@ contM_2 <- getContr(mods = monotonic_models,
                   dose_weights = c(2,1,1,1,2))
 contrasts_list = list(contM_2, contM, contM_2, contM)
 
-# Loop over nsample values
-for (i in seq_along(nsample_list)) {
-  
+# # Loop over nsample values
+# for (i in seq_along(nsample_list)) {
+#   
+# 
+#   # perform simulations
+#   success_probabilities_monotonic <- assessDesign(
+#     n_patients  = nsample_list[[i]],
+#     mods        = monotonic_models,
+#     prior_list  = uninf_prior_list,
+#     sd          = sd.sim,
+#     n_sim       = n_sim,
+#     alpha_crit_val = alpha, 
+#     contr = contrasts_list[[i]])
+# 
+# 
+# # Store result in list
+#   results_list_nsample_monotonic_Bay[[paste0("nsample_", nsample_list[i])]] <- success_probabilities_monotonic
+#   
+# }
 
-  # perform simulations
-  success_probabilities_monotonic <- assessDesign(
+chunks <- chunkVector(seq_along(nsample_list), getDoParWorkers())
+  
+results_list_nsample_monotonic_Bay <- foreach(k = chunks, .combine = c, .export = c(as.character(monotonic_models), as.character(contrasts_list)))  %dorng% {
+  
+  lapply(k, function (i) {
+    
+    success_probabilities_monotonic <- assessDesign(
     n_patients  = nsample_list[[i]],
     mods        = monotonic_models,
     prior_list  = uninf_prior_list,
     sd          = sd.sim,
     n_sim       = n_sim,
-    alpha_crit_val = alpha, 
+    alpha_crit_val = alpha,
     contr = contrasts_list[[i]])
-
-
-# Store result in list
-  results_list_nsample_monotonic_Bay[[paste0("nsample_", nsample_list[i])]] <- success_probabilities_monotonic
-  
+  })
 }
+  
 
 results_monotonic_Bay_nsample <- extract_success_rates_nsample(results_list_nsample_monotonic_Bay, monotonic_scenario)
 
@@ -1717,23 +1939,65 @@ monotonic_nsample_Bay$kable_result
 ```{r}
 results_list_Bay_non_monotonic <- list()
 
-results_list_Bay_non_monotonic <- purrr::map(c(0.05,0.1,0.2,0.3,0.5), function(i) {
+# results_list_Bay_non_monotonic <- purrr::map(c(0.05,0.1,0.2,0.3,0.5), function(i) {
+#   
+#  non_monotonic_models <- Mods(linear=NULL, 
+#                                emax = emax.g,
+#                                sigEmax = sigEmax.g,
+#                                quadratic = quad.g,
+#                                betaMod = beta.g,
+#                                doses = doses.sim,
+#                                placEff = plc.guess, 
+#                                maxEff = i,
+#                                direction = "increasing",
+#                                addArgs = list(scal=9.6))
+#                  
+#   #optimal contrasts
+#   contM <- getContr(mods = non_monotonic_models, 
+#                     dose_levels = doses.sim, 
+#                     prior_list = uninf_prior_list, 
+#                     dose_weights = c(1,1,1,1,1))
+# 
+#   success_probabilities_non_monotonic <- assessDesign(
+#     n_patients  = Nsample,
+#     mods        = non_monotonic_models,
+#     prior_list  = uninf_prior_list,
+#     sd          = sd.sim,
+#     n_sim       = n_sim,
+#     alpha_crit_val = alpha, 
+#     contr = contM)
+# 
+# 
+# # Store result in list
+#   results_list_Bay_non_monotonic[[paste0("max_effect_", expectedEffect[i])]] <- success_probabilities_non_monotonic
+#   
+# })
+
+list_max_eff <- as.list(c(0.05,0.1,0.2,0.3,0.5))
+chunks <- chunkVector(seq_along(list_max_eff), getDoParWorkers())
+
+
   
- non_monotonic_models <- Mods(linear=NULL, 
+results_list_Bay_non_monotonic <- foreach(k = chunks, .combine = c) %dorng% {
+  
+  lapply(k, function (i) {
+    
+    
+     non_monotonic_models <- Mods(linear=NULL, 
                                emax = emax.g,
                                sigEmax = sigEmax.g,
                                quadratic = quad.g,
                                betaMod = beta.g,
                                doses = doses.sim,
-                               placEff = plc.guess, 
-                               maxEff = i,
+                               placEff = plc.guess,
+                               maxEff = list_max_eff[[i]],
                                direction = "increasing",
                                addArgs = list(scal=9.6))
-                 
+
   #optimal contrasts
-  contM <- getContr(mods = non_monotonic_models, 
-                    dose_levels = doses.sim, 
-                    prior_list = uninf_prior_list, 
+  contM <- getContr(mods = non_monotonic_models,
+                    dose_levels = doses.sim,
+                    prior_list = uninf_prior_list,
                     dose_weights = c(1,1,1,1,1))
 
   success_probabilities_non_monotonic <- assessDesign(
@@ -1742,15 +2006,14 @@ results_list_Bay_non_monotonic <- purrr::map(c(0.05,0.1,0.2,0.3,0.5), function(i
     prior_list  = uninf_prior_list,
     sd          = sd.sim,
     n_sim       = n_sim,
-    alpha_crit_val = alpha, 
+    alpha_crit_val = alpha,
     contr = contM)
 
 
-# Store result in list
-  results_list_Bay_non_monotonic[[paste0("max_effect_", expectedEffect[i])]] <- success_probabilities_non_monotonic
+  })
   
-})
-
+}
+  
 results_non_monotonic_Bay <- extract_success_rates(results_list_Bay_non_monotonic, non_monotonic_scenario)
 
 non_monotonic_Bay <- print_result_Bay_max_eff(results_non_monotonic_Bay, c(non_monotonic_scenario, "average"), expectedEffect)
@@ -1788,25 +2051,44 @@ contM_2 <- getContr(mods = non_monotonic_models,
 
 contrasts_list = list(contM_2, contM, contM_2, contM)
   
-# Loop over nsample values
-for (i in seq_along(nsample_list)) {
+# # Loop over nsample values
+# for (i in seq_along(nsample_list)) {
+#   
+# 
+# 
+#   success_probabilities_non_monotonic <- assessDesign(
+#     n_patients  = nsample_list[[i]],
+#     mods        = non_monotonic_models,
+#     prior_list  = uninf_prior_list,
+#     sd          = sd.sim,
+#     n_sim       = n_sim,
+#     alpha_crit_val = alpha, 
+#     contr = contrasts_list[[i]])
+# 
+# 
+#   # Store result in list
+#   results_list_nsample_non_monotonic_Bay[[paste0("nsample_", nsample_list[i])]] <- success_probabilities_non_monotonic
+#   
+# }
+
+
+chunks <- chunkVector(seq_along(nsample_list), getDoParWorkers())
   
-
-
-  success_probabilities_non_monotonic <- assessDesign(
+results_list_nsample_non_monotonic_Bay <- foreach(k = chunks, .combine = c, .export = c(as.character(non_monotonic_models), as.character(contrasts_list)))  %dorng% {
+  
+  lapply(k, function (i) {
+    
+    success_probabilities_non_monotonic <- assessDesign(
     n_patients  = nsample_list[[i]],
     mods        = non_monotonic_models,
     prior_list  = uninf_prior_list,
     sd          = sd.sim,
     n_sim       = n_sim,
-    alpha_crit_val = alpha, 
+    alpha_crit_val = alpha,
     contr = contrasts_list[[i]])
-
-
-  # Store result in list
-  results_list_nsample_non_monotonic_Bay[[paste0("nsample_", nsample_list[i])]] <- success_probabilities_non_monotonic
-  
+  })
 }
+  
 
 results_non_monotonic_Bay_nsample <- extract_success_rates_nsample(results_list_nsample_non_monotonic_Bay, non_monotonic_scenario)
 
@@ -1832,33 +2114,42 @@ var_uninf_prior_list <- list(
 results_list_Bay_var <- list()
 
 
-results_list_Bay_var <- purrr::map(c(0.05,0.1,0.2,0.3,0.5), function(i) {
 
-  var_models <- Mods(linear = NULL, 
+list_max_eff <- as.list(c(0.05,0.1,0.2,0.3,0.5))
+chunks <- chunkVector(seq_along(list_max_eff), getDoParWorkers())
+
+
+  
+results_list_Bay_var <- foreach(k = chunks, .combine = c) %dorng% {
+  
+  lapply(k, function (i) {
+    
+      var_models <- Mods(linear = NULL, 
                      exponential = exp.g,
                      emax = emax.g,
                      doses = doses_var,
-                     placEff = plc.guess, 
-                     maxEff = i,
+                     placEff = plc.guess,
+                     maxEff = list_max_eff[[i]],
                      direction = "increasing")
-  
-  contM <- getContr(mods = var_models, 
-                    dose_levels = doses_var, 
-                    prior_list = var_uninf_prior_list, 
+
+  contM <- getContr(mods = var_models,
+                    dose_levels = doses_var,
+                    prior_list = var_uninf_prior_list,
                     dose_weights = c(1,1,1,1))
-  
+
   success_probabilities_var <- assessDesign(
     n_patients  = Nsample_var,
     mods        = var_models,
     prior_list  = var_uninf_prior_list,
     sd          = sd.sim_var,
     n_sim       = n_sim,
-    alpha_crit_val = alpha, 
+    alpha_crit_val = alpha,
     contr = contM)
 
-# Store result in list
-  results_list_Bay_var[[paste0("max_effect_", expectedEffect[i])]] <- success_probabilities_var
-})
+  })
+  
+}
+
 
 results_variability_Bay <- extract_success_rates(results_list_Bay_var, variability_scenario)
 
@@ -1892,25 +2183,43 @@ contM_2 <- getContr(mods = var_models,
                   dose_weights = c(2,1,1,2))
 contrasts_list = list(contM_2, contM, contM_2, contM)
 
-# Loop over nsample values
-for (i in seq_along(nsample_list_var)) {
+# # Loop over nsample values
+# for (i in seq_along(nsample_list_var)) {
+#   
+# 
+# 
+#   success_probabilities_var <- assessDesign(
+#     n_patients  = nsample_list_var[[i]],
+#     mods        = var_models,
+#     prior_list  = var_uninf_prior_list,
+#     sd          = sd.sim_var,
+#     n_sim       = n_sim,
+#     alpha_crit_val = alpha, 
+#     contr = contrasts_list[[i]])
+#   
+#   
+#   # Store result in list
+#   results_list_nsample_Bay_var[[paste0("nsample_", nsample_list[i])]] <- success_probabilities_var
+#   
+# }
+
+chunks <- chunkVector(seq_along(nsample_list_var), getDoParWorkers())
   
-
-
-  success_probabilities_var <- assessDesign(
+results_list_nsample_Bay_var <- foreach(k = chunks, .combine = c, .export = c(as.character(var_models), as.character(contrasts_list)))  %dorng% {
+  
+  lapply(k, function (i) {
+    success_probabilities_var <- assessDesign(
     n_patients  = nsample_list_var[[i]],
     mods        = var_models,
     prior_list  = var_uninf_prior_list,
     sd          = sd.sim_var,
     n_sim       = n_sim,
-    alpha_crit_val = alpha, 
+    alpha_crit_val = alpha,
     contr = contrasts_list[[i]])
-  
-  
-  # Store result in list
-  results_list_nsample_Bay_var[[paste0("nsample_", nsample_list[i])]] <- success_probabilities_var
-  
+   
+  })
 }
+  
 
 results_variability_Bay_nsample <- extract_success_rates_nsample(results_list_nsample_Bay_var, variability_scenario)
 
@@ -1918,26 +2227,6 @@ results_variability_Bay_nsample <- extract_success_rates_nsample(results_list_ns
 var_nsample_Bay <-  print_result_Bay_nsample(results_variability_Bay_nsample, c(variability_scenario, "average"), as.vector(nsample_list_var))
 var_nsample_Bay$kable_result
 
-
-##############test purr::map
-
-
-
-#results_list_nsample_Bay_var <- purrr::map(nsample_list_var, function(i) {
-
-#  success_probabilities_var <- assessDesign(
-#    n_patients  = i,
-#    mods        = var_models,
-#    prior_list  = var_uninf_prior_list,
-#    sd          = sd.sim_var,
-#    n_sim       = n_sim,
-#    alpha_crit_val = alpha, 
-#    contr = contM)
-
-  # Return result
-#   list(paste0("nsample_", i), success_probabilities_var)
-  
-#}) 
 
 ```
 
@@ -1947,6 +2236,10 @@ var_nsample_Bay$kable_result
 ## maximum effect
 ### minimal scenario
 ```{r}
+
+plot_minimal_max_eff <- plot_max_eff(results_min_MCP, results_min_Bay, min_scenario)
+plot_minimal_max_eff
+
 #table with results
 kable(results_min_MCP)%>%
   kable_classic(full_width = TRUE)%>%
@@ -1957,11 +2250,13 @@ minimal_Bay$kable_result
 
 #difference of power values
 results_min_max_eff <- data.table(
-  linear = as.vector(minimal_Bay$result_table$linear)-as.vector(results_min_MCP$Linear),
-  exponential = as.vector(minimal_Bay$result_table$exponential)-as.vector(results_min_MCP$Exponential),
-  emax = as.vector(minimal_Bay$result_table$emax)-as.vector(results_min_MCP$Emax),
+  linear = as.vector(minimal_Bay$result_table$linear)-as.vector(results_min_MCP$linear),
+  exponential = as.vector(minimal_Bay$result_table$exponential)-as.vector(results_min_MCP$exponential),
+  emax = as.vector(minimal_Bay$result_table$emax)-as.vector(results_min_MCP$emax),
   expectedEffect = expectedEffect
 )
+
+
 
 results_min_max_eff <- melt(results_min_max_eff, id.vars = "expectedEffect")
 
@@ -1975,11 +2270,14 @@ plot_minimal
 
 ### monotonic scenario
 ```{r}
+plot_monotonic_max_eff <- plot_max_eff(results_monotonic_MCP, results_monotonic_Bay, monotonic_scenario)
+plot_monotonic_max_eff
+
 results_monotonic_max_eff <- data.table(
-  linear = as.vector(monotonic_Bay$result_table$linear)-as.vector(results_monotonic_MCP$Linear),
-  exponential = as.vector(monotonic_Bay$result_table$exponential)-as.vector(results_monotonic_MCP$Exponential),
-  emax = as.vector(monotonic_Bay$result_table$emax)-as.vector(results_monotonic_MCP$Emax),
-  logistic = as.vector(monotonic_Bay$result_table$logistic)-as.vector(results_monotonic_MCP$Logistic),
+  linear = as.vector(monotonic_Bay$result_table$linear)-as.vector(results_monotonic_MCP$linear),
+  exponential = as.vector(monotonic_Bay$result_table$exponential)-as.vector(results_monotonic_MCP$exp),
+  emax = as.vector(monotonic_Bay$result_table$emax)-as.vector(results_monotonic_MCP$emax),
+  logistic = as.vector(monotonic_Bay$result_table$logistic)-as.vector(results_monotonic_MCP$logistic),
   sigemax = as.vector(monotonic_Bay$result_table$sigEmax)-as.vector(results_monotonic_MCP$sigEmax),
   expectedEffect = expectedEffect
 )
@@ -1995,9 +2293,12 @@ plot_monotonic
 ### non - monotonic scenario
 
 ```{r}
+plot_non_monotonic_max_eff <- plot_max_eff(results_non_monotonic_MCP, results_non_monotonic_Bay, non_monotonic_scenario)
+plot_non_monotonic_max_eff
+
 results_non_monotonic_max_eff <- data.table(
-  linear = as.vector(non_monotonic_Bay$result_table$linear)-as.vector(results_non_monotonic_MCP$Linear),
-  emax = as.vector(non_monotonic_Bay$result_table$emax)-as.vector(results_non_monotonic_MCP$Emax),
+  linear = as.vector(non_monotonic_Bay$result_table$linear)-as.vector(results_non_monotonic_MCP$linear),
+  emax = as.vector(non_monotonic_Bay$result_table$emax)-as.vector(results_non_monotonic_MCP$emax),
   sigemax = as.vector(non_monotonic_Bay$result_table$sigEmax)-as.vector(results_non_monotonic_MCP$sigEmax),
   quadratic = as.vector(non_monotonic_Bay$result_table$quadratic)-as.vector(results_non_monotonic_MCP$quadratic),
   beta = as.vector(non_monotonic_Bay$result_table$beta)-as.vector(results_non_monotonic_MCP$beta),
@@ -2012,11 +2313,15 @@ plot_non_monotonic
 
 ### variability scenario
 
+
 ```{r}
+plot_var_max_eff <- plot_max_eff(results_var_MCP, results_variability_Bay, variability_scenario)
+plot_var_max_eff
+
 results_var_max_eff <- data.table(
-  linear = as.vector(variability_Bay$result_table$linear)-as.vector(results_var_MCP$Linear),
-  exponential =  as.vector(variability_Bay$result_table$exponential)-as.vector(results_var_MCP$Exponential),
-  emax =  as.vector(variability_Bay$result_table$emax)-as.vector(results_var_MCP$Emax),
+  linear = as.vector(variability_Bay$result_table$linear)-as.vector(results_var_MCP$linear),
+  exponential =  as.vector(variability_Bay$result_table$exponential)-as.vector(results_var_MCP$exponential),
+  emax =  as.vector(variability_Bay$result_table$emax)-as.vector(results_var_MCP$emax),
   expectedEffect = expectedEffect
 )
 
@@ -2045,6 +2350,20 @@ results_min_nsample <- melt(results_min_nsample, id.vars = "nsample_vector")
 
 plot_minimal_nsample <- plot_power_deviation(results_min_nsample, results_min_nsample$nsample_vector, "sample sizes")
 plot_minimal_nsample
+
+##################################
+library(tidyverse)
+
+# bar_data_min <- data.table(
+  Bay_linear = minimal_nsample_Bay$result_table$linear,
+  Bay_exp = minimal_nsample_Bay$result_table$exponential,
+  Bay_emax = minimal_nsample_Bay$result_table$emax,
+  diff_linear = results_min_nsample$linear,
+  diff_exp = results_min_nsample$exponential,
+  diff_emax = results_min_nsample$emax
+)
+
+
 
 ```
 
@@ -2547,6 +2866,6 @@ plot_nsim_var
 
 
 ```{r}
-save(results_nsim_Bay, results_list_nsim_MCP, results_nsim_monotonic, results_nsim_non_monotonic, results_nsim_var,  results_min_MCP, results_monotonic_MCP, results_non_monotonic_MCP, results_var_MCP, results_min_MCP_nsample, results_monotonic_MCP_nsample, results_non_monotonic_MCP_nsample, results_var_MCP_nsample, results_min_Bay, results_min_Bay_nsample, results_monotonic_Bay, results_monotonic_Bay_nsample, results_non_monotonic_Bay, results_non_monotonic_Bay_nsample, results_variability_Bay, results_variability_Bay_nsample,
-     file = "simulation_data.RData")
+# save(results_nsim_Bay, results_list_nsim_MCP, results_nsim_monotonic, results_nsim_non_monotonic, results_nsim_var,  results_min_MCP, results_monotonic_MCP, results_non_monotonic_MCP, results_var_MCP, results_min_MCP_nsample, results_monotonic_MCP_nsample, results_non_monotonic_MCP_nsample, results_var_MCP_nsample, results_min_Bay, results_min_Bay_nsample, results_monotonic_Bay, results_monotonic_Bay_nsample, results_non_monotonic_Bay, results_non_monotonic_Bay_nsample, results_variability_Bay, results_variability_Bay_nsample,
+#      file = "simulation_data.RData")
 ```
