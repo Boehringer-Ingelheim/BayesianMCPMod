@@ -4,24 +4,39 @@
 \alias{getBootstrapQuantiles}
 \title{getBootstrapQuantiles}
 \usage{
-getBootstrapQuantiles(bs_samples, quantiles)
+getBootstrapQuantiles(
+  model_fits,
+  quantiles,
+  n_samples = 1000,
+  doses = NULL,
+  avg_fit = TRUE
+)
 }
 \arguments{
-\item{bs_samples}{An object of class bootstrappedSample as created by getBootstrapSamples}
+\item{model_fits}{An object of class modelFits, i.e. information about fitted models & corresponding model coefficients as well as the posterior distribution that was the basis for the model fitting}
 
 \item{quantiles}{A vector of quantiles that should be evaluated}
+
+\item{n_samples}{Number of samples that should be drawn as basis for the bootstrapped quantiles}
+
+\item{doses}{A vector of doses for which a prediction should be performed}
+
+\item{avg_fit}{Boolean variable, defining whether an average fit (based on generalized AIC weights) should be performed in addition to the individual models. Default TRUE.}
 }
 \value{
-A data frame with entries doses, models, and quantiles
+A data frame with columns for model, dose, and bootstrapped samples
 }
 \description{
-Calculates quantiles from bootstrapped dose predictions.
-Can be used to derive credible intervals to assess the uncertainty for the model fit.
+A function for the calculation of bootstrapped model predictions.
+Samples from the posterior distribution are drawn (via the RBesT function rmix()) and for every sample the simplified fitting step (see getModelFits() function) and a prediction is performed.
+These fits are then used to identify the specified quantiles.
+This approach can be considered as the Bayesian equivalent of the frequentist bootstrap approach described in O'Quigley et al. (2017).
+Instead of drawing n bootstrap samples from the sampling distribution of the trial dose-response estimates, here the samples are directly taken from the posterior distribution.
 }
 \examples{
 posterior_list <- list(Ctrl = RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 1), sigma = 2),
                        DG_1 = RBesT::mixnorm(comp1 = c(w = 1, m = 3, s = 1.2), sigma = 2),
-                       DG_2 = RBesT::mixnorm(comp1 = c(w = 1, m = 4, s = 1.5), sigma = 2) ,  
+                       DG_2 = RBesT::mixnorm(comp1 = c(w = 1, m = 4, s = 1.5), sigma = 2) ,
                        DG_3 = RBesT::mixnorm(comp1 = c(w = 1, m = 6, s = 1.2), sigma = 2) ,
                        DG_4 = RBesT::mixnorm(comp1 = c(w = 1, m = 6.5, s = 1.1), sigma = 2))
 models         <- c("exponential", "linear")
@@ -30,11 +45,13 @@ fit            <- getModelFits(models      = models,
                                posterior   = posterior_list,
                                dose_levels = dose_levels,
                                simple      = TRUE)
-                               
-bs_samples     <- getBootstrapSamples(model_fits = fit,
-                                      n_samples  = 10, # speeding up example run time
-                                      doses      = c(0, 6, 8))
-                           
-getBootstrapQuantiles(bs_samples = bs_samples,
-                      quantiles  = c(0.025, 0.5, 0.975))
+
+getBootstrapQuantiles(model_fits = fit,
+                    quantiles  = c(0.025, 0.5, 0.975),
+                    n_samples  = 10, # speeding up example run time
+                    doses      = c(0, 6, 8))
+
+}
+\references{
+O'Quigley J, Iasonos A, Bornkamp B. 2017. Handbook of Methods for Designing, Monitoring, and Analyzing Dose-Finding Trials (1st ed.). Chapman and Hall/CRC. doi:10.1201/9781315151984
 }

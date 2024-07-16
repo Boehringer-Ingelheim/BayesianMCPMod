@@ -52,7 +52,7 @@ The default setting is that these credible bands are not calculated.
 \examples{
 posterior_list <- list(Ctrl = RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 1), sigma = 2),
                        DG_1 = RBesT::mixnorm(comp1 = c(w = 1, m = 3, s = 1.2), sigma = 2),
-                       DG_2 = RBesT::mixnorm(comp1 = c(w = 1, m = 4, s = 1.5), sigma = 2) ,  
+                       DG_2 = RBesT::mixnorm(comp1 = c(w = 1, m = 4, s = 1.5), sigma = 2) ,
                        DG_3 = RBesT::mixnorm(comp1 = c(w = 1, m = 6, s = 1.2), sigma = 2) ,
                        DG_4 = RBesT::mixnorm(comp1 = c(w = 1, m = 6.5, s = 1.1), sigma = 2))
 models <- c("exponential", "linear")
@@ -61,6 +61,6 @@ fit <- getModelFits(models      = models,
                     posterior   = posterior_list,
                     dose_levels = dose_levels,
                     simple      = TRUE)
-                           
-plot(fit) 
+
+plot(fit)
 }

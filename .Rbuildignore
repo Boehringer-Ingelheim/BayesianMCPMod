@@ -11,3 +11,4 @@ docs
 ^cran-comments\.md$
 ^cran_submission_script\.R$
 ^CRAN-SUBMISSION$
+^vignettes/*_files$

@@ -1,2 +1,6 @@
 *.html
 *.R
+*_cache/*
+*_files/*
+*archive
+*_files

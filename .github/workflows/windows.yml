@@ -25,6 +25,7 @@ jobs:
       R_KEEP_PKG_SOURCE: yes
 
     steps:
+      - uses: quarto-dev/quarto-actions/setup@v2
       - uses: actions/checkout@v2
 
       - uses: r-lib/actions/setup-pandoc@v2
@@ -39,6 +40,10 @@ jobs:
         with:
           extra-packages: any::rcmdcheck
           needs: check
+
+      - name: Install BayesianMCPMod
+        shell: bash
+        run: R CMD INSTALL --preclean .
 
       - uses: r-lib/actions/check-r-package@v2
         with:
