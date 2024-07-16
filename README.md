@@ -12,6 +12,12 @@
 
 ## Installation
 
+Install the package from CRAN using
+
+```{r}
+install.packages("BayesianMCPMod")
+```
+
 The development version can be installed from this repository.
 
 ```{r}
