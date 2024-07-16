@@ -12,4 +12,5 @@ articles:
   navbar: ~
   contents:
   - analysis_normal
+  - analysis_normal_noninformative
   - Simulation_Example
