@@ -156,15 +156,15 @@ crit_pval = getCritProb(
 # )
 
 # Create covmat test case
-mixnorm_test <- mixnorm(comp1=c(0.2,2,3), comp2=c(0.2,5,6), comp3=c(0.2,8,9), comp4=c(0.2,11,12), robust=c(0.2,14,15), sigma=9.734)
+mixnorm_test <- RBesT::mixnorm(comp1=c(0.2,2,3), comp2=c(0.2,5,6), comp3=c(0.2,8,9), comp4=c(0.2,11,12), robust=c(0.2,14,15), sigma=9.734)
 
-mixnorm_DG1  <- mixnorm(comp1=c(0.5,2,3), comp2=c(0.5,3,6), sigma=9.651)
+mixnorm_DG1  <- RBesT::mixnorm(comp1=c(0.5,2,3), comp2=c(0.5,3,6), sigma=9.651)
 
-mixnorm_DG2  <- mixnorm(comp1=c(1,8,2), sigma=9.932)
+mixnorm_DG2  <- RBesT::mixnorm(comp1=c(1,8,2), sigma=9.932)
 
-mixnorm_DG3  <- mixnorm(comp1=c(1/3,6,8), comp2=c(1/3,7,9), comp3=c(1/3,0.5,1), sigma=9.134)
+mixnorm_DG3  <- RBesT::mixnorm(comp1=c(1/3,6,8), comp2=c(1/3,7,9), comp3=c(1/3,0.5,1), sigma=9.134)
 
-mixnorm_DG4  <- mixnorm(comp1=c(1/3,10,3), comp2=c(1/3,3,6), comp3=c(1/3,4,7), sigma=9.236)
+mixnorm_DG4  <- RBesT::mixnorm(comp1=c(1/3,10,3), comp2=c(1/3,3,6), comp3=c(1/3,4,7), sigma=9.236)
 
 prior_list <- vector("list", 5)
 prior_list[[1]] <- mixnorm_test
