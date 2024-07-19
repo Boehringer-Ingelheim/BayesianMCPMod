@@ -1,0 +1,1020 @@
+---
+title: "Vignette BayesianMCPMod"
+subtitle: "WORK IN PROGRESS"
+date: today
+format: 
+  html:
+    fig-height: 3.5
+    self-contained: true
+    toc: true
+    number-sections: true
+    #bibliography: references.bib
+vignette: >
+  %\VignetteIndexEntry{Simulation Example of Bayesian MCPMod and MCPMod}
+    %\VignetteEncoding{UTF-8}
+    %\VignetteEngine{quarto::html}
+editor: 
+  markdown: 
+    wrap: 72
+---
+
+```{r}
+#| code-summary: setup
+#| code-fold: true
+#| message: false
+#| warning: false
+
+#' Display Parameters Table
+#'
+#' This function generates a markdown table displaying the names and values of parameters
+#' from a named list.
+#'
+#' @param named_list A named list where each name represents a parameter name and the list
+#'   element represents the parameter value. Date values in the list are automatically
+#'   converted to character strings for display purposes.
+#'
+#' @return Prints a markdown table with two columns: "Parameter Name" and "Parameter Values".
+#'   The function does not return a value but displays the table directly to the output.
+#'
+#' @importFrom knitr kable
+#' @examples
+#' params <- list("Start Date" = as.Date("2020-01-01"),
+#'                "End Date" = as.Date("2020-12-31"),
+#'                "Threshold" = 10)
+#' display_params_table(params)
+#'
+#' @export
+display_params_table <- function(named_list) {
+  display_table <- data.frame()
+  value_names <- data.frame()
+  for (i in 1:length(named_list)) {
+    # dates will display as numeric by default, so convert to char first
+    if (class(named_list[[i]]) == "Date") {
+      named_list[[i]] = as.character(named_list[[i]])
+    }
+    if (!is.null(names(named_list[[i]]))) {
+      value_names <- rbind(value_names, paste(names(named_list[[i]]), collapse = ', '))
+    }
+    values <- data.frame(I(list(named_list[[i]])))
+    display_table <- rbind(display_table, values)
+  }
+  
+  round_numeric <- function(x, digits = 3) {
+    if (is.numeric(x)) {
+      return(round(x, digits))
+    } else {
+      return(x)
+    }
+  }
+  
+  display_table[1] <- lapply(display_table[1], function(sublist) {
+    lapply(sublist, round_numeric)
+  })
+  
+  class(display_table[[1]]) <- "list"
+  
+  if (nrow(value_names) == 0) {
+    knitr::kable(
+      cbind(names(named_list), display_table),
+      col.names = c("Name", "Value")
+    )
+  } else {
+    knitr::kable(
+      cbind(names(named_list), value_names, display_table),
+      col.names = c("Name", "Value Labels", "Value")
+    )
+  }
+}
+# function to solve power results for tables (different max eff) BayesianMCPMod
+# return(successrates models, average)
+extract_success_rates <- function(results_list, models) {
+  success_rates <- list()
+
+  for (i in seq_along(results_list)) {
+    success_rate <- c()
+    for (model in models) {
+      success_rate <- c(success_rate, attr(results_list[[i]][[model]]$BayesianMCP,"successRate"))
+    }
+    success_rates[[paste0("Bay_",  attr(results_list[[i]],"maxEff"))]] <- c(success_rate, attr(results_list[[i]], "avgSuccessRate"))
+  }
+
+  return(success_rates)
+  }
+
+# function to solve power results for tables (different nsample) BayesianMCPMod
+#models <c-(min_scenario)
+extract_success_rates_nsample <- function(results_list, models) {
+  success_rates <- list()
+
+  for (i in seq_along(results_list)) {
+    success_rate <- c()
+    for (model in models) {
+      success_rate <- c(success_rate, attr(results_list[[i]][[model]]$BayesianMCP,"successRate"))
+    }
+    success_rates[[paste0("Bay_", i )]] <- c(success_rate,  attr(results_list[[i]],"avgSuccessRate"))
+  }
+
+  return(success_rates)
+}
+
+#input: result_list, models =
+extract_success_rates_nsim <- function(results_list, models, n_sim) {
+  success_rates <- list()
+  for (model in models) {
+    success_rate <- c()
+    for (i in seq_along(n_sim)) {
+
+      success_rate <- c(success_rate, attr(results_list[[i]][[model]]$BayesianMCP,"successRate"))
+    }
+    success_rates[[paste0("Bay_", model)]] <- c(success_rate)
+  }
+
+  return(success_rates)
+}
+
+
+print_result_Bay_max_eff <- function(results, scenario, variable) {
+
+  result_table <- t(data.table(
+    Bay_0.05 = results$Bay_0.05,
+    Bay_0.1 = results$Bay_0.1,
+    Bay_0.2 = results$Bay_0.2,
+    Bay_0.3 = results$Bay_0.3,
+    Bay_0.5 = results$Bay_0.5))
+
+  result_table <- as.data.table(result_table)
+  names(result_table) <- scenario
+  #return(result_table)
+
+  kable_result <- kable(cbind(variable, result_table))%>%
+    kable_classic(full_width = TRUE)%>%
+    add_header_above(c("Power results different expected effects " = length(scenario)+1), font_size = 15, bold = TRUE)%>%
+    add_header_above(c("BayesianMCPMod " = length(scenario)+1), font_size = 15, bold = TRUE)
+
+  list(result_table = result_table, kable_result = kable_result)
+}
+
+
+
+print_result_Bay_nsample <- function(results, scenario, variable) {
+
+  result_table <- t(data.table(
+    Bay_1 = results$Bay_1,
+    Bay_2 = results$Bay_2,
+    Bay_3 = results$Bay_3,
+    Bay_4 = results$Bay_4))
+
+  result_table <- as.data.table(result_table)
+  names(result_table) <- scenario
+  #return(result_table)
+
+  kable_result <- kable(cbind(variable, result_table))%>%
+    kable_classic(full_width = TRUE)%>%
+    add_header_above(c("Success probability results different sample sizes " = length(scenario)+1), font_size = 15, bold = TRUE)%>%
+    add_header_above(c("BayesianMCPMod " = length(scenario)+1), font_size = 15, bold = TRUE)
+
+  list(result_table = result_table, kable_result = kable_result)
+}
+
+plot_power_deviation <- function(data, x, xlab, xlim){
+  plot <- ggplot2::ggplot(data, aes(x = x, y = value, color = variable, group = variable))+
+    geom_point()+
+    geom_line() +
+    scale_x_continuous(breaks = xlim) +
+    geom_hline(aes(yintercept = 0), linetype = 2)+
+    scale_color_manual(name = "assumed true model", values = c("linear" = "red", "exponential" = "blue", "emax" = "darkgreen", "logistic" = "orange", "sigemax" = "purple", "beta" = "deepskyblue", "quadratic" = "deeppink"))+
+    labs(x = xlab, y = "power deviation")+
+    ylim(-0.2, 0.2)+         #with higher n_sim!!!!!!!!!!!!
+    theme_classic()
+  return(plot)
+}
+
+#plot all max effects in one plot
+
+plot_max_eff <- function(results_MCP, results_Bay, scenario){
+  
+transformed_MCP <- t(results_MCP)
+transformed_MCP <- as.data.table(transformed_MCP)
+transformed_MCP  <- transformed_MCP[-c(1),] 
+
+data <- data.table(
+  Bay_0.05 = results_Bay$Bay_0.05,
+  Bay_0.1 = results_Bay$Bay_0.1,
+  Bay_0.2 = results_Bay$Bay_0.2,
+  Bay_0.3 = results_Bay$Bay_0.3,
+  Bay_0.5 = results_Bay$Bay_0.5,
+  MCP_0.05 = transformed_MCP$V1,
+  MCP_0.1 = transformed_MCP$V2,
+  MCP_0.2 = transformed_MCP$V3,
+  MCP_0.3 = transformed_MCP$V4,
+  MCP_0.5 = transformed_MCP$V5,
+  scenario = c(scenario, "average")
+)
+
+
+  
+
+  plot_max_eff <- ggplot(data = data)+
+    geom_point(mapping = aes(x= data$scenario, y = data$Bay_0.05, colour = "MCPMod", shape = "0.05"), data = data, position = position_nudge(x = -0.15))+
+    geom_point(mapping = aes(x= data$scenario, y = data$MCP_0.05, colour = "BayesianMCPMod", shape = "0.05"), data = data, position = position_nudge(x = 0.15))+
+    geom_point(mapping = aes(x= data$scenario, y = data$MCP_0.1, colour = "MCPMod", shape = "0.1"), data = data, position = position_nudge(x = -0.15))+
+    geom_point(mapping = aes(x= scenario, y = data$Bay_0.1, colour = "BayesianMCPMod", shape = "0.1"), data = data, position = position_nudge(x = 0.15))+
+    geom_point(mapping = aes(x= scenario, y = data$MCP_0.2, colour = "MCPMod", shape = "0.2"), data = data, position = position_nudge(x = -0.15))+
+    geom_point(mapping = aes(x= scenario, y = data$Bay_0.2, colour = "BayesianMCPMod", shape = "0.2"), data = data, position = position_nudge(x = 0.15))+
+    geom_point(mapping = aes(x= scenario, y = data$MCP_0.3, colour = "MCPMod", shape = "0.3"), data = data, position = position_nudge(x = -0.15))+
+    geom_point(mapping = aes(x= scenario, y = data$Bay_0.3, colour = "BayesianMCPMod", shape = "0.3"), data = data, position = position_nudge(x = 0.15))+
+    geom_point(mapping = aes(x= scenario, y = data$MCP_0.5, colour = "MCPMod", shape = "0.5"), data = data, position = position_nudge(x = -0.15))+
+    geom_point(mapping = aes(x= scenario, y = data$Bay_0.5, colour = "BayesianMCPMod", shape = "0.5"), data = data, position = position_nudge(x = 0.15))+
+    scale_color_manual(name = "Legend", values = c("MCPMod" = 'blue', "BayesianMCPMod" = "red"))+
+    scale_shape_manual(name = "Expected effects", values = c("0.05" = 0, "0.1" = 1, "0.2" = 2, "0.3" = 3, "0.5" = 5))+
+    ylim(0, 1)+
+    ylab("power")+
+    xlab("assumed true model")+
+    labs(title = "Power for different models and differen exptected effects for maximum dose")+
+    theme_bw()
+
+  plot_max_eff
+
+}
+
+
+
+# parallel----------------------------------------------
+chunkVector <- function (x, n_chunks) {
+  if (n_chunks <= 1) {
+    chunk_list <- list(x)
+  } else {
+    chunk_list <- unname(split(x, cut(seq_along(x), n_chunks, labels = FALSE)))
+  }
+  return(chunk_list)
+}
+
+devtools::load_all()
+#library(BayesianMCPMod)
+library(RBesT)
+library(clinDR)
+library(dplyr)
+library(tibble)
+library(reactable)
+library(DoseFinding)
+library(MCPModPack)
+library(kableExtra)
+library(data.table)
+library(doFuture)
+library(doRNG)
+
+registerDoFuture()
+plan(multisession)
+
+
+
+set.seed(7015)
+```
+
+# Introduction
+
+This vignette demonstrates the application of the {BayesianMCPMod}
+package for sample size calculations and the comparison with the
+{MCPModPack} package. As for other bayesian approaches BMCPMod is able
+to mimic the results of the frequentist MCPMod for non-informative
+priors and this is shown here for the sample size planning of different
+scenarios.
+
+In order to test and compare BayesianMCPMod and MCPModPack sample size
+calculations in different scenarios, the data used for the comparisons
+will be simulated multiple times using different input values. Every
+scenario will be named to make the differentiation between each scenario
+simpler. Altogether, four different scenarios were simulated. The first
+three scenarios are pretty similiar, they only differ in the pre-defined
+set of candidate models M. The other design choices, like the number of
+dose levels or sample size allocation stay the same between the
+scenarios. For the first three scenarios, these design choices are:
+
+-   four dose levels plus placebo (0 mg, 1 mg, 2 mg, 4 mg, 8 mg)
+
+-   total sample size of N = 200
+
+-   equal allocation ratio for each dose group
+
+-   expected effect for maximum dose of 0.2 mg
+
+-   standard deviation of 0.4 for every dose group
+
+The fourth scenario, the variability scenario, has some different design
+choices: - three dose levels plus placebo (0 mg, 1 mg, 4 mg, 8 mg) -
+total sample size of N = 100 - equal allocation ratio for each dose
+group - expected effect for maximum dose of 0.2 mg - standard deviation
+of 0.4 for every dose group
+
+Building on the initial scenarios, we further delve into the exploration
+of varying input parameters. The varying parameters are:
+
+-   expected effect for maximum dose of (0.05 mg, 0.1 mg, 0.2 mg, 0.3
+    mg, 0.5 mg)
+
+-   different total sample size with different allocation:
+
+-    (40,20,20,20,40), (30,30,30,30,30), (48,24,24,24,48),
+    (36,36,36,36,36) (for the first three scenarios)
+
+-   (40,20,20,40), (30,30,30,30), (48,24,24,48), (36,36,36,36) (for the
+    variability scenario)
+
+In a subsequent step, we extend our analysis to test the convergence of
+power values as the number of simulations increases. For this part of
+the study, we assume an expected effect for the maximum dose of 0.2 mg.
+The sample size is set to 200 for the linear, monotonic and
+non-monotonic scenario and 100 for the variability scenario. This
+further exploration allows us to deepen our understanding of the
+BayesianMCPMod and MCPModPack packages and their performance under
+varying conditions.
+
+```{r}
+#######  General assumptions  #########
+# simulations
+n_sim <- 1000
+
+# Define the list of sample sizes
+nsample_list = list(20*c(2,1,1,1,2),30*c(1,1,1,1,1), 24*c(2,1,1,1,2),36*c(1,1,1,1,1))
+nsample_vector <- c("(40,20,20,20,40)", "(30,30,30,30,30)", "(48,24,24,24,48)",  "(36,36,36,36,36)")
+
+# define input parameters
+doses.sim <- c(0,1,2,4,8)   # dose levels
+max.dose <- max(doses.sim) # specify max dose possibly available
+plc.guess <-  0 # expected placebo effect
+Nsample <-c(40,40,40,40,40) #,36*c(1,1,1,1)) #list(20*c(2,1,1,2),30*c(1,1,1,1), 24*c(2,1,1,2),36*c(1,1,1,1))
+expectedEffect_fix <- 0.2  #c(0.05,0.1,0.2,0.3,0.5)
+expectedEffect <- c(0.05,0.1,0.2,0.3,0.5)
+sd.sim <- c(0.4)
+
+#input paramters variability scenario
+doses_var <- c(0, 1, 4, 8)
+sd.sim_var <- 0.4
+Nsample_var <- c(25, 25, 25, 25)
+nsample_list_var <- list(20*c(2,1,1,2),30*c(1,1,1,1), 24*c(2,1,1,2),36*c(1,1,1,1))
+
+
+# define model functions  
+emax.g <- guesst(d = doses.sim[2], p = 0.6, "emax") 
+exp.g <- guesst(d=doses.sim[2],p=0.05,model="exponential", Maxd=max.dose)
+logit.g <- guesst(d=c(doses.sim[2],doses.sim[3]),p=c(0.1,0.9),"logistic",Maxd=max.dose) 
+sigEmax.g <- guesst(d=c(doses.sim[2],doses.sim[3]),p=c(0.15,0.75), model = "sigEmax") 
+quad.g <- guesst(d=doses.sim[2],p=0.35,model="quadratic")
+beta.g <- guesst(d=doses.sim[2],p=0.2,model="betaMod", dMax=5.5, scal=9.6, Maxd=max.dose)
+
+### define models to be tested in MCPMod
+models <- Mods(linear=NULL, 
+               emax = emax.g,
+               exponential = exp.g,
+               logistic=logit.g,
+               sigEmax = sigEmax.g,
+               quadratic = quad.g,
+               betaMod = beta.g,
+               doses = doses.sim,
+               placEff = plc.guess, 
+               maxEff = expectedEffect_fix,
+               direction = "increasing",
+               addArgs = list(scal=9.6) 
+)
+
+alpha <- 0.05
+
+# display_params_table(models)
+
+
+# kable(t(as.data.table(cbind(doses.sim, Nsample))))%>%
+#     kable_classic(full_width = TRUE)%>%
+#     add_header_above(c( "Doses" = 6), font_size = 15, bold = TRUE)
+# 
+# 
+# kable(t(data.table(placebo_guess = plc.guess,
+#                  sd = sd.sim[1],
+#                  alpha = alpha )))%>%
+#     kable_classic(full_width = TRUE)
+
+```
+
+## Scenarios
+
+In the following the candidate models for the different scenarios are
+plotted.
+
+```{r}
+
+#Specification of considered models for different scenarios for BayesianMCPMod
+
+min_scenario <- c("linear", "exponential", "emax")
+min_models <- Mods(linear=NULL, 
+                   exponential = exp.g,
+                  emax = emax.g,
+                  doses = doses.sim,
+                  placEff = plc.guess, 
+                  maxEff = expectedEffect_fix,
+                  direction = "increasing"
+)
+plot(min_models, main = "minimal Scenario")
+
+
+monotonic_scenario <- c("linear", "exponential", "emax", "logistic", "sigEmax")
+
+monotonic_models <- Mods(linear=NULL, 
+               exponential = exp.g,
+               emax = emax.g,
+               logistic=logit.g,
+               sigEmax = sigEmax.g,
+               doses = doses.sim,
+               placEff = plc.guess, 
+               maxEff = expectedEffect_fix,
+               direction = "increasing"
+)
+plot(monotonic_models, main = "monotonic Scenario")
+
+
+non_monotonic_scenario <- c("linear", "emax", "sigEmax", "quadratic", "betaMod")
+
+non_monotonic_models <- Mods(linear=NULL, 
+               emax = emax.g,
+               sigEmax = sigEmax.g,
+               quadratic = quad.g,
+               betaMod = beta.g,
+               doses = doses.sim,
+               placEff = plc.guess, 
+               maxEff = expectedEffect_fix,
+               direction = "increasing",
+               addArgs = list(scal=9.6)
+)
+plot(non_monotonic_models,main = "non monotonic Scenario")
+
+
+variability_scenario <- c("linear","exponential", "emax")
+
+kable(t(as.data.table(cbind(doses_var, Nsample_var))))%>%
+    kable_classic(full_width = TRUE)%>%
+    add_header_above(c( "Doses variability scenario" = 5), font_size = 15)
+
+var_models <- Mods(linear=NULL, 
+               exponential = exp.g,
+               emax = emax.g,
+               doses = doses_var,
+               placEff = plc.guess, 
+               maxEff = expectedEffect_fix,
+               direction = "increasing"
+)
+plot(var_models, main = "variability Scenario")
+
+```
+
+# MCPModPack
+
+```{r}
+
+#Specification of considered models for different scenarios for MCPModPack
+
+min_modelsPack = list(linear = NA,
+              exponential = 4.447149,
+              emax = 0.6666667)
+
+monotonic_modelsPack = list(linear = NA,
+              exponential = 4.447149,
+              emax = 0.6666667,
+              logistic = c(1.5, 0.2275598),
+              sigEmax =  c(1.528629, 4.087463))
+
+non_monotonic_modelsPack = list(linear = NA,
+              emax = 0.6666667 ,
+              sigEmax =  c(1.528629, 4.087463),
+              quadratic = -0.09688711)
+#beta
+
+var_modelsPack = list(linear = NA,
+              exponential = 4.447149,
+              emax = 0.6666667,
+              logistic = c(1.5, 0.2275598),
+              sigEmax =  c(1.528629, 4.087463))
+
+```
+
+```{r child = 'Comparison_MCPModPack.qmd'}
+
+```
+
+# BayesianMCPMod
+
+```{r child = 'Comparison_BayesianMCPMod.qmd'}
+
+```
+
+# Comparison
+
+In the following, we will draw comparisons between the power values of
+various scenarios and differnt parameters.
+
+## varying expected effect for maximum dose
+
+### minimal scenario
+
+```{r}
+
+plot_minimal_max_eff <- plot_max_eff(results_min_MCP, results_min_Bay, min_scenario)
+plot_minimal_max_eff
+
+#table with results
+kable(results_min_MCP)%>%
+  kable_classic(full_width = TRUE)%>%
+    add_header_above(c("Power results different expected effects " = 5), font_size = 15, bold = TRUE)%>%
+    add_header_above(c("MCPModPack " = 5), font_size = 15, bold = TRUE)
+    
+minimal_Bay$kable_result
+
+#difference of power values
+results_min_max_eff <- data.table(
+  linear = as.vector(minimal_Bay$result_table$linear)-as.vector(results_min_MCP$linear),
+  exponential = as.vector(minimal_Bay$result_table$exponential)-as.vector(results_min_MCP$exponential),
+  emax = as.vector(minimal_Bay$result_table$emax)-as.vector(results_min_MCP$emax),
+  expectedEffect = expectedEffect
+)
+
+
+
+results_min_max_eff <- melt(results_min_max_eff, id.vars = "expectedEffect")
+
+plot_minimal <- plot_power_deviation(results_min_max_eff, results_min_max_eff$expectedEffect, "assumed maximum effect", c(0.05,0.1,0.2,0.3,0.5))
+plot_minimal
+```
+
+```{r}
+
+```
+
+### monotonic scenario
+
+```{r}
+plot_monotonic_max_eff <- plot_max_eff(results_monotonic_MCP, results_monotonic_Bay, monotonic_scenario)
+plot_monotonic_max_eff
+
+#table with results
+kable(results_monotonic_MCP)%>%
+  kable_classic(full_width = TRUE)%>%
+    add_header_above(c("Power results different expected effects " = 7), font_size = 15, bold = TRUE)%>%
+    add_header_above(c("MCPModPack " = 7), font_size = 15, bold = TRUE)
+    
+monotonic_Bay$kable_result
+
+
+results_monotonic_max_eff <- data.table(
+  linear = as.vector(monotonic_Bay$result_table$linear)-as.vector(results_monotonic_MCP$linear),
+  exponential = as.vector(monotonic_Bay$result_table$exponential)-as.vector(results_monotonic_MCP$exp),
+  emax = as.vector(monotonic_Bay$result_table$emax)-as.vector(results_monotonic_MCP$emax),
+  logistic = as.vector(monotonic_Bay$result_table$logistic)-as.vector(results_monotonic_MCP$logistic),
+  sigemax = as.vector(monotonic_Bay$result_table$sigEmax)-as.vector(results_monotonic_MCP$sigEmax),
+  expectedEffect = expectedEffect
+)
+
+results_monotonic_max_eff <- melt(results_monotonic_max_eff, id.vars = "expectedEffect")
+
+plot_monotonic <- plot_power_deviation(results_monotonic_max_eff, results_monotonic_max_eff$expectedEffect, "assumed maximum effect", c(0.05,0.1,0.2,0.3,0.5))
+plot_monotonic
+```
+
+### non - monotonic scenario
+
+```{r}
+plot_non_monotonic_max_eff <- plot_max_eff(results_non_monotonic_MCP, results_non_monotonic_Bay, non_monotonic_scenario)
+plot_non_monotonic_max_eff
+
+# table results
+kable(results_non_monotonic_MCP)%>%
+  kable_classic(full_width = TRUE)%>%
+    add_header_above(c("Power results different expected effects" = 7), font_size = 15, bold = TRUE)%>%
+    add_header_above(c("MCPModPack" = 7), font_size = 15, bold = TRUE)
+
+non_monotonic_Bay$kable_result
+
+results_non_monotonic_max_eff <- data.table(
+  linear = as.vector(non_monotonic_Bay$result_table$linear)-as.vector(results_non_monotonic_MCP$linear),
+  emax = as.vector(non_monotonic_Bay$result_table$emax)-as.vector(results_non_monotonic_MCP$emax),
+  sigemax = as.vector(non_monotonic_Bay$result_table$sigEmax)-as.vector(results_non_monotonic_MCP$sigEmax),
+  quadratic = as.vector(non_monotonic_Bay$result_table$quadratic)-as.vector(results_non_monotonic_MCP$quadratic),
+  beta = as.vector(non_monotonic_Bay$result_table$beta)-as.vector(results_non_monotonic_MCP$beta),
+  expectedEffect = expectedEffect
+  )
+
+results_non_monotonic_max_eff <- melt(results_non_monotonic_max_eff, id.vars = "expectedEffect")
+
+plot_non_monotonic <- plot_power_deviation(results_non_monotonic_max_eff, results_non_monotonic_max_eff$expectedEffect, "assumed maximum effect", c(0.05,0.1,0.2,0.3,0.5))
+plot_non_monotonic
+```
+
+### variability scenario
+
+```{r}
+plot_var_max_eff <- plot_max_eff(results_var_MCP, results_variability_Bay, variability_scenario)
+plot_var_max_eff
+
+#table with results
+kable(results_var_MCP)%>%
+  kable_classic(full_width = TRUE)%>%
+    add_header_above(c("Power results different expected effects" = 5), font_size = 15, bold = TRUE)%>%
+    add_header_above(c("MCPModPack" = 5), font_size = 15, bold = TRUE)
+
+variability_Bay$kable_result
+
+results_var_max_eff <- data.table(
+  linear = as.vector(variability_Bay$result_table$linear)-as.vector(results_var_MCP$linear),
+  exponential =  as.vector(variability_Bay$result_table$exponential)-as.vector(results_var_MCP$exponential),
+  emax =  as.vector(variability_Bay$result_table$emax)-as.vector(results_var_MCP$emax),
+  expectedEffect = expectedEffect
+)
+
+results_var_max_eff <- melt(results_var_max_eff, id.vars = "expectedEffect")
+
+plot_var <- plot_power_deviation(results_var_max_eff, results_var_max_eff$expectedEffect, "assumed maximum effect", c(0.05,0.1,0.2,0.3,0.5))
+plot_var
+```
+
+## varying sample size
+
+```{r}
+nsample_vector <- as.vector(c("(40, 20, 20, 20, 40)", "(30, 30, 30, 30, 30)", "(48, 24, 24, 24, 48)", "(36, 36, 36, 36, 36)"))
+```
+
+### minimal scenario
+
+```{r}
+
+# results_min_nsample <- data.table(
+#   linear = as.vector(minimal_nsample_Bay$result_table$linear)-as.vector(results_min_MCP_nsample$Linear),
+#   exponential = as.vector(minimal_nsample_Bay$result_table$exponential)-as.vector(results_min_MCP_nsample$Exponential),
+#   emax = as.vector(minimal_nsample_Bay$result_table$emax)-as.vector(results_min_MCP_nsample$Emax),
+#   nsample_vector = nsample_vector
+# )
+# 
+# results_min_nsample <- melt(results_min_nsample, id.vars = "nsample_vector")
+# 
+# plot_minimal_nsample <- plot_power_deviation(results_min_nsample, results_min_nsample$nsample_vector, "sample sizes")
+# plot_minimal_nsample
+
+kable(results_min_MCP_nsample)%>%
+  kable_classic(full_width = TRUE)%>%
+    add_header_above(c("Power results different sample sizes " = 5), font_size = 15, bold = TRUE)%>%
+    add_header_above(c("MCPModPack" = 5), font_size = 15, bold = TRUE)
+
+minimal_nsample_Bay$kable_result
+    
+
+
+
+data_plot_nsample_min <- data.frame(
+  sample_sizes = nsample_vector,
+  sample_sizes_num = c(1, 2, 3, 4),
+  start_linear =  minimal_nsample_Bay$result_table$linear,
+  end_linear = results_min_MCP_nsample$Linear,
+  start_exp = minimal_nsample_Bay$result_table$exponential,
+  end_exp = results_min_MCP_nsample$Exponential,
+  start_emax = minimal_nsample_Bay$result_table$emax,
+  end_emax = results_min_MCP_nsample$Emax
+)
+
+
+# Create the plot
+ggplot(data = data_plot_nsample_min, aes(x = sample_sizes_num)) +
+  geom_segment(aes(x = sample_sizes_num - 0.3, xend = sample_sizes_num - 0.3, y = start_linear, yend = end_linear, color = "MCPMod power deviation"), size = 3) +
+  geom_segment(aes(x = sample_sizes_num - 0.4, xend = sample_sizes_num - 0.2 , y = start_linear, yend = start_linear, color = "linear"), size = 0.5) +
+  geom_segment(aes(x = sample_sizes_num - 0.05, xend = sample_sizes_num - 0.05 , y = start_exp, yend = end_exp, color = "MCPMod power deviation"), size = 3) +
+  geom_segment(aes(x = sample_sizes_num - 0.15, xend = sample_sizes_num + 0.05, y = start_exp, yend = start_exp, color = "exponential"), size = 0.5) +
+  geom_segment(aes(x = sample_sizes_num + 0.2, xend = sample_sizes_num + 0.2, y = start_emax, yend = end_emax, color = "MCPMod power deviation"), size = 3) +
+  geom_segment(aes(x = sample_sizes_num + 0.1, xend = sample_sizes_num  + 0.3, y = start_emax, yend = start_emax, color = "emax"), size = 0.5) +
+  scale_x_continuous(breaks = data_plot_nsample_min$sample_sizes_num, labels = data_plot_nsample_min$sample_sizes) +
+  scale_color_manual(name = "Assumed true model (BayesianMCPMod)", values = c("linear" = "red", "exponential" = "blue", "emax" = "darkgreen", "logistic" = "orange", "sigemax" = "purple", "beta" = "deepskyblue", "quadratic" = "deeppink", "MCPMod power deviation" = "grey"))+
+  theme_minimal() +
+  ylab("Power") +
+  ylim(c(0.25,1))+
+  xlab("sample sizes")+
+  ggtitle("Power values different sample sizes") +
+  geom_vline(xintercept = data_plot_nsample_min$sample_sizes_num + 0.5, linetype="dashed", color = "black") +
+  theme(legend.position = "bottom")
+
+
+
+ 
+```
+
+### monotonic scenario
+
+```{r}
+# results_monotonic_nsample <- data.table(
+#   linear = as.vector(monotonic_nsample_Bay$result_table$linear)-as.vector(results_monotonic_MCP_nsample$Linear),
+#   exponential = as.vector(monotonic_nsample_Bay$result_table$exponential)-as.vector(results_monotonic_MCP_nsample$Exponential),
+#   emax = as.vector(monotonic_nsample_Bay$result_table$emax)-as.vector(results_monotonic_MCP_nsample$Emax),
+#   logistic = as.vector(monotonic_nsample_Bay$result_table$logistic)-as.vector(results_monotonic_MCP_nsample$Logistic),
+#   sigemax = as.vector(monotonic_nsample_Bay$result_table$sigEmax)-as.vector(results_monotonic_MCP_nsample$sigEmax),
+#   nsample_vector = nsample_vector
+# )
+# 
+# results_monotonic_nsample <- melt(results_monotonic_nsample, id.vars = "nsample_vector")
+# 
+# plot_monotonic_nsample <- plot_power_deviation(results_monotonic_nsample, results_monotonic_nsample$nsample_vector, "sample sizes")
+# plot_monotonic_nsample
+
+
+kable(results_monotonic_MCP_nsample)%>%
+  kable_classic(full_width = TRUE)%>%
+    add_header_above(c("Power results different sample sizes" = 7), font_size = 15, bold = TRUE)%>%
+    add_header_above(c("MCPModPack" = 7), font_size = 15, bold = TRUE)
+
+monotonic_nsample_Bay$kable_result
+
+data_plot_nsample_monotonic <- data.frame(
+  sample_sizes = nsample_vector,
+  sample_sizes_num = c(1, 2, 3, 4),
+  start_linear =  monotonic_nsample_Bay$result_table$linear,
+  end_linear = results_monotonic_MCP_nsample$Linear,
+  start_exp = monotonic_nsample_Bay$result_table$exponential,
+  end_exp = results_monotonic_MCP_nsample$Exponential,
+  start_emax = monotonic_nsample_Bay$result_table$emax,
+  end_emax = results_monotonic_MCP_nsample$Emax,
+  start_logistic = monotonic_nsample_Bay$result_table$logistic,
+  end_logistic = results_monotonic_MCP_nsample$Logistic,
+  start_sigemax = monotonic_nsample_Bay$result_table$sigEmax,
+  end_sigemax = results_monotonic_MCP_nsample$sigEmax
+)
+
+
+# Create the plot
+ggplot(data = data_plot_nsample_monotonic, aes(x = sample_sizes_num)) +
+  geom_segment(aes(x = sample_sizes_num - 0.4, xend = sample_sizes_num - 0.4, y = start_linear, yend = end_linear, color = "MCPMod power deviation"), size = 3) +
+  geom_segment(aes(x = sample_sizes_num - 0.45, xend = sample_sizes_num - 0.35 , y = start_linear, yend = start_linear, color = "linear"), size = 0.5) +
+  geom_segment(aes(x = sample_sizes_num - 0.2, xend = sample_sizes_num - 0.2 , y = start_exp, yend = end_exp, color = "MCPMod power deviation"), size = 3) +
+  geom_segment(aes(x = sample_sizes_num - 0.25, xend = sample_sizes_num - 0.15, y = start_exp, yend = start_exp, color = "exponential"), size = 0.5) +
+  geom_segment(aes(x = sample_sizes_num, xend = sample_sizes_num, y = start_emax, yend = end_emax, color = "MCPMod power deviation"), size = 3) +
+  geom_segment(aes(x = sample_sizes_num - 0.05, xend = sample_sizes_num + 0.05, y = start_emax, yend = start_emax, color = "emax"), size = 0.5) +
+  geom_segment(aes(x = sample_sizes_num + 0.2, xend = sample_sizes_num + 0.2, y = start_logistic, yend = end_logistic, color = "MCPMod power deviation"), size = 3) +
+  geom_segment(aes(x = sample_sizes_num + 0.15, xend = sample_sizes_num  + 0.25, y = start_logistic, yend = start_logistic, color = "logistic"), size = 0.5) +
+  geom_segment(aes(x = sample_sizes_num + 0.4, xend = sample_sizes_num + 0.4, y = start_sigemax, yend = end_sigemax, color = "MCPMod power deviation"), size = 3) +
+  geom_segment(aes(x = sample_sizes_num + 0.35, xend = sample_sizes_num  + 0.45, y = start_sigemax, yend = start_sigemax, color = "sigemax"), size = 0.5) +
+  scale_x_continuous(breaks = data_plot_nsample_monotonic$sample_sizes_num, labels = data_plot_nsample_monotonic$sample_sizes) +
+  scale_color_manual(name = "Assumed true model (BayesianMCPMod)", values = c("linear" = "red", "exponential" = "blue", "emax" = "darkgreen", "logistic" = "orange", "sigemax" = "purple", "beta" = "deepskyblue", "quadratic" = "deeppink", "MCPMod power deviation" = "grey"))+
+  theme_minimal() +
+  ylab("Power") +
+  ylim(c(0.25,1))+
+  xlab("sample sizes")+
+  ggtitle("Power values different sample sizes")+
+  geom_vline(xintercept = data_plot_nsample_min$sample_sizes_num + 0.5, linetype="dashed", color = "black") +
+  theme(legend.position = "bottom")
+
+
+```
+
+### non-monotonic scenario
+
+```{r}
+# results_non_monotonic_nsample <- data.table(
+#   linear = as.vector(non_monotonic_nsample_Bay$result_table$linear)-as.vector(results_non_monotonic_MCP_nsample$Linear),
+#   emax = as.vector(non_monotonic_nsample_Bay$result_table$emax)-as.vector(results_non_monotonic_MCP_nsample$Emax),
+#   sigemax = as.vector(non_monotonic_nsample_Bay$result_table$sigEmax)-as.vector(results_non_monotonic_MCP_nsample$sigEmax),
+#   quadratic = as.vector(non_monotonic_nsample_Bay$result_table$quadratic)-as.vector(results_non_monotonic_MCP_nsample$quadratic),
+#   beta = as.vector(non_monotonic_nsample_Bay$result_table$betaMod) - as.vector(results_non_monotonic_MCP_nsample$beta),
+#   nsample_vector = nsample_vector
+#   )
+# 
+# results_non_monotonic_nsample <- melt(results_non_monotonic_nsample, id.vars = "nsample_vector")
+# 
+# plot_non_monotonic_nsample <- plot_power_deviation(results_non_monotonic_nsample, results_non_monotonic_nsample$nsample_vector, "sample sizes")
+# plot_non_monotonic_nsample
+
+kable(results_non_monotonic_MCP_nsample)%>%
+  kable_classic(full_width = TRUE)%>%
+    add_header_above(c("Power results different sample sizes" = 6), font_size = 15, bold = TRUE)%>%
+    add_header_above(c("MCPModPack" = 6), font_size = 15, bold = TRUE)
+
+non_monotonic_nsample_Bay$kable_result
+
+data_plot_nsample_non_monotonic <- data.frame(
+  sample_sizes = nsample_vector,
+  sample_sizes_num = c(1, 2, 3, 4),
+  start_linear =  non_monotonic_nsample_Bay$result_table$linear,
+  end_linear = results_non_monotonic_MCP_nsample$Linear,
+  start_emax = non_monotonic_nsample_Bay$result_table$emax,
+  end_emax = results_non_monotonic_MCP_nsample$Emax,
+  start_sigemax = non_monotonic_nsample_Bay$result_table$sigEmax,
+  end_sigemax = results_non_monotonic_MCP_nsample$sigEmax,
+  start_quadratic = non_monotonic_nsample_Bay$result_table$quadratic,
+  end_quadratic = results_non_monotonic_MCP_nsample$quadratic,
+  start_beta = non_monotonic_nsample_Bay$result_table$betaMod,
+  end_beta = results_non_monotonic_MCP_nsample$beta
+)
+
+
+# Create the plot
+ggplot(data = data_plot_nsample_non_monotonic, aes(x = sample_sizes_num)) +
+  geom_segment(aes(x = sample_sizes_num - 0.4, xend = sample_sizes_num - 0.4, y = start_linear, yend = end_linear, color = "MCPMod power deviation"), size = 3) +
+  geom_segment(aes(x = sample_sizes_num - 0.45, xend = sample_sizes_num - 0.35 , y = start_linear, yend = start_linear, color = "linear"), size = 0.5) +
+  geom_segment(aes(x = sample_sizes_num - 0.2, xend = sample_sizes_num - 0.2 , y = start_emax, yend = end_emax, color = "MCPMod power deviation"), size = 3) +
+  geom_segment(aes(x = sample_sizes_num - 0.25, xend = sample_sizes_num - 0.15, y = start_emax, yend = start_emax, color = "emax"), size = 0.5) +
+  geom_segment(aes(x = sample_sizes_num, xend = sample_sizes_num, y = start_sigemax, yend = end_sigemax, color = "MCPMod power deviation"), size = 3) +
+  geom_segment(aes(x = sample_sizes_num - 0.05, xend = sample_sizes_num + 0.05, y = start_sigemax, yend = start_sigemax, color = "sigemax"), size = 0.5) +
+  geom_segment(aes(x = sample_sizes_num + 0.1, xend = sample_sizes_num + 0.1, y = start_quadratic, yend = end_quadratic, color = "MCPMod power deviation"), size = 3) +
+  geom_segment(aes(x = sample_sizes_num + 0.05, xend = sample_sizes_num  + 0.15, y = start_quadratic, yend = start_quadratic, color = "quadratic"), size = 0.5) +
+  geom_segment(aes(x = sample_sizes_num + 0.3, xend = sample_sizes_num + 0.3, y = start_beta, yend = end_beta, color = "MCPMod power deviation"), size = 3) +
+  geom_segment(aes(x = sample_sizes_num + 0.25, xend = sample_sizes_num  + 0.35, y = start_beta, yend = start_beta, color = "beta"), size = 0.5) +
+  scale_x_continuous(breaks = data_plot_nsample_non_monotonic$sample_sizes_num, labels = data_plot_nsample_non_monotonic$sample_sizes) +
+  scale_color_manual(name = "Assumed true model (BayesianMCPMod)", values = c("linear" = "red", "exponential" = "blue", "emax" = "darkgreen", "logistic" = "orange", "sigemax" = "purple", "beta" = "deepskyblue", "quadratic" = "deeppink", "MCPMod power deviation" = "grey"))+
+  theme_minimal() +
+  ylab("Power") +
+  ylim(c(0.25,1))+
+  xlab("sample sizes")+
+  ggtitle("Power values different sample sizes")+
+  geom_vline(xintercept = data_plot_nsample_min$sample_sizes_num + 0.5, linetype="dashed", color = "black") +
+  theme(legend.position = "bottom")
+
+
+
+```
+
+### variability sceanrio
+
+```{r}
+# results_var_nsample <- data.table(
+#   linear = as.vector(var_nsample_Bay$result_table$linear)-as.vector(results_var_MCP_nsample$Linear),
+#   exponential =  as.vector(var_nsample_Bay$result_table$exponential)-as.vector(results_var_MCP_nsample$Exponential),
+#   emax =  as.vector(var_nsample_Bay$result_table$emax)-as.vector(results_var_MCP_nsample$Emax),
+#   nsample_vector = nsample_vector
+# )
+# 
+# results_var_nsample <- melt(results_var_nsample, id.vars = "nsample_vector")
+# 
+# 
+# plot_var_nsample <- plot_power_deviation(results_var_nsample, results_var_nsample$nsample_vector, "sample sizes")
+# plot_var_nsample
+
+kable(results_var_MCP_nsample)%>%
+  kable_classic(full_width = TRUE)%>%
+    add_header_above(c("Power results different sample sizes" = 5), font_size = 15, bold = TRUE)%>%
+    add_header_above(c("Variability scenario" = 5), font_size = 15, bold = TRUE)
+
+var_nsample_Bay$kable_result
+
+
+data_plot_nsample_var <- data.frame(
+  sample_sizes = nsample_vector,
+  sample_sizes_num = c(1, 2, 3, 4),
+  start_linear =  var_nsample_Bay$result_table$linear,
+  end_linear = results_var_MCP_nsample$Linear,
+  start_exp = var_nsample_Bay$result_table$exponential,
+  end_exp = results_var_MCP_nsample$Exponential,
+  start_emax = var_nsample_Bay$result_table$emax,
+  end_emax = results_var_MCP_nsample$Emax
+)
+
+
+# Create the plot
+ggplot(data = data_plot_nsample_var, aes(x = sample_sizes_num)) +
+  geom_segment(aes(x = sample_sizes_num - 0.3, xend = sample_sizes_num - 0.3, y = start_linear, yend = end_linear, color = "MCPMod power deviation"), size = 3) +
+  geom_segment(aes(x = sample_sizes_num - 0.4, xend = sample_sizes_num - 0.2 , y = start_linear, yend = start_linear, color = "linear"), size = 0.5) +
+  geom_segment(aes(x = sample_sizes_num - 0.05, xend = sample_sizes_num - 0.05, y = start_exp, yend = end_exp, color = "MCPMod power deviation"), size = 3) +
+  geom_segment(aes(x = sample_sizes_num - 0.15, xend = sample_sizes_num + 0.05 , y = start_exp, yend = start_exp, color = "exponential"), size = 0.5) +
+  geom_segment(aes(x = sample_sizes_num + 0.2, xend = sample_sizes_num + 0.2, y = start_emax, yend = end_emax, color = "MCPMod power deviation"), size = 3) +
+  geom_segment(aes(x = sample_sizes_num + 0.1, xend = sample_sizes_num + 0.3 , y = start_emax, yend = start_emax, color = "emax"), size = 0.5) +
+  scale_x_continuous(breaks = data_plot_nsample_var$sample_sizes_num, labels = data_plot_nsample_var$sample_sizes) +
+  scale_color_manual(name = "Assumed true model (BayesianMCPMod)", values = c("linear" = "red", "exponential" = "blue", "emax" = "darkgreen", "logistic" = "orange", "sigemax" = "purple", "beta" = "deepskyblue", "quadratic" = "deeppink", "MCPMod power deviation" = "grey"))+
+  theme_minimal() +
+  ylab("Power") +
+  ylim(c(0.25,1))+
+  xlab("sample sizes")+
+  ggtitle("Power values different sample sizes")+
+  geom_vline(xintercept = data_plot_nsample_min$sample_sizes_num + 0.5, linetype="dashed", color = "black") +
+  theme(legend.position = "bottom")
+
+```
+
+## convergence of power values
+
+In the following simulations, we examine the convergence of power values for an increasing number of simulations. We are considering the following number of simulations: 100, 500, 1000, 2500, 5000.
+
+```{r child = 'Comparison_convergence.qmd'}
+
+```
+
+### minimal scenario
+
+
+```{r}
+#safe results in data.table for plot
+results_nsim <- data.table(
+  MCP_linear = c(results_list_nsim_MCP[[1]]$sim_results$power, results_list_nsim_MCP[[2]]$sim_results$power, results_list_nsim_MCP[[3]]$sim_results$power, results_list_nsim_MCP[[4]]$sim_results$power, results_list_nsim_MCP[[5]]$sim_results$power),
+  MCP_exp = c(results_list_nsim_MCP[[6]]$sim_results$power, results_list_nsim_MCP[[7]]$sim_results$power, results_list_nsim_MCP[[8]]$sim_results$power, results_list_nsim_MCP[[9]]$sim_results$power, results_list_nsim_MCP[[10]]$sim_results$power),
+  MCP_emax = c(results_list_nsim_MCP[[11]]$sim_results$power, results_list_nsim_MCP[[12]]$sim_results$power, results_list_nsim_MCP[[13]]$sim_results$power, results_list_nsim_MCP[[14]]$sim_results$power, results_list_nsim_MCP[[15]]$sim_results$power),
+  Bay_linear = results_nsim_Bay$Bay_linear,
+  Bay_exp = results_nsim_Bay$Bay_exponential,
+  Bay_emax = results_nsim_Bay$Bay_emax)
+
+results_nsim_diff <- data.table(
+  linear = results_nsim$Bay_linear - results_nsim$MCP_linear,
+  exponential = results_nsim$Bay_exp - results_nsim$MCP_exp,
+  emax = results_nsim$Bay_emax - results_nsim$MCP_emax,
+  n_sim = n_sim_values
+)
+
+results_nsim_diff <- melt(results_nsim_diff, id.vars = "n_sim")
+
+plot_nsim <- plot_power_deviation(results_nsim_diff, results_nsim_diff$n_sim, "nsim", c(100, 500, 1000, 2500, 5000))
+plot_nsim
+```
+
+### monotonic scenario
+
+
+
+```{r}
+#safe results in data.table for plot
+results_nsim_monotonic <- data.table(
+  MCP_linear = c(results_list_nsim_MCP_monotonic[[1]]$sim_results$power, results_list_nsim_MCP_monotonic[[2]]$sim_results$power, results_list_nsim_MCP_monotonic[[3]]$sim_results$power, results_list_nsim_MCP_monotonic[[4]]$sim_results$power, results_list_nsim_MCP_monotonic[[5]]$sim_results$power),
+  MCP_exp = c(results_list_nsim_MCP_monotonic[[6]]$sim_results$power, results_list_nsim_MCP_monotonic[[7]]$sim_results$power, results_list_nsim_MCP_monotonic[[8]]$sim_results$power, results_list_nsim_MCP_monotonic[[9]]$sim_results$power, results_list_nsim_MCP_monotonic[[10]]$sim_results$power),
+  MCP_emax = c(results_list_nsim_MCP_monotonic[[11]]$sim_results$power, results_list_nsim_MCP_monotonic[[12]]$sim_results$power, results_list_nsim_MCP_monotonic[[13]]$sim_results$power, results_list_nsim_MCP_monotonic[[14]]$sim_results$power, results_list_nsim_MCP_monotonic[[15]]$sim_results$power),
+  MCP_logistic = c(results_list_nsim_MCP_monotonic[[16]]$sim_results$power, results_list_nsim_MCP_monotonic[[17]]$sim_results$power, results_list_nsim_MCP_monotonic[[18]]$sim_results$power, results_list_nsim_MCP_monotonic[[19]]$sim_results$power, results_list_nsim_MCP_monotonic[[20]]$sim_results$power),
+  MCP_sigemax = c(results_list_nsim_MCP_monotonic[[21]]$sim_results$power, results_list_nsim_MCP_monotonic[[22]]$sim_results$power, results_list_nsim_MCP_monotonic[[23]]$sim_results$power, results_list_nsim_MCP_monotonic[[24]]$sim_results$power, results_list_nsim_MCP_monotonic[[25]]$sim_results$power),
+  Bay_linear = results_nsim_Bay_monotonic$Bay_linear,
+  Bay_exp = results_nsim_Bay_monotonic$Bay_exponential,
+  Bay_emax = results_nsim_Bay_monotonic$Bay_emax,
+  Bay_logistic = results_nsim_Bay_monotonic$Bay_logistic,
+  Bay_sigemax = results_nsim_Bay_monotonic$Bay_sigEmax)
+
+results_nsim_diff_monotonic <- data.table(
+  linear = results_nsim_monotonic$Bay_linear - results_nsim_monotonic$MCP_linear,
+  exponential = results_nsim_monotonic$Bay_exp - results_nsim_monotonic$MCP_exp,
+  emax = results_nsim_monotonic$Bay_emax - results_nsim_monotonic$MCP_emax,
+  logistic = results_nsim_monotonic$Bay_logistic - results_nsim_monotonic$MCP_logistic,
+  sigemax = results_nsim_monotonic$Bay_sigemax - results_nsim_monotonic$MCP_sigemax,
+  n_sim = n_sim_values
+)
+
+results_nsim_diff_monotonic <- melt(results_nsim_diff_monotonic, id.vars = "n_sim")
+
+plot_nsim_monotonic <-  plot_power_deviation(results_nsim_diff_monotonic, results_nsim_diff_monotonic$n_sim, "nsim", c(100, 500, 1000, 2500, 5000))
+plot_nsim_monotonic
+```
+
+### non - monotonic scenario
+
+
+
+```{r}
+#safe results in data.table for plot
+results_nsim_non_monotonic <- data.table(
+  MCP_linear = c(results_list_nsim_MCP_non_monotonic[[1]]$sim_results$power, results_list_nsim_MCP_non_monotonic[[2]]$sim_results$power, results_list_nsim_MCP_non_monotonic[[3]]$sim_results$power, results_list_nsim_MCP_non_monotonic[[4]]$sim_results$power, results_list_nsim_MCP_non_monotonic[[5]]$sim_results$power),
+  MCP_emax = c(results_list_nsim_MCP_non_monotonic[[6]]$sim_results$power, results_list_nsim_MCP_non_monotonic[[7]]$sim_results$power, results_list_nsim_MCP_non_monotonic[[8]]$sim_results$power, results_list_nsim_MCP_non_monotonic[[9]]$sim_results$power, results_list_nsim_MCP_non_monotonic[[10]]$sim_results$power),
+  MCP_sigemax = c(results_list_nsim_MCP_non_monotonic[[11]]$sim_results$power, results_list_nsim_MCP_non_monotonic[[12]]$sim_results$power, results_list_nsim_MCP_non_monotonic[[13]]$sim_results$power, results_list_nsim_MCP_non_monotonic[[14]]$sim_results$power, results_list_nsim_MCP_non_monotonic[[15]]$sim_results$power),
+  #MCP_quadratic = results_list_nsim_MCP_non_monotonic$power_non_monotonic_nsim_sigemax,
+  Bay_linear = results_nsim_Bay_non_monotonic$Bay_linear,
+  Bay_emax = results_nsim_Bay_monotonic$Bay_emax,
+  Bay_sigemax = results_nsim_Bay_non_monotonic$Bay_sigEmax,
+  Bay_quadratic = results_nsim_Bay_non_monotonic$Bay_quadratic)
+
+results_nsim_diff_non_monotonic <- data.table(
+  linear = results_nsim_non_monotonic$Bay_linear - results_nsim_non_monotonic$MCP_linear,
+  emax = results_nsim_non_monotonic$Bay_emax - results_nsim_non_monotonic$MCP_emax,
+  sigemax =results_nsim_non_monotonic$Bay_sigemax - results_nsim_non_monotonic$MCP_sigemax,
+  #quadratic = results_nsim_non_monotonic$Bay_quadratic - results_nsim_non_monotonic$MCP_quadratic,
+  n_sim = n_sim_values
+)
+
+
+results_nsim_diff_non_monotonic <- melt(results_nsim_diff_non_monotonic, id.vars = "n_sim")
+
+plot_nsim_non_monotonic <-  plot_power_deviation(results_nsim_diff_non_monotonic, results_nsim_diff_non_monotonic$n_sim, "nsim", c(100, 500, 1000, 2500, 5000))
+plot_nsim_non_monotonic
+
+```
+
+### variability scenario
+
+
+
+```{r}
+#safe results in data.table for plot
+results_nsim_var <- data.table(
+  MCP_linear = c(results_list_nsim_MCP_var[[1]]$sim_results$power, results_list_nsim_MCP_var[[2]]$sim_results$power, results_list_nsim_MCP_var[[3]]$sim_results$power, results_list_nsim_MCP_var[[4]]$sim_results$power, results_list_nsim_MCP_var[[5]]$sim_results$power),
+  MCP_exp = c(results_list_nsim_MCP_var[[6]]$sim_results$power, results_list_nsim_MCP_var[[7]]$sim_results$power, results_list_nsim_MCP_var[[8]]$sim_results$power, results_list_nsim_MCP_var[[9]]$sim_results$power, results_list_nsim_MCP_var[[10]]$sim_results$power),
+  MCP_emax = c(results_list_nsim_MCP_var[[11]]$sim_results$power, results_list_nsim_MCP_var[[12]]$sim_results$power, results_list_nsim_MCP_var[[13]]$sim_results$power, results_list_nsim_MCP_var[[14]]$sim_results$power, results_list_nsim_MCP_var[[15]]$sim_results$power),
+  Bay_linear = results_nsim_Bay_var$Bay_linear,
+  Bay_exp = results_nsim_Bay_var$Bay_exponential,
+  Bay_emax = results_nsim_Bay_var$Bay_emax
+)
+
+results_nsim_diff_var <- data.table(
+  linear = results_nsim_var$Bay_linear - results_nsim_var$MCP_linear,
+  exponential = results_nsim_var$Bay_exp - results_nsim_var$MCP_exp,
+  emax = results_nsim_var$Bay_emax - results_nsim_var$MCP_emax,
+  n_sim = n_sim_values
+  )
+
+results_nsim_diff_var <- melt(results_nsim_diff_var, id.vars = "n_sim")
+
+plot_nsim_var <-  plot_power_deviation(results_nsim_diff_var, results_nsim_diff_var$n_sim, "nsim", c(100, 500, 1000, 2500, 5000))
+plot_nsim_var
+```
+
+```{r}
+# save(results_nsim_Bay, results_list_nsim_MCP, results_nsim_monotonic, results_nsim_non_monotonic, results_nsim_var,  results_min_MCP, results_monotonic_MCP, results_non_monotonic_MCP, results_var_MCP, results_min_MCP_nsample, results_monotonic_MCP_nsample, results_non_monotonic_MCP_nsample, results_var_MCP_nsample, results_min_Bay, results_min_Bay_nsample, results_monotonic_Bay, results_monotonic_Bay_nsample, results_non_monotonic_Bay, results_non_monotonic_Bay_nsample, results_variability_Bay, results_variability_Bay_nsample,
+#      file = "simulation_data.RData")
+```

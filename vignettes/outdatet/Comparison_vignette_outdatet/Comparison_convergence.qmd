@@ -20,8 +20,8 @@ vignette: >
 # minimal BayesianMCPMod
 
 # Define a vector of different n_sim values
-n_sim_values_list <- as.list(c(100, 500, 1000, 2500, 5000, 10000))
-n_sim_values <- c(100, 500, 1000, 2500, 5000, 10000)
+n_sim_values_list <- as.list(c(100, 500, 1000, 2500, 5000))
+n_sim_values <- c(100, 500, 1000, 2500, 5000)
 
 # Initialize a list to store the results
 results_list_nsim_Bay <- list()
@@ -88,12 +88,10 @@ sim_models_min_emax = list( emax = 0.6666667,
 
 
 
-list_models <- list(sim_models_min_linear, sim_models_min_linear, sim_models_min_linear, sim_models_min_linear, sim_models_min_linear, sim_models_min_linear,
-                    sim_models_min_exp, sim_models_min_exp, sim_models_min_exp, sim_models_min_exp, sim_models_min_exp, sim_models_min_exp, 
-                    sim_models_min_emax, sim_models_min_emax, sim_models_min_emax, sim_models_min_emax, sim_models_min_emax, sim_models_min_emax)
-n_sim_values_list <- as.list(c(100, 500, 1000, 2500, 5000, 10000, 
-                               100, 500, 1000, 2500, 5000, 10000, 
-                               100, 500, 1000, 2500, 5000, 10000))
+list_models <- list(sim_models_min_linear, sim_models_min_linear, sim_models_min_linear, sim_models_min_linear, sim_models_min_linear, 
+                    sim_models_min_exp, sim_models_min_exp, sim_models_min_exp, sim_models_min_exp, sim_models_min_exp, 
+                    sim_models_min_emax, sim_models_min_emax, sim_models_min_emax, sim_models_min_emax, sim_models_min_emax)
+n_sim_values_list <- as.list(c(100, 500, 1000, 2500, 5000, 100, 500, 1000, 2500, 5000, 100, 500, 1000, 2500, 5000))
 
 chunks <- chunkVector(seq_along(list_models), getDoParWorkers())
 
@@ -142,7 +140,7 @@ contM <- getContr(mods = monotonic_models,
                   prior_list = uninf_prior_list,
                   dose_weights = c(1,1,1,1,1))
 
-n_sim_values_list <- as.list(c(100, 500, 1000, 2500, 5000, 10000))
+n_sim_values_list <- as.list(c(100, 500, 1000, 2500, 5000))
 
 chunks <- chunkVector(seq_along(n_sim_values_list), getDoParWorkers())
 
@@ -181,17 +179,17 @@ sim_models_monotonic_emax$max_effect <- expectedEffect_fix
 sim_models_monotonic_logistic$max_effect <- expectedEffect_fix
 sim_models_monotonic_sigemax$max_effect <- expectedEffect_fix
 
-list_models <- list(sim_models_monotonic_linear, sim_models_monotonic_linear, sim_models_monotonic_linear, sim_models_monotonic_linear, sim_models_monotonic_linear, sim_models_monotonic_linear, 
-                    sim_models_monotonic_exp, sim_models_monotonic_exp, sim_models_monotonic_exp, sim_models_monotonic_exp, sim_models_monotonic_exp, sim_models_monotonic_exp, 
-                    sim_models_monotonic_emax, sim_models_monotonic_emax, sim_models_monotonic_emax, sim_models_monotonic_emax, sim_models_monotonic_emax, sim_models_monotonic_emax,
-                    sim_models_monotonic_logistic, sim_models_monotonic_logistic, sim_models_monotonic_logistic, sim_models_monotonic_logistic, sim_models_monotonic_logistic, sim_models_monotonic_logistic,
-                    sim_models_monotonic_sigemax, sim_models_monotonic_sigemax, sim_models_monotonic_sigemax, sim_models_monotonic_sigemax, sim_models_monotonic_sigemax, sim_models_monotonic_sigemax
+list_models <- list(sim_models_monotonic_linear, sim_models_monotonic_linear, sim_models_monotonic_linear, sim_models_monotonic_linear, sim_models_monotonic_linear, 
+                    sim_models_monotonic_exp, sim_models_monotonic_exp, sim_models_monotonic_exp, sim_models_monotonic_exp, sim_models_monotonic_exp, 
+                    sim_models_monotonic_emax, sim_models_monotonic_emax, sim_models_monotonic_emax, sim_models_monotonic_emax, sim_models_monotonic_emax,
+                    sim_models_monotonic_logistic, sim_models_monotonic_logistic, sim_models_monotonic_logistic, sim_models_monotonic_logistic, sim_models_monotonic_logistic,
+                    sim_models_monotonic_sigemax, sim_models_monotonic_sigemax, sim_models_monotonic_sigemax, sim_models_monotonic_sigemax,sim_models_monotonic_sigemax
                     )
-n_sim_values_list <- as.list(c(100, 500, 1000, 2500, 5000, 10000,
-                               100, 500, 1000, 2500, 5000, 10000,
-                               100, 500, 1000, 2500, 5000, 10000,
-                               100, 500, 1000, 2500, 5000, 10000,
-                               100, 500, 1000, 2500, 5000, 10000))
+n_sim_values_list <- as.list(c(100, 500, 1000, 2500, 5000, 
+                               100, 500, 1000, 2500, 5000, 
+                               100, 500, 1000, 2500, 5000,
+                               100, 500, 1000, 2500, 5000,
+                               100, 500, 1000, 2500, 5000))
 
 chunks <- chunkVector(seq_along(list_models), getDoParWorkers())
 
@@ -237,7 +235,7 @@ contM <- getContr(mods = non_monotonic_models,
                   prior_list = uninf_prior_list,
                   dose_weights = c(1,1,1,1,1))
 
-n_sim_values_list <- as.list(c(100, 500, 1000, 2500, 5000, 10000))
+n_sim_values_list <- as.list(c(100, 500, 1000, 2500, 5000))
 
 chunks <- chunkVector(seq_along(n_sim_values_list), getDoParWorkers())
 
@@ -299,13 +297,13 @@ sim_models_non_monotonic_sigemax$max_effect <- expectedEffect_fix
 #sim_models_non_monotonic_quadratic$max_effect <- expectedEffect_fix
 #sim_models_non_monotonic_beta$max_effect <- expectedEffect_fix
 
-list_models <- list(sim_models_non_monotonic_linear, sim_models_non_monotonic_linear, sim_models_non_monotonic_linear, sim_models_non_monotonic_linear, sim_models_non_monotonic_linear, sim_models_non_monotonic_linear,
-                    sim_models_non_monotonic_emax, sim_models_non_monotonic_emax, sim_models_non_monotonic_emax, sim_models_non_monotonic_emax, sim_models_non_monotonic_emax, sim_models_non_monotonic_emax,
-                    sim_models_non_monotonic_sigemax, sim_models_non_monotonic_sigemax, sim_models_non_monotonic_sigemax, sim_models_non_monotonic_sigemax,sim_models_non_monotonic_sigemax, sim_models_non_monotonic_sigemax
+list_models <- list(sim_models_non_monotonic_linear, sim_models_non_monotonic_linear, sim_models_non_monotonic_linear, sim_models_non_monotonic_linear, sim_models_non_monotonic_linear,
+                    sim_models_non_monotonic_emax, sim_models_non_monotonic_emax, sim_models_non_monotonic_emax, sim_models_non_monotonic_emax, sim_models_non_monotonic_emax,
+                    sim_models_non_monotonic_sigemax, sim_models_non_monotonic_sigemax, sim_models_non_monotonic_sigemax, sim_models_non_monotonic_sigemax,sim_models_non_monotonic_sigemax
                     )
-n_sim_values_list <- as.list(c(100, 500, 1000, 2500, 5000, 10000, 
-                               100, 500, 1000, 2500, 5000, 10000,
-                               100, 500, 1000, 2500, 5000, 10000))
+n_sim_values_list <- as.list(c(100, 500, 1000, 2500, 5000, 
+                               100, 500, 1000, 2500, 5000, 
+                               100, 500, 1000, 2500, 5000))
 
 chunks <- chunkVector(seq_along(list_models), getDoParWorkers())
 
@@ -347,7 +345,7 @@ contM <- getContr(mods = var_models,
                   prior_list = var_uninf_prior_list,
                   dose_weights = c(1,1,1,1))
 
-n_sim_values_list <- as.list(c(100, 500, 1000, 2500, 5000, 10000))
+n_sim_values_list <- as.list(c(100, 500, 1000, 2500, 5000))
 
 chunks <- chunkVector(seq_along(n_sim_values_list), getDoParWorkers())
 
@@ -392,12 +390,12 @@ sim_models_var_emax$max_effect <- expectedEffect_fix
 sim_parameters_var$n <- Nsample_var
 
 
-list_models <- list(sim_models_var_linear, sim_models_var_linear, sim_models_var_linear, sim_models_var_linear, sim_models_var_linear, sim_models_var_linear,
-                    sim_models_var_exp, sim_models_var_exp, sim_models_var_exp, sim_models_var_exp, sim_models_var_exp, sim_models_var_exp,
-                    sim_models_var_emax, sim_models_var_emax, sim_models_var_emax, sim_models_var_emax, sim_models_var_emax, sim_models_var_emax)
-n_sim_values_list <- as.list(c(100, 500, 1000, 2500, 5000, 10000,
-                               100, 500, 1000, 2500, 5000, 10000,
-                               100, 500, 1000, 2500, 5000, 10000))
+list_models <- list(sim_models_var_linear, sim_models_var_linear, sim_models_var_linear, sim_models_var_linear, sim_models_var_linear,
+                    sim_models_var_exp, sim_models_var_exp, sim_models_var_exp, sim_models_var_exp, sim_models_var_exp,
+                    sim_models_var_emax, sim_models_var_emax, sim_models_var_emax, sim_models_var_emax, sim_models_var_emax)
+n_sim_values_list <- as.list(c(100, 500, 1000, 2500, 5000, 
+                               100, 500, 1000, 2500, 5000, 
+                               100, 500, 1000, 2500, 5000))
 
 chunks <- chunkVector(seq_along(list_models), getDoParWorkers())
 
