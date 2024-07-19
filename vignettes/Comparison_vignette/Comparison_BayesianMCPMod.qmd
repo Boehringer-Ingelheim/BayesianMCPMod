@@ -19,7 +19,7 @@ Following simulations will be conducted utilizing the BayesianMCPMod' package, w
 
 
 # Prior Specification
-We use an uninformativ prior.
+In a first step an uninformativ prior is calculated.
 
 ```{r}
 uninf_prior_list <- list(
