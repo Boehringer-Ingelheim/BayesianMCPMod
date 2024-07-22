@@ -166,14 +166,14 @@ mixnorm_DG3  <- RBesT::mixnorm(comp1=c(1/3,6,8), comp2=c(1/3,7,9), comp3=c(1/3,0
 
 mixnorm_DG4  <- RBesT::mixnorm(comp1=c(1/3,10,3), comp2=c(1/3,3,6), comp3=c(1/3,4,7), sigma=9.236)
 
-prior_list <- vector("list", 5)
-prior_list[[1]] <- mixnorm_test
-prior_list[[2]] <- mixnorm_DG1
-prior_list[[3]] <- mixnorm_DG2
-prior_list[[4]] <- mixnorm_DG3
-prior_list[[5]] <- mixnorm_DG4
+prior_list_matrix <- vector("list", 5)
+prior_list_matrix[[1]] <- mixnorm_test
+prior_list_matrix[[2]] <- mixnorm_DG1
+prior_list_matrix[[3]] <- mixnorm_DG2
+prior_list_matrix[[4]] <- mixnorm_DG3
+prior_list_matrix[[5]] <- mixnorm_DG4
 
-names(prior_list) <- c("Ctr","DG_1","DG_2","DG_3","DG_4")
+names(prior_list_matrix) <- c("Ctr","DG_1","DG_2","DG_3","DG_4")
 
 mu_hat <- c(10, 20, 30, 40, 50)
 se_hat_vector <- c(1.0, 3.0, 5.0, 9.0, 6.0)
@@ -192,14 +192,14 @@ se_hat_matrix2 <- matrix(c(1.00, 0.10, 0.20, 0.30, 0.40,
                            0.40, 0.30, 0.20, 0.10, 6.00), nrow = 5, ncol = 5)
 
 posterior <- getPosterior(
-  prior_list = prior_list,
+  prior_list = prior_list_matrix,
   mu_hat     = mu_hat,
   S_hat      = se_hat_matrix,
   calc_ess   = FALSE
 )
 
 posterior_noZero <- getPosterior(
-  prior_list = prior_list,
+  prior_list = prior_list_matrix,
   mu_hat     = mu_hat,
   S_hat      = se_hat_matrix2,
   calc_ess   = FALSE

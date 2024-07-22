@@ -20,11 +20,21 @@ test_covmatrix_symmetry <- function (
 
 test_that("getPosterior works correctly", {
   dummy_data <- getModelData(data, names(mods)[1])
+  prior_list_noRBesT <- list(1,2,3,4)
+  
+  expect_error(getPosterior(
+    prior_list = prior_list_noRBesT,
+    mu_hat = mu_hat,
+    S_hat = se_hat_matrix,
+    calc_ess = FALSE
+  ))
   
   # Test getPosterior function
   posterior_list <- getPosterior(
-    data = getModelData(data, names(mods)[1]),
-    prior_list = prior_list
+    prior_list = prior_list_matrix,
+    mu_hat = mu_hat,
+    S_hat = se_hat_vector,
+    calc_ess = FALSE
   )
   expect_type(posterior_list, "list")
   expect_s3_class(posterior_list, "postList")
@@ -78,21 +88,21 @@ test_that("getPriorList input parameters do work as intented", {
 test_that("getPosteriorI works correctly", {
   # Prepare test data and parameters
   data_i <- data.frame(
-    dose = c(0, 1, 2, 3),
-    response = c(10, 20, 30, 40)
+    dose = c(0, 1, 2, 3, 4),
+    response = c(10, 20, 30, 40, 50)
   )
   
-  prior_list <- list(1, 2, 3, 4)
-  mu_hat <- c(10, 20, 30, 40)
-  se_hat <- matrix(c(1, 2, 3, 4), nrow = 4, ncol = 1)
+  #prior_list <- list(1, 2, 3, 4)
+  #mu_hat <- c(10, 20, 30, 40)
+  #se_hat <- matrix(c(1, 2, 3, 4), nrow = 4, ncol = 1)
   
   # Test getPosteriorI function
-  post_list <- getPosteriorI(data_i, prior_list, mu_hat, se_hat)
+  post_list <- getPosteriorI(data_i = data_i, prior_list = prior_list_matrix, mu_hat = mu_hat, se_hat = se_hat_vector)
   expect_type(post_list, "list")
   expect_s3_class(post_list, "postList")
   
   # Test mu_hat and sd_hat both null branch
-  post_list <- getPosteriorI(data_i, prior_list, NULL, NULL)
+  post_list <- getPosteriorI(data_i, prior_list_matrix, NULL, NULL)
   expect_type(post_list, "list")
   expect_s3_class(post_list, "postList")
 })
@@ -132,7 +142,7 @@ test_that("priorList2priorMix works correctly", {
   expect_error(priorList2priorMix())
   
   # test priorList2priorMix function
-  prior_mix <- priorList2priorMix(prior_list)
+  prior_mix <- priorList2priorMix(prior_list_matrix)
   expect_type(prior_mix, "list")
   expect_length(prior_mix, 3)
   
@@ -141,7 +151,7 @@ test_that("priorList2priorMix works correctly", {
 test_that("postMix2posteriorList works correctly", {
   
   # create posterior with matrix
-  prior_mix <- priorList2priorMix(prior_list)
+  prior_mix <- priorList2priorMix(prior_list_matrix)
   
   posterior <- DoseFinding::mvpostmix(
     priormix = prior_mix,
@@ -150,14 +160,14 @@ test_that("postMix2posteriorList works correctly", {
   
   # create posterior with vector
   posterior_vector <- getPosterior(
-    prior_list = prior_list,
+    prior_list = prior_list_matrix,
     mu_hat = mu_hat,
     S_hat = se_hat_vector,
     calc_ess = FALSE
   )
   
   ### test postMix2posteriorList function - se_hat_matrix only zeros
-  posterior_list <- postMix2posteriorList(posterior, prior_list, calc_ess = FALSE)
+  posterior_list <- postMix2posteriorList(posterior, prior_list_matrix, calc_ess = FALSE)
   expect_type(posterior_list, "list")
   expect_s3_class(posterior_list, "postList")
   
@@ -177,7 +187,7 @@ test_that("postMix2posteriorList works correctly", {
     S_hat    = se_hat_matrix2)
   
   posterior_noZero <- getPosterior(
-  prior_list = prior_list,
+  prior_list = prior_list_matrix,
   mu_hat     = mu_hat,
   S_hat      = se_hat_matrix2,
   calc_ess   = FALSE
@@ -200,14 +210,14 @@ test_that("postMix2posteriorList works correctly", {
   S_hat  <- diag(se_hat)
   
   posterior_matrix_S <- getPosterior(
-    prior_list = prior_list,
+    prior_list = prior_list_matrix,
     mu_hat     = mu_hat,
     S_hat      = S_hat,
     calc_ess   = FALSE
   )
   
   posterior_vector_se <- getPosterior(
-    prior_list = prior_list,
+    prior_list = prior_list_matrix,
     mu_hat     = mu_hat,
     S_hat      = sqrt(se_hat),
     calc_ess   = FALSE
