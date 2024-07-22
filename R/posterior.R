@@ -45,6 +45,11 @@ getPosterior <- function(
   checkmate::check_vector(S_hat, any.missing = FALSE, null.ok = TRUE)
   checkmate::check_double(S_hat, null.ok = TRUE, lower = 0, upper = Inf)
   
+  is_matrix_S_hat <- FALSE
+  
+  stopifnot("prior_list must be an object of RBesT package" =
+              all(sapply(prior_list, function(x) is(x, "normMix") | is(x, "betaMix") | is(x, "mix"))))
+  
   if (!is.null(mu_hat) && !is.null(S_hat) && is.null(data)) {
     
     if (is.matrix(S_hat)) {
@@ -142,9 +147,10 @@ getPosteriorI <- function(
   } else if (!is.null(mu_hat) && !is.null(se_hat)) {
     
     stopifnot("m_hat length must match number of dose levels" = 
-                length(prior_list) == length(mu_hat),
-              "se_hat length must match number of dose levels" = 
-                length(prior_list) == length(se_hat))
+                length(prior_list) == length(mu_hat))
+    # ,
+    #           "se_hat length must match number of dose levels" = 
+    #             length(prior_list) == length(se_hat))
     
   } else {
     
