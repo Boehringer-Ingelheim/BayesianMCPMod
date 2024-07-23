@@ -1,8 +1,6 @@
 test_that("Test plot.modelFits with different model_fits input", {
-  library(BayesianMCPMod)
-  library(dplyr)
-  dataset <- filter(testdata, bname == "VIAGRA")
-  histcontrol <- filter(dataset, dose == 0, primtime == 12, indication == "ERECTILE DYSFUNCTION")
+  dataset <- dplyr::filter(testdata, bname == "VIAGRA")
+  histcontrol <- dplyr::filter(dataset, dose == 0, primtime == 12, indication == "ERECTILE DYSFUNCTION")
 
   ## Create MAP Prior
   hist_data <- data.frame(

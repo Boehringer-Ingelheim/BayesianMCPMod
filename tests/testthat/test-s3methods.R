@@ -17,10 +17,9 @@ test_that("predict.ModelFits works as intented", {
 })
 
 test_that("s3 postList functions work as intented", {
-  library(dplyr)
   set.seed(8080)
-  dataset     <- filter(testdata, bname == "BRINTELLIX")
-  histcontrol <- filter(dataset, dose == 0, primtime == 8, indication == "MAJOR DEPRESSIVE DISORDER",protid!=6)
+  dataset     <- dplyr::filter(testdata, bname == "BRINTELLIX")
+  histcontrol <- dplyr::filter(dataset, dose == 0, primtime == 8, indication == "MAJOR DEPRESSIVE DISORDER",protid!=6)
 
   ##Create MAP Prior
   hist_data <- data.frame(
