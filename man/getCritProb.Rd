@@ -48,5 +48,5 @@ critVal <- getCritProb(
   mods           = mods,
   dose_weights   = c(50,50,50,50,50), #reflecting the planned sample size
   dose_levels    = dose_levels,
-  alpha_crit_val = 0.05) 
+  alpha_crit_val = 0.05)
 }

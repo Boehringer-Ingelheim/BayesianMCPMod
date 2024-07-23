@@ -59,6 +59,6 @@ sd_posterior <- c(2.8, 3, 2.5, 3.5, 4)
 contr_mat <- getContr(
   mods         = mods,
   dose_levels  = dose_levels,
-  sd_posterior = sd_posterior) 
+  sd_posterior = sd_posterior)
 
 }
