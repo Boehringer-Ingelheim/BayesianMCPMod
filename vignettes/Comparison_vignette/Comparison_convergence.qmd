@@ -272,67 +272,200 @@ results_nsim_Bay_non_monotonic <- extract_success_rates_nsim(results_list_nsim_B
 ```
 
 ### non-monotonic MCPModPack
-```{r, warning=FALSE}
 
 
-results_list_nsim_MCP_non_monotonic = list(
-  power_non_monotonic_nsim_linear = vector(),
-  power_non_monotonic_nsim_emax = vector(),
-  power_non_monotonic_nsim_sigemax= vector()
-  #power_non_monotonic_nsim_quadratic = vector(),
-  #power_non_monotonic_nsim_beta = vector()
-  )
+```{r}
+# linear with DoseFinding package
+mvt_control <- mvtnorm.control(maxpts = 30000, abseps = 0.001, releps = 0)
+doses <- c(0,1,2,4,8)
+allocation <- c(1,1,1,1,1)
+alpha <- 0.05
+addArgs <- list(off = 0.08, scal = 9.6)
 
-sim_models_non_monotonic_linear = list(linear = NA,
-                  max_effect = 0.2,
-                  sd = rep(sd.sim, length(doses.sim)),
-                  placebo_effect = plc.guess)
+resp_mod_list <- list(linear = NULL)
+cand_mod_list <- list(linear = NULL, emax = 0.6666667, quadratic = -0.09688711, betaMod = rbind(c(1.396434, 1.040978)), sigEmax = rbind(c(1.528629, 4.087463)))
+mods <- do.call(Mods, append(cand_mod_list, 
+        list(maxEff = 1, doses = doses, placEff = 0, addArgs = addArgs)))
+cont_mat <- optContr(mods, w = allocation)
 
-sim_models_non_monotonic_emax= list(emax = 0.6666667,
-                  max_effect = 0.2,
-                  sd = rep(sd.sim, length(doses.sim)),
-                  placebo_effect = plc.guess)
-
-sim_models_non_monotonic_sigemax= list(sigemax =  c(1.528629, 4.087463),
-                  max_effect = 0.2,
-                  sd = rep(sd.sim, length(doses.sim)),
-                  placebo_effect = plc.guess)
-
-
-sim_models_non_monotonic_linear$max_effect <- expectedEffect_fix
-sim_models_non_monotonic_emax$max_effect <- expectedEffect_fix
-sim_models_non_monotonic_sigemax$max_effect <- expectedEffect_fix
-#sim_models_non_monotonic_quadratic$max_effect <- expectedEffect_fix
-#sim_models_non_monotonic_beta$max_effect <- expectedEffect_fix
-
-list_models <- list(sim_models_non_monotonic_linear, sim_models_non_monotonic_linear, sim_models_non_monotonic_linear, sim_models_non_monotonic_linear, sim_models_non_monotonic_linear, sim_models_non_monotonic_linear,
-                    sim_models_non_monotonic_emax, sim_models_non_monotonic_emax, sim_models_non_monotonic_emax, sim_models_non_monotonic_emax, sim_models_non_monotonic_emax, sim_models_non_monotonic_emax,
-                    sim_models_non_monotonic_sigemax, sim_models_non_monotonic_sigemax, sim_models_non_monotonic_sigemax, sim_models_non_monotonic_sigemax,sim_models_non_monotonic_sigemax, sim_models_non_monotonic_sigemax
-                    )
-n_sim_values_list <- as.list(c(100, 500, 1000, 2500, 5000, 10000, 
-                               100, 500, 1000, 2500, 5000, 10000,
-                               100, 500, 1000, 2500, 5000, 10000))
-
-chunks <- chunkVector(seq_along(list_models), getDoParWorkers())
-
-results_list_nsim_MCP_non_monotonic <- foreach(k = chunks, .combine = c, .export = c(as.character(non_monotonic_modelsPack)))  %dorng% {
-  
-  lapply(k, function (i) {
-    # Simulation parameters
-  sim_parameters = list(n = Nsample,
-                      doses = doses.sim,
-                      dropout_rate = 0.0,
-                      go_threshold = 0.1,
-                      nsims = n_sim_values_list[[i]])
-    
-    func_sim(non_monotonic_modelsPack, list_models[[i]], sim_parameters) 
-    
-  })
-  
+grd <- expand.grid(max_eff = c(0.2), sd = c(0.4), n_total = c(200))
+power_list <- vector("list", nrow(grd))
+dat_n <- t(sapply(grd$n_total, function(n) round(n*allocation/sum(allocation))))
+colnames(dat_n) <- paste0("D", doses)
+for (i in 1:nrow(grd)) {
+  ######
+  mods <- do.call(Mods, append(resp_mod_list, list(maxEff = grd$max_eff[i], doses = doses,
+  placEff = 0, addArgs = addArgs)))
+  n <- dat_n[i, ]
+  power_list[[i]] <- powMCT(cont_mat, alpha, mods, n, grd$sd[i], control = mvt_control)
 }
+power_df <- as.data.frame(do.call("rbind", power_list))
+mu <- getResp(mods)
+parList <- attr(mu, 'parList')
+mod_nams <- DoseFinding:::getModNams(parList)
+colnames(power_df) <- mod_nams
+power_df[['mean power']] <- apply(power_df, 1, mean)
+result <- cbind(grd, power_df, dat_n)
+results_nsim_non_monotonic_linear <- result$linear
 
 
 ```
+
+```{r}
+# emax with DoseFinding package
+mvt_control <- mvtnorm.control(maxpts = 30000, abseps = 0.001, releps = 0)
+doses <- c(0,1,2,4,8)
+allocation <- c(1,1,1,1,1)
+alpha <- 0.05
+addArgs <- list(off = 0.08, scal = 9.6)
+
+resp_mod_list <- list(emax = 0.6666667)
+cand_mod_list <- list(linear = NULL, emax = 0.6666667, quadratic = -0.09688711, betaMod = rbind(c(1.396434, 1.040978)), sigEmax = rbind(c(1.528629, 4.087463)))
+mods <- do.call(Mods, append(cand_mod_list, 
+        list(maxEff = 1, doses = doses, placEff = 0, addArgs = addArgs)))
+cont_mat <- optContr(mods, w = allocation)
+
+grd <- expand.grid(max_eff = c(0.2), sd = c(0.4), n_total = c(200))
+power_list <- vector("list", nrow(grd))
+dat_n <- t(sapply(grd$n_total, function(n) round(n*allocation/sum(allocation))))
+colnames(dat_n) <- paste0("D", doses)
+for (i in 1:nrow(grd)) {
+  ######
+  mods <- do.call(Mods, append(resp_mod_list, list(maxEff = grd$max_eff[i], doses = doses,
+  placEff = 0, addArgs = addArgs)))
+  n <- dat_n[i, ]
+  power_list[[i]] <- powMCT(cont_mat, alpha, mods, n, grd$sd[i], control = mvt_control)
+}
+power_df <- as.data.frame(do.call("rbind", power_list))
+mu <- getResp(mods)
+parList <- attr(mu, 'parList')
+mod_nams <- DoseFinding:::getModNams(parList)
+colnames(power_df) <- mod_nams
+power_df[['mean power']] <- apply(power_df, 1, mean)
+result <- cbind(grd, power_df, dat_n)
+results_nsim_non_monotonic_emax <- result$`emax (ED50=0.6666667)`
+```
+
+
+```{r}
+# sigemax with DoseFinding package
+mvt_control <- mvtnorm.control(maxpts = 30000, abseps = 0.001, releps = 0)
+doses <- c(0,1,2,4,8)
+allocation <- c(1,1,1,1,1)
+alpha <- 0.05
+addArgs <- list(off = 0.08, scal = 9.6)
+
+resp_mod_list <- list(sigEmax = rbind(c(1.528629, 4.087463)))
+cand_mod_list <- list(linear = NULL, emax = 0.6666667, quadratic = -0.09688711, betaMod = rbind(c(1.396434, 1.040978)), sigEmax = rbind(c(1.528629, 4.087463)))
+mods <- do.call(Mods, append(cand_mod_list, 
+        list(maxEff = 1, doses = doses, placEff = 0, addArgs = addArgs)))
+cont_mat <- optContr(mods, w = allocation)
+
+grd <- expand.grid(max_eff = c(0.2), sd = c(0.4), n_total = c(200))
+power_list <- vector("list", nrow(grd))
+dat_n <- t(sapply(grd$n_total, function(n) round(n*allocation/sum(allocation))))
+colnames(dat_n) <- paste0("D", doses)
+for (i in 1:nrow(grd)) {
+  ######
+  mods <- do.call(Mods, append(resp_mod_list, list(maxEff = grd$max_eff[i], doses = doses,
+  placEff = 0, addArgs = addArgs)))
+  n <- dat_n[i, ]
+  power_list[[i]] <- powMCT(cont_mat, alpha, mods, n, grd$sd[i], control = mvt_control)
+}
+power_df <- as.data.frame(do.call("rbind", power_list))
+mu <- getResp(mods)
+parList <- attr(mu, 'parList')
+mod_nams <- DoseFinding:::getModNams(parList)
+colnames(power_df) <- mod_nams
+power_df[['mean power']] <- apply(power_df, 1, mean)
+result <- cbind(grd, power_df, dat_n)
+results_nsim_non_monotonic_sigemax <- result$`sigEmax (ED50=1.528629,h=4.087463)`
+
+```
+```{r}
+#quadratic with DoseFinding package
+mvt_control <- mvtnorm.control(maxpts = 30000, abseps = 0.001, releps = 0)
+doses <- c(0,1,2,4,8)
+allocation <- c(1,1,1,1,1)
+alpha <- 0.05
+addArgs <- list(off = 0.08, scal = 9.6)
+
+resp_mod_list <- list(quadratic = -0.09688711)
+cand_mod_list <- list(linear = NULL, emax = 0.6666667, quadratic = -0.09688711, betaMod = rbind(c(1.396434, 1.040978)), sigEmax = rbind(c(1.528629, 4.087463)))
+mods <- do.call(Mods, append(cand_mod_list, 
+        list(maxEff = 1, doses = doses, placEff = 0, addArgs = addArgs)))
+cont_mat <- optContr(mods, w = allocation)
+
+grd <- expand.grid(max_eff = c(0.2), sd = c(0.4), n_total = c(200))
+power_list <- vector("list", nrow(grd))
+dat_n <- t(sapply(grd$n_total, function(n) round(n*allocation/sum(allocation))))
+colnames(dat_n) <- paste0("D", doses)
+for (i in 1:nrow(grd)) {
+  ######
+  mods <- do.call(Mods, append(resp_mod_list, list(maxEff = grd$max_eff[i], doses = doses,
+  placEff = 0, addArgs = addArgs)))
+  n <- dat_n[i, ]
+  power_list[[i]] <- powMCT(cont_mat, alpha, mods, n, grd$sd[i], control = mvt_control)
+}
+power_df <- as.data.frame(do.call("rbind", power_list))
+mu <- getResp(mods)
+parList <- attr(mu, 'parList')
+mod_nams <- DoseFinding:::getModNams(parList)
+colnames(power_df) <- mod_nams
+power_df[['mean power']] <- apply(power_df, 1, mean)
+result <- cbind(grd, power_df, dat_n)
+
+results_nsim_non_monotonic_quadratic <- result$`quadratic (delta=-0.09688711)`
+
+```
+
+```{r}
+# beta with DoseFinding package
+mvt_control <- mvtnorm.control(maxpts = 30000, abseps = 0.001, releps = 0)
+doses <- c(0,1,2,4,8)
+allocation <- c(1,1,1,1,1)
+alpha <- 0.05
+addArgs <- list(off = 0.08, scal = 9.6)
+
+resp_mod_list <- list(betaMod = rbind(c(1.396434, 1.040978)))
+cand_mod_list <- list(linear = NULL, emax = 0.6666667, quadratic = -0.09688711, betaMod = rbind(c(1.396434, 1.040978)), sigEmax = rbind(c(1.528629, 4.087463)))
+mods <- do.call(Mods, append(cand_mod_list, 
+        list(maxEff = 1, doses = doses, placEff = 0, addArgs = addArgs)))
+cont_mat <- optContr(mods, w = allocation)
+
+grd <- expand.grid(max_eff = c(0.2), sd = c(0.4), n_total = c(200))
+power_list <- vector("list", nrow(grd))
+dat_n <- t(sapply(grd$n_total, function(n) round(n*allocation/sum(allocation))))
+colnames(dat_n) <- paste0("D", doses)
+for (i in 1:nrow(grd)) {
+  ######
+  mods <- do.call(Mods, append(resp_mod_list, list(maxEff = grd$max_eff[i], doses = doses,
+  placEff = 0, addArgs = addArgs)))
+  n <- dat_n[i, ]
+  power_list[[i]] <- powMCT(cont_mat, alpha, mods, n, grd$sd[i], control = mvt_control)
+}
+power_df <- as.data.frame(do.call("rbind", power_list))
+mu <- getResp(mods)
+parList <- attr(mu, 'parList')
+mod_nams <- DoseFinding:::getModNams(parList)
+colnames(power_df) <- mod_nams
+power_df[['mean power']] <- apply(power_df, 1, mean)
+result <- cbind(grd, power_df, dat_n)
+results_nsim_non_monotonic_beta <- result$`betaMod (delta1=1.396434,delta2=1.040978,scal=9.6)`
+
+```
+```{r}
+results_nsim_MCP_non_monotonic <- data.table(
+  linear = results_nsim_non_monotonic_linear,
+  emax = results_nsim_non_monotonic_emax,
+  sigemax = results_nsim_non_monotonic_sigemax,
+  quadratic = results_nsim_non_monotonic_quadratic,
+  beta = results_nsim_non_monotonic_beta
+)
+```
+
+
+
 
 ### variability BayesianMCPMod
 ```{r}

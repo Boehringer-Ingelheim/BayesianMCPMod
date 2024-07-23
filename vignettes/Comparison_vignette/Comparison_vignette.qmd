@@ -608,18 +608,18 @@ data_plot_eff_non_monotonic <- data.frame(
 # Create the plot
 ggplot(data = data_plot_eff_non_monotonic, aes(x = max_eff_num)) +
   geom_segment(aes(x = max_eff_num - 0.4, xend = max_eff_num - 0.4, y = start_linear, yend = end_linear, color = "linear", size = "BayesianMCPMod")) +
-  geom_segment(aes(x = max_eff_num - 0.45, xend = max_eff_num - 0.35 , y = start_linear, yend = start_linear, color = "linear", size = "MCPModPack")) +
+  geom_segment(aes(x = max_eff_num - 0.45, xend = max_eff_num - 0.35 , y = start_linear, yend = start_linear, color = "linear", size = "DoseFinding")) +
   geom_segment(aes(x = max_eff_num - 0.2, xend = max_eff_num - 0.2 , y = start_emax, yend = end_emax, color = "emax", size = "BayesianMCPMod")) +
-  geom_segment(aes(x = max_eff_num - 0.25, xend = max_eff_num - 0.15, y = start_emax, yend = start_emax, color = "emax", size = "MCPModPack")) +
+  geom_segment(aes(x = max_eff_num - 0.25, xend = max_eff_num - 0.15, y = start_emax, yend = start_emax, color = "emax", size = "DoseFinding")) +
   geom_segment(aes(x = max_eff_num, xend = max_eff_num, y = start_sigemax, yend = end_sigemax, color = "sigemax", size = "BayesianMCPMod")) +
-  geom_segment(aes(x = max_eff_num - 0.05, xend = max_eff_num + 0.05, y = start_sigemax, yend = start_sigemax, color = "sigemax", size = "MCPModPack")) +
+  geom_segment(aes(x = max_eff_num - 0.05, xend = max_eff_num + 0.05, y = start_sigemax, yend = start_sigemax, color = "sigemax", size = "DoseFinding")) +
   geom_segment(aes(x = max_eff_num + 0.2, xend = max_eff_num + 0.2, y = start_quadratic, yend = end_quadratic, color = "quadratic", size = "BayesianMCPMod")) +
-  geom_segment(aes(x = max_eff_num + 0.15, xend = max_eff_num  + 0.25, y = start_quadratic, yend = start_quadratic, color = "quadratic", size = "MCPModPack")) +
+  geom_segment(aes(x = max_eff_num + 0.15, xend = max_eff_num  + 0.25, y = start_quadratic, yend = start_quadratic, color = "quadratic", size = "DoseFinding")) +
   geom_segment(aes(x = max_eff_num + 0.4, xend = max_eff_num + 0.4, y = start_beta, yend = end_beta, color = "beta", size = "BayesianMCPMod")) +
-  geom_segment(aes(x = max_eff_num + 0.35, xend = max_eff_num  + 0.45, y = start_beta, yend = start_beta, color = "beta", size = "MCPModPack")) +
+  geom_segment(aes(x = max_eff_num + 0.35, xend = max_eff_num  + 0.45, y = start_beta, yend = start_beta, color = "beta", size = "DoseFinding")) +
   scale_x_continuous(breaks = data_plot_eff_non_monotonic$max_eff_num, labels = data_plot_eff_non_monotonic$max_eff) +
   scale_color_manual(name = "Assumed true model", values = c("linear" = "red", "exponential" = "blue", "emax" = "darkgreen", "logistic" = "orange", "sigemax" = "purple", "beta" = "deepskyblue", "quadratic" = "deeppink"))+
-   scale_size_manual( name = "Package", values = c("MCPModPack" = 0.5, "BayesianMCPMod" = 2))+
+   scale_size_manual( name = "Package", values = c("DoseFinding" = 0.5, "BayesianMCPMod" = 2))+
   theme_minimal() +
   ylab("Power") +
   xlab("expected effect for maximum dose")+
@@ -818,18 +818,18 @@ data_plot_nsample_non_monotonic <- data.frame(
 # Create the plot
 ggplot(data = data_plot_nsample_non_monotonic, aes(x = sample_sizes_num)) +
   geom_segment(aes(x = sample_sizes_num - 0.4, xend = sample_sizes_num - 0.4, y = start_linear, yend = end_linear, color = "linear", size = "BayesianMCPMod")) +
-  geom_segment(aes(x = sample_sizes_num - 0.45, xend = sample_sizes_num - 0.35 , y = start_linear, yend = start_linear, color = "linear", size = "MCPModPack")) +
+  geom_segment(aes(x = sample_sizes_num - 0.45, xend = sample_sizes_num - 0.35 , y = start_linear, yend = start_linear, color = "linear", size = "DoseFinding")) +
   geom_segment(aes(x = sample_sizes_num - 0.2, xend = sample_sizes_num - 0.2 , y = start_emax, yend = end_emax, color = "emax", size = "BayesianMCPMod")) +
-  geom_segment(aes(x = sample_sizes_num - 0.25, xend = sample_sizes_num - 0.15, y = start_emax, yend = start_emax, color = "emax", size = "MCPModPack")) +
+  geom_segment(aes(x = sample_sizes_num - 0.25, xend = sample_sizes_num - 0.15, y = start_emax, yend = start_emax, color = "emax", size = "DoseFinding")) +
   geom_segment(aes(x = sample_sizes_num, xend = sample_sizes_num, y = start_sigemax, yend = end_sigemax, color = "sigemax", size = "BayesianMCPMod")) +
-  geom_segment(aes(x = sample_sizes_num - 0.05, xend = sample_sizes_num + 0.05, y = start_sigemax, yend = start_sigemax, color = "sigemax", size = "MCPModPack")) +
+  geom_segment(aes(x = sample_sizes_num - 0.05, xend = sample_sizes_num + 0.05, y = start_sigemax, yend = start_sigemax, color = "sigemax", size = "DoseFinding")) +
   geom_segment(aes(x = sample_sizes_num + 0.1, xend = sample_sizes_num + 0.1, y = start_quadratic, yend = end_quadratic, color = "quadratic", size = "BayesianMCPMod")) +
-  geom_segment(aes(x = sample_sizes_num + 0.05, xend = sample_sizes_num  + 0.15, y = start_quadratic, yend = start_quadratic, color = "quadratic", size = "MCPModPack")) +
+  geom_segment(aes(x = sample_sizes_num + 0.05, xend = sample_sizes_num  + 0.15, y = start_quadratic, yend = start_quadratic, color = "quadratic", size = "DoseFinding")) +
   geom_segment(aes(x = sample_sizes_num + 0.3, xend = sample_sizes_num + 0.3, y = start_beta, yend = end_beta, color = "beta", size = "BayesianMCPMod")) +
-  geom_segment(aes(x = sample_sizes_num + 0.25, xend = sample_sizes_num  + 0.35, y = start_beta, yend = start_beta, color = "beta", size = "MCPModPack")) +
+  geom_segment(aes(x = sample_sizes_num + 0.25, xend = sample_sizes_num  + 0.35, y = start_beta, yend = start_beta, color = "beta", size = "DoseFinding")) +
   scale_x_continuous(breaks = data_plot_nsample_non_monotonic$sample_sizes_num, labels = data_plot_nsample_non_monotonic$sample_sizes) +
   scale_color_manual(name = "Assumed true model", values = c("linear" = "red", "exponential" = "blue", "emax" = "darkgreen", "logistic" = "orange", "sigemax" = "purple", "beta" = "deepskyblue", "quadratic" = "deeppink"))+
-   scale_size_manual( name = "Package", values = c("MCPModPack" = 0.5, "BayesianMCPMod" = 3))+
+   scale_size_manual( name = "Package", values = c("DoseFinding" = 0.5, "BayesianMCPMod" = 3))+
   theme_minimal() +
   ylab("Power") +
   ylim(c(0.25,1))+
@@ -892,7 +892,7 @@ ggplot(data = data_plot_nsample_var, aes(x = sample_sizes_num)) +
 
 ## convergence of power values
 
-In the following simulations, we examine the convergence of power values for an increasing number of simulations. We are considering the following number of simulations: 100, 500, 1000, 2500, 5000.
+In the following simulations, we examine the convergence of power values for an increasing number of simulations. We are considering the following number of simulations: 100, 500, 1000, 2500, 5000, 10000.
 
 ```{r child = 'Comparison_convergence.qmd'}
 
@@ -965,20 +965,23 @@ plot_nsim_monotonic
 ```{r}
 #safe results in data.table for plot
 results_nsim_non_monotonic <- data.table(
-  MCP_linear = c(results_list_nsim_MCP_non_monotonic[[1]]$sim_results$power, results_list_nsim_MCP_non_monotonic[[2]]$sim_results$power, results_list_nsim_MCP_non_monotonic[[3]]$sim_results$power, results_list_nsim_MCP_non_monotonic[[4]]$sim_results$power, results_list_nsim_MCP_non_monotonic[[5]]$sim_results$power, results_list_nsim_MCP_non_monotonic[[6]]$sim_results$power),
-  MCP_emax = c(results_list_nsim_MCP_non_monotonic[[7]]$sim_results$power, results_list_nsim_MCP_non_monotonic[[8]]$sim_results$power, results_list_nsim_MCP_non_monotonic[[9]]$sim_results$power, results_list_nsim_MCP_non_monotonic[[10]]$sim_results$power, results_list_nsim_MCP_non_monotonic[[11]]$sim_results$power,results_list_nsim_MCP_non_monotonic[[12]]$sim_results$power),
-  MCP_sigemax = c(results_list_nsim_MCP_non_monotonic[[13]]$sim_results$power, results_list_nsim_MCP_non_monotonic[[14]]$sim_results$power, results_list_nsim_MCP_non_monotonic[[15]]$sim_results$power, results_list_nsim_MCP_non_monotonic[[16]]$sim_results$power, results_list_nsim_MCP_non_monotonic[[17]]$sim_results$power, results_list_nsim_MCP_non_monotonic[[18]]$sim_results$power),
-  #MCP_quadratic = results_list_nsim_MCP_non_monotonic$power_non_monotonic_nsim_sigemax,
+  MCP_linear = replicate(6,results_nsim_MCP_non_monotonic$linear),
+  MCP_emax = replicate(6,results_nsim_MCP_non_monotonic$emax),
+  MCP_sigemax = replicate(6,results_nsim_MCP_non_monotonic$sigemax),
+  MCP_quadratic = replicate(6,results_nsim_MCP_non_monotonic$quadratic),
+  MCP_beta = replicate(6,results_nsim_MCP_non_monotonic$beta),
   Bay_linear = results_nsim_Bay_non_monotonic$Bay_linear,
   Bay_emax = results_nsim_Bay_monotonic$Bay_emax,
   Bay_sigemax = results_nsim_Bay_non_monotonic$Bay_sigEmax,
-  Bay_quadratic = results_nsim_Bay_non_monotonic$Bay_quadratic)
+  Bay_quadratic = results_nsim_Bay_non_monotonic$Bay_quadratic,
+  Bay_beta = results_nsim_Bay_non_monotonic$Bay_betaMod)
 
 results_nsim_diff_non_monotonic <- data.table(
   linear = results_nsim_non_monotonic$Bay_linear - results_nsim_non_monotonic$MCP_linear,
   emax = results_nsim_non_monotonic$Bay_emax - results_nsim_non_monotonic$MCP_emax,
   sigemax =results_nsim_non_monotonic$Bay_sigemax - results_nsim_non_monotonic$MCP_sigemax,
-  #quadratic = results_nsim_non_monotonic$Bay_quadratic - results_nsim_non_monotonic$MCP_quadratic,
+  quadratic = results_nsim_non_monotonic$Bay_quadratic - results_nsim_non_monotonic$MCP_quadratic,
+  beta = results_nsim_non_monotonic$Bay_beta -  results_nsim_non_monotonic$MCP_beta,
   n_sim = n_sim_values
 )
 
@@ -1021,6 +1024,6 @@ plot_nsim_var
 ```{r}
 # save( results_min_MCP, minimal_Bay, results_monotonic_MCP, monotonic_Bay, results_non_monotonic_MCP, non_monotonic_Bay, results_var_MCP, variability_Bay, 
 # results_min_MCP_nsample, minimal_nsample_Bay, results_monotonic_MCP_nsample, monotonic_nsample_Bay, results_non_monotonic_MCP_nsample, non_monotonic_nsample_Bay, results_var_MCP_nsample, 
-# var_nsample_Bay, results_list_nsim_MCP, results_nsim_Bay, results_list_nsim_MCP_monotonic, results_nsim_Bay_monotonic, results_list_nsim_MCP_non_monotonic, results_nsim_Bay_non_monotonic, results_list_nsim_MCP_var, results_nsim_Bay_var
+# var_nsample_Bay, results_list_nsim_MCP, results_nsim_Bay, results_list_nsim_MCP_monotonic, results_nsim_Bay_monotonic, results_nsim_MCP_non_monotonic, results_nsim_Bay_non_monotonic, results_list_nsim_MCP_var, results_nsim_Bay_var
 #      file = "simulation_data.RData")
 ```
