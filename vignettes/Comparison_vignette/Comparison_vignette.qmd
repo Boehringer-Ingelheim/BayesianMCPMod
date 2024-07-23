@@ -9,6 +9,7 @@ format:
     toc: true
     number-sections: true
     #bibliography: references.bib
+    code-fold: true
 vignette: >
   %\VignetteIndexEntry{Simulation Example of Bayesian MCPMod and MCPMod}
     %\VignetteEncoding{UTF-8}
@@ -176,11 +177,12 @@ print_result_Bay_nsample <- function(results, scenario, variable) {
   list(result_table = result_table, kable_result = kable_result)
 }
 
-plot_power_deviation <- function(data, x, xlab, xlim){
+plot_power_deviation <- function(data, x, xlab){
   plot <- ggplot2::ggplot(data, aes(x = x, y = value, color = variable, group = variable))+
     geom_point()+
     geom_line() +
-    scale_x_continuous(breaks = xlim) +
+    scale_x_continuous(breaks = c(0, 100, 500, 1000, 2500, 5000, 10000),
+    labels = c("", "100", "", "1000", "2500", "5000", "10000")) +
     geom_hline(aes(yintercept = 0), linetype = 2)+
     geom_hline(aes(yintercept = -0.05), linetype = 2, color = "darkgrey")+
     geom_hline(aes(yintercept = 0.05), linetype = 2, color = "darkgrey")+
@@ -513,7 +515,9 @@ ggplot(data = data_plot_eff_min, aes(x = max_eff_num)) +
   xlab("expected effect for maximum dose")+
   ggtitle("Power values different expected effect for maximum dose") +
   geom_vline(xintercept = data_plot_eff_min$max_eff_num + 0.5, linetype="dashed", color = "black") +
-  theme(legend.position = "bottom")
+  theme(legend.position = "bottom") +
+  guides(color = guide_legend(nrow= 2 , byrow= TRUE ), size = guide_legend(nrow= 2 , byrow= TRUE )) 
+
 
 ```
 
@@ -561,13 +565,14 @@ ggplot(data = data_plot_eff_monotonic, aes(x = max_eff_num)) +
   geom_segment(aes(x = max_eff_num + 0.35, xend = max_eff_num + 0.45, y = start_sigemax, yend = start_sigemax, color = "sigemax", size = "MCPModPack")) +
   scale_x_continuous(breaks = data_plot_eff_monotonic$max_eff_num, labels = data_plot_eff_monotonic$max_eff) +
   scale_color_manual(name = "Assumed true model", values = c("linear" = "red", "exponential" = "blue", "emax" = "darkgreen", "logistic" = "orange", "sigemax" = "purple", "beta" = "deepskyblue", "quadratic" = "deeppink"))+
-  scale_size_manual( name = "Model", values = c("MCPModPack" = 0.5, "BayesianMCPMod" = 2))+
+  scale_size_manual( name = "Package", values = c("MCPModPack" = 0.5, "BayesianMCPMod" = 2))+
   theme_minimal() +
   ylab("Power") +
   xlab("expected effect for maximum dose")+
   ggtitle("Power values different expected effect for maximum dose")+
   geom_vline(xintercept = data_plot_eff_monotonic$max_eff_num + 0.5, linetype="dashed", color = "black") +
-  theme(legend.position = "bottom")
+  theme(legend.position = "bottom") +
+  guides(color = guide_legend(nrow= 2 , byrow= TRUE ), size = guide_legend(nrow= 2 , byrow= TRUE )) 
 
 ```
 
@@ -583,19 +588,6 @@ kable(results_non_monotonic_MCP)%>%
 
 non_monotonic_Bay$kable_result
 
-# results_non_monotonic_max_eff <- data.table(
-#   linear = as.vector(non_monotonic_Bay$result_table$linear)-as.vector(results_non_monotonic_MCP$linear),
-#   emax = as.vector(non_monotonic_Bay$result_table$emax)-as.vector(results_non_monotonic_MCP$emax),
-#   sigemax = as.vector(non_monotonic_Bay$result_table$sigEmax)-as.vector(results_non_monotonic_MCP$sigEmax),
-#   quadratic = as.vector(non_monotonic_Bay$result_table$quadratic)-as.vector(results_non_monotonic_MCP$quadratic),
-#   beta = as.vector(non_monotonic_Bay$result_table$beta)-as.vector(results_non_monotonic_MCP$beta),
-#   expectedEffect = expectedEffect
-#   )
-# 
-# results_non_monotonic_max_eff <- melt(results_non_monotonic_max_eff, id.vars = "expectedEffect")
-# 
-# plot_non_monotonic <- plot_power_deviation(results_non_monotonic_max_eff, results_non_monotonic_max_eff$expectedEffect, "assumed maximum effect", c(0.05,0.1,0.2,0.3,0.5))
-# plot_non_monotonic
 
 data_plot_eff_non_monotonic <- data.frame(
   max_eff = expectedEffect,
@@ -621,19 +613,20 @@ ggplot(data = data_plot_eff_non_monotonic, aes(x = max_eff_num)) +
   geom_segment(aes(x = max_eff_num - 0.25, xend = max_eff_num - 0.15, y = start_emax, yend = start_emax, color = "emax", size = "MCPModPack")) +
   geom_segment(aes(x = max_eff_num, xend = max_eff_num, y = start_sigemax, yend = end_sigemax, color = "sigemax", size = "BayesianMCPMod")) +
   geom_segment(aes(x = max_eff_num - 0.05, xend = max_eff_num + 0.05, y = start_sigemax, yend = start_sigemax, color = "sigemax", size = "MCPModPack")) +
-  geom_segment(aes(x = max_eff_num + 0.1, xend = max_eff_num + 0.1, y = start_quadratic, yend = end_quadratic, color = "quadratic", size = "BayesianMCPMod")) +
-  geom_segment(aes(x = max_eff_num + 0.05, xend = max_eff_num  + 0.15, y = start_quadratic, yend = start_quadratic, color = "quadratic", size = "MCPModPack")) +
-  geom_segment(aes(x = max_eff_num + 0.3, xend = max_eff_num + 0.3, y = start_beta, yend = end_beta, color = "beta", size = "BayesianMCPMod")) +
-  geom_segment(aes(x = max_eff_num + 0.25, xend = max_eff_num  + 0.35, y = start_beta, yend = start_beta, color = "beta", size = "MCPModPack")) +
+  geom_segment(aes(x = max_eff_num + 0.2, xend = max_eff_num + 0.2, y = start_quadratic, yend = end_quadratic, color = "quadratic", size = "BayesianMCPMod")) +
+  geom_segment(aes(x = max_eff_num + 0.15, xend = max_eff_num  + 0.25, y = start_quadratic, yend = start_quadratic, color = "quadratic", size = "MCPModPack")) +
+  geom_segment(aes(x = max_eff_num + 0.4, xend = max_eff_num + 0.4, y = start_beta, yend = end_beta, color = "beta", size = "BayesianMCPMod")) +
+  geom_segment(aes(x = max_eff_num + 0.35, xend = max_eff_num  + 0.45, y = start_beta, yend = start_beta, color = "beta", size = "MCPModPack")) +
   scale_x_continuous(breaks = data_plot_eff_non_monotonic$max_eff_num, labels = data_plot_eff_non_monotonic$max_eff) +
   scale_color_manual(name = "Assumed true model", values = c("linear" = "red", "exponential" = "blue", "emax" = "darkgreen", "logistic" = "orange", "sigemax" = "purple", "beta" = "deepskyblue", "quadratic" = "deeppink"))+
-   scale_size_manual( name = "Model", values = c("MCPModPack" = 0.5, "BayesianMCPMod" = 2))+
+   scale_size_manual( name = "Package", values = c("MCPModPack" = 0.5, "BayesianMCPMod" = 2))+
   theme_minimal() +
   ylab("Power") +
   xlab("expected effect for maximum dose")+
   ggtitle("Power values for different expected effect for maximum dose")+
   geom_vline(xintercept = data_plot_eff_non_monotonic$max_eff_num + 0.5, linetype="dashed", color = "black") +
-  theme(legend.position = "bottom")
+  theme(legend.position = "bottom") +
+  guides(color = guide_legend(nrow= 2 , byrow= TRUE ), size = guide_legend(nrow= 2 , byrow= TRUE )) 
 ```
 
 ### variability scenario
@@ -669,14 +662,15 @@ ggplot(data = data_plot_eff_var, aes(x = max_eff_num)) +
   geom_segment(aes(x = max_eff_num + 0.2, xend = max_eff_num + 0.2, y = start_emax, yend = end_emax, color = "emax", size = "BayesianMCPMod")) +
   geom_segment(aes(x = max_eff_num + 0.1, xend = max_eff_num + 0.3 , y = start_emax, yend = start_emax, color = "emax", size = "MCPModPack")) +
   scale_x_continuous(breaks = data_plot_eff_var$max_eff_num, labels = data_plot_eff_var$max_eff) +
-  scale_color_manual(name = "Assumed true model (BayesianMCPMod)", values = c("linear" = "red", "exponential" = "blue", "emax" = "darkgreen", "logistic" = "orange", "sigemax" = "purple", "beta" = "deepskyblue", "quadratic" = "deeppink"))+
-   scale_size_manual( name = "Model", values = c("MCPModPack" = 0.5, "BayesianMCPMod" = 3))+
+  scale_color_manual(name = "Assumed true model", values = c("linear" = "red", "exponential" = "blue", "emax" = "darkgreen", "logistic" = "orange", "sigemax" = "purple", "beta" = "deepskyblue", "quadratic" = "deeppink"))+
+   scale_size_manual( name = "Package", values = c("MCPModPack" = 0.5, "BayesianMCPMod" = 3))+
   theme_minimal() +
   ylab("Power") +
   xlab("expected effect for maximum dose")+
   ggtitle("Power values for different expected effect for maximum dose")+
   geom_vline(xintercept = data_plot_eff_var$max_eff_num + 0.5, linetype="dashed", color = "black") +
-  theme(legend.position = "bottom")
+  theme(legend.position = "bottom") +
+  guides(color = guide_legend(nrow= 2 , byrow= TRUE ), size = guide_legend(nrow= 2 , byrow= TRUE )) 
 ```
 
 ## varying sample size
@@ -723,7 +717,7 @@ ggplot(data = data_plot_nsample_min, aes(x = sample_sizes_num)) +
   geom_segment(aes(x = sample_sizes_num + 0.1, xend = sample_sizes_num  + 0.3, y = start_emax, yend = start_emax, color = "emax", size = "MCPModPack")) +
   scale_x_continuous(breaks = data_plot_nsample_min$sample_sizes_num, labels = data_plot_nsample_min$sample_sizes) +
   scale_color_manual(name = "Assumed true model", values = c("linear" = "red", "exponential" = "blue", "emax" = "darkgreen", "logistic" = "orange", "sigemax" = "purple", "beta" = "deepskyblue", "quadratic" = "deeppink"))+
-  scale_size_manual( name = "Model", values = c("MCPModPack" = 0.5, "BayesianMCPMod" = 3))+
+  scale_size_manual( name = "Package", values = c("MCPModPack" = 0.5, "BayesianMCPMod" = 3))+
    theme_minimal() +
   ylab("Power") +
   theme_minimal() +
@@ -732,7 +726,8 @@ ggplot(data = data_plot_nsample_min, aes(x = sample_sizes_num)) +
   xlab("sample sizes")+
   ggtitle("Power values different sample sizes") +
   geom_vline(xintercept = data_plot_nsample_min$sample_sizes_num + 0.5, linetype="dashed", color = "black") +
-  theme(legend.position = "bottom")
+  theme(legend.position = "bottom") +
+  guides(color = guide_legend(nrow= 2 , byrow= TRUE ), size = guide_legend(nrow= 2 , byrow= TRUE )) 
 
 
 
@@ -780,14 +775,15 @@ ggplot(data = data_plot_nsample_monotonic, aes(x = sample_sizes_num)) +
   geom_segment(aes(x = sample_sizes_num + 0.35, xend = sample_sizes_num  + 0.45, y = start_sigemax, yend = start_sigemax, color = "sigemax", size = "MCPModPack")) +
   scale_x_continuous(breaks = data_plot_nsample_monotonic$sample_sizes_num, labels = data_plot_nsample_monotonic$sample_sizes) +
   scale_color_manual(name = "Assumed true model", values = c("linear" = "red", "exponential" = "blue", "emax" = "darkgreen", "logistic" = "orange", "sigemax" = "purple", "beta" = "deepskyblue", "quadratic" = "deeppink"))+
-  scale_size_manual( name = "Model", values = c("MCPModPack" = 0.5, "BayesianMCPMod" = 3))+
+  scale_size_manual( name = "Package", values = c("MCPModPack" = 0.5, "BayesianMCPMod" = 3))+
   theme_minimal() +
   ylab("Power") +
   ylim(c(0.25,1))+
   xlab("sample sizes")+
   ggtitle("Power values different sample sizes")+
   geom_vline(xintercept = data_plot_nsample_monotonic$sample_sizes_num + 0.5, linetype="dashed", color = "black") +
-  theme(legend.position = "bottom")
+  theme(legend.position = "bottom") +
+  guides(color = guide_legend(nrow= 2 , byrow= TRUE ), size = guide_legend(nrow= 2 , byrow= TRUE )) 
 
 
 ```
@@ -833,14 +829,15 @@ ggplot(data = data_plot_nsample_non_monotonic, aes(x = sample_sizes_num)) +
   geom_segment(aes(x = sample_sizes_num + 0.25, xend = sample_sizes_num  + 0.35, y = start_beta, yend = start_beta, color = "beta", size = "MCPModPack")) +
   scale_x_continuous(breaks = data_plot_nsample_non_monotonic$sample_sizes_num, labels = data_plot_nsample_non_monotonic$sample_sizes) +
   scale_color_manual(name = "Assumed true model", values = c("linear" = "red", "exponential" = "blue", "emax" = "darkgreen", "logistic" = "orange", "sigemax" = "purple", "beta" = "deepskyblue", "quadratic" = "deeppink"))+
-   scale_size_manual( name = "Model", values = c("MCPModPack" = 0.5, "BayesianMCPMod" = 3))+
+   scale_size_manual( name = "Package", values = c("MCPModPack" = 0.5, "BayesianMCPMod" = 3))+
   theme_minimal() +
   ylab("Power") +
   ylim(c(0.25,1))+
   xlab("sample sizes")+
   ggtitle("Power values different sample sizes")+
   geom_vline(xintercept = data_plot_nsample_non_monotonic$sample_sizes_num + 0.5, linetype="dashed", color = "black") +
-  theme(legend.position = "bottom")
+  theme(legend.position = "bottom") +
+  guides(color = guide_legend(nrow= 2 , byrow= TRUE ), size = guide_legend(nrow= 2 , byrow= TRUE )) 
 
 
 
@@ -879,15 +876,17 @@ ggplot(data = data_plot_nsample_var, aes(x = sample_sizes_num)) +
   geom_segment(aes(x = sample_sizes_num + 0.2, xend = sample_sizes_num + 0.2, y = start_emax, yend = end_emax, color = "emax", size = "BayesianMCPMod")) +
   geom_segment(aes(x = sample_sizes_num + 0.1, xend = sample_sizes_num + 0.3 , y = start_emax, yend = start_emax, color = "emax", size = "MCPModPack")) +
   scale_x_continuous(breaks = data_plot_nsample_var$sample_sizes_num, labels = data_plot_nsample_var$sample_sizes) +
-  scale_color_manual(name = "Assumed true model (BayesianMCPMod)", values = c("linear" = "red", "exponential" = "blue", "emax" = "darkgreen", "logistic" = "orange", "sigemax" = "purple", "beta" = "deepskyblue", "quadratic" = "deeppink"))+
-   scale_size_manual( name = "Model", values = c("MCPModPack" = 0.5, "BayesianMCPMod" = 3))+
+  scale_color_manual(name = "Assumed true model", values = c("linear" = "red", "exponential" = "blue", "emax" = "darkgreen", "logistic" = "orange", "sigemax" = "purple", "beta" = "deepskyblue", "quadratic" = "deeppink"))+
+   scale_size_manual( name = "Package", values = c("MCPModPack" = 0.5, "BayesianMCPMod" = 3))+
   theme_minimal() +
   ylab("Power") +
   ylim(c(0.25,1))+
   xlab("sample sizes")+
   ggtitle("Power values different sample sizes")+
   geom_vline(xintercept = data_plot_nsample_var$sample_sizes_num + 0.5, linetype="dashed", color = "black") +
-  theme(legend.position = "bottom")
+  theme(legend.position = "bottom") +
+  guides(color = guide_legend(nrow= 2 , byrow= TRUE ), size = guide_legend(nrow= 2 , byrow= TRUE )) 
+
 
 ```
 
@@ -898,6 +897,7 @@ In the following simulations, we examine the convergence of power values for an 
 ```{r child = 'Comparison_convergence.qmd'}
 
 ```
+## Results
 
 ### minimal scenario
 
@@ -921,7 +921,7 @@ results_nsim_diff <- data.table(
 
 results_nsim_diff <- melt(results_nsim_diff, id.vars = "n_sim")
 
-plot_nsim <- plot_power_deviation(results_nsim_diff, results_nsim_diff$n_sim, "nsim", c(100, 500, 1000, 2500, 5000, 10000))
+plot_nsim <- plot_power_deviation(results_nsim_diff, results_nsim_diff$n_sim, "nsim")
 plot_nsim
 ```
 
@@ -954,7 +954,7 @@ results_nsim_diff_monotonic <- data.table(
 
 results_nsim_diff_monotonic <- melt(results_nsim_diff_monotonic, id.vars = "n_sim")
 
-plot_nsim_monotonic <-  plot_power_deviation(results_nsim_diff_monotonic, results_nsim_diff_monotonic$n_sim, "nsim", c(100, 500, 1000, 2500, 5000, 10000))
+plot_nsim_monotonic <-  plot_power_deviation(results_nsim_diff_monotonic, results_nsim_diff_monotonic$n_sim, "nsim")
 plot_nsim_monotonic
 ```
 
@@ -985,7 +985,7 @@ results_nsim_diff_non_monotonic <- data.table(
 
 results_nsim_diff_non_monotonic <- melt(results_nsim_diff_non_monotonic, id.vars = "n_sim")
 
-plot_nsim_non_monotonic <-  plot_power_deviation(results_nsim_diff_non_monotonic, results_nsim_diff_non_monotonic$n_sim, "nsim", c(100, 500, 1000, 2500, 5000, 10000))
+plot_nsim_non_monotonic <-  plot_power_deviation(results_nsim_diff_non_monotonic, results_nsim_diff_non_monotonic$n_sim, "nsim")
 plot_nsim_non_monotonic
 
 ```
@@ -1014,11 +1014,13 @@ results_nsim_diff_var <- data.table(
 
 results_nsim_diff_var <- melt(results_nsim_diff_var, id.vars = "n_sim")
 
-plot_nsim_var <-  plot_power_deviation(results_nsim_diff_var, results_nsim_diff_var$n_sim, "nsim", c(100, 500, 1000, 2500, 5000, 10000))
+plot_nsim_var <-  plot_power_deviation(results_nsim_diff_var, results_nsim_diff_var$n_sim, "nsim")
 plot_nsim_var
 ```
 
 ```{r}
-# save(results_nsim_Bay, results_list_nsim_MCP, results_nsim_monotonic, results_nsim_non_monotonic, results_nsim_var,  results_min_MCP, results_monotonic_MCP, results_non_monotonic_MCP, results_var_MCP, results_min_MCP_nsample, results_monotonic_MCP_nsample, results_non_monotonic_MCP_nsample, results_var_MCP_nsample, results_min_Bay, results_min_Bay_nsample, results_monotonic_Bay, results_monotonic_Bay_nsample, results_non_monotonic_Bay, results_non_monotonic_Bay_nsample, results_variability_Bay, results_variability_Bay_nsample,
+# save( results_min_MCP, minimal_Bay, results_monotonic_MCP, monotonic_Bay, results_non_monotonic_MCP, non_monotonic_Bay, results_var_MCP, variability_Bay, 
+# results_min_MCP_nsample, minimal_nsample_Bay, results_monotonic_MCP_nsample, monotonic_nsample_Bay, results_non_monotonic_MCP_nsample, non_monotonic_nsample_Bay, results_var_MCP_nsample, 
+# var_nsample_Bay, results_list_nsim_MCP, results_nsim_Bay, results_list_nsim_MCP_monotonic, results_nsim_Bay_monotonic, results_list_nsim_MCP_non_monotonic, results_nsim_Bay_non_monotonic, results_list_nsim_MCP_var, results_nsim_Bay_var
 #      file = "simulation_data.RData")
 ```

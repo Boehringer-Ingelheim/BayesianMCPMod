@@ -15,9 +15,9 @@ vignette: >
     %\VignetteEngine{quarto::html}
 ---
 
-
+### minimal BayesianMCPMod
 ```{r}
-# minimal BayesianMCPMod
+
 
 # Define a vector of different n_sim values
 n_sim_values_list <- as.list(c(100, 500, 1000, 2500, 5000, 10000))
@@ -66,8 +66,9 @@ results_nsim_Bay <- extract_success_rates_nsim(results_list_nsim_Bay, min_scenar
 
 ```
 
+### minimal MCPModPack
 ```{r warning=FALSE}
-# minimal MCPModPack
+
 
 # assumed dose - response model
 sim_models_min_linear = list(linear = NA,
@@ -119,9 +120,9 @@ results_list_nsim_MCP <- foreach(k = chunks, .combine = c, .export = c(as.charac
 
 
 
-
+### monotonic BayesianMCPMod
 ```{r}
-# monotonic BayesianMCPMod
+
 
 # Initialize a list to store the results
  results_list_nsim_Bay_monotonic <- list()
@@ -153,7 +154,7 @@ results_list_nsim_Bay_monotonic <- foreach(k = chunks, .combine = c, .export = c
 
 
  # Simulation step
-  success_probabilities_min <- assessDesign(
+  success_probabilities_monotonic <- assessDesign(
     n_patients  = Nsample,
     mods        = monotonic_models,
     prior_list  = uninf_prior_list,
@@ -172,8 +173,10 @@ results_nsim_Bay_monotonic <- extract_success_rates_nsim(results_list_nsim_Bay_m
 
 ```
 
+### monotonic MCPModPack
+
 ```{r warning=FALSE}
-# monotonic MCPModPack
+
 
 sim_models_monotonic_linear$max_effect <- expectedEffect_fix
 sim_models_monotonic_exp$max_effect <- expectedEffect_fix
@@ -214,8 +217,10 @@ results_list_nsim_MCP_monotonic <- foreach(k = chunks, .combine = c, .export = c
 
 ```
 
+### non-monotonic BayesianMCPMod
+
 ```{r}
-# non-monotonic BayesianMCPMod
+
 
 # Initialize list to store results
 results_list_nsim_Bay_non_monotonic <- list()
@@ -248,7 +253,7 @@ results_list_nsim_Bay_non_monotonic <- foreach(k = chunks, .combine = c, .export
 
 
  # Simulation step
-  success_probabilities_min <- assessDesign(
+  success_probabilities_non_monotonic <- assessDesign(
     n_patients  = Nsample,
     mods        = non_monotonic_models,
     prior_list  = uninf_prior_list,
@@ -266,8 +271,9 @@ results_list_nsim_Bay_non_monotonic <- foreach(k = chunks, .combine = c, .export
 results_nsim_Bay_non_monotonic <- extract_success_rates_nsim(results_list_nsim_Bay_non_monotonic, non_monotonic_scenario, n_sim_values)
 ```
 
+### non-monotonic MCPModPack
 ```{r, warning=FALSE}
-# non-monotonic MCPModPack
+
 
 results_list_nsim_MCP_non_monotonic = list(
   power_non_monotonic_nsim_linear = vector(),
@@ -328,8 +334,9 @@ results_list_nsim_MCP_non_monotonic <- foreach(k = chunks, .combine = c, .export
 
 ```
 
+### variability BayesianMCPMod
 ```{r}
-# variability BayesianMCPMod
+
 
 # Initialize list to store results
 results_list_nsim_Bay_var <- list()
@@ -358,7 +365,7 @@ results_list_nsim_Bay_var <- foreach(k = chunks, .combine = c, .export = c(as.ch
 
 
  # Simulation step
-  success_probabilities_min <- assessDesign(
+  success_probabilities_var <- assessDesign(
     n_patients  = Nsample_var,
     mods        = var_models,
     prior_list  = var_uninf_prior_list,
@@ -376,8 +383,10 @@ results_list_nsim_Bay_var <- foreach(k = chunks, .combine = c, .export = c(as.ch
 results_nsim_Bay_var <- extract_success_rates_nsim(results_list_nsim_Bay_var, variability_scenario, n_sim_values)
 ```
 
+
+### variability MCPModPack
 ```{r, warning=FALSE}
-# variability MCPModPack
+
 
 results_list_nsim_MCP_var = list(
   power_var_nsim_linear = vector(),

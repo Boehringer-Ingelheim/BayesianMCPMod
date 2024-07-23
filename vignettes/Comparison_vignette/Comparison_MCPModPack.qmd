@@ -967,6 +967,8 @@ kable(results_non_monotonic_MCP_nsample)%>%
 ```
 
 ## Variability scenario
+
+
 ### varying expected effect for maximum dose
 
 ```{r warning=FALSE}
