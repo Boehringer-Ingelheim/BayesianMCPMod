@@ -1,5 +1,5 @@
 ---
-title: "Analysis Example of Bayesian MCPMod for Continuous Data"
+title: "Analysis Example of Bayesian MCPMod for Continuous Data with non-informative prior"
 format: 
   html:
     fig-height: 3.5
@@ -8,7 +8,7 @@ format:
     number-sections: true
     bibliography: references.bib
 vignette: >
-  %\VignetteIndexEntry{Analysis Example of Bayesian MCPMod for Continuous Data}
+  %\VignetteIndexEntry{Analysis Example of Bayesian MCPMod for Continuous Data with non-informative prior}
     %\VignetteEncoding{UTF-8}
     %\VignetteEngine{quarto::html}
 ---
@@ -229,8 +229,8 @@ the prior information with the estimated results of the trial [@fleischer_2022].
 ```{r}
 posterior <- getPosterior(
   prior_list = prior_list,
-  mu_hat = trial_data$rslt,
-  se_hat = trial_data$se,
+  mu_hat     = trial_data$rslt,
+  S_hat      = trial_data$se,
   calc_ess = TRUE
 )
 

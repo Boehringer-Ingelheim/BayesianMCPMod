@@ -154,3 +154,53 @@ crit_pval = getCritProb(
 #   alpha_crit_val = alpha_crit_val,
 #   simple = TRUE
 # )
+
+# Create covmat test case
+mixnorm_test <- RBesT::mixnorm(comp1=c(0.2,2,3), comp2=c(0.2,5,6), comp3=c(0.2,8,9), comp4=c(0.2,11,12), robust=c(0.2,14,15), sigma=9.734)
+
+mixnorm_DG1  <- RBesT::mixnorm(comp1=c(0.5,2,3), comp2=c(0.5,3,6), sigma=9.651)
+
+mixnorm_DG2  <- RBesT::mixnorm(comp1=c(1,8,2), sigma=9.932)
+
+mixnorm_DG3  <- RBesT::mixnorm(comp1=c(1/3,6,8), comp2=c(1/3,7,9), comp3=c(1/3,0.5,1), sigma=9.134)
+
+mixnorm_DG4  <- RBesT::mixnorm(comp1=c(1/3,10,3), comp2=c(1/3,3,6), comp3=c(1/3,4,7), sigma=9.236)
+
+prior_list_matrix <- vector("list", 5)
+prior_list_matrix[[1]] <- mixnorm_test
+prior_list_matrix[[2]] <- mixnorm_DG1
+prior_list_matrix[[3]] <- mixnorm_DG2
+prior_list_matrix[[4]] <- mixnorm_DG3
+prior_list_matrix[[5]] <- mixnorm_DG4
+
+names(prior_list_matrix) <- c("Ctr","DG_1","DG_2","DG_3","DG_4")
+
+mu_hat <- c(10, 20, 30, 40, 50)
+se_hat_vector <- c(1.0, 3.0, 5.0, 9.0, 6.0)
+se_hat_vector_sqrt <- c(sqrt(1), sqrt(3), sqrt(5), sqrt(9), sqrt(6))
+ 
+se_hat_matrix <- matrix(c(1.00, 0.00, 0.00, 0.00, 0.00,
+                          0.00, 3.00, 0.00, 0.00, 0.00,
+                          0.00, 0.00, 5.00, 0.00, 0.00,
+                          0.00, 0.00, 0.00, 9.00, 0.00,
+                          0.00, 0.00, 0.00, 0.00, 6.00), nrow = 5, ncol = 5)
+
+se_hat_matrix2 <- matrix(c(1.00, 0.10, 0.20, 0.30, 0.40,
+                           0.10, 3.00, 0.10, 0.20, 0.30,
+                           0.20, 0.10, 5.00, 0.10, 0.20,
+                           0.30, 0.20, 0.10, 9.00, 0.10,
+                           0.40, 0.30, 0.20, 0.10, 6.00), nrow = 5, ncol = 5)
+
+posterior <- getPosterior(
+  prior_list = prior_list_matrix,
+  mu_hat     = mu_hat,
+  S_hat      = se_hat_matrix,
+  calc_ess   = FALSE
+)
+
+posterior_noZero <- getPosterior(
+  prior_list = prior_list_matrix,
+  mu_hat     = mu_hat,
+  S_hat      = se_hat_matrix2,
+  calc_ess   = FALSE
+)
