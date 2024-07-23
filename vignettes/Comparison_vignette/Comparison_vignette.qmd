@@ -288,6 +288,8 @@ further exploration allows us to deepen our understanding of the
 BayesianMCPMod and MCPModPack packages and their performance under
 varying conditions.
 
+For each of these simulation cases, 10000 simulation runs are performed. Given the number of simulations, the difference should be in the range of 1-3% (based on the law of large numbers).
+
 ```{r}
 #######  General assumptions  #########
 # simulations
@@ -465,8 +467,9 @@ var_modelsPack = list(linear = NA,
 
 # Comparison
 
-In the following, we will draw comparisons between the power values of
-various scenarios and differnt parameters.
+In the following, we will draw comparisons between the power values of various scenarios and differnt parameters.
+
+The following plots show the difference between the results with MCPModPack and BayesianMCPMod. The results with MCPModPack are shown as a line and the difference to the result with BayesianMCPMod is shown as a bar. The dose-response model assumed to be true during the analysis is shown as a different colour.
 
 ## varying expected effect for maximum dose
 
@@ -898,6 +901,9 @@ In the following simulations, we examine the convergence of power values for an 
 
 ```
 ## Results
+
+The following plots show the result of the convergence test of the power values for an increasing number of simulations. The difference between the power values of the frequency and Bayesian simulations is shown.
+In the non-monotonous scenario, the DoseFinding package was used instead of the MCPModPack. This package does not simulate but accurately calculates the values. The difference between the Bayesian results and the true value of the DoseFinding calculation is also shown.
 
 ### minimal scenario
 
