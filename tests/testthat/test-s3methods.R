@@ -7,8 +7,42 @@ test_that("print.BayesianMCPMod works as intented", {
 test_that("print.BayesianMCP works as intented", {
   expect_error(print.BayesianMCP())
 
+  data <- simulateData(
+    n_patients  = n_patients,
+    dose_levels = dose_levels,
+    sd          = sd,
+    mods        = mods,
+    n_sim       = n_sim
+  )
 
+  posterior_list <- getPosterior(
+    data = getModelData(data, names(mods)[1]),
+    prior_list = prior_list
+  )
 
+  contr_mat = getContr(
+    mods = mods,
+    dose_levels = dose_levels,
+    dose_weights = n_patients,
+    prior_list = prior_list
+  )
+
+  crit_pval = getCritProb(
+    mods = mods,
+    dose_levels = dose_levels,
+    dose_weights = n_patients,
+    alpha_crit_val = alpha_crit_val
+  )
+
+  b_mcp <- performBayesianMCP(
+    posterior_list = posterior_list,
+    contr = contr_mat,
+    crit_prob_adj = crit_pval
+  )
+
+  expect_s3_class(b_mcp, "BayesianMCP")
+  expect_no_error(print(b_mcp))
+  expect_type(print(b_mcp), "double")
 })
 
 test_that("predict.ModelFits works as intented", {
