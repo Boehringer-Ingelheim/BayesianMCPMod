@@ -69,6 +69,11 @@ getPriorList <- function (
 testdata <- readRDS("data/testdata.RDS")
 
 
+
+# further setup -----------------------------------------------------------
+
+
+
 getPostProb <- function (
 
   contr_j,     # j: dose level

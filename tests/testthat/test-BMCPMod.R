@@ -1,6 +1,7 @@
-##########################
-# Tests for assessDesign #
-##########################
+
+# Tests for assessDesign --------------------------------------------------
+
+
 
 test_that("base case input throws no error and has correct properties", {
 
@@ -109,9 +110,10 @@ test_that("assessDesign validates prior_list parameter input and give appropriat
 
 })
 
-#########################
-# Tests for getCritProb #
-#########################
+
+# Tests for getCritProb ---------------------------------------------------
+
+
 
 # getCritProb relies on DoseFinding, which we assumes works correctly, so the tests here are minimal
 
@@ -134,9 +136,10 @@ test_that("getCritProb returns the right type of value under normal case", {
 
 })
 
-#########################
-# Tests for getContrMat #
-#########################
+
+# Tests for getContrMat ---------------------------------------------------
+
+
 
 # getContrMat relies on DoseFinding, which we assumes works correctly, so the tests here are minimal
 
@@ -197,9 +200,10 @@ test_that("getContrMat works as expected", {
 
 })
 
-################################
-# Tests for performBayesianMCP #
-################################
+
+# Tests for performBayesianMCP --------------------------------------------
+
+
 
 test_that("performBayesianMCP returns the right type of object under normal case", {
 
@@ -258,9 +262,10 @@ test_that("performBayesianMCP returns the right type of object under normal case
 
 })
 
-###################################
-# Tests for performBayesianMCPMod #
-###################################
+
+# Tests for performBayesianMCPMod -----------------------------------------
+
+
 
 test_that("performBayesianMCPMod returns the right type of object under normal case", {
 
@@ -282,9 +287,9 @@ test_that("performBayesianMCPMod returns the right type of object under normal c
 })
 
 
-#############################
-# Tests for addSignificance #
-#############################
+# Tests for addSignificance -----------------------------------------------
+
+
 
 test_that("addSignificance works as intended", {
   model_fits  <- list(linear = 1)
@@ -301,9 +306,10 @@ test_that("addSignificance works as intended", {
 })
 
 
-#########################
-# Tests for getPostProb #
-#########################
+
+# Tests for getPostProb ---------------------------------------------------
+
+
 
 # Test for getPostProb
 test_that("getPostProb works correctly in a simple case", {
