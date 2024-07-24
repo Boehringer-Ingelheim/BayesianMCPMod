@@ -54,6 +54,59 @@ test_that("base case input throws no error and has correct properties", {
     contr = contr_mat
   ))
 
+
+  sd_tot <- 9.4
+
+  dose_levels <- c(0, 2.5, 5, 10, 20)
+
+  prior_list <- lapply(dose_levels, function(dose_group) {
+    RBesT::mixnorm(weak = c(w = 1, m = 0, s = 200), sigma = 10)
+  })
+
+  names(prior_list) <- c("Ctr", paste0("DG_", dose_levels[-1]))
+
+  exp     <- DoseFinding::guesst(
+    d     = 5,
+    p     = c(0.2),
+    model = "exponential",
+    Maxd  = max(dose_levels))
+
+  emax    <- DoseFinding::guesst(
+    d     = 2.5,
+    p     = c(0.9),
+    model = "emax")
+
+  sigemax <- DoseFinding::guesst(
+    d     = c(2.5, 5),
+    p     = c(0.1, 0.6),
+    model = "sigEmax")
+
+  sigemax2 <- DoseFinding::guesst(
+    d     = c(2, 4),
+    p     = c(0.3, 0.8),
+    model = "sigEmax")
+
+  mods <- DoseFinding::Mods(
+    linear      = NULL,
+    emax        = emax,
+    exponential = exp,
+    sigEmax     = rbind(sigemax, sigemax2),
+    doses       = dose_levels,
+    maxEff      = -3,
+    placEff     = -12.8)
+
+  n_patients <- c(60, 80, 80, 80, 80)
+
+  expect_no_error(
+    assessDesign(
+      n_patients  = n_patients,
+      mods        = mods,
+      prior_list  = prior_list,
+      sd          = sd_tot,
+      n_sim       = 10,
+      reestimate = TRUE
+      ))
+
 })
 
 
@@ -308,8 +361,6 @@ test_that("addSignificance works as intended", {
 
 
 # Tests for getPostProb ---------------------------------------------------
-
-
 
 # Test for getPostProb
 test_that("getPostProb works correctly in a simple case", {
