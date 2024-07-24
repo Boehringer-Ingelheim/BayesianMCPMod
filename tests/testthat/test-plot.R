@@ -163,4 +163,11 @@ test_that("Test plot.modelFits with different model_fits input", {
   # Test with all non-default parameters and more models
   plot5 <- plot.modelFits(fit, cr_intv = TRUE, gAIC = FALSE, avg_fit = FALSE)
   expect_s3_class(plot5, "ggplot")
+
+  # Test with all non-default parameters and more models
+  plot6 <- plot.modelFits(fit, cr_intv = TRUE, cr_bands = TRUE, gAIC = FALSE, avg_fit = FALSE)
+  expect_s3_class(plot6, "ggplot")
+  # Test with all non-default parameters and more models
+  plot7 <- plot.modelFits(fit, cr_intv = TRUE, cr_bands = TRUE, alpha_CrB = c(0.025, 0.5), gAIC = FALSE, avg_fit = FALSE)
+  expect_s3_class(plot7, "ggplot")
 })
