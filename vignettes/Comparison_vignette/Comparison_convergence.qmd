@@ -1,15 +1,3 @@
----
-title: "Vignette BayesianMCPMod - convergence of power values"
-subtitle: "WORK IN PROGRESS"
-date: today
-format: 
-  html:
-    fig-height: 3.5
-    self-contained: true
-    toc: true
-    number-sections: true
----
-
 ```{r}
 knitr::opts_chunk$set(eval = FALSE)
 ```
