@@ -8,11 +8,6 @@ format:
     self-contained: true
     toc: true
     number-sections: true
-    #bibliography: references.bib
-vignette: >
-  %\VignetteIndexEntry{Simulation Example of Bayesian MCPMod and MCPMod}
-    %\VignetteEncoding{UTF-8}
-    %\VignetteEngine{quarto::html}
 ---
 
 ### minimal BayesianMCPMod
