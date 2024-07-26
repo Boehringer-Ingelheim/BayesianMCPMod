@@ -207,8 +207,7 @@ chunkVector <- function (x, n_chunks) {
   return(chunk_list)
 }
 
-devtools::load_all()
-#library(BayesianMCPMod)
+library(BayesianMCPMod)
 library(RBesT)
 library(clinDR)
 library(dplyr)

@@ -31,8 +31,8 @@ knitr::opts_chunk$set(
 #| message: false
 #| warning: false
 
-devtools::load_all()
-#library(BayesianMCPMod)
+
+library(BayesianMCPMod)
 library(clinDR)
 library(dplyr)
 
