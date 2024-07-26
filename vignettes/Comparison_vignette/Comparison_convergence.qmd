@@ -10,6 +10,11 @@ format:
     number-sections: true
 ---
 
+```{r}
+knitr::opts_chunk$set(eval = FALSE)
+```
+
+
 ### minimal BayesianMCPMod
 ```{r}
 

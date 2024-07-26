@@ -10,6 +10,10 @@ format:
     number-sections: true
 ---
 
+```{r}
+knitr::opts_chunk$set(eval = FALSE)
+```
+
 Following simulations will be conducted utilizing the MCPModPack package, with varying the expected effect for maximum dose and the sample sizes.
 
 ## Minimal scenario
