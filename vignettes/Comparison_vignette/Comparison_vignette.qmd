@@ -1,6 +1,5 @@
 ---
 title: "Vignette BayesianMCPMod"
-subtitle: "WORK IN PROGRESS"
 date: today
 format: 
   html:

@@ -8,7 +8,8 @@ Authors@R: c(
     person("Lars", "Andersen", , "lars.andersen@boehringer-ingelheim.com", role = "aut"),
     person("Sebastian", "Bossert", , "sebastian.bossert@boehringer-ingelheim.com", role = "aut"),
     person("Steven", "Brooks", , "steven.brooks@boehringer-ingelheim.com", role = "ctb"),
-    person("Jonas", "Schick", , "jonas.schick@boehringer-ingelheim.com", role = "ctb")
+    person("Jonas", "Schick", , "jonas.schick@boehringer-ingelheim.com", role = "ctb"),
+    person("Gina", "Kleibrink", , "gina_marie.kleibrink@boehringer-ingelheim.com", role = "ctb")
   )
 Description: Bayesian MCPMod (Fleischer et al. (2022)
     <doi:10.1002/pst.2193>) is an innovative method that improves the

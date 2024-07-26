@@ -1,6 +1,5 @@
 ---
 title: "Simulation Example of Bayesian MCPMod for Continuous Data"
-output: rmarkdown::html_vignette
 number_sections: true
 format: 
   html:
@@ -14,9 +13,9 @@ format:
     message: false
     warning: false
 vignette: >
-  %\VignetteIndexEntry{Analysis Example of Bayesian MCPMod for Continuous Data}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+  %\VignetteIndexEntry{Simulation Example of Bayesian MCPMod for Continuous Data}
+    %\VignetteEncoding{UTF-8}
+    %\VignetteEngine{quarto::html}
 ---
 
 ```{r, include = FALSE}
