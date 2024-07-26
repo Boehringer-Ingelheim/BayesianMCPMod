@@ -293,7 +293,7 @@ For each of these simulation cases, 10000 simulation runs are performed. Given t
 ```{r}
 #######  General assumptions  #########
 # simulations
-n_sim <- 1000
+n_sim <- 100 #to be upscaled to 10000
 
 # Define the list of sample sizes
 nsample_list = list(20*c(2,1,1,1,2),30*c(1,1,1,1,1), 24*c(2,1,1,1,2),36*c(1,1,1,1,1))
