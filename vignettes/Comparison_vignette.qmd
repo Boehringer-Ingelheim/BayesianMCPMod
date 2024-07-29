@@ -1,21 +1,19 @@
 ---
-title: "Vignette BayesianMCPMod"
-date: today
+title: "Simulation Example of Bayesian MCPMod and MCPMod"
 format: 
   html:
     fig-height: 3.5
     self-contained: true
     toc: true
     number-sections: true
-    #bibliography: references.bib
+    code-summary: setup
     code-fold: true
+    message: false
+    warning: false
 vignette: >
   %\VignetteIndexEntry{Simulation Example of Bayesian MCPMod and MCPMod}
     %\VignetteEncoding{UTF-8}
     %\VignetteEngine{quarto::html}
-editor: 
-  markdown: 
-    wrap: 72
 ---
 
 ```{r}
