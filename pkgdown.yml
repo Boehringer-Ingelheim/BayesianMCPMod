@@ -2,10 +2,10 @@ pandoc: 3.1.11
 pkgdown: 2.1.0
 pkgdown_sha: ~
 articles:
-  analysis_normal_noninformative: analysis_normal_noninformative.html
   analysis_normal: analysis_normal.html
+  Comparison_vignette: Comparison_vignette.html
   Simulation_Example: Simulation_Example.html
-last_built: 2024-07-25T09:46Z
+last_built: 2024-07-30T09:17Z
 urls:
   reference: https://boehringer-ingelheim.github.io/BayesianMCPMod/reference
   article: https://boehringer-ingelheim.github.io/BayesianMCPMod/articles

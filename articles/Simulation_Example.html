@@ -10,7 +10,15 @@
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.4.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Simulation Example of Bayesian MCPMod for Continuous Data">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><script>/**
+ * @popperjs/core v2.11.7 - MIT License
+ */
+
+!function(e,t){"object"==typeof exports&&"undefined"!=typeof module?t(exports):"function"==typeof define&&define.amd?define(["exports"],t):t((e="undefined"!=typeof globalThis?globalThis:e||self).Popper={})}(this,(function(e){"use strict";function t(e){if(null==e)return window;if("[object Window]"!==e.toString()){var t=e.ownerDocument;return t&&t.defaultView||window}return e}function n(e){return e instanceof t(e).Element||e instanceof Element}function r(e){return e instanceof t(e).HTMLElement||e instanceof HTMLElement}function o(e){return"undefined"!=typeof ShadowRoot&&(e instanceof t(e).ShadowRoot||e instanceof ShadowRoot)}var i=Math.max,a=Math.min,s=Math.round;function f(){var e=navigator.userAgentData;return null!=e&&e.brands&&Array.isArray(e.brands)?e.brands.map((function(e){return e.brand+"/"+e.version})).join(" "):navigator.userAgent}function c(){return!/^((?!chrome|android).)*safari/i.test(f())}function p(e,o,i){void 0===o&&(o=!1),void 0===i&&(i=!1);var a=e.getBoundingClientRect(),f=1,p=1;o&&r(e)&&(f=e.offsetWidth>0&&s(a.width)/e.offsetWidth||1,p=e.offsetHeight>0&&s(a.height)/e.offsetHeight||1);var u=(n(e)?t(e):window).visualViewport,l=!c()&&i,d=(a.left+(l&&u?u.offsetLeft:0))/f,h=(a.top+(l&&u?u.offsetTop:0))/p,m=a.width/f,v=a.height/p;return{width:m,height:v,top:h,right:d+m,bottom:h+v,left:d,x:d,y:h}}function u(e){var n=t(e);return{scrollLeft:n.pageXOffset,scrollTop:n.pageYOffset}}function l(e){return e?(e.nodeName||"").toLowerCase():null}function d(e){return((n(e)?e.ownerDocument:e.document)||window.document).documentElement}function h(e){return p(d(e)).left+u(e).scrollLeft}function m(e){return t(e).getComputedStyle(e)}function v(e){var t=m(e),n=t.overflow,r=t.overflowX,o=t.overflowY;return/auto|scroll|overlay|hidden/.test(n+o+r)}function y(e,n,o){void 0===o&&(o=!1);var i,a,f=r(n),c=r(n)&&function(e){var t=e.getBoundingClientRect(),n=s(t.width)/e.offsetWidth||1,r=s(t.height)/e.offsetHeight||1;return 1!==n||1!==r}(n),m=d(n),y=p(e,c,o),g={scrollLeft:0,scrollTop:0},b={x:0,y:0};return(f||!f&&!o)&&(("body"!==l(n)||v(m))&&(g=(i=n)!==t(i)&&r(i)?{scrollLeft:(a=i).scrollLeft,scrollTop:a.scrollTop}:u(i)),r(n)?((b=p(n,!0)).x+=n.clientLeft,b.y+=n.clientTop):m&&(b.x=h(m))),{x:y.left+g.scrollLeft-b.x,y:y.top+g.scrollTop-b.y,width:y.width,height:y.height}}function g(e){var t=p(e),n=e.offsetWidth,r=e.offsetHeight;return Math.abs(t.width-n)<=1&&(n=t.width),Math.abs(t.height-r)<=1&&(r=t.height),{x:e.offsetLeft,y:e.offsetTop,width:n,height:r}}function b(e){return"html"===l(e)?e:e.assignedSlot||e.parentNode||(o(e)?e.host:null)||d(e)}function x(e){return["html","body","#document"].indexOf(l(e))>=0?e.ownerDocument.body:r(e)&&v(e)?e:x(b(e))}function w(e,n){var r;void 0===n&&(n=[]);var o=x(e),i=o===(null==(r=e.ownerDocument)?void 0:r.body),a=t(o),s=i?[a].concat(a.visualViewport||[],v(o)?o:[]):o,f=n.concat(s);return i?f:f.concat(w(b(s)))}function O(e){return["table","td","th"].indexOf(l(e))>=0}function j(e){return r(e)&&"fixed"!==m(e).position?e.offsetParent:null}function E(e){for(var n=t(e),i=j(e);i&&O(i)&&"static"===m(i).position;)i=j(i);return i&&("html"===l(i)||"body"===l(i)&&"static"===m(i).position)?n:i||function(e){var t=/firefox/i.test(f());if(/Trident/i.test(f())&&r(e)&&"fixed"===m(e).position)return null;var n=b(e);for(o(n)&&(n=n.host);r(n)&&["html","body"].indexOf(l(n))<0;){var i=m(n);if("none"!==i.transform||"none"!==i.perspective||"paint"===i.contain||-1!==["transform","perspective"].indexOf(i.willChange)||t&&"filter"===i.willChange||t&&i.filter&&"none"!==i.filter)return n;n=n.parentNode}return null}(e)||n}var D="top",A="bottom",L="right",P="left",M="auto",k=[D,A,L,P],W="start",B="end",H="viewport",T="popper",R=k.reduce((function(e,t){return e.concat([t+"-"+W,t+"-"+B])}),[]),S=[].concat(k,[M]).reduce((function(e,t){return e.concat([t,t+"-"+W,t+"-"+B])}),[]),V=["beforeRead","read","afterRead","beforeMain","main","afterMain","beforeWrite","write","afterWrite"];function q(e){var t=new Map,n=new Set,r=[];function o(e){n.add(e.name),[].concat(e.requires||[],e.requiresIfExists||[]).forEach((function(e){if(!n.has(e)){var r=t.get(e);r&&o(r)}})),r.push(e)}return e.forEach((function(e){t.set(e.name,e)})),e.forEach((function(e){n.has(e.name)||o(e)})),r}function C(e){return e.split("-")[0]}function N(e,t){var n=t.getRootNode&&t.getRootNode();if(e.contains(t))return!0;if(n&&o(n)){var r=t;do{if(r&&e.isSameNode(r))return!0;r=r.parentNode||r.host}while(r)}return!1}function I(e){return Object.assign({},e,{left:e.x,top:e.y,right:e.x+e.width,bottom:e.y+e.height})}function _(e,r,o){return r===H?I(function(e,n){var r=t(e),o=d(e),i=r.visualViewport,a=o.clientWidth,s=o.clientHeight,f=0,p=0;if(i){a=i.width,s=i.height;var u=c();(u||!u&&"fixed"===n)&&(f=i.offsetLeft,p=i.offsetTop)}return{width:a,height:s,x:f+h(e),y:p}}(e,o)):n(r)?function(e,t){var n=p(e,!1,"fixed"===t);return n.top=n.top+e.clientTop,n.left=n.left+e.clientLeft,n.bottom=n.top+e.clientHeight,n.right=n.left+e.clientWidth,n.width=e.clientWidth,n.height=e.clientHeight,n.x=n.left,n.y=n.top,n}(r,o):I(function(e){var t,n=d(e),r=u(e),o=null==(t=e.ownerDocument)?void 0:t.body,a=i(n.scrollWidth,n.clientWidth,o?o.scrollWidth:0,o?o.clientWidth:0),s=i(n.scrollHeight,n.clientHeight,o?o.scrollHeight:0,o?o.clientHeight:0),f=-r.scrollLeft+h(e),c=-r.scrollTop;return"rtl"===m(o||n).direction&&(f+=i(n.clientWidth,o?o.clientWidth:0)-a),{width:a,height:s,x:f,y:c}}(d(e)))}function F(e,t,o,s){var f="clippingParents"===t?function(e){var t=w(b(e)),o=["absolute","fixed"].indexOf(m(e).position)>=0&&r(e)?E(e):e;return n(o)?t.filter((function(e){return n(e)&&N(e,o)&&"body"!==l(e)})):[]}(e):[].concat(t),c=[].concat(f,[o]),p=c[0],u=c.reduce((function(t,n){var r=_(e,n,s);return t.top=i(r.top,t.top),t.right=a(r.right,t.right),t.bottom=a(r.bottom,t.bottom),t.left=i(r.left,t.left),t}),_(e,p,s));return u.width=u.right-u.left,u.height=u.bottom-u.top,u.x=u.left,u.y=u.top,u}function U(e){return e.split("-")[1]}function z(e){return["top","bottom"].indexOf(e)>=0?"x":"y"}function X(e){var t,n=e.reference,r=e.element,o=e.placement,i=o?C(o):null,a=o?U(o):null,s=n.x+n.width/2-r.width/2,f=n.y+n.height/2-r.height/2;switch(i){case D:t={x:s,y:n.y-r.height};break;case A:t={x:s,y:n.y+n.height};break;case L:t={x:n.x+n.width,y:f};break;case P:t={x:n.x-r.width,y:f};break;default:t={x:n.x,y:n.y}}var c=i?z(i):null;if(null!=c){var p="y"===c?"height":"width";switch(a){case W:t[c]=t[c]-(n[p]/2-r[p]/2);break;case B:t[c]=t[c]+(n[p]/2-r[p]/2)}}return t}function Y(e){return Object.assign({},{top:0,right:0,bottom:0,left:0},e)}function G(e,t){return t.reduce((function(t,n){return t[n]=e,t}),{})}function J(e,t){void 0===t&&(t={});var r=t,o=r.placement,i=void 0===o?e.placement:o,a=r.strategy,s=void 0===a?e.strategy:a,f=r.boundary,c=void 0===f?"clippingParents":f,u=r.rootBoundary,l=void 0===u?H:u,h=r.elementContext,m=void 0===h?T:h,v=r.altBoundary,y=void 0!==v&&v,g=r.padding,b=void 0===g?0:g,x=Y("number"!=typeof b?b:G(b,k)),w=m===T?"reference":T,O=e.rects.popper,j=e.elements[y?w:m],E=F(n(j)?j:j.contextElement||d(e.elements.popper),c,l,s),P=p(e.elements.reference),M=X({reference:P,element:O,strategy:"absolute",placement:i}),W=I(Object.assign({},O,M)),B=m===T?W:P,R={top:E.top-B.top+x.top,bottom:B.bottom-E.bottom+x.bottom,left:E.left-B.left+x.left,right:B.right-E.right+x.right},S=e.modifiersData.offset;if(m===T&&S){var V=S[i];Object.keys(R).forEach((function(e){var t=[L,A].indexOf(e)>=0?1:-1,n=[D,A].indexOf(e)>=0?"y":"x";R[e]+=V[n]*t}))}return R}var K={placement:"bottom",modifiers:[],strategy:"absolute"};function Q(){for(var e=arguments.length,t=new Array(e),n=0;n<e;n++)t[n]=arguments[n];return!t.some((function(e){return!(e&&"function"==typeof e.getBoundingClientRect)}))}function Z(e){void 0===e&&(e={});var t=e,r=t.defaultModifiers,o=void 0===r?[]:r,i=t.defaultOptions,a=void 0===i?K:i;return function(e,t,r){void 0===r&&(r=a);var i,s,f={placement:"bottom",orderedModifiers:[],options:Object.assign({},K,a),modifiersData:{},elements:{reference:e,popper:t},attributes:{},styles:{}},c=[],p=!1,u={state:f,setOptions:function(r){var i="function"==typeof r?r(f.options):r;l(),f.options=Object.assign({},a,f.options,i),f.scrollParents={reference:n(e)?w(e):e.contextElement?w(e.contextElement):[],popper:w(t)};var s,p,d=function(e){var t=q(e);return V.reduce((function(e,n){return e.concat(t.filter((function(e){return e.phase===n})))}),[])}((s=[].concat(o,f.options.modifiers),p=s.reduce((function(e,t){var n=e[t.name];return e[t.name]=n?Object.assign({},n,t,{options:Object.assign({},n.options,t.options),data:Object.assign({},n.data,t.data)}):t,e}),{}),Object.keys(p).map((function(e){return p[e]}))));return f.orderedModifiers=d.filter((function(e){return e.enabled})),f.orderedModifiers.forEach((function(e){var t=e.name,n=e.options,r=void 0===n?{}:n,o=e.effect;if("function"==typeof o){var i=o({state:f,name:t,instance:u,options:r}),a=function(){};c.push(i||a)}})),u.update()},forceUpdate:function(){if(!p){var e=f.elements,t=e.reference,n=e.popper;if(Q(t,n)){f.rects={reference:y(t,E(n),"fixed"===f.options.strategy),popper:g(n)},f.reset=!1,f.placement=f.options.placement,f.orderedModifiers.forEach((function(e){return f.modifiersData[e.name]=Object.assign({},e.data)}));for(var r=0;r<f.orderedModifiers.length;r++)if(!0!==f.reset){var o=f.orderedModifiers[r],i=o.fn,a=o.options,s=void 0===a?{}:a,c=o.name;"function"==typeof i&&(f=i({state:f,options:s,name:c,instance:u})||f)}else f.reset=!1,r=-1}}},update:(i=function(){return new Promise((function(e){u.forceUpdate(),e(f)}))},function(){return s||(s=new Promise((function(e){Promise.resolve().then((function(){s=void 0,e(i())}))}))),s}),destroy:function(){l(),p=!0}};if(!Q(e,t))return u;function l(){c.forEach((function(e){return e()})),c=[]}return u.setOptions(r).then((function(e){!p&&r.onFirstUpdate&&r.onFirstUpdate(e)})),u}}var $={passive:!0};var ee={name:"eventListeners",enabled:!0,phase:"write",fn:function(){},effect:function(e){var n=e.state,r=e.instance,o=e.options,i=o.scroll,a=void 0===i||i,s=o.resize,f=void 0===s||s,c=t(n.elements.popper),p=[].concat(n.scrollParents.reference,n.scrollParents.popper);return a&&p.forEach((function(e){e.addEventListener("scroll",r.update,$)})),f&&c.addEventListener("resize",r.update,$),function(){a&&p.forEach((function(e){e.removeEventListener("scroll",r.update,$)})),f&&c.removeEventListener("resize",r.update,$)}},data:{}};var te={name:"popperOffsets",enabled:!0,phase:"read",fn:function(e){var t=e.state,n=e.name;t.modifiersData[n]=X({reference:t.rects.reference,element:t.rects.popper,strategy:"absolute",placement:t.placement})},data:{}},ne={top:"auto",right:"auto",bottom:"auto",left:"auto"};function re(e){var n,r=e.popper,o=e.popperRect,i=e.placement,a=e.variation,f=e.offsets,c=e.position,p=e.gpuAcceleration,u=e.adaptive,l=e.roundOffsets,h=e.isFixed,v=f.x,y=void 0===v?0:v,g=f.y,b=void 0===g?0:g,x="function"==typeof l?l({x:y,y:b}):{x:y,y:b};y=x.x,b=x.y;var w=f.hasOwnProperty("x"),O=f.hasOwnProperty("y"),j=P,M=D,k=window;if(u){var W=E(r),H="clientHeight",T="clientWidth";if(W===t(r)&&"static"!==m(W=d(r)).position&&"absolute"===c&&(H="scrollHeight",T="scrollWidth"),W=W,i===D||(i===P||i===L)&&a===B)M=A,b-=(h&&W===k&&k.visualViewport?k.visualViewport.height:W[H])-o.height,b*=p?1:-1;if(i===P||(i===D||i===A)&&a===B)j=L,y-=(h&&W===k&&k.visualViewport?k.visualViewport.width:W[T])-o.width,y*=p?1:-1}var R,S=Object.assign({position:c},u&&ne),V=!0===l?function(e,t){var n=e.x,r=e.y,o=t.devicePixelRatio||1;return{x:s(n*o)/o||0,y:s(r*o)/o||0}}({x:y,y:b},t(r)):{x:y,y:b};return y=V.x,b=V.y,p?Object.assign({},S,((R={})[M]=O?"0":"",R[j]=w?"0":"",R.transform=(k.devicePixelRatio||1)<=1?"translate("+y+"px, "+b+"px)":"translate3d("+y+"px, "+b+"px, 0)",R)):Object.assign({},S,((n={})[M]=O?b+"px":"",n[j]=w?y+"px":"",n.transform="",n))}var oe={name:"computeStyles",enabled:!0,phase:"beforeWrite",fn:function(e){var t=e.state,n=e.options,r=n.gpuAcceleration,o=void 0===r||r,i=n.adaptive,a=void 0===i||i,s=n.roundOffsets,f=void 0===s||s,c={placement:C(t.placement),variation:U(t.placement),popper:t.elements.popper,popperRect:t.rects.popper,gpuAcceleration:o,isFixed:"fixed"===t.options.strategy};null!=t.modifiersData.popperOffsets&&(t.styles.popper=Object.assign({},t.styles.popper,re(Object.assign({},c,{offsets:t.modifiersData.popperOffsets,position:t.options.strategy,adaptive:a,roundOffsets:f})))),null!=t.modifiersData.arrow&&(t.styles.arrow=Object.assign({},t.styles.arrow,re(Object.assign({},c,{offsets:t.modifiersData.arrow,position:"absolute",adaptive:!1,roundOffsets:f})))),t.attributes.popper=Object.assign({},t.attributes.popper,{"data-popper-placement":t.placement})},data:{}};var ie={name:"applyStyles",enabled:!0,phase:"write",fn:function(e){var t=e.state;Object.keys(t.elements).forEach((function(e){var n=t.styles[e]||{},o=t.attributes[e]||{},i=t.elements[e];r(i)&&l(i)&&(Object.assign(i.style,n),Object.keys(o).forEach((function(e){var t=o[e];!1===t?i.removeAttribute(e):i.setAttribute(e,!0===t?"":t)})))}))},effect:function(e){var t=e.state,n={popper:{position:t.options.strategy,left:"0",top:"0",margin:"0"},arrow:{position:"absolute"},reference:{}};return Object.assign(t.elements.popper.style,n.popper),t.styles=n,t.elements.arrow&&Object.assign(t.elements.arrow.style,n.arrow),function(){Object.keys(t.elements).forEach((function(e){var o=t.elements[e],i=t.attributes[e]||{},a=Object.keys(t.styles.hasOwnProperty(e)?t.styles[e]:n[e]).reduce((function(e,t){return e[t]="",e}),{});r(o)&&l(o)&&(Object.assign(o.style,a),Object.keys(i).forEach((function(e){o.removeAttribute(e)})))}))}},requires:["computeStyles"]};var ae={name:"offset",enabled:!0,phase:"main",requires:["popperOffsets"],fn:function(e){var t=e.state,n=e.options,r=e.name,o=n.offset,i=void 0===o?[0,0]:o,a=S.reduce((function(e,n){return e[n]=function(e,t,n){var r=C(e),o=[P,D].indexOf(r)>=0?-1:1,i="function"==typeof n?n(Object.assign({},t,{placement:e})):n,a=i[0],s=i[1];return a=a||0,s=(s||0)*o,[P,L].indexOf(r)>=0?{x:s,y:a}:{x:a,y:s}}(n,t.rects,i),e}),{}),s=a[t.placement],f=s.x,c=s.y;null!=t.modifiersData.popperOffsets&&(t.modifiersData.popperOffsets.x+=f,t.modifiersData.popperOffsets.y+=c),t.modifiersData[r]=a}},se={left:"right",right:"left",bottom:"top",top:"bottom"};function fe(e){return e.replace(/left|right|bottom|top/g,(function(e){return se[e]}))}var ce={start:"end",end:"start"};function pe(e){return e.replace(/start|end/g,(function(e){return ce[e]}))}function ue(e,t){void 0===t&&(t={});var n=t,r=n.placement,o=n.boundary,i=n.rootBoundary,a=n.padding,s=n.flipVariations,f=n.allowedAutoPlacements,c=void 0===f?S:f,p=U(r),u=p?s?R:R.filter((function(e){return U(e)===p})):k,l=u.filter((function(e){return c.indexOf(e)>=0}));0===l.length&&(l=u);var d=l.reduce((function(t,n){return t[n]=J(e,{placement:n,boundary:o,rootBoundary:i,padding:a})[C(n)],t}),{});return Object.keys(d).sort((function(e,t){return d[e]-d[t]}))}var le={name:"flip",enabled:!0,phase:"main",fn:function(e){var t=e.state,n=e.options,r=e.name;if(!t.modifiersData[r]._skip){for(var o=n.mainAxis,i=void 0===o||o,a=n.altAxis,s=void 0===a||a,f=n.fallbackPlacements,c=n.padding,p=n.boundary,u=n.rootBoundary,l=n.altBoundary,d=n.flipVariations,h=void 0===d||d,m=n.allowedAutoPlacements,v=t.options.placement,y=C(v),g=f||(y===v||!h?[fe(v)]:function(e){if(C(e)===M)return[];var t=fe(e);return[pe(e),t,pe(t)]}(v)),b=[v].concat(g).reduce((function(e,n){return e.concat(C(n)===M?ue(t,{placement:n,boundary:p,rootBoundary:u,padding:c,flipVariations:h,allowedAutoPlacements:m}):n)}),[]),x=t.rects.reference,w=t.rects.popper,O=new Map,j=!0,E=b[0],k=0;k<b.length;k++){var B=b[k],H=C(B),T=U(B)===W,R=[D,A].indexOf(H)>=0,S=R?"width":"height",V=J(t,{placement:B,boundary:p,rootBoundary:u,altBoundary:l,padding:c}),q=R?T?L:P:T?A:D;x[S]>w[S]&&(q=fe(q));var N=fe(q),I=[];if(i&&I.push(V[H]<=0),s&&I.push(V[q]<=0,V[N]<=0),I.every((function(e){return e}))){E=B,j=!1;break}O.set(B,I)}if(j)for(var _=function(e){var t=b.find((function(t){var n=O.get(t);if(n)return n.slice(0,e).every((function(e){return e}))}));if(t)return E=t,"break"},F=h?3:1;F>0;F--){if("break"===_(F))break}t.placement!==E&&(t.modifiersData[r]._skip=!0,t.placement=E,t.reset=!0)}},requiresIfExists:["offset"],data:{_skip:!1}};function de(e,t,n){return i(e,a(t,n))}var he={name:"preventOverflow",enabled:!0,phase:"main",fn:function(e){var t=e.state,n=e.options,r=e.name,o=n.mainAxis,s=void 0===o||o,f=n.altAxis,c=void 0!==f&&f,p=n.boundary,u=n.rootBoundary,l=n.altBoundary,d=n.padding,h=n.tether,m=void 0===h||h,v=n.tetherOffset,y=void 0===v?0:v,b=J(t,{boundary:p,rootBoundary:u,padding:d,altBoundary:l}),x=C(t.placement),w=U(t.placement),O=!w,j=z(x),M="x"===j?"y":"x",k=t.modifiersData.popperOffsets,B=t.rects.reference,H=t.rects.popper,T="function"==typeof y?y(Object.assign({},t.rects,{placement:t.placement})):y,R="number"==typeof T?{mainAxis:T,altAxis:T}:Object.assign({mainAxis:0,altAxis:0},T),S=t.modifiersData.offset?t.modifiersData.offset[t.placement]:null,V={x:0,y:0};if(k){if(s){var q,N="y"===j?D:P,I="y"===j?A:L,_="y"===j?"height":"width",F=k[j],X=F+b[N],Y=F-b[I],G=m?-H[_]/2:0,K=w===W?B[_]:H[_],Q=w===W?-H[_]:-B[_],Z=t.elements.arrow,$=m&&Z?g(Z):{width:0,height:0},ee=t.modifiersData["arrow#persistent"]?t.modifiersData["arrow#persistent"].padding:{top:0,right:0,bottom:0,left:0},te=ee[N],ne=ee[I],re=de(0,B[_],$[_]),oe=O?B[_]/2-G-re-te-R.mainAxis:K-re-te-R.mainAxis,ie=O?-B[_]/2+G+re+ne+R.mainAxis:Q+re+ne+R.mainAxis,ae=t.elements.arrow&&E(t.elements.arrow),se=ae?"y"===j?ae.clientTop||0:ae.clientLeft||0:0,fe=null!=(q=null==S?void 0:S[j])?q:0,ce=F+ie-fe,pe=de(m?a(X,F+oe-fe-se):X,F,m?i(Y,ce):Y);k[j]=pe,V[j]=pe-F}if(c){var ue,le="x"===j?D:P,he="x"===j?A:L,me=k[M],ve="y"===M?"height":"width",ye=me+b[le],ge=me-b[he],be=-1!==[D,P].indexOf(x),xe=null!=(ue=null==S?void 0:S[M])?ue:0,we=be?ye:me-B[ve]-H[ve]-xe+R.altAxis,Oe=be?me+B[ve]+H[ve]-xe-R.altAxis:ge,je=m&&be?function(e,t,n){var r=de(e,t,n);return r>n?n:r}(we,me,Oe):de(m?we:ye,me,m?Oe:ge);k[M]=je,V[M]=je-me}t.modifiersData[r]=V}},requiresIfExists:["offset"]};var me={name:"arrow",enabled:!0,phase:"main",fn:function(e){var t,n=e.state,r=e.name,o=e.options,i=n.elements.arrow,a=n.modifiersData.popperOffsets,s=C(n.placement),f=z(s),c=[P,L].indexOf(s)>=0?"height":"width";if(i&&a){var p=function(e,t){return Y("number"!=typeof(e="function"==typeof e?e(Object.assign({},t.rects,{placement:t.placement})):e)?e:G(e,k))}(o.padding,n),u=g(i),l="y"===f?D:P,d="y"===f?A:L,h=n.rects.reference[c]+n.rects.reference[f]-a[f]-n.rects.popper[c],m=a[f]-n.rects.reference[f],v=E(i),y=v?"y"===f?v.clientHeight||0:v.clientWidth||0:0,b=h/2-m/2,x=p[l],w=y-u[c]-p[d],O=y/2-u[c]/2+b,j=de(x,O,w),M=f;n.modifiersData[r]=((t={})[M]=j,t.centerOffset=j-O,t)}},effect:function(e){var t=e.state,n=e.options.element,r=void 0===n?"[data-popper-arrow]":n;null!=r&&("string"!=typeof r||(r=t.elements.popper.querySelector(r)))&&N(t.elements.popper,r)&&(t.elements.arrow=r)},requires:["popperOffsets"],requiresIfExists:["preventOverflow"]};function ve(e,t,n){return void 0===n&&(n={x:0,y:0}),{top:e.top-t.height-n.y,right:e.right-t.width+n.x,bottom:e.bottom-t.height+n.y,left:e.left-t.width-n.x}}function ye(e){return[D,L,A,P].some((function(t){return e[t]>=0}))}var ge={name:"hide",enabled:!0,phase:"main",requiresIfExists:["preventOverflow"],fn:function(e){var t=e.state,n=e.name,r=t.rects.reference,o=t.rects.popper,i=t.modifiersData.preventOverflow,a=J(t,{elementContext:"reference"}),s=J(t,{altBoundary:!0}),f=ve(a,r),c=ve(s,o,i),p=ye(f),u=ye(c);t.modifiersData[n]={referenceClippingOffsets:f,popperEscapeOffsets:c,isReferenceHidden:p,hasPopperEscaped:u},t.attributes.popper=Object.assign({},t.attributes.popper,{"data-popper-reference-hidden":p,"data-popper-escaped":u})}},be=Z({defaultModifiers:[ee,te,oe,ie]}),xe=[ee,te,oe,ie,ae,le,he,me,ge],we=Z({defaultModifiers:xe});e.applyStyles=ie,e.arrow=me,e.computeStyles=oe,e.createPopper=we,e.createPopperLite=be,e.defaultModifiers=xe,e.detectOverflow=J,e.eventListeners=ee,e.flip=le,e.hide=ge,e.offset=ae,e.popperGenerator=Z,e.popperOffsets=te,e.preventOverflow=he,Object.defineProperty(e,"__esModule",{value:!0})}));
+
+</script><script>!function(e,t){"object"==typeof exports&&"undefined"!=typeof module?module.exports=t(require("@popperjs/core")):"function"==typeof define&&define.amd?define(["@popperjs/core"],t):(e=e||self).tippy=t(e.Popper)}(this,(function(e){"use strict";var t={passive:!0,capture:!0},n=function(){return document.body};function r(e,t,n){if(Array.isArray(e)){var r=e[t];return null==r?Array.isArray(n)?n[t]:n:r}return e}function o(e,t){var n={}.toString.call(e);return 0===n.indexOf("[object")&&n.indexOf(t+"]")>-1}function i(e,t){return"function"==typeof e?e.apply(void 0,t):e}function a(e,t){return 0===t?e:function(r){clearTimeout(n),n=setTimeout((function(){e(r)}),t)};var n}function s(e,t){var n=Object.assign({},e);return t.forEach((function(e){delete n[e]})),n}function u(e){return[].concat(e)}function c(e,t){-1===e.indexOf(t)&&e.push(t)}function p(e){return e.split("-")[0]}function f(e){return[].slice.call(e)}function l(e){return Object.keys(e).reduce((function(t,n){return void 0!==e[n]&&(t[n]=e[n]),t}),{})}function d(){return document.createElement("div")}function v(e){return["Element","Fragment"].some((function(t){return o(e,t)}))}function m(e){return o(e,"MouseEvent")}function g(e){return!(!e||!e._tippy||e._tippy.reference!==e)}function h(e){return v(e)?[e]:function(e){return o(e,"NodeList")}(e)?f(e):Array.isArray(e)?e:f(document.querySelectorAll(e))}function b(e,t){e.forEach((function(e){e&&(e.style.transitionDuration=t+"ms")}))}function y(e,t){e.forEach((function(e){e&&e.setAttribute("data-state",t)}))}function w(e){var t,n=u(e)[0];return null!=n&&null!=(t=n.ownerDocument)&&t.body?n.ownerDocument:document}function E(e,t,n){var r=t+"EventListener";["transitionend","webkitTransitionEnd"].forEach((function(t){e[r](t,n)}))}function O(e,t){for(var n=t;n;){var r;if(e.contains(n))return!0;n=null==n.getRootNode||null==(r=n.getRootNode())?void 0:r.host}return!1}var x={isTouch:!1},C=0;function T(){x.isTouch||(x.isTouch=!0,window.performance&&document.addEventListener("mousemove",A))}function A(){var e=performance.now();e-C<20&&(x.isTouch=!1,document.removeEventListener("mousemove",A)),C=e}function L(){var e=document.activeElement;if(g(e)){var t=e._tippy;e.blur&&!t.state.isVisible&&e.blur()}}var D=!!("undefined"!=typeof window&&"undefined"!=typeof document)&&!!window.msCrypto,R=Object.assign({appendTo:n,aria:{content:"auto",expanded:"auto"},delay:0,duration:[300,250],getReferenceClientRect:null,hideOnClick:!0,ignoreAttributes:!1,interactive:!1,interactiveBorder:2,interactiveDebounce:0,moveTransition:"",offset:[0,10],onAfterUpdate:function(){},onBeforeUpdate:function(){},onCreate:function(){},onDestroy:function(){},onHidden:function(){},onHide:function(){},onMount:function(){},onShow:function(){},onShown:function(){},onTrigger:function(){},onUntrigger:function(){},onClickOutside:function(){},placement:"top",plugins:[],popperOptions:{},render:null,showOnCreate:!1,touch:!0,trigger:"mouseenter focus",triggerTarget:null},{animateFill:!1,followCursor:!1,inlinePositioning:!1,sticky:!1},{allowHTML:!1,animation:"fade",arrow:!0,content:"",inertia:!1,maxWidth:350,role:"tooltip",theme:"",zIndex:9999}),k=Object.keys(R);function P(e){var t=(e.plugins||[]).reduce((function(t,n){var r,o=n.name,i=n.defaultValue;o&&(t[o]=void 0!==e[o]?e[o]:null!=(r=R[o])?r:i);return t}),{});return Object.assign({},e,t)}function j(e,t){var n=Object.assign({},t,{content:i(t.content,[e])},t.ignoreAttributes?{}:function(e,t){return(t?Object.keys(P(Object.assign({},R,{plugins:t}))):k).reduce((function(t,n){var r=(e.getAttribute("data-tippy-"+n)||"").trim();if(!r)return t;if("content"===n)t[n]=r;else try{t[n]=JSON.parse(r)}catch(e){t[n]=r}return t}),{})}(e,t.plugins));return n.aria=Object.assign({},R.aria,n.aria),n.aria={expanded:"auto"===n.aria.expanded?t.interactive:n.aria.expanded,content:"auto"===n.aria.content?t.interactive?null:"describedby":n.aria.content},n}function M(e,t){e.innerHTML=t}function V(e){var t=d();return!0===e?t.className="tippy-arrow":(t.className="tippy-svg-arrow",v(e)?t.appendChild(e):M(t,e)),t}function I(e,t){v(t.content)?(M(e,""),e.appendChild(t.content)):"function"!=typeof t.content&&(t.allowHTML?M(e,t.content):e.textContent=t.content)}function S(e){var t=e.firstElementChild,n=f(t.children);return{box:t,content:n.find((function(e){return e.classList.contains("tippy-content")})),arrow:n.find((function(e){return e.classList.contains("tippy-arrow")||e.classList.contains("tippy-svg-arrow")})),backdrop:n.find((function(e){return e.classList.contains("tippy-backdrop")}))}}function N(e){var t=d(),n=d();n.className="tippy-box",n.setAttribute("data-state","hidden"),n.setAttribute("tabindex","-1");var r=d();function o(n,r){var o=S(t),i=o.box,a=o.content,s=o.arrow;r.theme?i.setAttribute("data-theme",r.theme):i.removeAttribute("data-theme"),"string"==typeof r.animation?i.setAttribute("data-animation",r.animation):i.removeAttribute("data-animation"),r.inertia?i.setAttribute("data-inertia",""):i.removeAttribute("data-inertia"),i.style.maxWidth="number"==typeof r.maxWidth?r.maxWidth+"px":r.maxWidth,r.role?i.setAttribute("role",r.role):i.removeAttribute("role"),n.content===r.content&&n.allowHTML===r.allowHTML||I(a,e.props),r.arrow?s?n.arrow!==r.arrow&&(i.removeChild(s),i.appendChild(V(r.arrow))):i.appendChild(V(r.arrow)):s&&i.removeChild(s)}return r.className="tippy-content",r.setAttribute("data-state","hidden"),I(r,e.props),t.appendChild(n),n.appendChild(r),o(e.props,e.props),{popper:t,onUpdate:o}}N.$$tippy=!0;var B=1,H=[],U=[];function _(o,s){var v,g,h,C,T,A,L,k,M=j(o,Object.assign({},R,P(l(s)))),V=!1,I=!1,N=!1,_=!1,F=[],W=a(we,M.interactiveDebounce),X=B++,Y=(k=M.plugins).filter((function(e,t){return k.indexOf(e)===t})),$={id:X,reference:o,popper:d(),popperInstance:null,props:M,state:{isEnabled:!0,isVisible:!1,isDestroyed:!1,isMounted:!1,isShown:!1},plugins:Y,clearDelayTimeouts:function(){clearTimeout(v),clearTimeout(g),cancelAnimationFrame(h)},setProps:function(e){if($.state.isDestroyed)return;ae("onBeforeUpdate",[$,e]),be();var t=$.props,n=j(o,Object.assign({},t,l(e),{ignoreAttributes:!0}));$.props=n,he(),t.interactiveDebounce!==n.interactiveDebounce&&(ce(),W=a(we,n.interactiveDebounce));t.triggerTarget&&!n.triggerTarget?u(t.triggerTarget).forEach((function(e){e.removeAttribute("aria-expanded")})):n.triggerTarget&&o.removeAttribute("aria-expanded");ue(),ie(),J&&J(t,n);$.popperInstance&&(Ce(),Ae().forEach((function(e){requestAnimationFrame(e._tippy.popperInstance.forceUpdate)})));ae("onAfterUpdate",[$,e])},setContent:function(e){$.setProps({content:e})},show:function(){var e=$.state.isVisible,t=$.state.isDestroyed,o=!$.state.isEnabled,a=x.isTouch&&!$.props.touch,s=r($.props.duration,0,R.duration);if(e||t||o||a)return;if(te().hasAttribute("disabled"))return;if(ae("onShow",[$],!1),!1===$.props.onShow($))return;$.state.isVisible=!0,ee()&&(z.style.visibility="visible");ie(),de(),$.state.isMounted||(z.style.transition="none");if(ee()){var u=re(),p=u.box,f=u.content;b([p,f],0)}A=function(){var e;if($.state.isVisible&&!_){if(_=!0,z.offsetHeight,z.style.transition=$.props.moveTransition,ee()&&$.props.animation){var t=re(),n=t.box,r=t.content;b([n,r],s),y([n,r],"visible")}se(),ue(),c(U,$),null==(e=$.popperInstance)||e.forceUpdate(),ae("onMount",[$]),$.props.animation&&ee()&&function(e,t){me(e,t)}(s,(function(){$.state.isShown=!0,ae("onShown",[$])}))}},function(){var e,t=$.props.appendTo,r=te();e=$.props.interactive&&t===n||"parent"===t?r.parentNode:i(t,[r]);e.contains(z)||e.appendChild(z);$.state.isMounted=!0,Ce()}()},hide:function(){var e=!$.state.isVisible,t=$.state.isDestroyed,n=!$.state.isEnabled,o=r($.props.duration,1,R.duration);if(e||t||n)return;if(ae("onHide",[$],!1),!1===$.props.onHide($))return;$.state.isVisible=!1,$.state.isShown=!1,_=!1,V=!1,ee()&&(z.style.visibility="hidden");if(ce(),ve(),ie(!0),ee()){var i=re(),a=i.box,s=i.content;$.props.animation&&(b([a,s],o),y([a,s],"hidden"))}se(),ue(),$.props.animation?ee()&&function(e,t){me(e,(function(){!$.state.isVisible&&z.parentNode&&z.parentNode.contains(z)&&t()}))}(o,$.unmount):$.unmount()},hideWithInteractivity:function(e){ne().addEventListener("mousemove",W),c(H,W),W(e)},enable:function(){$.state.isEnabled=!0},disable:function(){$.hide(),$.state.isEnabled=!1},unmount:function(){$.state.isVisible&&$.hide();if(!$.state.isMounted)return;Te(),Ae().forEach((function(e){e._tippy.unmount()})),z.parentNode&&z.parentNode.removeChild(z);U=U.filter((function(e){return e!==$})),$.state.isMounted=!1,ae("onHidden",[$])},destroy:function(){if($.state.isDestroyed)return;$.clearDelayTimeouts(),$.unmount(),be(),delete o._tippy,$.state.isDestroyed=!0,ae("onDestroy",[$])}};if(!M.render)return $;var q=M.render($),z=q.popper,J=q.onUpdate;z.setAttribute("data-tippy-root",""),z.id="tippy-"+$.id,$.popper=z,o._tippy=$,z._tippy=$;var G=Y.map((function(e){return e.fn($)})),K=o.hasAttribute("aria-expanded");return he(),ue(),ie(),ae("onCreate",[$]),M.showOnCreate&&Le(),z.addEventListener("mouseenter",(function(){$.props.interactive&&$.state.isVisible&&$.clearDelayTimeouts()})),z.addEventListener("mouseleave",(function(){$.props.interactive&&$.props.trigger.indexOf("mouseenter")>=0&&ne().addEventListener("mousemove",W)})),$;function Q(){var e=$.props.touch;return Array.isArray(e)?e:[e,0]}function Z(){return"hold"===Q()[0]}function ee(){var e;return!(null==(e=$.props.render)||!e.$$tippy)}function te(){return L||o}function ne(){var e=te().parentNode;return e?w(e):document}function re(){return S(z)}function oe(e){return $.state.isMounted&&!$.state.isVisible||x.isTouch||C&&"focus"===C.type?0:r($.props.delay,e?0:1,R.delay)}function ie(e){void 0===e&&(e=!1),z.style.pointerEvents=$.props.interactive&&!e?"":"none",z.style.zIndex=""+$.props.zIndex}function ae(e,t,n){var r;(void 0===n&&(n=!0),G.forEach((function(n){n[e]&&n[e].apply(n,t)})),n)&&(r=$.props)[e].apply(r,t)}function se(){var e=$.props.aria;if(e.content){var t="aria-"+e.content,n=z.id;u($.props.triggerTarget||o).forEach((function(e){var r=e.getAttribute(t);if($.state.isVisible)e.setAttribute(t,r?r+" "+n:n);else{var o=r&&r.replace(n,"").trim();o?e.setAttribute(t,o):e.removeAttribute(t)}}))}}function ue(){!K&&$.props.aria.expanded&&u($.props.triggerTarget||o).forEach((function(e){$.props.interactive?e.setAttribute("aria-expanded",$.state.isVisible&&e===te()?"true":"false"):e.removeAttribute("aria-expanded")}))}function ce(){ne().removeEventListener("mousemove",W),H=H.filter((function(e){return e!==W}))}function pe(e){if(!x.isTouch||!N&&"mousedown"!==e.type){var t=e.composedPath&&e.composedPath()[0]||e.target;if(!$.props.interactive||!O(z,t)){if(u($.props.triggerTarget||o).some((function(e){return O(e,t)}))){if(x.isTouch)return;if($.state.isVisible&&$.props.trigger.indexOf("click")>=0)return}else ae("onClickOutside",[$,e]);!0===$.props.hideOnClick&&($.clearDelayTimeouts(),$.hide(),I=!0,setTimeout((function(){I=!1})),$.state.isMounted||ve())}}}function fe(){N=!0}function le(){N=!1}function de(){var e=ne();e.addEventListener("mousedown",pe,!0),e.addEventListener("touchend",pe,t),e.addEventListener("touchstart",le,t),e.addEventListener("touchmove",fe,t)}function ve(){var e=ne();e.removeEventListener("mousedown",pe,!0),e.removeEventListener("touchend",pe,t),e.removeEventListener("touchstart",le,t),e.removeEventListener("touchmove",fe,t)}function me(e,t){var n=re().box;function r(e){e.target===n&&(E(n,"remove",r),t())}if(0===e)return t();E(n,"remove",T),E(n,"add",r),T=r}function ge(e,t,n){void 0===n&&(n=!1),u($.props.triggerTarget||o).forEach((function(r){r.addEventListener(e,t,n),F.push({node:r,eventType:e,handler:t,options:n})}))}function he(){var e;Z()&&(ge("touchstart",ye,{passive:!0}),ge("touchend",Ee,{passive:!0})),(e=$.props.trigger,e.split(/\s+/).filter(Boolean)).forEach((function(e){if("manual"!==e)switch(ge(e,ye),e){case"mouseenter":ge("mouseleave",Ee);break;case"focus":ge(D?"focusout":"blur",Oe);break;case"focusin":ge("focusout",Oe)}}))}function be(){F.forEach((function(e){var t=e.node,n=e.eventType,r=e.handler,o=e.options;t.removeEventListener(n,r,o)})),F=[]}function ye(e){var t,n=!1;if($.state.isEnabled&&!xe(e)&&!I){var r="focus"===(null==(t=C)?void 0:t.type);C=e,L=e.currentTarget,ue(),!$.state.isVisible&&m(e)&&H.forEach((function(t){return t(e)})),"click"===e.type&&($.props.trigger.indexOf("mouseenter")<0||V)&&!1!==$.props.hideOnClick&&$.state.isVisible?n=!0:Le(e),"click"===e.type&&(V=!n),n&&!r&&De(e)}}function we(e){var t=e.target,n=te().contains(t)||z.contains(t);"mousemove"===e.type&&n||function(e,t){var n=t.clientX,r=t.clientY;return e.every((function(e){var t=e.popperRect,o=e.popperState,i=e.props.interactiveBorder,a=p(o.placement),s=o.modifiersData.offset;if(!s)return!0;var u="bottom"===a?s.top.y:0,c="top"===a?s.bottom.y:0,f="right"===a?s.left.x:0,l="left"===a?s.right.x:0,d=t.top-r+u>i,v=r-t.bottom-c>i,m=t.left-n+f>i,g=n-t.right-l>i;return d||v||m||g}))}(Ae().concat(z).map((function(e){var t,n=null==(t=e._tippy.popperInstance)?void 0:t.state;return n?{popperRect:e.getBoundingClientRect(),popperState:n,props:M}:null})).filter(Boolean),e)&&(ce(),De(e))}function Ee(e){xe(e)||$.props.trigger.indexOf("click")>=0&&V||($.props.interactive?$.hideWithInteractivity(e):De(e))}function Oe(e){$.props.trigger.indexOf("focusin")<0&&e.target!==te()||$.props.interactive&&e.relatedTarget&&z.contains(e.relatedTarget)||De(e)}function xe(e){return!!x.isTouch&&Z()!==e.type.indexOf("touch")>=0}function Ce(){Te();var t=$.props,n=t.popperOptions,r=t.placement,i=t.offset,a=t.getReferenceClientRect,s=t.moveTransition,u=ee()?S(z).arrow:null,c=a?{getBoundingClientRect:a,contextElement:a.contextElement||te()}:o,p=[{name:"offset",options:{offset:i}},{name:"preventOverflow",options:{padding:{top:2,bottom:2,left:5,right:5}}},{name:"flip",options:{padding:5}},{name:"computeStyles",options:{adaptive:!s}},{name:"$$tippy",enabled:!0,phase:"beforeWrite",requires:["computeStyles"],fn:function(e){var t=e.state;if(ee()){var n=re().box;["placement","reference-hidden","escaped"].forEach((function(e){"placement"===e?n.setAttribute("data-placement",t.placement):t.attributes.popper["data-popper-"+e]?n.setAttribute("data-"+e,""):n.removeAttribute("data-"+e)})),t.attributes.popper={}}}}];ee()&&u&&p.push({name:"arrow",options:{element:u,padding:3}}),p.push.apply(p,(null==n?void 0:n.modifiers)||[]),$.popperInstance=e.createPopper(c,z,Object.assign({},n,{placement:r,onFirstUpdate:A,modifiers:p}))}function Te(){$.popperInstance&&($.popperInstance.destroy(),$.popperInstance=null)}function Ae(){return f(z.querySelectorAll("[data-tippy-root]"))}function Le(e){$.clearDelayTimeouts(),e&&ae("onTrigger",[$,e]),de();var t=oe(!0),n=Q(),r=n[0],o=n[1];x.isTouch&&"hold"===r&&o&&(t=o),t?v=setTimeout((function(){$.show()}),t):$.show()}function De(e){if($.clearDelayTimeouts(),ae("onUntrigger",[$,e]),$.state.isVisible){if(!($.props.trigger.indexOf("mouseenter")>=0&&$.props.trigger.indexOf("click")>=0&&["mouseleave","mousemove"].indexOf(e.type)>=0&&V)){var t=oe(!1);t?g=setTimeout((function(){$.state.isVisible&&$.hide()}),t):h=requestAnimationFrame((function(){$.hide()}))}}else ve()}}function F(e,n){void 0===n&&(n={});var r=R.plugins.concat(n.plugins||[]);document.addEventListener("touchstart",T,t),window.addEventListener("blur",L);var o=Object.assign({},n,{plugins:r}),i=h(e).reduce((function(e,t){var n=t&&_(t,o);return n&&e.push(n),e}),[]);return v(e)?i[0]:i}F.defaultProps=R,F.setDefaultProps=function(e){Object.keys(e).forEach((function(t){R[t]=e[t]}))},F.currentInput=x;var W=Object.assign({},e.applyStyles,{effect:function(e){var t=e.state,n={popper:{position:t.options.strategy,left:"0",top:"0",margin:"0"},arrow:{position:"absolute"},reference:{}};Object.assign(t.elements.popper.style,n.popper),t.styles=n,t.elements.arrow&&Object.assign(t.elements.arrow.style,n.arrow)}}),X={mouseover:"mouseenter",focusin:"focus",click:"click"};var Y={name:"animateFill",defaultValue:!1,fn:function(e){var t;if(null==(t=e.props.render)||!t.$$tippy)return{};var n=S(e.popper),r=n.box,o=n.content,i=e.props.animateFill?function(){var e=d();return e.className="tippy-backdrop",y([e],"hidden"),e}():null;return{onCreate:function(){i&&(r.insertBefore(i,r.firstElementChild),r.setAttribute("data-animatefill",""),r.style.overflow="hidden",e.setProps({arrow:!1,animation:"shift-away"}))},onMount:function(){if(i){var e=r.style.transitionDuration,t=Number(e.replace("ms",""));o.style.transitionDelay=Math.round(t/10)+"ms",i.style.transitionDuration=e,y([i],"visible")}},onShow:function(){i&&(i.style.transitionDuration="0ms")},onHide:function(){i&&y([i],"hidden")}}}};var $={clientX:0,clientY:0},q=[];function z(e){var t=e.clientX,n=e.clientY;$={clientX:t,clientY:n}}var J={name:"followCursor",defaultValue:!1,fn:function(e){var t=e.reference,n=w(e.props.triggerTarget||t),r=!1,o=!1,i=!0,a=e.props;function s(){return"initial"===e.props.followCursor&&e.state.isVisible}function u(){n.addEventListener("mousemove",f)}function c(){n.removeEventListener("mousemove",f)}function p(){r=!0,e.setProps({getReferenceClientRect:null}),r=!1}function f(n){var r=!n.target||t.contains(n.target),o=e.props.followCursor,i=n.clientX,a=n.clientY,s=t.getBoundingClientRect(),u=i-s.left,c=a-s.top;!r&&e.props.interactive||e.setProps({getReferenceClientRect:function(){var e=t.getBoundingClientRect(),n=i,r=a;"initial"===o&&(n=e.left+u,r=e.top+c);var s="horizontal"===o?e.top:r,p="vertical"===o?e.right:n,f="horizontal"===o?e.bottom:r,l="vertical"===o?e.left:n;return{width:p-l,height:f-s,top:s,right:p,bottom:f,left:l}}})}function l(){e.props.followCursor&&(q.push({instance:e,doc:n}),function(e){e.addEventListener("mousemove",z)}(n))}function d(){0===(q=q.filter((function(t){return t.instance!==e}))).filter((function(e){return e.doc===n})).length&&function(e){e.removeEventListener("mousemove",z)}(n)}return{onCreate:l,onDestroy:d,onBeforeUpdate:function(){a=e.props},onAfterUpdate:function(t,n){var i=n.followCursor;r||void 0!==i&&a.followCursor!==i&&(d(),i?(l(),!e.state.isMounted||o||s()||u()):(c(),p()))},onMount:function(){e.props.followCursor&&!o&&(i&&(f($),i=!1),s()||u())},onTrigger:function(e,t){m(t)&&($={clientX:t.clientX,clientY:t.clientY}),o="focus"===t.type},onHidden:function(){e.props.followCursor&&(p(),c(),i=!0)}}}};var G={name:"inlinePositioning",defaultValue:!1,fn:function(e){var t,n=e.reference;var r=-1,o=!1,i=[],a={name:"tippyInlinePositioning",enabled:!0,phase:"afterWrite",fn:function(o){var a=o.state;e.props.inlinePositioning&&(-1!==i.indexOf(a.placement)&&(i=[]),t!==a.placement&&-1===i.indexOf(a.placement)&&(i.push(a.placement),e.setProps({getReferenceClientRect:function(){return function(e){return function(e,t,n,r){if(n.length<2||null===e)return t;if(2===n.length&&r>=0&&n[0].left>n[1].right)return n[r]||t;switch(e){case"top":case"bottom":var o=n[0],i=n[n.length-1],a="top"===e,s=o.top,u=i.bottom,c=a?o.left:i.left,p=a?o.right:i.right;return{top:s,bottom:u,left:c,right:p,width:p-c,height:u-s};case"left":case"right":var f=Math.min.apply(Math,n.map((function(e){return e.left}))),l=Math.max.apply(Math,n.map((function(e){return e.right}))),d=n.filter((function(t){return"left"===e?t.left===f:t.right===l})),v=d[0].top,m=d[d.length-1].bottom;return{top:v,bottom:m,left:f,right:l,width:l-f,height:m-v};default:return t}}(p(e),n.getBoundingClientRect(),f(n.getClientRects()),r)}(a.placement)}})),t=a.placement)}};function s(){var t;o||(t=function(e,t){var n;return{popperOptions:Object.assign({},e.popperOptions,{modifiers:[].concat(((null==(n=e.popperOptions)?void 0:n.modifiers)||[]).filter((function(e){return e.name!==t.name})),[t])})}}(e.props,a),o=!0,e.setProps(t),o=!1)}return{onCreate:s,onAfterUpdate:s,onTrigger:function(t,n){if(m(n)){var o=f(e.reference.getClientRects()),i=o.find((function(e){return e.left-2<=n.clientX&&e.right+2>=n.clientX&&e.top-2<=n.clientY&&e.bottom+2>=n.clientY})),a=o.indexOf(i);r=a>-1?a:r}},onHidden:function(){r=-1}}}};var K={name:"sticky",defaultValue:!1,fn:function(e){var t=e.reference,n=e.popper;function r(t){return!0===e.props.sticky||e.props.sticky===t}var o=null,i=null;function a(){var s=r("reference")?(e.popperInstance?e.popperInstance.state.elements.reference:t).getBoundingClientRect():null,u=r("popper")?n.getBoundingClientRect():null;(s&&Q(o,s)||u&&Q(i,u))&&e.popperInstance&&e.popperInstance.update(),o=s,i=u,e.state.isMounted&&requestAnimationFrame(a)}return{onMount:function(){e.props.sticky&&a()}}}};function Q(e,t){return!e||!t||(e.top!==t.top||e.right!==t.right||e.bottom!==t.bottom||e.left!==t.left)}return F.setDefaultProps({plugins:[Y,J,G,K],render:N}),F.createSingleton=function(e,t){var n;void 0===t&&(t={});var r,o=e,i=[],a=[],c=t.overrides,p=[],f=!1;function l(){a=o.map((function(e){return u(e.props.triggerTarget||e.reference)})).reduce((function(e,t){return e.concat(t)}),[])}function v(){i=o.map((function(e){return e.reference}))}function m(e){o.forEach((function(t){e?t.enable():t.disable()}))}function g(e){return o.map((function(t){var n=t.setProps;return t.setProps=function(o){n(o),t.reference===r&&e.setProps(o)},function(){t.setProps=n}}))}function h(e,t){var n=a.indexOf(t);if(t!==r){r=t;var s=(c||[]).concat("content").reduce((function(e,t){return e[t]=o[n].props[t],e}),{});e.setProps(Object.assign({},s,{getReferenceClientRect:"function"==typeof s.getReferenceClientRect?s.getReferenceClientRect:function(){var e;return null==(e=i[n])?void 0:e.getBoundingClientRect()}}))}}m(!1),v(),l();var b={fn:function(){return{onDestroy:function(){m(!0)},onHidden:function(){r=null},onClickOutside:function(e){e.props.showOnCreate&&!f&&(f=!0,r=null)},onShow:function(e){e.props.showOnCreate&&!f&&(f=!0,h(e,i[0]))},onTrigger:function(e,t){h(e,t.currentTarget)}}}},y=F(d(),Object.assign({},s(t,["overrides"]),{plugins:[b].concat(t.plugins||[]),triggerTarget:a,popperOptions:Object.assign({},t.popperOptions,{modifiers:[].concat((null==(n=t.popperOptions)?void 0:n.modifiers)||[],[W])})})),w=y.show;y.show=function(e){if(w(),!r&&null==e)return h(y,i[0]);if(!r||null!=e){if("number"==typeof e)return i[e]&&h(y,i[e]);if(o.indexOf(e)>=0){var t=e.reference;return h(y,t)}return i.indexOf(e)>=0?h(y,e):void 0}},y.showNext=function(){var e=i[0];if(!r)return y.show(0);var t=i.indexOf(r);y.show(i[t+1]||e)},y.showPrevious=function(){var e=i[i.length-1];if(!r)return y.show(e);var t=i.indexOf(r),n=i[t-1]||e;y.show(n)};var E=y.setProps;return y.setProps=function(e){c=e.overrides||c,E(e)},y.setInstances=function(e){m(!0),p.forEach((function(e){return e()})),o=e,m(!1),v(),l(),p=g(y),y.setProps({triggerTarget:a})},p=g(y),y},F.delegate=function(e,n){var r=[],o=[],i=!1,a=n.target,c=s(n,["target"]),p=Object.assign({},c,{trigger:"manual",touch:!1}),f=Object.assign({touch:R.touch},c,{showOnCreate:!0}),l=F(e,p);function d(e){if(e.target&&!i){var t=e.target.closest(a);if(t){var r=t.getAttribute("data-tippy-trigger")||n.trigger||R.trigger;if(!t._tippy&&!("touchstart"===e.type&&"boolean"==typeof f.touch||"touchstart"!==e.type&&r.indexOf(X[e.type])<0)){var s=F(t,f);s&&(o=o.concat(s))}}}}function v(e,t,n,o){void 0===o&&(o=!1),e.addEventListener(t,n,o),r.push({node:e,eventType:t,handler:n,options:o})}return u(l).forEach((function(e){var n=e.destroy,a=e.enable,s=e.disable;e.destroy=function(e){void 0===e&&(e=!0),e&&o.forEach((function(e){e.destroy()})),o=[],r.forEach((function(e){var t=e.node,n=e.eventType,r=e.handler,o=e.options;t.removeEventListener(n,r,o)})),r=[],n()},e.enable=function(){a(),o.forEach((function(e){return e.enable()})),i=!1},e.disable=function(){s(),o.forEach((function(e){return e.disable()})),i=!0},function(e){var n=e.reference;v(n,"touchstart",d,t),v(n,"mouseover",d),v(n,"focusin",d),v(n,"click",d)}(e)})),l},F.hideAll=function(e){var t=void 0===e?{}:e,n=t.exclude,r=t.duration;U.forEach((function(e){var t=!1;if(n&&(t=g(n)?e.reference===n:e.popper===n.popper),!t){var o=e.props.duration;e.setProps({duration:r}),e.hide(),e.state.isDestroyed||e.setProps({duration:o})}}))},F.roundArrow='<svg width="16" height="6" xmlns="http://www.w3.org/2000/svg"><path d="M0 6s1.796-.013 4.67-3.615C5.851.9 6.93.006 8 0c1.07-.006 2.148.887 3.343 2.385C14.233 6.005 16 6 16 6H0z"></svg>',F}));
+
+</script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Simulation Example of Bayesian MCPMod for Continuous Data">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -33,8 +41,8 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/analysis_normal.html">Analysis Example of Bayesian MCPMod for Continuous Data</a></li>
-    <li><a class="dropdown-item" href="../articles/analysis_normal_noninformative.html">Analysis Example of Bayesian MCPMod for Continuous Data with non-informative prior</a></li>
     <li><a class="dropdown-item" href="../articles/Simulation_Example.html">Simulation Example of Bayesian MCPMod for Continuous Data</a></li>
+    <li><a class="dropdown-item" href="../articles/Comparison_vignette.html">Simulation Example of Bayesian MCPMod and MCPMod</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
@@ -50,69 +58,44 @@
 
 
   </div>
-</nav><div class="container template-article">
-
-
-
-
+</nav><div class="container template-quarto">
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Simulation Example of Bayesian MCPMod for Continuous Data</h1>
-            
-      
-      <small class="dont-index">Source: <a href="https://github.com/Boehringer-Ingelheim/BayesianMCPMod/blob/main/vignettes/Simulation_Example.Rmd" class="external-link"><code>vignettes/Simulation_Example.Rmd</code></a></small>
-      <div class="d-none name"><code>Simulation_Example.Rmd</code></div>
+
+
+
+
+      <small class="dont-index">Source: <a href="https://github.com/Boehringer-Ingelheim/BayesianMCPMod/blob/main/vignettes/Simulation_Example.qmd" class="external-link"><code>vignettes/Simulation_Example.qmd</code></a></small>
+      <div class="d-none name"><code></code></div>
     </div>
 
-    
-    
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Boehringer-Ingelheim/BayesianMCPMod" class="external-link">BayesianMCPMod</a></span><span class="op">)</span></span>
+
+
+
+
+
+    <div class="cell">
+<details class="code-fold"><summary>setup</summary><div class="sourceCode cell-code" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Boehringer-Ingelheim/BayesianMCPMod" class="external-link">BayesianMCPMod</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">clinDR</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Loading required package: rstan</span></span>
-<span><span class="co">#&gt; Loading required package: StanHeaders</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; rstan version 2.32.6 (Stan version 2.32.2)</span></span>
-<span><span class="co">#&gt; For execution on a local, multicore CPU with excess RAM we recommend calling</span></span>
-<span><span class="co">#&gt; options(mc.cores = parallel::detectCores()).</span></span>
-<span><span class="co">#&gt; To avoid recompilation of unchanged Stan programs, we recommend calling</span></span>
-<span><span class="co">#&gt; rstan_options(auto_write = TRUE)</span></span>
-<span><span class="co">#&gt; For within-chain threading using `reduce_sum()` or `map_rect()` Stan functions,</span></span>
-<span><span class="co">#&gt; change `threads_per_chain` option:</span></span>
-<span><span class="co">#&gt; rstan_options(threads_per_chain = 1)</span></span>
-<span><span class="co">#&gt; Loading required package: shiny</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Attaching package: 'dplyr'</span></span>
-<span><span class="co">#&gt; The following objects are masked from 'package:stats':</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     filter, lag</span></span>
-<span><span class="co">#&gt; The following objects are masked from 'package:base':</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     intersect, setdiff, setequal, union</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">7015</span><span class="op">)</span></span></code></pre></div>
-<div class="section level2">
-<h2 id="background-and-data">Background and data<a class="anchor" aria-label="anchor" href="#background-and-data"></a>
-</h2>
-<p>In this vignette, we will show the use of the Bayesian MCPMod package
-for trial planning for continuous distributed data. As in <a href="analysis_normal.html">the analysis example vignette</a>, we focus
-on the indication MDD and make use of historical data that is included
-in the clinDR package. More specifically, trial results for BRINTELLIX
-will be utilized to establish an informative prior for the control
-group.</p>
+</details>
 </div>
-<div class="section level2">
-<h2 id="calculation-of-a-map-prior">Calculation of a MAP prior<a class="anchor" aria-label="anchor" href="#calculation-of-a-map-prior"></a>
+<section class="section level2" data-number="1"><h2 data-number="1" id="background-and-data">
+<span class="header-section-number">1</span> Background and data<a class="anchor" aria-label="anchor" href="#background-and-data"></a>
 </h2>
-<p>In a first step, a meta analytic predictive prior will be calculated
-using historical data from 5 trials with main endpoint Change from
-baseline in MADRS score after 8 weeks. Please note that only information
-from the control group will be integrated leading to an informative
-mixture prior for the control group, while for the active groups a
-non-informative prior will be specified.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<p>In this vignette, we will show the use of the Bayesian MCPMod package for trial planning for continuous distributed data. As in <a href="analysis_normal.html">the analysis example vignette</a>, we focus on the indication MDD and make use of historical data that is included in the clinDR package. More specifically, trial results for BRINTELLIX will be utilized to establish an informative prior for the control group.</p>
+</section><section class="section level2" data-number="2"><h2 data-number="2" id="calculation-of-a-map-prior">
+<span class="header-section-number">2</span> Calculation of a MAP prior<a class="anchor" aria-label="anchor" href="#calculation-of-a-map-prior"></a>
+</h2>
+<p>In a first step, a meta analytic predictive prior will be calculated using historical data from 5 trials with main endpoint Change from baseline in MADRS score after 8 weeks. Please note that only information from the control group will be integrated leading to an informative mixture prior for the control group, while for the active groups a non-informative prior will be specified.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"metaData"</span><span class="op">)</span></span>
 <span><span class="va">testdata</span>    <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">metaData</span><span class="op">)</span></span>
 <span><span class="va">dataset</span>     <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">testdata</span>, <span class="va">bname</span> <span class="op">==</span> <span class="st">"BRINTELLIX"</span><span class="op">)</span></span>
@@ -126,9 +109,10 @@ non-informative prior will be specified.</p>
 <span>  n     <span class="op">=</span> <span class="va">histcontrol</span><span class="op">$</span><span class="va">sampsize</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">sd_tot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/with.html" class="external-link">with</a></span><span class="op">(</span><span class="va">hist_data</span>, <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">sd</span> <span class="op">*</span> <span class="va">n</span><span class="op">)</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p>We will make use of the same getPriorList() function as in the <a href="analysis_normal.html">analysis example vignette</a> to create a
-MAP prior.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+</div>
+<p>We will make use of the same getPriorList() function as in the <a href="analysis_normal.html">analysis example vignette</a> to create a MAP prior.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dose_levels</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">2.5</span>, <span class="fl">5</span>, <span class="fl">10</span>, <span class="fl">20</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">prior_list</span>  <span class="op">&lt;-</span> <span class="fu">getPriorList</span><span class="op">(</span></span>
@@ -136,17 +120,13 @@ MAP prior.</p>
 <span>  dose_levels   <span class="op">=</span> <span class="va">dose_levels</span>,</span>
 <span>  robust_weight <span class="op">=</span> <span class="fl">0.3</span><span class="op">)</span></span></code></pre></div>
 </div>
-<div class="section level2">
-<h2 id="specification-of-new-trial-design">Specification of new trial design<a class="anchor" aria-label="anchor" href="#specification-of-new-trial-design"></a>
+</section><section class="section level2" data-number="3"><h2 data-number="3" id="specification-of-new-trial-design">
+<span class="header-section-number">3</span> Specification of new trial design<a class="anchor" aria-label="anchor" href="#specification-of-new-trial-design"></a>
 </h2>
-<p>For the hypothetical new trial, we plan with 4 active dose levels and
-we specify a broad set of potential dose-response relationships,
-including a linear, an exponential, an emax and 2 sigEMax models.<br>
-Furthermore, we assume a maximum effect of -3 on top of control
-(i.e. assuming that active treatment can reduce the MADRS score after 8
-weeks by up to 15.8) and plan a trial with 80 patients for all active
-groups and 60 patients for control.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<p>For the hypothetical new trial, we plan with 4 active dose levels and we specify a broad set of potential dose-response relationships, including a linear, an exponential, an emax and 2 sigEMax models.<br>
+Furthermore, we assume a maximum effect of -3 on top of control (i.e. assuming that active treatment can reduce the MADRS score after 8 weeks by up to 15.8) and plan a trial with 80 patients for all active groups and 60 patients for control.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">exp</span>     <span class="op">&lt;-</span> <span class="fu">DoseFinding</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/DoseFinding/man/guesst.html" class="external-link">guesst</a></span><span class="op">(</span></span>
 <span>  d     <span class="op">=</span> <span class="fl">5</span>,</span>
 <span>  p     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.2</span><span class="op">)</span>,</span>
@@ -179,14 +159,12 @@ groups and 60 patients for control.</p>
 <span></span>
 <span><span class="va">n_patients</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">60</span>, <span class="fl">80</span>, <span class="fl">80</span>, <span class="fl">80</span>, <span class="fl">80</span><span class="op">)</span></span></code></pre></div>
 </div>
-<div class="section level2">
-<h2 id="calculation-of-success-probabilities">Calculation of success probabilities<a class="anchor" aria-label="anchor" href="#calculation-of-success-probabilities"></a>
+</section><section class="section level2" data-number="4"><h2 data-number="4" id="calculation-of-success-probabilities">
+<span class="header-section-number">4</span> Calculation of success probabilities<a class="anchor" aria-label="anchor" href="#calculation-of-success-probabilities"></a>
 </h2>
-<p>To calculate success probabilities for the different assumed
-dose-response models and the specified trial design we will apply the
-assessDesign function. For illustration purposes, the number of
-simulated trial results is reduced to 100 in this example.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<p>To calculate success probabilities for the different assumed dose-response models and the specified trial design we will apply the assessDesign function. For illustration purposes, the number of simulated trial results is reduced to 100 in this example.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">success_probabilities</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/assessDesign.html">assessDesign</a></span><span class="op">(</span></span>
 <span>  n_patients  <span class="op">=</span> <span class="va">n_patients</span>,</span>
 <span>  mods        <span class="op">=</span> <span class="va">mods</span>,</span>
@@ -197,23 +175,6 @@ simulated trial results is reduced to 100 in this example.</p>
 <span><span class="va">success_probabilities</span></span>
 <span><span class="co">#&gt; $linear</span></span>
 <span><span class="co">#&gt; Bayesian Multiple Comparison Procedure</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Summary:</span></span>
-<span><span class="co">#&gt;   Sign: 1 </span></span>
-<span><span class="co">#&gt;   Critical Probability: 0.9783337 </span></span>
-<span><span class="co">#&gt;   Maximum Posterior Probability: 0.9969896 </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Effective Sample Size (ESS) per Dose Group:</span></span>
-<span><span class="co">#&gt; NULL</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Posterior Probabilities for Model Shapes:</span></span>
-<span><span class="co">#&gt;        Model Probability</span></span>
-<span><span class="co">#&gt;       linear   0.9928528</span></span>
-<span><span class="co">#&gt;         emax   0.9886740</span></span>
-<span><span class="co">#&gt;  exponential   0.9902840</span></span>
-<span><span class="co">#&gt;     sigEmax1   0.9969896</span></span>
-<span><span class="co">#&gt;     sigEmax2   0.9967365</span></span>
-<span><span class="co">#&gt; Bayesian Multiple Comparison Procedure</span></span>
 <span><span class="co">#&gt;   Estimated Success Rate:  0.68 </span></span>
 <span><span class="co">#&gt;   N Simulations:           100</span></span>
 <span><span class="co">#&gt; Model Significance Frequencies</span></span>
@@ -221,23 +182,6 @@ simulated trial results is reduced to 100 in this example.</p>
 <span><span class="co">#&gt;        0.59        0.21        0.59        0.48        0.36 </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $emax</span></span>
-<span><span class="co">#&gt; Bayesian Multiple Comparison Procedure</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Summary:</span></span>
-<span><span class="co">#&gt;   Sign: 1 </span></span>
-<span><span class="co">#&gt;   Critical Probability: 0.9783337 </span></span>
-<span><span class="co">#&gt;   Maximum Posterior Probability: 0.99979 </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Effective Sample Size (ESS) per Dose Group:</span></span>
-<span><span class="co">#&gt; NULL</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Posterior Probabilities for Model Shapes:</span></span>
-<span><span class="co">#&gt;        Model Probability</span></span>
-<span><span class="co">#&gt;       linear   0.9477625</span></span>
-<span><span class="co">#&gt;         emax   0.9997900</span></span>
-<span><span class="co">#&gt;  exponential   0.9197456</span></span>
-<span><span class="co">#&gt;     sigEmax1   0.9935264</span></span>
-<span><span class="co">#&gt;     sigEmax2   0.9994455</span></span>
 <span><span class="co">#&gt; Bayesian Multiple Comparison Procedure</span></span>
 <span><span class="co">#&gt;   Estimated Success Rate:  0.82 </span></span>
 <span><span class="co">#&gt;   N Simulations:           100</span></span>
@@ -247,23 +191,6 @@ simulated trial results is reduced to 100 in this example.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $exponential</span></span>
 <span><span class="co">#&gt; Bayesian Multiple Comparison Procedure</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Summary:</span></span>
-<span><span class="co">#&gt;   Sign: 1 </span></span>
-<span><span class="co">#&gt;   Critical Probability: 0.9783337 </span></span>
-<span><span class="co">#&gt;   Maximum Posterior Probability: 0.9963305 </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Effective Sample Size (ESS) per Dose Group:</span></span>
-<span><span class="co">#&gt; NULL</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Posterior Probabilities for Model Shapes:</span></span>
-<span><span class="co">#&gt;        Model Probability</span></span>
-<span><span class="co">#&gt;       linear   0.9931849</span></span>
-<span><span class="co">#&gt;         emax   0.9852549</span></span>
-<span><span class="co">#&gt;  exponential   0.9910500</span></span>
-<span><span class="co">#&gt;     sigEmax1   0.9963305</span></span>
-<span><span class="co">#&gt;     sigEmax2   0.9956441</span></span>
-<span><span class="co">#&gt; Bayesian Multiple Comparison Procedure</span></span>
 <span><span class="co">#&gt;   Estimated Success Rate:  0.63 </span></span>
 <span><span class="co">#&gt;   N Simulations:           100</span></span>
 <span><span class="co">#&gt; Model Significance Frequencies</span></span>
@@ -272,23 +199,6 @@ simulated trial results is reduced to 100 in this example.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $sigEmax1</span></span>
 <span><span class="co">#&gt; Bayesian Multiple Comparison Procedure</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Summary:</span></span>
-<span><span class="co">#&gt;   Sign: 1 </span></span>
-<span><span class="co">#&gt;   Critical Probability: 0.9783337 </span></span>
-<span><span class="co">#&gt;   Maximum Posterior Probability: 0.999784 </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Effective Sample Size (ESS) per Dose Group:</span></span>
-<span><span class="co">#&gt; NULL</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Posterior Probabilities for Model Shapes:</span></span>
-<span><span class="co">#&gt;        Model Probability</span></span>
-<span><span class="co">#&gt;       linear   0.9941367</span></span>
-<span><span class="co">#&gt;         emax   0.9978640</span></span>
-<span><span class="co">#&gt;  exponential   0.9896725</span></span>
-<span><span class="co">#&gt;     sigEmax1   0.9997367</span></span>
-<span><span class="co">#&gt;     sigEmax2   0.9997840</span></span>
-<span><span class="co">#&gt; Bayesian Multiple Comparison Procedure</span></span>
 <span><span class="co">#&gt;   Estimated Success Rate:  0.82 </span></span>
 <span><span class="co">#&gt;   N Simulations:           100</span></span>
 <span><span class="co">#&gt; Model Significance Frequencies</span></span>
@@ -296,23 +206,6 @@ simulated trial results is reduced to 100 in this example.</p>
 <span><span class="co">#&gt;        0.63        0.52        0.58        0.73        0.76 </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $sigEmax2</span></span>
-<span><span class="co">#&gt; Bayesian Multiple Comparison Procedure</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Summary:</span></span>
-<span><span class="co">#&gt;   Sign: 1 </span></span>
-<span><span class="co">#&gt;   Critical Probability: 0.9783337 </span></span>
-<span><span class="co">#&gt;   Maximum Posterior Probability: 0.9997862 </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Effective Sample Size (ESS) per Dose Group:</span></span>
-<span><span class="co">#&gt; NULL</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Posterior Probabilities for Model Shapes:</span></span>
-<span><span class="co">#&gt;        Model Probability</span></span>
-<span><span class="co">#&gt;       linear   0.9804604</span></span>
-<span><span class="co">#&gt;         emax   0.9994475</span></span>
-<span><span class="co">#&gt;  exponential   0.9670817</span></span>
-<span><span class="co">#&gt;     sigEmax1   0.9989468</span></span>
-<span><span class="co">#&gt;     sigEmax2   0.9997862</span></span>
 <span><span class="co">#&gt; Bayesian Multiple Comparison Procedure</span></span>
 <span><span class="co">#&gt;   Estimated Success Rate:  0.84 </span></span>
 <span><span class="co">#&gt;   N Simulations:           100</span></span>
@@ -331,10 +224,10 @@ simulated trial results is reduced to 100 in this example.</p>
 <span><span class="co">#&gt; attr(,"priorESS")</span></span>
 <span><span class="co">#&gt;  Ctr DG_1 DG_2 DG_3 DG_4 </span></span>
 <span><span class="co">#&gt; 20.6  1.0  1.0  1.0  1.0</span></span></code></pre></div>
-<p>As an alternative, we will evaluate a design with the same overall
-sample size but allocating more patients on the highest dose group and
-control.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+</div>
+<p>As an alternative, we will evaluate a design with the same overall sample size but allocating more patients on the highest dose group and control.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">success_probabilities_uneq</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/assessDesign.html">assessDesign</a></span><span class="op">(</span></span>
 <span>  n_patients  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">80</span>, <span class="fl">60</span>, <span class="fl">60</span>, <span class="fl">60</span>, <span class="fl">120</span><span class="op">)</span>,</span>
 <span>  mods        <span class="op">=</span> <span class="va">mods</span>,</span>
@@ -344,23 +237,6 @@ control.</p>
 <span><span class="va">success_probabilities_uneq</span></span>
 <span><span class="co">#&gt; $linear</span></span>
 <span><span class="co">#&gt; Bayesian Multiple Comparison Procedure</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Summary:</span></span>
-<span><span class="co">#&gt;   Sign: 1 </span></span>
-<span><span class="co">#&gt;   Critical Probability: 0.9766502 </span></span>
-<span><span class="co">#&gt;   Maximum Posterior Probability: 0.9943142 </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Effective Sample Size (ESS) per Dose Group:</span></span>
-<span><span class="co">#&gt; NULL</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Posterior Probabilities for Model Shapes:</span></span>
-<span><span class="co">#&gt;        Model Probability</span></span>
-<span><span class="co">#&gt;       linear   0.9943142</span></span>
-<span><span class="co">#&gt;         emax   0.9844101</span></span>
-<span><span class="co">#&gt;  exponential   0.9934109</span></span>
-<span><span class="co">#&gt;     sigEmax1   0.9936960</span></span>
-<span><span class="co">#&gt;     sigEmax2   0.9918645</span></span>
-<span><span class="co">#&gt; Bayesian Multiple Comparison Procedure</span></span>
 <span><span class="co">#&gt;   Estimated Success Rate:  0.8 </span></span>
 <span><span class="co">#&gt;   N Simulations:           100</span></span>
 <span><span class="co">#&gt; Model Significance Frequencies</span></span>
@@ -368,23 +244,6 @@ control.</p>
 <span><span class="co">#&gt;        0.76        0.50        0.75        0.65        0.61 </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $emax</span></span>
-<span><span class="co">#&gt; Bayesian Multiple Comparison Procedure</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Summary:</span></span>
-<span><span class="co">#&gt;   Sign: 1 </span></span>
-<span><span class="co">#&gt;   Critical Probability: 0.9766502 </span></span>
-<span><span class="co">#&gt;   Maximum Posterior Probability: 0.999295 </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Effective Sample Size (ESS) per Dose Group:</span></span>
-<span><span class="co">#&gt; NULL</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Posterior Probabilities for Model Shapes:</span></span>
-<span><span class="co">#&gt;        Model Probability</span></span>
-<span><span class="co">#&gt;       linear   0.9587449</span></span>
-<span><span class="co">#&gt;         emax   0.9992950</span></span>
-<span><span class="co">#&gt;  exponential   0.9437822</span></span>
-<span><span class="co">#&gt;     sigEmax1   0.9873499</span></span>
-<span><span class="co">#&gt;     sigEmax2   0.9978414</span></span>
 <span><span class="co">#&gt; Bayesian Multiple Comparison Procedure</span></span>
 <span><span class="co">#&gt;   Estimated Success Rate:  0.84 </span></span>
 <span><span class="co">#&gt;   N Simulations:           100</span></span>
@@ -394,23 +253,6 @@ control.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $exponential</span></span>
 <span><span class="co">#&gt; Bayesian Multiple Comparison Procedure</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Summary:</span></span>
-<span><span class="co">#&gt;   Sign: 1 </span></span>
-<span><span class="co">#&gt;   Critical Probability: 0.9766502 </span></span>
-<span><span class="co">#&gt;   Maximum Posterior Probability: 0.9947911 </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Effective Sample Size (ESS) per Dose Group:</span></span>
-<span><span class="co">#&gt; NULL</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Posterior Probabilities for Model Shapes:</span></span>
-<span><span class="co">#&gt;        Model Probability</span></span>
-<span><span class="co">#&gt;       linear   0.9947911</span></span>
-<span><span class="co">#&gt;         emax   0.9808488</span></span>
-<span><span class="co">#&gt;  exponential   0.9941373</span></span>
-<span><span class="co">#&gt;     sigEmax1   0.9929367</span></span>
-<span><span class="co">#&gt;     sigEmax2   0.9901143</span></span>
-<span><span class="co">#&gt; Bayesian Multiple Comparison Procedure</span></span>
 <span><span class="co">#&gt;   Estimated Success Rate:  0.81 </span></span>
 <span><span class="co">#&gt;   N Simulations:           100</span></span>
 <span><span class="co">#&gt; Model Significance Frequencies</span></span>
@@ -419,23 +261,6 @@ control.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $sigEmax1</span></span>
 <span><span class="co">#&gt; Bayesian Multiple Comparison Procedure</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Summary:</span></span>
-<span><span class="co">#&gt;   Sign: 1 </span></span>
-<span><span class="co">#&gt;   Critical Probability: 0.9766502 </span></span>
-<span><span class="co">#&gt;   Maximum Posterior Probability: 0.9985657 </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Effective Sample Size (ESS) per Dose Group:</span></span>
-<span><span class="co">#&gt; NULL</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Posterior Probabilities for Model Shapes:</span></span>
-<span><span class="co">#&gt;        Model Probability</span></span>
-<span><span class="co">#&gt;       linear   0.9933061</span></span>
-<span><span class="co">#&gt;         emax   0.9956022</span></span>
-<span><span class="co">#&gt;  exponential   0.9905965</span></span>
-<span><span class="co">#&gt;     sigEmax1   0.9985231</span></span>
-<span><span class="co">#&gt;     sigEmax2   0.9985657</span></span>
-<span><span class="co">#&gt; Bayesian Multiple Comparison Procedure</span></span>
 <span><span class="co">#&gt;   Estimated Success Rate:  0.87 </span></span>
 <span><span class="co">#&gt;   N Simulations:           100</span></span>
 <span><span class="co">#&gt; Model Significance Frequencies</span></span>
@@ -443,23 +268,6 @@ control.</p>
 <span><span class="co">#&gt;        0.73        0.66        0.71        0.84        0.80 </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $sigEmax2</span></span>
-<span><span class="co">#&gt; Bayesian Multiple Comparison Procedure</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Summary:</span></span>
-<span><span class="co">#&gt;   Sign: 1 </span></span>
-<span><span class="co">#&gt;   Critical Probability: 0.9766502 </span></span>
-<span><span class="co">#&gt;   Maximum Posterior Probability: 0.9987015 </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Effective Sample Size (ESS) per Dose Group:</span></span>
-<span><span class="co">#&gt; NULL</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Posterior Probabilities for Model Shapes:</span></span>
-<span><span class="co">#&gt;        Model Probability</span></span>
-<span><span class="co">#&gt;       linear   0.9815705</span></span>
-<span><span class="co">#&gt;         emax   0.9984707</span></span>
-<span><span class="co">#&gt;  exponential   0.9739715</span></span>
-<span><span class="co">#&gt;     sigEmax1   0.9962152</span></span>
-<span><span class="co">#&gt;     sigEmax2   0.9987015</span></span>
 <span><span class="co">#&gt; Bayesian Multiple Comparison Procedure</span></span>
 <span><span class="co">#&gt;   Estimated Success Rate:  0.86 </span></span>
 <span><span class="co">#&gt;   N Simulations:           100</span></span>
@@ -478,14 +286,11 @@ control.</p>
 <span><span class="co">#&gt; attr(,"priorESS")</span></span>
 <span><span class="co">#&gt;  Ctr DG_1 DG_2 DG_3 DG_4 </span></span>
 <span><span class="co">#&gt; 20.6  1.0  1.0  1.0  1.0</span></span></code></pre></div>
-<p>For this specific trial setting the adapted allocation ratio leads to
-increased success probabilities under all assumed dose response
-relationships.</p>
-<p>Instead of specifying the assumed effects via the models it is also
-possible to directly specify the effects for the individual dose levels
-via the dr_means input. This allows e.g. also the simulation of
-scenarios with a prior-data conflict.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+</div>
+<p>For this specific trial setting the adapted allocation ratio leads to increased success probabilities under all assumed dose response relationships.</p>
+<p>Instead of specifying the assumed effects via the models it is also possible to directly specify the effects for the individual dose levels via the dr_means input. This allows e.g. also the simulation of scenarios with a prior-data conflict.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">success_probabilities</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/assessDesign.html">assessDesign</a></span><span class="op">(</span></span>
 <span>  n_patients  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">60</span>, <span class="fl">80</span>, <span class="fl">80</span>, <span class="fl">80</span>, <span class="fl">80</span><span class="op">)</span>,</span>
 <span>  mods        <span class="op">=</span> <span class="va">mods</span>,</span>
@@ -495,23 +300,6 @@ scenarios with a prior-data conflict.</p>
 <span>  n_sim       <span class="op">=</span> <span class="fl">100</span><span class="op">)</span> <span class="co"># speed up example run-time</span></span>
 <span><span class="va">success_probabilities</span></span>
 <span><span class="co">#&gt; $dose_resp</span></span>
-<span><span class="co">#&gt; Bayesian Multiple Comparison Procedure</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Summary:</span></span>
-<span><span class="co">#&gt;   Sign: 1 </span></span>
-<span><span class="co">#&gt;   Critical Probability: 0.9782716 </span></span>
-<span><span class="co">#&gt;   Maximum Posterior Probability: 0.9990132 </span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Effective Sample Size (ESS) per Dose Group:</span></span>
-<span><span class="co">#&gt; NULL</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Posterior Probabilities for Model Shapes:</span></span>
-<span><span class="co">#&gt;        Model Probability</span></span>
-<span><span class="co">#&gt;       linear   0.9983927</span></span>
-<span><span class="co">#&gt;         emax   0.9915783</span></span>
-<span><span class="co">#&gt;  exponential   0.9977974</span></span>
-<span><span class="co">#&gt;     sigEmax1   0.9990132</span></span>
-<span><span class="co">#&gt;     sigEmax2   0.9984487</span></span>
 <span><span class="co">#&gt; Bayesian Multiple Comparison Procedure</span></span>
 <span><span class="co">#&gt;   Estimated Success Rate:  0.99 </span></span>
 <span><span class="co">#&gt;   N Simulations:           100</span></span>
@@ -531,10 +319,109 @@ scenarios with a prior-data conflict.</p>
 <span><span class="co">#&gt;  Ctr DG_1 DG_2 DG_3 DG_4 </span></span>
 <span><span class="co">#&gt; 20.6  1.0  1.0  1.0  1.0</span></span></code></pre></div>
 </div>
-  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
-    </nav></aside>
+</section><script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+    var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'light-border',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config);
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script></main>
 </div>
-
 
 
     <footer><div class="pkgdown-footer-left">
