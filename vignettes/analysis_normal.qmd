@@ -1,5 +1,5 @@
 ---
-title: "Analysis Example of Bayesian MCPMod for Continuous Data with non-informative prior"
+title: "Analysis Example of Bayesian MCPMod for Continuous Data"
 format: 
   html:
     fig-height: 3.5
@@ -7,13 +7,24 @@ format:
     toc: true
     number-sections: true
     bibliography: references.bib
+    code-summary: setup
+    #code-fold: true
+    message: false
+    warning: false
 vignette: >
-  %\VignetteIndexEntry{Analysis Example of Bayesian MCPMod for Continuous Data with non-informative prior}
+  %\VignetteIndexEntry{Analysis Example of Bayesian MCPMod for Continuous Data}
     %\VignetteEncoding{UTF-8}
     %\VignetteEngine{quarto::html}
 ---
 
-```{r setup}
+
+
+```{r}
+#| code-summary: setup
+#| code-fold: true
+#| message: false
+#| warning: false
+
 library(BayesianMCPMod)
 library(RBesT)
 library(clinDR)
@@ -22,13 +33,6 @@ library(tibble)
 library(reactable)
 
 set.seed(7015)
-```
-
-```{r}
-#| code-summary: setup
-#| code-fold: true
-#| message: false
-#| warning: false
 
 #' Display Parameters Table
 #'
@@ -98,22 +102,93 @@ display_params_table <- function(named_list) {
 This vignette demonstrates the application of the {BayesianMCPMod} package for 
 analyzing a phase 2 dose-finding trial using the Bayesian MCPMod approach.
 
-# Prior Specification
+# Calculation of a MAP prior
 
-Ideally, priors are grounded in historical data. This approach allows for the synthesis of 
-prior knowledge with current data, enhancing the accuracy of trial evaluations.
+In a first step, a meta analytic prior will be calculated using historical data from 4 trials with main endpoint Change from baseline in MADRS score after 8 weeks.
+Please note that only information from the control group will be integrated leading to an informative mixture prior for the control group, while for the active groups a non-informative prior will be specified.
+```{r Historical Data for Control Arm}
+data("metaData")
+dataset     <- filter(as.data.frame(metaData), bname == "BRINTELLIX")
+histcontrol <- filter(
+  dataset,
+  dose       == 0,
+  primtime   == 8,
+  indication == "MAJOR DEPRESSIVE DISORDER",
+  protid     != 5)
 
-The focus of this vignette is more generic, however. We specify weakly-informative 
-priors across all dose groups to allow the trial data to have a stronger influence on the analysis.
-
-```{r}
+hist_data   <- data.frame(
+  trial = histcontrol$nctno,
+  est   = histcontrol$rslt,
+  se    = histcontrol$se,
+  sd    = histcontrol$sd,
+  n     = histcontrol$sampsize)
+```
+Here, we suggest a function to construct a list of prior distributions for the different dose groups.
+This function is adapted to the needs of this example.
+Other applications may need a different way to construct prior distributions.
+```{r Defining MAP prior function}
+getPriorList <- function (
+  
+  hist_data,
+  dose_levels,
+  dose_names    = NULL,
+  robust_weight = 0.5
+  
+) {
+  
+  sd_tot <- with(hist_data, sum(sd * n) / sum(n))
+  
+  gmap <- RBesT::gMAP(
+    formula    = cbind(est, se) ~ 1 | trial,
+    weights    = hist_data$n,
+    data       = hist_data,
+    family     = gaussian,
+    beta.prior = cbind(0, 100 * sd_tot),
+    tau.dist   = "HalfNormal",
+    tau.prior  = cbind(0, sd_tot / 4))
+  
+  prior_ctr <- RBesT::automixfit(gmap)
+  
+  if (!is.null(robust_weight)) {
+    
+    prior_ctr <- suppressMessages(RBesT::robustify(
+      priormix = prior_ctr,
+      weight   = robust_weight,
+      sigma    = sd_tot))
+    
+  }
+  
+  prior_trt <- RBesT::mixnorm(
+    comp1 = c(w = 1, m = summary(prior_ctr)[1], n = 1),
+    sigma = sd_tot,
+    param = "mn")
+  
+  prior_list <- c(list(prior_ctr),
+                  rep(x     = list(prior_trt),
+                      times = length(dose_levels[-1])))
+  
+  if (is.null(dose_names)) {
+    
+    dose_names <- c("Ctr", paste0("DG_", seq_along(dose_levels[-1])))
+    
+  }
+  
+  names(prior_list) <- dose_names
+  
+  return (prior_list)
+  
+}
+```
+With the dose levels to be investigated, the prior distribution can be constructed.
+```{r Getting the MAP prior}
 dose_levels <- c(0, 2.5, 5, 10)
 
-prior_list <- lapply(dose_levels, function(dose_group) {
-  RBesT::mixnorm(weak = c(w = 1, m = 0, s = 200), sigma = 10) 
-})
+prior_list  <- getPriorList(
+  hist_data     = hist_data,
+  dose_levels   = dose_levels,
+  robust_weight = 0.3)
 
-names(prior_list) <- c("Ctr", paste0("DG_", dose_levels[-1]))
+getESS(prior_list)
 ```
 
 # Dose-Response Model Shapes
@@ -229,8 +304,8 @@ the prior information with the estimated results of the trial [@fleischer_2022].
 ```{r}
 posterior <- getPosterior(
   prior_list = prior_list,
-  mu_hat     = trial_data$rslt,
-  S_hat      = trial_data$se,
+  mu_hat = trial_data$rslt,
+  S_hat = trial_data$se,
   calc_ess = TRUE
 )
 
