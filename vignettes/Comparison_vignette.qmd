@@ -16,6 +16,22 @@ vignette: >
     %\VignetteEngine{quarto::html}
 ---
 
+```{r setup, include=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+library(BayesianMCPMod)
+library(RBesT)
+library(clinDR)
+library(dplyr)
+library(tibble)
+library(reactable)
+library(DoseFinding)
+library(MCPModPack)
+library(kableExtra)
+library(data.table)
+library(doFuture)
+library(doRNG)
+```
+
+
 ```{r}
 #| code-summary: setup
 #| code-fold: true
