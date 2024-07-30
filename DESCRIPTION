@@ -47,6 +47,11 @@ Suggests:
     dplyr,
     knitr,
     rmarkdown,
+    MCPModPack,
+    data.table,
+    doFuture,
+    doRNG,
+    kableExtra,
     spelling,
     testthat (>= 3.0.0)
 VignetteBuilder: quarto
