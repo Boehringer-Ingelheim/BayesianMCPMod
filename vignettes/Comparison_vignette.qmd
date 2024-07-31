@@ -246,20 +246,14 @@ set.seed(7015)
 
 This vignette demonstrates the application of the {BayesianMCPMod}
 package for sample size calculations and the comparison with the
-{MCPModPack} package. As for other bayesian approaches BMCPMod is able
-to mimic the results of the frequentist MCPMod for non-informative
-priors and this is shown here for the sample size planning of different
-scenarios.
+{MCPModPack} package. As for other bayesian approaches BMCPMod is set up in a way that it 
+mimics the results (and operating characteristics) of the frequentist MCPMod for non-informative
+priors. This characteristic is illustrated in the following sections focusing on the trial planning. 
 
-In order to test and compare BayesianMCPMod and MCPModPack sample size
-calculations in different scenarios, the data used for the comparisons
-will be simulated multiple times using different input values. Every
-scenario will be named to make the differentiation between each scenario
-simpler. Altogether, four different scenarios were simulated. The first
-three scenarios are pretty similiar, they only differ in the pre-defined
-set of candidate models M. The other design choices, like the number of
-dose levels or sample size allocation stay the same between the
-scenarios. For the first three scenarios, these design choices are:
+In order to compare BayesianMCPMod and MCPModPack success probabilities 
+four different dose-finding scenarios are considered. For the first
+three scenarios the general trial design is the same, the only difference is the considered set of DR models. 
+These design choices are:
 
 -   four dose levels plus placebo (0 mg, 1 mg, 2 mg, 4 mg, 8 mg)
 
@@ -267,25 +261,20 @@ scenarios. For the first three scenarios, these design choices are:
 
 -   equal allocation ratio for each dose group
 
--   expected effect for maximum dose of 0.2 mg
-
 -   standard deviation of 0.4 for every dose group
 
 The fourth scenario, the variability scenario, has some different design
-choices: - three dose levels plus placebo (0 mg, 1 mg, 4 mg, 8 mg) -
-total sample size of N = 100 - equal allocation ratio for each dose
-group - expected effect for maximum dose of 0.2 mg - standard deviation
-of 0.4 for every dose group
+choices for the number of dose levels and the total sample size: 
+- three dose levels plus placebo (0 mg, 1 mg, 4 mg, 8 mg) 
+- total sample size of N = 100 
 
-Building on the initial scenarios, we further delve into the exploration
-of varying input parameters. The varying parameters are:
+Building on these scenarios the following varying additional parameters are used:
 
--   expected effect for maximum dose of (0.05 mg, 0.1 mg, 0.2 mg, 0.3
-    mg, 0.5 mg)
+-   expected effect for maximum dose of (0.05, 0.1, 0.2, 0.3, 0.5)
 
 -   different total sample size with different allocation:
 
--    (40,20,20,20,40), (30,30,30,30,30), (48,24,24,24,48),
+-   (40,20,20,20,40), (30,30,30,30,30), (48,24,24,24,48),
     (36,36,36,36,36) (for the first three scenarios)
 
 -   (40,20,20,40), (30,30,30,30), (48,24,24,48), (36,36,36,36) (for the
@@ -293,14 +282,12 @@ of varying input parameters. The varying parameters are:
 
 In a subsequent step, we extend our analysis to test the convergence of
 power values as the number of simulations increases. For this part of
-the study, we assume an expected effect for the maximum dose of 0.2 mg.
+the study, we assume an expected effect for the maximum dose of 0.2.
 The sample size is set to 200 for the linear, monotonic and
-non-monotonic scenario and 100 for the variability scenario. This
-further exploration allows us to deepen our understanding of the
-BayesianMCPMod and MCPModPack packages and their performance under
-varying conditions.
+non-monotonic scenario and 100 for the variability scenario using equal allocation. 
 
-For each of these simulation cases, 10000 simulation runs are performed. Given the number of simulations, the difference should be in the range of 1-3% (based on the law of large numbers).
+For each of these simulation cases, 10000 simulation runs are performed. 
+Given the number of simulations, and using basic mathematical approximations (like the law of large numbers) the difference in success probabilities should be in the range of 1-3%.
 
 ```{r}
 #######  General assumptions  #########
@@ -369,7 +356,7 @@ alpha <- 0.05
 
 ## Scenarios
 
-In the following the candidate models for the different scenarios are
+In the following the candidate models for the different scenarios are specified and
 plotted.
 
 ```{r}
@@ -471,7 +458,8 @@ var_modelsPack = list(linear = NA,
 # Comparison_MCPModPack.qmd
 ```
 
-Following simulations will be conducted utilizing the MCPModPack package, with varying the expected effect for maximum dose and the sample sizes.
+The following simulations will be conducted utilizing the MCPModPack package (with varying expected effect for maximum dose and  sample sizes).
+
 
 ## Minimal scenario
 
@@ -817,7 +805,7 @@ kable(results_monotonic_MCP_nsample)%>%
 
 ### varying expected effect for maximum dose
 
-For the simulations of the non-monotonic scenario, the R package 'Dosefinding' was used instead of 'MCPModPack
+For the simulations of the non-monotonic scenario, the R package 'Dosefinding' was used instead of 'MCPModPack'. In particular the powMCT function was utilized to calculate success probabilities for the various scenarios.
 
 ```{r}
 # linear with DoseFinding package
@@ -1578,11 +1566,11 @@ kable(results_var_MCP_nsample)%>%
 ```
 
 
-Following simulations will be conducted utilizing the BayesianMCPMod' package, with varying the expected effect for maximum dose and the sample sizes.
+Following simulations will be conducted utilizing the 'BayesianMCPMod' package using the same scenarios as for the frequentist evaluations.
 
 
 # Prior Specification
-In a first step an uninformativ prior is calculated.
+In a first step an uninformative prior is specified.
 
 ```{r}
 uninf_prior_list <- list(
@@ -2070,9 +2058,9 @@ var_nsample_Bay$kable_result
 
 # Comparison
 
-In the following, we will draw comparisons between the power values of various scenarios and differnt parameters.
+In the following, the comparisons between the success probabilities (i.e.power values for frequentist set-up) of various scenarios and differnt parameters are visualized.
 
-The following plots show the difference between the results with MCPModPack and BayesianMCPMod. The results with MCPModPack are shown as a line and the difference to the result with BayesianMCPMod is shown as a bar. The dose-response model assumed to be true during the analysis is shown as a different colour.
+The following plots show the difference between the results from MCPModPack and BayesianMCPMod. The results of MCPModPack are shown as a line and the difference to the result with BayesianMCPMod is presented as a bar. The results for the different assumed true dose-response models (that were the basis for simulating the data) are shown in different colours.
 
 ## varying expected effect for maximum dose
 
@@ -2495,6 +2483,8 @@ ggplot(data = data_plot_nsample_var, aes(x = sample_sizes_num)) +
 
 
 ```
+
+As expected for all the different scenarios operating characteristics for BayesianMCPMod with non-informative prior match with operating characteristics for frequentist MCPMod.
 
 ## convergence of power values
 
@@ -3068,8 +3058,8 @@ results_list_nsim_MCP_var <- foreach(k = chunks, .combine = c, .export = c(as.ch
 
 ## Results
 
-The following plots show the result of the convergence test of the power values for an increasing number of simulations. The difference between the power values of the frequency and Bayesian simulations is shown.
-In the non-monotonous scenario, the DoseFinding package was used instead of the MCPModPack. This package does not simulate but accurately calculates the values. The difference between the Bayesian results and the true value of the DoseFinding calculation is also shown.
+The following plots show the result of the convergence test of the power values for an increasing number of simulations. The difference between the success probabilities of the frequency and Bayesian simulations is shown.
+In the non-monotonous scenario, the DoseFinding package was used instead of the MCPModPack. This package does not simulate but calculates the success probabilities (i.e. no specific number of iterations needs to be defined). The difference between the Bayesian results and the value of the DoseFinding calculation is also shown.
 
 ### minimal scenario
 
