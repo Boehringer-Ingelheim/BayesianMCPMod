@@ -11,6 +11,7 @@
 #' @param mu_hat vector of estimated mean values (per dose group).
 #' @param S_hat Either a vector or a covariance matrix specifying the (estimated) variability can be specified. The length of the vector (resp. the dimension of the matrix) needs to match the number of dose groups. Please note that for a vector input the numbers should reflect the standard error per dose group (i.e. square root of variance), while for a matrix input the variance-covariance matrix should be provided.
 #' @param calc_ess boolean variable, indicating whether effective sample size should be calculated. Default FALSE
+#' @references BERNARDO, Jl. M., and Smith, AFM (1994). Bayesian Theory. 81.
 #' @return posterior_list, a posterior list object is returned with information about (mixture) posterior distribution per dose group (more detailed information about the conjugate posterior in case of covariance input for S_hat is provided in the attributes)
 #' @examples
 #' prior_list <- list(Ctrl = RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 5), sigma = 2),
