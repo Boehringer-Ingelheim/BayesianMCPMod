@@ -1253,6 +1253,7 @@ function(a,b,c){if(!Vd(b))throw Error(n(200));return Wd(null,a,b,!1,c)};Q.unmoun
 <li><a class="dropdown-item" href="../articles/analysis_normal.html">Analysis Example of Bayesian MCPMod for Continuous Data</a></li>
     <li><a class="dropdown-item" href="../articles/Simulation_Example.html">Simulation Example of Bayesian MCPMod for Continuous Data</a></li>
     <li><a class="dropdown-item" href="../articles/Comparison_vignette.html">Simulation Example of Bayesian MCPMod and MCPMod</a></li>
+    <li><a class="dropdown-item" href="../articles/Simulation_Comparison.html">Comparison of Bayesian MCPMod and MCPMod</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
@@ -1288,7 +1289,7 @@ function(a,b,c){if(!Vd(b))throw Error(n(200));return Wd(null,a,b,!1,c)};Q.unmoun
 
     <div class="cell">
 <details class="code-fold"><summary>setup</summary><div class="sourceCode cell-code" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Boehringer-Ingelheim/BayesianMCPMod" class="external-link">BayesianMCPMod</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://boehringer-ingelheim.github.io/BayesianMCPMod/">BayesianMCPMod</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://opensource.nibr.com/RBesT/" class="external-link">RBesT</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">clinDR</span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
@@ -1461,7 +1462,7 @@ function(a,b,c){if(!Vd(b))throw Error(n(200));return Wd(null,a,b,!1,c)};Q.unmoun
 <span class="header-section-number">3</span> Dose-Response Model Shapes<a class="anchor" aria-label="anchor" href="#dose-response-model-shapes"></a>
 </h2>
 <p>Candidate models are specified using the {DoseFinding} package. Models can be parameterized using guesstimates or by directly providing distribution parameters. Note that the linear candidate model does not require parameterization.</p>
-<p><span class="column-margin margin-aside"><strong>Note:</strong> The LinLog model is rarely used and not currently supported by <a href="https://github.com/Boehringer-Ingelheim/BayesianMCPMod" class="external-link">BayesianMCPMod</a>.</span></p>
+<p><span class="column-margin margin-aside"><strong>Note:</strong> The LinLog model is rarely used and not currently supported by <a href="https://boehringer-ingelheim.github.io/BayesianMCPMod/">BayesianMCPMod</a>.</span></p>
 <p>In the code below, the models are “guesstimated” using the <code><a href="https://rdrr.io/pkg/DoseFinding/man/guesst.html" class="external-link">DoseFinding::guesst</a></code> function. The <code>d</code> option usually takes a single value (a dose level), and the corresponding <code>p</code> for the maximum effect achieved at <code>d</code>.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb6"><pre class="downlit sourceCode r">

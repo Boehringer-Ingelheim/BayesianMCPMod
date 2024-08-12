@@ -43,6 +43,7 @@
 <li><a class="dropdown-item" href="../articles/analysis_normal.html">Analysis Example of Bayesian MCPMod for Continuous Data</a></li>
     <li><a class="dropdown-item" href="../articles/Simulation_Example.html">Simulation Example of Bayesian MCPMod for Continuous Data</a></li>
     <li><a class="dropdown-item" href="../articles/Comparison_vignette.html">Simulation Example of Bayesian MCPMod and MCPMod</a></li>
+    <li><a class="dropdown-item" href="../articles/Simulation_Comparison.html">Comparison of Bayesian MCPMod and MCPMod</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
@@ -79,7 +80,7 @@
     <div class="cell">
 <details class="code-fold"><summary>setup</summary><div class="sourceCode cell-code" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Boehringer-Ingelheim/BayesianMCPMod" class="external-link">BayesianMCPMod</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://boehringer-ingelheim.github.io/BayesianMCPMod/">BayesianMCPMod</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">clinDR</span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
 <span></span>
@@ -123,7 +124,7 @@
 </section><section class="section level2" data-number="3"><h2 data-number="3" id="specification-of-new-trial-design">
 <span class="header-section-number">3</span> Specification of new trial design<a class="anchor" aria-label="anchor" href="#specification-of-new-trial-design"></a>
 </h2>
-<p>For the hypothetical new trial, we plan with 4 active dose levels and we specify a broad set of potential dose-response relationships, including a linear, an exponential, an emax and 2 sigEMax models.<br>
+<p>For the hypothetical new trial, we plan with 4 active dose levels and we specify a broad set of potential dose-response relationships, including a linear, an exponential, an emax and 2 sigEMAX models.<br>
 Furthermore, we assume a maximum effect of -3 on top of control (i.e. assuming that active treatment can reduce the MADRS score after 8 weeks by up to 15.8) and plan a trial with 80 patients for all active groups and 60 patients for control.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb4"><pre class="downlit sourceCode r">

@@ -51,6 +51,7 @@
 <li><a class="dropdown-item" href="../articles/analysis_normal.html">Analysis Example of Bayesian MCPMod for Continuous Data</a></li>
     <li><a class="dropdown-item" href="../articles/Simulation_Example.html">Simulation Example of Bayesian MCPMod for Continuous Data</a></li>
     <li><a class="dropdown-item" href="../articles/Comparison_vignette.html">Simulation Example of Bayesian MCPMod and MCPMod</a></li>
+    <li><a class="dropdown-item" href="../articles/Simulation_Comparison.html">Comparison of Bayesian MCPMod and MCPMod</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
@@ -269,7 +270,7 @@
 <span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">chunk_list</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Boehringer-Ingelheim/BayesianMCPMod" class="external-link">BayesianMCPMod</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://boehringer-ingelheim.github.io/BayesianMCPMod/">BayesianMCPMod</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://opensource.nibr.com/RBesT/" class="external-link">RBesT</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">clinDR</span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
@@ -1162,7 +1163,7 @@ Power results different sample sizes
 <section class="level3" data-number="2.3.1"><h4 data-number="2.3.1" id="varying-expected-effect-for-maximum-dose-2">
 <span class="header-section-number">2.3.1</span> varying expected effect for maximum dose<a class="anchor" aria-label="anchor" href="#varying-expected-effect-for-maximum-dose-2"></a>
 </h4>
-<p>For the simulations of the non-monotonic scenario, the R package ‘Dosefinding’ was used instead of ‘MCPModPack’. In particular the powMCT function was utilized to calculate success probabilities for the various scenarios.</p>
+<p>For the simulations of the non-monotonic scenario, the R package ‘DoseFinding’ was used instead of ‘MCPModPack’. In particular the powMCT function was utilized to calculate success probabilities for the various scenarios.</p>
 <div class="cell">
 <details class="code-fold"><summary>setup</summary><div class="sourceCode cell-code" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># linear with DoseFinding package</span></span>
@@ -2200,8 +2201,8 @@ Power results different sample sizes
 </details>
 </div>
 <p>To calculate success probabilities for the different assumed dose-response models and the specified trial design we will apply the assessDesign function.</p>
-<section class="level2" data-number="4.1"><h3 data-number="4.1" id="minimal-scnenario">
-<span class="header-section-number">4.1</span> Minimal scnenario<a class="anchor" aria-label="anchor" href="#minimal-scnenario"></a>
+<section class="level2" data-number="4.1"><h3 data-number="4.1" id="minimal-scenario-1">
+<span class="header-section-number">4.1</span> Minimal scenario<a class="anchor" aria-label="anchor" href="#minimal-scenario-1"></a>
 </h3>
 <section class="level3" data-number="4.1.1"><h4 data-number="4.1.1" id="varying-expected-effect-for-maximum-dose-4">
 <span class="header-section-number">4.1.1</span> varying expected effect for maximum dose<a class="anchor" aria-label="anchor" href="#varying-expected-effect-for-maximum-dose-4"></a>
@@ -3230,13 +3231,13 @@ Success probability results different sample sizes
 </section></section></section><section class="section level2" data-number="5"><h2 data-number="5" id="comparison">
 <span class="header-section-number">5</span> Comparison<a class="anchor" aria-label="anchor" href="#comparison"></a>
 </h2>
-<p>In the following, the comparisons between the success probabilities (i.e.power values for frequentist set-up) of various scenarios and differnt parameters are visualized.</p>
+<p>In the following, the comparisons between the success probabilities (i.e.power values for frequentist set-up) of various scenarios and different parameters are visualized.</p>
 <p>The following plots show the difference between the results from MCPModPack and BayesianMCPMod. The results of MCPModPack are shown as a line and the difference to the result with BayesianMCPMod is presented as a bar. The results for the different assumed true dose-response models (that were the basis for simulating the data) are shown in different colours.</p>
 <section class="level2" data-number="5.1"><h3 data-number="5.1" id="varying-expected-effect-for-maximum-dose-8">
 <span class="header-section-number">5.1</span> varying expected effect for maximum dose<a class="anchor" aria-label="anchor" href="#varying-expected-effect-for-maximum-dose-8"></a>
 </h3>
-<section class="level3" data-number="5.1.1"><h4 data-number="5.1.1" id="minimal-scenario-1">
-<span class="header-section-number">5.1.1</span> minimal scenario<a class="anchor" aria-label="anchor" href="#minimal-scenario-1"></a>
+<section class="level3" data-number="5.1.1"><h4 data-number="5.1.1" id="minimal-scenario-2">
+<span class="header-section-number">5.1.1</span> minimal scenario<a class="anchor" aria-label="anchor" href="#minimal-scenario-2"></a>
 </h4>
 <div class="cell">
 <details class="code-fold"><summary>setup</summary><div class="sourceCode cell-code" id="cb37"><pre class="downlit sourceCode r">
@@ -4055,8 +4056,8 @@ Power results different expected effects
 <code class="sourceCode R"><span><span class="va">nsample_vector</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html" class="external-link">as.vector</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"(40, 20, 20, 20, 40)"</span>, <span class="st">"(30, 30, 30, 30, 30)"</span>, <span class="st">"(48, 24, 24, 24, 48)"</span>, <span class="st">"(36, 36, 36, 36, 36)"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </details>
 </div>
-<section class="level3" data-number="5.2.1"><h4 data-number="5.2.1" id="minimal-scenario-2">
-<span class="header-section-number">5.2.1</span> minimal scenario<a class="anchor" aria-label="anchor" href="#minimal-scenario-2"></a>
+<section class="level3" data-number="5.2.1"><h4 data-number="5.2.1" id="minimal-scenario-3">
+<span class="header-section-number">5.2.1</span> minimal scenario<a class="anchor" aria-label="anchor" href="#minimal-scenario-3"></a>
 </h4>
 <div class="cell">
 <details class="code-fold"><summary>setup</summary><div class="sourceCode cell-code" id="cb50"><pre class="downlit sourceCode r">
@@ -4627,8 +4628,8 @@ Success probability results different sample sizes
 </div>
 </div>
 </div>
-</section><section class="level3" data-number="5.2.4"><h4 data-number="5.2.4" id="variability-sceanrio">
-<span class="header-section-number">5.2.4</span> variability sceanrio<a class="anchor" aria-label="anchor" href="#variability-sceanrio"></a>
+</section><section class="level3" data-number="5.2.4"><h4 data-number="5.2.4" id="variability-scenario-3">
+<span class="header-section-number">5.2.4</span> variability scenario<a class="anchor" aria-label="anchor" href="#variability-scenario-3"></a>
 </h4>
 <div class="cell">
 <details class="code-fold"><summary>setup</summary><div class="sourceCode cell-code" id="cb59"><pre class="downlit sourceCode r">
@@ -5357,8 +5358,8 @@ Success probability results different sample sizes
 <span class="header-section-number">5.4</span> Results<a class="anchor" aria-label="anchor" href="#results"></a>
 </h3>
 <p>The following plots show the result of the convergence test of the power values for an increasing number of simulations. The difference between the success probabilities of the frequency and Bayesian simulations is shown. In the non-monotonous scenario, the DoseFinding package was used instead of the MCPModPack. This package does not simulate but calculates the success probabilities (i.e. no specific number of iterations needs to be defined). The difference between the Bayesian results and the value of the DoseFinding calculation is also shown.</p>
-<section class="level3" data-number="5.4.1"><h4 data-number="5.4.1" id="minimal-scenario-3">
-<span class="header-section-number">5.4.1</span> minimal scenario<a class="anchor" aria-label="anchor" href="#minimal-scenario-3"></a>
+<section class="level3" data-number="5.4.1"><h4 data-number="5.4.1" id="minimal-scenario-4">
+<span class="header-section-number">5.4.1</span> minimal scenario<a class="anchor" aria-label="anchor" href="#minimal-scenario-4"></a>
 </h4>
 <div class="cell">
 <details class="code-fold"><summary>setup</summary><div class="sourceCode cell-code" id="cb75"><pre class="downlit sourceCode r">
@@ -5466,8 +5467,8 @@ Success probability results different sample sizes
 </div>
 </div>
 </div>
-</section><section class="level3" data-number="5.4.4"><h4 data-number="5.4.4" id="variability-scenario-3">
-<span class="header-section-number">5.4.4</span> variability scenario<a class="anchor" aria-label="anchor" href="#variability-scenario-3"></a>
+</section><section class="level3" data-number="5.4.4"><h4 data-number="5.4.4" id="variability-scenario-4">
+<span class="header-section-number">5.4.4</span> variability scenario<a class="anchor" aria-label="anchor" href="#variability-scenario-4"></a>
 </h4>
 <div class="cell">
 <details class="code-fold"><summary>setup</summary><div class="sourceCode cell-code" id="cb78"><pre class="downlit sourceCode r">
