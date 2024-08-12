@@ -14,8 +14,8 @@ format:
     warning: false
 vignette: >
   %\VignetteIndexEntry{Simulation Example of Bayesian MCPMod for Continuous Data}
-    %\VignetteEncoding{UTF-8}
-    %\VignetteEngine{quarto::html}
+  %\VignetteEngine{quarto::html}
+  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r, include = FALSE}
@@ -103,7 +103,7 @@ prior_list  <- list(
 
 # Specification of new trial design 
 
-For the hypothetical new trial, we plan with 4 active dose levels \eqn{2.5, 5, 10, 20} and we specify a broad set of potential dose-response relationships, including a linear, an exponential, an emax and 2 sigEMax models.  
+For the hypothetical new trial, we plan with 4 active dose levels \eqn{2.5, 5, 10, 20} and we specify a broad set of potential dose-response relationships, including a linear, an exponential, an emax and 2 sigEMAX models.  
 Furthermore, we assume a maximum effect of -3 on top of control (i.e. assuming that active treatment can reduce the MADRS score after 8 weeks by up to 15.8) and plan a trial with 80 patients for all active groups and 60 patients for control.
 ```{r}
 exp     <- DoseFinding::guesst(

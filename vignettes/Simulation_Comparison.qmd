@@ -12,8 +12,8 @@ format:
     warning: false
 vignette: >
   %\VignetteIndexEntry{Comparison of Bayesian MCPMod and MCPMod}
-    %\VignetteEncoding{UTF-8}
-    %\VignetteEngine{quarto::html}
+  %\VignetteEngine{quarto::html}
+  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r setup, include=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
@@ -557,7 +557,7 @@ monotonic_Bay <- print_result_Bay_max_eff(results_monotonic_Bay, c(monotonic_sce
 
 # Comparison
 
-In the following, the comparisons between the success probabilities (i.e.power values for frequentist set-up) of various scenarios and differnt parameters are visualized.
+In the following, the comparisons between the success probabilities (i.e.power values for frequentist set-up) of various scenarios and different parameters are visualized.
 
 The following plots show the difference between the results from MCPModPack and BayesianMCPMod. The results of MCPModPack are shown as a line and the difference to the result with BayesianMCPMod is presented as a bar. The results for the different assumed true dose-response models (that were the basis for simulating the data) are shown in different colours.
 

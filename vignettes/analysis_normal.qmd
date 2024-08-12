@@ -13,8 +13,8 @@ format:
     warning: false
 vignette: >
   %\VignetteIndexEntry{Analysis Example of Bayesian MCPMod for Continuous Data}
-    %\VignetteEncoding{UTF-8}
-    %\VignetteEngine{quarto::html}
+  %\VignetteEngine{quarto::html}
+  %\VignetteEncoding{UTF-8}
 ---
 
 

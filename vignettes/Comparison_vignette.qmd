@@ -12,8 +12,8 @@ format:
     warning: false
 vignette: >
   %\VignetteIndexEntry{Simulation Example of Bayesian MCPMod and MCPMod}
-    %\VignetteEncoding{UTF-8}
-    %\VignetteEngine{quarto::html}
+  %\VignetteEngine{quarto::html}
+  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r setup, include=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
@@ -805,7 +805,7 @@ kable(results_monotonic_MCP_nsample)%>%
 
 ### varying expected effect for maximum dose
 
-For the simulations of the non-monotonic scenario, the R package 'Dosefinding' was used instead of 'MCPModPack'. In particular the powMCT function was utilized to calculate success probabilities for the various scenarios.
+For the simulations of the non-monotonic scenario, the R package 'DoseFinding' was used instead of 'MCPModPack'. In particular the powMCT function was utilized to calculate success probabilities for the various scenarios.
 
 ```{r}
 # linear with DoseFinding package
@@ -1585,7 +1585,7 @@ uninf_prior_list <- list(
 
 To calculate success probabilities for the different assumed dose-response models and the specified trial design we will apply the assessDesign function. 
 
-## Minimal scnenario
+## Minimal scenario
 ### varying expected effect for maximum dose
 
 
@@ -2058,7 +2058,7 @@ var_nsample_Bay$kable_result
 
 # Comparison
 
-In the following, the comparisons between the success probabilities (i.e.power values for frequentist set-up) of various scenarios and differnt parameters are visualized.
+In the following, the comparisons between the success probabilities (i.e.power values for frequentist set-up) of various scenarios and different parameters are visualized.
 
 The following plots show the difference between the results from MCPModPack and BayesianMCPMod. The results of MCPModPack are shown as a line and the difference to the result with BayesianMCPMod is presented as a bar. The results for the different assumed true dose-response models (that were the basis for simulating the data) are shown in different colours.
 
@@ -2437,7 +2437,7 @@ ggplot(data = data_plot_nsample_non_monotonic, aes(x = sample_sizes_num)) +
 
 ```
 
-### variability sceanrio
+### variability scenario
 
 ```{r}
 

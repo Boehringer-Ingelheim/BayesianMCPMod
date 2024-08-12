@@ -29,9 +29,9 @@ getPriorList <- function (
 
   gmap <- RBesT::gMAP(
     formula    = cbind(est, se) ~ 1 | trial,
+    family     = gaussian,
     weights    = hist_data$n,
     data       = hist_data,
-    family     = gaussian,
     beta.prior = cbind(0, 100 * sd_tot),
     tau.dist   = "HalfNormal",
     tau.prior  = cbind(0, sd_tot / 4))

@@ -2,7 +2,7 @@
 #'
 #' @description Either the patient level data or both mu_hat as well as S_hat must to be provided.
 #' If patient level data is provided mu_hat and S_hat are calculated within the function using a linear model.
-#' This function calculates the posterior distribution. Depending on the input for S_hat this step is either performed for every dose group independently via the RBesT function postmix() or the mvpostmix() function of the dosefinding package is utilized. 
+#' This function calculates the posterior distribution. Depending on the input for S_hat this step is either performed for every dose group independently via the RBesT function postmix() or the mvpostmix() function of the DoseFinding package is utilized.
 #' In the latter case conjugate posterior mixture of multivariate normals are calculated (DeGroot 1970, Bernardo and Smith 1994)
 #'
 #' @param prior_list a prior list with information about the prior to be used for every dose group

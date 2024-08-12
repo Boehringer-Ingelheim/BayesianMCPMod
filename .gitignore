@@ -2,6 +2,7 @@
 .Rhistory
 .RData
 .Ruserdata
-/doc/
-/Meta/
+Meta
 .DS_Store
+doc
+docs
