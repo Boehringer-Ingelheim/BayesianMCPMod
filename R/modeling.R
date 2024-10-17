@@ -47,7 +47,8 @@ getModelFits <- function (
   models,
   dose_levels,
   posterior,
-  simple = FALSE
+  simple = FALSE,
+  delta
 
 ) {
   if (inherits(models, "character")) {
@@ -61,8 +62,7 @@ getModelFits <- function (
   model_names <- unique(gsub("\\d", "", names(models)))
 
   getModelFit <- ifelse(simple, getModelFitSimple, getModelFitOpt)
-
-  model_fits  <- lapply(model_names, getModelFit, dose_levels, posterior, list("scal" = attr(models, "scal")))
+  model_fits  <- lapply(model_names, getModelFit, dose_levels, posterior, list("scal" = attr(models, "scal")), delta = delta)
   model_fits  <- addModelWeights(model_fits)
 
   names(model_fits)             <- model_names
@@ -114,7 +114,8 @@ getModelFitOpt <- function (
   model,
   dose_levels,
   posterior,
-  addArgs = NULL
+  addArgs = NULL,
+  delta
 
 ) {
 
@@ -123,7 +124,8 @@ getModelFitOpt <- function (
     model,
     dose_levels,
     posterior,
-    addArgs = NULL
+    addArgs = NULL,
+    delta
 
   ) {
     switch (
@@ -177,6 +179,17 @@ getModelFitOpt <- function (
       dose_levels = dose_levels,
       posterior   = posterior)
 
+    # MED <- min(abs(simple_fit$pred_values + delta))
+    # MED <- which(min(simple_fit$pred_values + delta)) == abs(simple_fit$pred_values + delta))
+
+    MED_pos <- min(which(abs(simple_fit$pred_values[2:length(dose_levels)] - simple_fit$pred_values[1]) > delta))
+    if(length(MED_pos) == 0 | MED_pos == Inf) {
+      MED <- NA
+      effect_reached <- 0
+    } else {
+      MED <- dose_levels[MED_pos + 1] # adding one because of placebo being first dose
+      effect_reached <- 1
+    }
     param_list <- list(
       expr_i  = expr_i,
       opts    = list("algorithm" = "NLOPT_LN_NELDERMEAD", maxeval = 1e3), #,stopval=0
@@ -184,7 +197,10 @@ getModelFitOpt <- function (
         x0 = simple_fit$coeffs,
         lb = lb,
         ub = ub),
-      c_names = names(simple_fit$coeffs))
+      c_names = names(simple_fit$coeffs),
+      MED = MED,
+      effect_reached = effect_reached
+      )
 
     return (param_list)
 
@@ -203,7 +219,7 @@ getModelFitOpt <- function (
 
   }
 
-  param_list <- getOptParams(model, dose_levels, posterior)
+  param_list <- getOptParams(model, dose_levels, posterior, delta = delta)
   post_combs <- getPostCombsI(posterior)
 
   fit <- nloptr::nloptr(
@@ -227,6 +243,8 @@ getModelFitOpt <- function (
   model_fit$pred_values <- predictModelFit(model_fit = model_fit, doses = model_fit$dose_levels, addArgs = addArgs)
   model_fit$max_effect  <- max(model_fit$pred_values) - min(model_fit$pred_values)
   model_fit$gAIC        <- getGenAIC(model_fit, post_combs)
+  model_fit$MED         <- param_list$MED
+  model_fit$effect_reached <- param_list$effect_reached
 
   return (model_fit)
 

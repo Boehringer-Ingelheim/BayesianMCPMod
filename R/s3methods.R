@@ -29,7 +29,7 @@ print.BayesianMCP <- function(x, ...) {
     cat("  Sign:", x[1, "sign"], "\n")
     cat("  Critical Probability:", x[1, "crit_prob_adj"], "\n")
     cat("  Maximum Posterior Probability:", x[1, "max_post_prob"], "\n\n")
-    
+
     attr(x, "critProbAdj") <- NULL
     attr(x, "successRate") <- NULL
     class(x)               <- NULL
@@ -38,7 +38,7 @@ print.BayesianMCP <- function(x, ...) {
     model_names <- gsub("post_probs\\.", "", names(model_probs))
     model_df <- data.frame(Model = model_names, Probability = unlist(model_probs))
     print(model_df, row.names = FALSE)
-    
+
    # print.default(x, ...)
 
     if (any(!is.na(attr(x, "essAvg")))) {
@@ -154,7 +154,9 @@ print.modelFits <- function (
   out_table <- data.frame(predictions,
                           mEff = sapply(x, function (y) y$max_effect),
                           gAIC = sapply(x, function (y) y$gAIC),
-                          w    = sapply(x, function (y) y$model_weight))
+                          w    = sapply(x, function (y) y$model_weight),
+                          MED    = sapply(x, function (y) y$MED),
+                          effect_reached    = sapply(x, function (y) y$effect_reached))
   out_table <- apply(as.matrix(out_table), 2, round, digits = n_digits)
 
   if (!is.null(x[[1]]$significant)) {
@@ -188,7 +190,7 @@ print.modelFits <- function (
   cat("Dose Levels\n",
       paste(dose_names, round(dose_levels, n_digits), sep = " = "), "\n")
   cat("\n")
-  cat("Predictions, Maximum Effect, gAIC, Model Weights & Significance\n")
+  cat("Predictions, Maximum Effect, gAIC, Model Weights, Significance, MED & effect_reached\n")
   print(out_table, ...)
 
 }
