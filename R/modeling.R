@@ -174,15 +174,28 @@ getModelFitOpt <- function (
       stop(paste("error:", model, "shape not yet implemented"))
     )
 
+    # plot_res   <- 1e3
+    # dose_seq <- seq(from       = min(dose_levels),
+    #                 to         = max(dose_levels),
+    #                 length.out = plot_res)
+    #
+    # # linear exact
+    # response_values <- simple_fit$coeffs["e0"] + simple_fit$coeffs["delta"] * dose_seq
+
+
     simple_fit <- getModelFitSimple(
       model       = model,
       dose_levels = dose_levels,
       posterior   = posterior)
 
-    # MED <- min(abs(simple_fit$pred_values + delta))
-    # MED <- which(min(simple_fit$pred_values + delta)) == abs(simple_fit$pred_values + delta))
 
     MED_pos <- min(which(abs(simple_fit$pred_values[2:length(dose_levels)] - simple_fit$pred_values[1]) > delta))
+    # placebo corrected values as output as well
+    # max dosis / 1000 -> precise/estimated/kontinuerlich MED / grid
+    # avg model in output as well -> gAIC weighted models -> 76-86 plot.R
+    # flexible for simple & full fit
+    # LB CRE for MED
+    # post sample MED -> Probs(MED) # number of bootstrap samples as param in func
     if(length(MED_pos) == 0 | MED_pos == Inf) {
       MED <- NA
       effect_reached <- 0
