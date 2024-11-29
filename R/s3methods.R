@@ -62,6 +62,7 @@ print.BayesianMCP <- function(x, ...) {
   }
 
   invisible(x)
+  
 }
 # print.BayesianMCP <- function (
     #
