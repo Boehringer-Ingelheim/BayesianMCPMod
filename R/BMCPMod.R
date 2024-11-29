@@ -546,6 +546,7 @@ performBayesianMCP <- function(
 
 }
 
+#' @export
 getModelSuccesses <- function (b_mcp) {
 
   stopifnot(inherits(b_mcp, "BayesianMCP"))

@@ -50,7 +50,8 @@ getPosterior <- function(
   is_matrix_S_hat <- FALSE
 
   stopifnot("prior_list must be an object of RBesT package" =
-              all(sapply(prior_list, function(x) is(x, "normMix") | is(x, "betaMix") | is(x, "mix"))))
+              all(sapply(prior_list, function(x) methods::is(x, "normMix") |
+                           methods::is(x, "betaMix") | methods::is(x, "mix"))))
 
   if (!is.null(mu_hat) && !is.null(S_hat) && is.null(data)) {
 
@@ -293,7 +294,7 @@ postMix2posteriorList <- function (
   # create posterior list
   posterior_list_RBesT <- lapply(seq_along(combined_vectors), function (x)
     do.call(RBesT::mixnorm,
-            c(combined_vectors[[x]], sigma = sigma(prior_list[[x]]))))
+            c(combined_vectors[[x]], sigma = stats::sigma(prior_list[[x]]))))
 
   ## fix component names
   names(posterior_list_RBesT) <- names(prior_list)

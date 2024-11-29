@@ -1,5 +1,5 @@
 ---
-title: "Simulation Example of Bayesian MCPMod and MCPMod"
+title: "Simulation Example Comparing MCPMod and Bayesian MCPMod"
 format: 
   html:
     fig-height: 3.5
@@ -11,7 +11,7 @@ format:
     message: false
     warning: false
 vignette: >
-  %\VignetteIndexEntry{Simulation Example of Bayesian MCPMod and MCPMod}
+  %\VignetteIndexEntry{Simulation Example Comparing MCPMod and Bayesian MCPMod}
   %\VignetteEngine{quarto::html}
   %\VignetteEncoding{UTF-8}
 ---
@@ -244,15 +244,12 @@ set.seed(7015)
 
 # Introduction
 
-This vignette demonstrates the application of the {BayesianMCPMod}
-package for sample size calculations and the comparison with the
-{MCPModPack} package. As for other bayesian approaches BMCPMod is set up in a way that it 
-mimics the results (and operating characteristics) of the frequentist MCPMod for non-informative
-priors. This characteristic is illustrated in the following sections focusing on the trial planning. 
+This vignette demonstrates the application of the {BayesianMCPMod} package for sample size calculations and the comparison with the {MCPModPack} package.
+Bayesian MCPMod is set up in a way that it  mimics the results (and operating characteristics) of the frequentist MCPMod for non-informative priors.
+This characteristic is illustrated in the following sections focusing on the trial planning. 
 
-In order to compare BayesianMCPMod and MCPModPack success probabilities 
-four different dose-finding scenarios are considered. For the first
-three scenarios the general trial design is the same, the only difference is the considered set of DR models. 
+To compare Bayesian MCPMod and MCPModPack success probabilities, four different dose-finding scenarios are considered.
+For the first three scenarios, the general trial design is the same except the considered set of dose response models. 
 These design choices are:
 
 -   four dose levels plus placebo (0 mg, 1 mg, 2 mg, 4 mg, 8 mg)
@@ -263,163 +260,144 @@ These design choices are:
 
 -   standard deviation of 0.4 for every dose group
 
-The fourth scenario, the variability scenario, has some different design
-choices for the number of dose levels and the total sample size: 
+The fourth scenario, the variability scenario, has  different design choices for the number of dose levels and the total sample size: 
 - three dose levels plus placebo (0 mg, 1 mg, 4 mg, 8 mg) 
 - total sample size of N = 100 
 
-Building on these scenarios the following varying additional parameters are used:
+Building on these scenarios, the following varying additional parameters are used:
 
 -   expected effect for maximum dose of (0.05, 0.1, 0.2, 0.3, 0.5)
 
 -   different total sample size with different allocation:
 
--   (40,20,20,20,40), (30,30,30,30,30), (48,24,24,24,48),
-    (36,36,36,36,36) (for the first three scenarios)
+-   (40,20,20,20,40), (30,30,30,30,30), (48,24,24,24,48), (36,36,36,36,36) (for the first three scenarios)
 
--   (40,20,20,40), (30,30,30,30), (48,24,24,48), (36,36,36,36) (for the
-    variability scenario)
+-   (40,20,20,40), (30,30,30,30), (48,24,24,48), (36,36,36,36) (for the variability scenario)
 
-In a subsequent step, we extend our analysis to test the convergence of
-power values as the number of simulations increases. For this part of
-the study, we assume an expected effect for the maximum dose of 0.2.
-The sample size is set to 200 for the linear, monotonic and
-non-monotonic scenario and 100 for the variability scenario using equal allocation. 
+In a subsequent step, the analysis is extended to test the convergence of power values as the number of simulations increases.
+For this part of the study, an expected effect for the maximum dose of 0.2 is assumed.
+The sample size is set to 200 for the linear, monotonic, and non-monotonic scenario and 100 for the variability scenario using equal allocation. 
 
 For each of these simulation cases, 10000 simulation runs are performed. 
-Given the number of simulations, and using basic mathematical approximations (like the law of large numbers) the difference in success probabilities should be in the range of 1-3%.
+Given the number of simulations and applying the law of large numbers, the difference in success probabilities should be in the range of 1%-3%.
 
 ```{r}
 #######  General assumptions  #########
+
 # simulations
 n_sim <- 100 #to be upscaled to 10000
 
 # Define the list of sample sizes
-nsample_list = list(20*c(2,1,1,1,2),30*c(1,1,1,1,1), 24*c(2,1,1,1,2),36*c(1,1,1,1,1))
-nsample_vector <- c("(40,20,20,20,40)", "(30,30,30,30,30)", "(48,24,24,24,48)",  "(36,36,36,36,36)")
+nsample_list <- list(20 * c(2, 1, 1, 1, 2),
+                     30 * c(1, 1, 1, 1, 1),
+                     24 * c(2, 1, 1, 1, 2),
+                     36 * c(1, 1, 1, 1, 1))
+nsample_vector <- c("(40,20,20,20,40)",
+                    "(30,30,30,30,30)",
+                    "(48,24,24,24,48)",
+                    "(36,36,36,36,36)")
 
 # define input parameters
-doses.sim <- c(0,1,2,4,8)   # dose levels
-max.dose <- max(doses.sim) # specify max dose possibly available
-plc.guess <-  0 # expected placebo effect
-Nsample <-c(40,40,40,40,40) #,36*c(1,1,1,1)) #list(20*c(2,1,1,2),30*c(1,1,1,1), 24*c(2,1,1,2),36*c(1,1,1,1))
-expectedEffect_fix <- 0.2  #c(0.05,0.1,0.2,0.3,0.5)
-expectedEffect <- c(0.05,0.1,0.2,0.3,0.5)
+doses.sim <- c(0, 1, 2, 4, 8) # dose levels
+max.dose <- max(doses.sim)    # specify max dose possibly available
+plc.guess <- 0                # expected placebo effect
+Nsample <- c(40, 40, 40, 40, 40)
+expectedEffect_fix <- 0.2
+expectedEffect <- c(0.05, 0.1, 0.2, 0.3, 0.5)
 sd.sim <- c(0.4)
 
 #input paramters variability scenario
 doses_var <- c(0, 1, 4, 8)
 sd.sim_var <- 0.4
 Nsample_var <- c(25, 25, 25, 25)
-nsample_list_var <- list(20*c(2,1,1,2),30*c(1,1,1,1), 24*c(2,1,1,2),36*c(1,1,1,1))
-
+nsample_list_var <- list(20 * c(2, 1, 1, 2),
+                         30 * c(1, 1, 1, 1),
+                         24 * c(2, 1, 1, 2),
+                         36 * c(1, 1, 1, 1))
 
 # define model functions  
-emax.g <- guesst(d = doses.sim[2], p = 0.6, "emax") 
-exp.g <- guesst(d=doses.sim[2],p=0.05,model="exponential", Maxd=max.dose)
-logit.g <- guesst(d=c(doses.sim[2],doses.sim[3]),p=c(0.1,0.9),"logistic",Maxd=max.dose) 
-sigEmax.g <- guesst(d=c(doses.sim[2],doses.sim[3]),p=c(0.15,0.75), model = "sigEmax") 
-quad.g <- guesst(d=doses.sim[2],p=0.35,model="quadratic")
-beta.g <- guesst(d=doses.sim[2],p=0.2,model="betaMod", dMax=5.5, scal=9.6, Maxd=max.dose)
+emax.g    <- guesst(d = doses.sim[2], p = 0.6, model = "emax") 
+exp.g     <- guesst(d = doses.sim[2], p = 0.05, model = "exponential", Maxd = max.dose)
+logit.g   <- guesst(d = c(doses.sim[2], doses.sim[3]), p = c(0.1, 0.9), model = "logistic", Maxd = max.dose) 
+sigEmax.g <- guesst(d = c(doses.sim[2], doses.sim[3]), p = c(0.15, 0.75), model = "sigEmax") 
+quad.g    <- guesst(d = doses.sim[2], p = 0.35, model = "quadratic")
+beta.g    <- guesst(d = doses.sim[2], p = 0.2, model = "betaMod",
+                    dMax = 5.5, scal = 9.6, Maxd = max.dose)
 
 ### define models to be tested in MCPMod
-models <- Mods(linear=NULL, 
+models <- Mods(linear = NULL,
                emax = emax.g,
                exponential = exp.g,
-               logistic=logit.g,
+               logistic = logit.g,
                sigEmax = sigEmax.g,
                quadratic = quad.g,
                betaMod = beta.g,
                doses = doses.sim,
-               placEff = plc.guess, 
+               placEff = plc.guess,
                maxEff = expectedEffect_fix,
                direction = "increasing",
-               addArgs = list(scal=9.6) 
+               addArgs = list(scal = 9.6) 
 )
 
 alpha <- 0.05
-
-# display_params_table(models)
-
-
-# kable(t(as.data.table(cbind(doses.sim, Nsample))))%>%
-#     kable_classic(full_width = TRUE)%>%
-#     add_header_above(c( "Doses" = 6), font_size = 15, bold = TRUE)
-# 
-# 
-# kable(t(data.table(placebo_guess = plc.guess,
-#                  sd = sd.sim[1],
-#                  alpha = alpha )))%>%
-#     kable_classic(full_width = TRUE)
-
 ```
 
 ## Scenarios
 
-In the following the candidate models for the different scenarios are specified and
-plotted.
+In the following, the candidate models for the different scenarios are specified and plotted.
 
 ```{r}
 
 #Specification of considered models for different scenarios for BayesianMCPMod
 
 min_scenario <- c("linear", "exponential", "emax")
-min_models <- Mods(linear=NULL, 
+min_models <- Mods(linear = NULL,
                    exponential = exp.g,
-                  emax = emax.g,
-                  doses = doses.sim,
-                  placEff = plc.guess, 
-                  maxEff = expectedEffect_fix,
-                  direction = "increasing"
-)
+                   emax = emax.g,
+                   doses = doses.sim,
+                   placEff = plc.guess,
+                   maxEff = expectedEffect_fix,
+                   direction = "increasing")
 plot(min_models, main = "minimal Scenario")
 
 
 monotonic_scenario <- c("linear", "exponential", "emax", "logistic", "sigEmax")
-
 monotonic_models <- Mods(linear=NULL, 
-               exponential = exp.g,
-               emax = emax.g,
-               logistic=logit.g,
-               sigEmax = sigEmax.g,
-               doses = doses.sim,
-               placEff = plc.guess, 
-               maxEff = expectedEffect_fix,
-               direction = "increasing"
-)
+                         exponential = exp.g,
+                         emax = emax.g,
+                         logistic = logit.g,
+                         sigEmax = sigEmax.g,
+                         doses = doses.sim,
+                         placEff = plc.guess,
+                         maxEff = expectedEffect_fix,
+                         direction = "increasing")
 plot(monotonic_models, main = "monotonic Scenario")
 
-
 non_monotonic_scenario <- c("linear", "emax", "sigEmax", "quadratic", "betaMod")
-
-non_monotonic_models <- Mods(linear=NULL, 
-               emax = emax.g,
-               sigEmax = sigEmax.g,
-               quadratic = quad.g,
-               betaMod = beta.g,
-               doses = doses.sim,
-               placEff = plc.guess, 
-               maxEff = expectedEffect_fix,
-               direction = "increasing",
-               addArgs = list(scal=9.6)
+non_monotonic_models <- Mods(linear = NULL,
+                             emax = emax.g,
+                             sigEmax = sigEmax.g,
+                             quadratic = quad.g,
+                             betaMod = beta.g,
+                             doses = doses.sim,
+                             placEff = plc.guess,
+                             maxEff = expectedEffect_fix,
+                             direction = "increasing",
+                             addArgs = list(scal = 9.6)
 )
 plot(non_monotonic_models,main = "non monotonic Scenario")
 
-
 variability_scenario <- c("linear","exponential", "emax")
-
-kable(t(as.data.table(cbind(doses_var, Nsample_var))))%>%
-    kable_classic(full_width = TRUE)%>%
-    add_header_above(c( "Doses variability scenario" = 5), font_size = 15)
-
-var_models <- Mods(linear=NULL, 
-               exponential = exp.g,
-               emax = emax.g,
-               doses = doses_var,
-               placEff = plc.guess, 
-               maxEff = expectedEffect_fix,
-               direction = "increasing"
-)
+kable(t(as.data.table(cbind(doses_var, Nsample_var)))) %>%
+    kable_classic(full_width = TRUE) %>%
+    add_header_above(c("Doses variability scenario" = 5), font_size = 15)
+var_models <- Mods(linear = NULL,
+                   exponential = exp.g,
+                   emax = emax.g,
+                   doses = doses_var,
+                   placEff = plc.guess,
+                   maxEff = expectedEffect_fix,
+                   direction = "increasing")
 plot(var_models, main = "variability Scenario")
 
 ```
@@ -431,39 +409,33 @@ plot(var_models, main = "variability Scenario")
 #Specification of considered models for different scenarios for MCPModPack
 
 min_modelsPack = list(linear = NA,
-              exponential = 4.447149,
-              emax = 0.6666667)
+                      exponential = 4.447149,
+                      emax = 0.6666667)
 
 monotonic_modelsPack = list(linear = NA,
-              exponential = 4.447149,
-              emax = 0.6666667,
-              logistic = c(1.5, 0.2275598),
-              sigEmax =  c(1.528629, 4.087463))
+                            exponential = 4.447149,
+                            emax = 0.6666667,
+                            logistic = c(1.5, 0.2275598),
+                            sigEmax =  c(1.528629, 4.087463))
 
 non_monotonic_modelsPack = list(linear = NA,
-              emax = 0.6666667 ,
-              sigEmax =  c(1.528629, 4.087463),
-              quadratic = -0.09688711)
-#beta
+                                emax = 0.6666667 ,
+                                sigEmax =  c(1.528629, 4.087463),
+                                quadratic = -0.09688711)
 
 var_modelsPack = list(linear = NA,
-              exponential = 4.447149,
-              emax = 0.6666667,
-              logistic = c(1.5, 0.2275598),
-              sigEmax =  c(1.528629, 4.087463))
+                      exponential = 4.447149,
+                      emax = 0.6666667,
+                      logistic = c(1.5, 0.2275598),
+                      sigEmax =  c(1.528629, 4.087463))
 
 ```
 
-```{r, include=FALSE, eval=FALSE}
-# Comparison_MCPModPack.qmd
-```
-
-The following simulations will be conducted utilizing the MCPModPack package (with varying expected effect for maximum dose and  sample sizes).
-
+The following simulations will be conducted utilizing the MCPModPack package with varying expected effect for maximum dose and sample sizes.
 
 ## Minimal scenario
 
-### varying expected effect for maximum dose
+### Varying expected effect for maximum dose
 ```{r warning=FALSE}
 # assumed dose - response model
 sim_models_min_linear = list(linear = NA,
@@ -473,182 +445,223 @@ sim_models_min_linear = list(linear = NA,
                              placebo_effect = plc.guess)
 
 sim_models_min_exp = list(exponential = 4.447149,
-                  max_effect = c(0.05,0.1,0.2,0.3,0.5),
-                  sd = rep(sd.sim, length(doses.sim)),
-                  placebo_effect = plc.guess)
+                          max_effect = c(0.05, 0.1, 0.2, 0.3, 0.5),
+                          sd = rep(sd.sim, length(doses.sim)),
+                          placebo_effect = plc.guess)
 
-sim_models_min_emax = list( emax = 0.6666667,
-                  max_effect = c(0.05,0.1,0.2,0.3,0.5),
-                  sd = rep(sd.sim, length(doses.sim)),
-                  placebo_effect = plc.guess)
-
-# Simulation parameters
-sim_parameters = list(n = Nsample, 
-                      doses = doses.sim,
-                      dropout_rate = 0.0, 
-                      go_threshold = 0.1, 
-                      nsims = n_sim)
-
-# Initialize list to store results
-results_list_min <- list()
-  
-# Run simulation
-func_sim <- function(models ,sim_models, sim_parameters){
-
-sim_result = MCPModSimulation(endpoint_type = "Normal", 
-                                 models = models, 
-                                 alpha = alpha, 
-                                 direction = "increasing", 
-                                 model_selection = "aveAIC", 
-                                 Delta = 0.1,
-                                 sim_models = sim_models,
-                                 sim_parameters = sim_parameters)
-}
-
+sim_models_min_emax = list(emax = 0.6666667,
+                           max_effect = c(0.05, 0.1, 0.2, 0.3, 0.5),
+                           sd = rep(sd.sim, length(doses.sim)),
+                           placebo_effect = plc.guess)
 
 list_models <- list(sim_models_min_linear, sim_models_min_exp, sim_models_min_emax)
-chunks <- chunkVector(seq_along(list_models), getDoParWorkers())
 
-results_list_min <- foreach(k = chunks, .combine = c)  %dorng% {
+# Simulation parameters
+sim_parameters = list(n = Nsample,
+                      doses = doses.sim,
+                      dropout_rate = 0.0,
+                      go_threshold = 0.1,
+                      nsims = n_sim)
+```
+```{r warning=FALSE}
+#| eval: false
+chunks <- chunkVector(seq_along(list_models), getDoParWorkers())
+results_min_MCP <- foreach(k = chunks, .combine = c)  %dorng% {
   
   lapply(k, function (i) {
     
-    func_sim(min_modelsPack, list_models[[i]], sim_parameters) 
+    MCPModSimulation(endpoint_type = "Normal",
+                     models = min_modelsPack,
+                     alpha = alpha,
+                     direction = "increasing",
+                     model_selection = "aveAIC",
+                     Delta = 0.1,
+                     sim_models = list_models[[i]],
+                     sim_parameters = sim_parameters)
     
   })
   
 }
-
-
-
-
-#store results
+```
+```{r warning=FALSE}
+#| include: false
+if (file.exists("min_scenario_var_expected_effect.rds")) {
+  
+  results_list_min <- readRDS("min_scenario_var_expected_effect.rds")
+  
+} else {
+  
+  chunks <- chunkVector(seq_along(list_models), getDoParWorkers())
+  results_list_min <- foreach(k = chunks, .combine = c)  %dorng% {
+  
+    lapply(k, function (i) {
+      
+      MCPModSimulation(endpoint_type = "Normal",
+                       models = min_modelsPack,
+                       alpha = alpha,
+                       direction = "increasing",
+                       model_selection = "aveAIC",
+                       Delta = 0.1,
+                       sim_models = list_models[[i]],
+                       sim_parameters = sim_parameters)
+      
+    })
+  
+  }
+  
+  saveRDS(results_list_min, "min_scenario_var_expected_effect.rds")
+  
+}
+```
+```{r warning=FALSE}
+#display results
 results_min_MCP <- data.table(
   max_eff = c(0.05, 0.1, 0.2, 0.3, 0.5),
   linear = c(results_list_min[[1]]$sim_results$power),
   exponential = c(results_list_min[[2]]$sim_results$power),
-  emax = c(results_list_min[[3]]$sim_results$power),
-  Average = c(sum(results_list_min[[1]]$sim_results$power[1], results_list_min[[2]]$sim_results$power[1], results_list_min[[3]]$sim_results$power[1])/3,
-               sum(results_list_min[[1]]$sim_results$power[2], results_list_min[[2]]$sim_results$power[2], results_list_min[[3]]$sim_results$power[2])/3,
-               sum(results_list_min[[1]]$sim_results$power[3], results_list_min[[2]]$sim_results$power[3], results_list_min[[3]]$sim_results$power[3])/3,
-               sum(results_list_min[[1]]$sim_results$power[4], results_list_min[[2]]$sim_results$power[4], results_list_min[[3]]$sim_results$power[4])/3,
-               sum(results_list_min[[1]]$sim_results$power[5], results_list_min[[2]]$sim_results$power[5], results_list_min[[3]]$sim_results$power[5])/3))
+  emax = c(results_list_min[[3]]$sim_results$power)) %>%
+  mutate(Average = rowMeans(select(., linear:emax)))
 
-
-kable(results_min_MCP)%>%
-  kable_classic(full_width = TRUE)%>%
-    add_header_above(c("Power results different expected effects " = 5), font_size = 15, bold = TRUE)%>%
+kable(results_min_MCP) %>%
+  kable_classic(full_width = TRUE) %>%
+    add_header_above(c("Power results of different expected effects " = 5), font_size = 15, bold = TRUE) %>%
     add_header_above(c("Minimal scenario " = 5), font_size = 15, bold = TRUE)
-    
-
 
 ```
 
 ### varying sample size
 ```{r warning=FALSE}
 #list of different samole sizes
-nsample_list = list(20*c(2,1,1,1,2),30*c(1,1,1,1,1), 24*c(2,1,1,1,2),36*c(1,1,1,1,1))
+nsample_list = list(20 * c(2, 1, 1, 1, 2),
+                    30 * c(1, 1, 1, 1, 1),
+                    24 * c(2, 1, 1, 1, 2),
+                    36 * c(1, 1, 1, 1, 1))
 
 # assumed dose - response model
 sim_models_min_linear = list(linear = NA,
-                  max_effect = expectedEffect_fix,
-                  sd = rep(sd.sim, length(doses.sim)),
-                  placebo_effect = plc.guess)
+                             max_effect = expectedEffect_fix,
+                             sd = rep(sd.sim, length(doses.sim)),
+                             placebo_effect = plc.guess)
 
 sim_models_min_exp = list(exponential = 4.447149,
-                  max_effect = expectedEffect_fix,
-                  sd = rep(sd.sim, length(doses.sim)),
-                  placebo_effect = plc.guess)
+                          max_effect = expectedEffect_fix,
+                          sd = rep(sd.sim, length(doses.sim)),
+                          placebo_effect = plc.guess)
 
-sim_models_min_emax = list( emax = 0.6666667,
-                  max_effect = expectedEffect_fix,
-                  sd = rep(sd.sim, length(doses.sim)),
-                  placebo_effect = plc.guess)
+sim_models_min_emax = list(emax = 0.6666667,
+                           max_effect = expectedEffect_fix,
+                           sd = rep(sd.sim, length(doses.sim)),
+                           placebo_effect = plc.guess)
 
 # Simulation parameters
-sim_parameters = list(n = Nsample, 
+sim_parameters = list(n = Nsample,
                       doses = doses.sim,
-                      dropout_rate = 0.0, 
-                      go_threshold = 0.1, 
+                      dropout_rate = 0.0,
+                      go_threshold = 0.1,
                       nsims = n_sim)
 
-
-# store results
-power_min_nsample_linear <- vector()
-power_min_nsample_exp <- vector()
-power_min_nsample_emax <- vector()
-
-
-
-
-
-# # Loop over nsample values
-# for (i in seq_along(nsample_list)) {
-#   
-#   # Update nsample in simulation parameters
-#   sim_parameters$n <- nsample_list[[i]]
-#   
-#   # Set max_effect to 0.2
-#   min_modelsPack$max_effect <- expectedEffect_fix
-#   
-#   # power values for different assumed true models
-#   power_nsample_linear <- func_sim(min_modelsPack, sim_models_min_linear, sim_parameters)
-#   power_min_nsample_linear[i] <- power_nsample_linear$sim_results$power
-#   
-#   power_nsample_exp <- func_sim(min_modelsPack, sim_models_min_exp, sim_parameters)
-#   power_min_nsample_exp[i] <-power_nsample_exp$sim_results$power
-#   
-#   power_nsample_emax <- func_sim(min_modelsPack, sim_models_min_emax, sim_parameters)
-#   power_min_nsample_emax[i] <- power_nsample_exp$sim_results$power
-#   
-# }
-# Set max_effect to 0.2
 min_modelsPack$max_effect <- expectedEffect_fix
-#list of different samole sizes
-nsample_list = list(20*c(2,1,1,1,2),30*c(1,1,1,1,1), 24*c(2,1,1,1,2),36*c(1,1,1,1,1),
-                    20*c(2,1,1,1,2),30*c(1,1,1,1,1), 24*c(2,1,1,1,2),36*c(1,1,1,1,1),
-                    20*c(2,1,1,1,2),30*c(1,1,1,1,1), 24*c(2,1,1,1,2),36*c(1,1,1,1,1))
+#list of different sample sizes
 
-list_models <- list(sim_models_min_linear,sim_models_min_linear,sim_models_min_linear,sim_models_min_linear,
-                    sim_models_min_exp, sim_models_min_exp,sim_models_min_exp,sim_models_min_exp,
-                    sim_models_min_emax, sim_models_min_emax, sim_models_min_emax, sim_models_min_emax)
+list_models <- c(rep(list(sim_models_min_linear), 4),
+                 rep(list(sim_models_min_exp), 4),
+                 rep(list(sim_models_min_emax), 4))
 
-#ind_tasks <- 1:12
+# nsample_list = rep(nsample_list, length.out = length(list_models))
+
+
+```
+```{r warning=FALSE}
+#| eval: false
 
 chunks <- chunkVector(seq_along(list_models), getDoParWorkers())
 
-results_list_min_nsample <- foreach(k = chunks, .combine = c, .export = c(as.character(min_modelsPack), as.character(nsample_list)))  %dorng% {
+results_list_min_nsample <- foreach(k = chunks, .combine = c)  %dorng% {
+  
   lapply(k, function (i) {
-    sim_parameters = list(n = nsample_list[[i]], 
-                      doses = doses.sim,
-                      dropout_rate = 0.0, 
-                      go_threshold = 0.1, 
-                      nsims = n_sim)
     
-    func_sim(min_modelsPack, list_models[[i]], sim_parameters) 
+    sim_parameters = list(n = rep(nsample_list, length.out = length(list_models))[[i]],
+                          doses = doses.sim,
+                          dropout_rate = 0.0,
+                          go_threshold = 0.1,
+                          nsims = n_sim)
+    
+    MCPModSimulation(endpoint_type = "Normal",
+                       models = min_modelsPack,
+                       alpha = alpha,
+                       direction = "increasing",
+                       model_selection = "aveAIC",
+                       Delta = 0.1,
+                       sim_models = list_models[[i]],
+                       sim_parameters = sim_parameters)
     
   })
   
 }
 
+```
+```{r warning=FALSE}
+#| include: false
+if (file.exists("min_scenario_var_sample_size.rds")) {
+  
+  results_list_min_nsample <- readRDS("min_scenario_var_sample_size.rds")
+  
+} else {
+  
+  chunks <- chunkVector(seq_along(list_models), getDoParWorkers())
+  results_list_min_nsample <- foreach(k = chunks, .combine = c)  %dorng% {
+
+    lapply(k, function (i) {
+
+      sim_parameters = list(n = rep(nsample_list, length.out = length(list_models))[[i]],
+                            doses = doses.sim,
+                            dropout_rate = 0.0,
+                            go_threshold = 0.1,
+                            nsims = n_sim)
+
+      MCPModSimulation(endpoint_type = "Normal",
+                         models = min_modelsPack,
+                         alpha = alpha,
+                         direction = "increasing",
+                         model_selection = "aveAIC",
+                         Delta = 0.1,
+                         sim_models = list_models[[i]],
+                         sim_parameters = sim_parameters)
+
+    })
+
+  }
+
+  saveRDS(results_list_min_nsample, "min_scenario_var_sample_size.rds")
+  
+}
+```
+```{r warning=FALSE}
+
 # store results
 results_min_MCP_nsample <- data.table(
-  N_sample = c("(40,20,20,20,40)","(30,30,30,30,30)", "(48,24,24,24,48)","(36,36,36,36,36)"),
-  Linear = c(results_list_min_nsample[[1]]$sim_results$power, results_list_min_nsample[[2]]$sim_results$power, results_list_min_nsample[[3]]$sim_results$power, results_list_min_nsample[[4]]$sim_results$power),
-  Exponential = c(results_list_min_nsample[[5]]$sim_results$power, results_list_min_nsample[[6]]$sim_results$power, results_list_min_nsample[[7]]$sim_results$power, results_list_min_nsample[[8]]$sim_results$power),
-  Emax = c(results_list_min_nsample[[9]]$sim_results$power, results_list_min_nsample[[10]]$sim_results$power, results_list_min_nsample[[11]]$sim_results$power, results_list_min_nsample[[12]]$sim_results$power),
-  Average = c(sum(results_list_min_nsample[[1]]$sim_results$power, results_list_min_nsample[[5]]$sim_results$power, results_list_min_nsample[[9]]$sim_results$power)/3,
-              sum(results_list_min_nsample[[2]]$sim_results$power, results_list_min_nsample[[6]]$sim_results$power, results_list_min_nsample[[10]]$sim_results$power)/3,
-              sum(results_list_min_nsample[[3]]$sim_results$power, results_list_min_nsample[[7]]$sim_results$power, results_list_min_nsample[[11]]$sim_results$power)/3,
-              sum(results_list_min_nsample[[4]]$sim_results$power, results_list_min_nsample[[8]]$sim_results$power, results_list_min_nsample[[12]]$sim_results$power)/3)
-)
+  N_sample = c("(40,20,20,20,40)",
+               "(30,30,30,30,30)",
+               "(48,24,24,24,48)",
+               "(36,36,36,36,36)"),
+  linear = c(results_list_min_nsample[[1]]$sim_results$power,
+             results_list_min_nsample[[2]]$sim_results$power,
+             results_list_min_nsample[[3]]$sim_results$power,
+             results_list_min_nsample[[4]]$sim_results$power),
+  exponential = c(results_list_min_nsample[[5]]$sim_results$power,
+                  results_list_min_nsample[[6]]$sim_results$power,
+                  results_list_min_nsample[[7]]$sim_results$power,
+                  results_list_min_nsample[[8]]$sim_results$power),
+  emax = c(results_list_min_nsample[[9]]$sim_results$power,
+           results_list_min_nsample[[10]]$sim_results$power,
+           results_list_min_nsample[[11]]$sim_results$power,
+           results_list_min_nsample[[12]]$sim_results$power)) %>%
+  mutate(Average = rowMeans(select(., linear:emax)))
 
-kable(results_min_MCP_nsample)%>%
-  kable_classic(full_width = TRUE)%>%
-    add_header_above(c("Power results different sample sizes " = 5), font_size = 15, bold = TRUE)%>%
+kable(results_min_MCP_nsample) %>%
+  kable_classic(full_width = TRUE) %>%
+    add_header_above(c("Power results different sample sizes " = 5), font_size = 15, bold = TRUE) %>%
     add_header_above(c("Minimal scenario " = 5), font_size = 15, bold = TRUE)
-    
-
 
 ```
 
