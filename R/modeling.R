@@ -65,6 +65,7 @@ getModelFits <- function (
   model_fits  <- lapply(model_names, getModelFit, dose_levels, posterior, list("scal" = attr(models, "scal")), delta = delta)
   model_fits  <- addModelWeights(model_fits)
 
+
   names(model_fits)             <- model_names
   attr(model_fits, "posterior") <- posterior
   class(model_fits)             <- "modelFits"
@@ -189,20 +190,29 @@ getModelFitOpt <- function (
       posterior   = posterior)
 
 
-    MED_pos <- min(which(abs(simple_fit$pred_values[2:length(dose_levels)] - simple_fit$pred_values[1]) > delta))
+    # MED_pos <- min(which(abs(simple_fit$pred_values[2:length(dose_levels)] - simple_fit$pred_values[1]) > delta))
     # placebo corrected values as output as well
     # max dosis / 1000 -> precise/estimated/kontinuerlich MED / grid
     # avg model in output as well -> gAIC weighted models -> 76-86 plot.R
     # flexible for simple & full fit
     # LB CRE for MED
     # post sample MED -> Probs(MED) # number of bootstrap samples as param in func
-    if(length(MED_pos) == 0 | MED_pos == Inf) {
-      MED <- NA
-      effect_reached <- 0
-    } else {
-      MED <- dose_levels[MED_pos + 1] # adding one because of placebo being first dose
-      effect_reached <- 1
-    }
+    # if(length(MED_pos) == 0 | MED_pos == Inf) {
+    #   MED <- NA
+    #   effect_reached <- 0
+    # } else {
+    #   MED <- dose_levels[MED_pos + 1] # adding one because of placebo being first dose
+    #   effect_reached <- 1
+    # }
+
+    MED <- getMED(
+      fit = simple_fit,
+      doses = dose_levels,
+      threshold = delta,
+      grid = FALSE,
+      addArgs = addArgs
+    )
+
     param_list <- list(
       expr_i  = expr_i,
       opts    = list("algorithm" = "NLOPT_LN_NELDERMEAD", maxeval = 1e3), #,stopval=0
@@ -211,8 +221,8 @@ getModelFitOpt <- function (
         lb = lb,
         ub = ub),
       c_names = names(simple_fit$coeffs),
-      MED = MED,
-      effect_reached = effect_reached
+      MED = attributes(MED)$MED,
+      MED_effect = attributes(MED)$MED_EFFECT
       )
 
     return (param_list)
@@ -253,11 +263,18 @@ getModelFitOpt <- function (
     coeffs      = fit$solution,
     dose_levels = dose_levels)
 
+ if(!is.na(param_list$MED_effect)) {
+    effect_reached <- 1
+  } else {
+    effect_reached <- 0
+  }
+
   model_fit$pred_values <- predictModelFit(model_fit = model_fit, doses = model_fit$dose_levels, addArgs = addArgs)
   model_fit$max_effect  <- max(model_fit$pred_values) - min(model_fit$pred_values)
   model_fit$gAIC        <- getGenAIC(model_fit, post_combs)
-  model_fit$MED         <- param_list$MED
-  model_fit$effect_reached <- param_list$effect_reached
+  model_fit$MED         <- unlist(param_list$MED)
+  model_fit$MED_effect <- unlist(param_list$MED_effect)
+  model_fit$effect_reached <- effect_reached
 
   return (model_fit)
 
@@ -355,3 +372,131 @@ addModelWeights <- function (
   return (model_fits_out)
 
 }
+
+#' @title getMED
+#'
+#' @param fit the model fits for the dose-response models to be looked at
+#' @param doses the doses to be investigated as potential MED
+#' @param threshold the threshold to be minimally reached for a doses to be counted as MED. The threshold is placebo adjusted.
+#' @param grid boolean, default FALSE, whether a fine grid or the doses should be used for the MED calculation
+#'
+#' @return post_fits containing the response rates for the provided dose-response models as well as having the MED and the respective MED effects as attributes.
+#' @export
+
+getMED <- function(
+
+  fit = fit,
+  doses = dose_levels,
+  threshold,
+  grid = FALSE,
+  addArgs = NULL
+
+) {
+
+  if (grid) {
+
+    dose_seq <- seq(
+
+      from = min(dose_levels),
+      to = max(dose_levels),
+      length.out = 1e3
+
+    )
+
+  }
+
+  else {
+
+    dose_seq <- doses
+
+  }
+  fitModel <- function(model_type) {
+
+    switch (
+      model_type,
+      "emax" = {DoseFinding::emax(
+        dose = dose_seq,
+        e0   = fit$coeffs[["e0"]],
+        eMax = fit$coeffs[["eMax"]],
+        ed50 = fit$coeffs[["ed50"]]
+      )},
+      "sigEmax" = DoseFinding::sigEmax(
+        dose = dose_seq,
+        e0   = fit$coeffs[["e0"]],
+        eMax = fit$coeffs[["eMax"]],
+        ed50 = fit$coeffs[["ed50"]],
+        h    = fit$coeffs[["h"]]
+      ),
+      "exponential" = DoseFinding::exponential(
+        dose  = dose_seq,
+        e0    = fit$coeffs[["e0"]],
+        e1    = fit$coeffs[["e1"]],
+        delta = fit$coeffs[["delta"]]
+      ),
+      "quadratic" = DoseFinding::quadratic(
+        dose = dose_seq,
+        e0   = fit$coeffs[["e0"]],
+        b1   = fit$coeffs[["b1"]],
+        b2   = fit$coeffs[["b2"]]
+      ),
+      "linear" = DoseFinding::linear(
+        dose  = dose_seq,
+        e0    = fit$coeffs[["e0"]],
+        delta = fit$coeffs[["delta"]]
+      ),
+      "logistic" = DoseFinding::logistic(
+        dose  = dose_seq,
+        e0    = fit$coeffs[["e0"]],
+        eMax  = fit$coeffs[["eMax"]],
+        ed50  = fit$coeffs[["ed50"]],
+        delta = fit$coeffs[["delta"]]
+      ),
+      "betaMod" = DoseFinding::betaMod(
+        dose    = dose_seq,
+        e0      = fit$coeffs[["e0"]],
+        eMax    = fit$coeffs[["eMax"]],
+        delta1  = fit$coeffs[["delta1"]],
+        delta2  = fit$coeffs[["delta2"]],
+        ifelse(is.null(addArgs) | is.null(addArgs[["scal"]]), 1.2 * max(doses), addArgs[["scal"]])),
+        {stop(paste("error:", fit$model, "shape not yet implemented"))}
+
+    )
+
+  }
+
+
+  post_fits <- lapply(fit$model, fitModel)
+
+  names(post_fits) <- fit$model
+  med_list <- list()
+  med_effect_list <- list()
+
+  for (i in 1:length(post_fits)) {
+
+    fits <- post_fits[[i]]
+
+    med <- which(abs(fits[2:length(fits)] - fits[1]) > threshold)
+
+    if(length(med) > 0) {
+      med_effect_list[[i]] <- fits[min(med) + 1]
+
+      med_list[[i]] <- which(fits == med_effect_list[[i]])
+    }
+    else {
+      med_effect_list[[i]] <- NA_integer_
+
+      med_list[[i]] <- NA_integer_
+    }
+
+
+  }
+
+  names(med_list) <- names(post_fits)
+  names(med_effect_list) <- names(post_fits)
+
+  attr(post_fits, "MED") <- med_list
+  attr(post_fits, "MED_EFFECT") <- med_effect_list
+  return(post_fits)
+
+}
+

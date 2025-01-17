@@ -156,6 +156,7 @@ print.modelFits <- function (
                           gAIC = sapply(x, function (y) y$gAIC),
                           w    = sapply(x, function (y) y$model_weight),
                           MED    = sapply(x, function (y) y$MED),
+                          MED_effect    = sapply(x, function (y) y$MED_effect),
                           effect_reached    = sapply(x, function (y) y$effect_reached))
   out_table <- apply(as.matrix(out_table), 2, round, digits = n_digits)
 
@@ -190,7 +191,7 @@ print.modelFits <- function (
   cat("Dose Levels\n",
       paste(dose_names, round(dose_levels, n_digits), sep = " = "), "\n")
   cat("\n")
-  cat("Predictions, Maximum Effect, gAIC, Model Weights, Significance, MED & effect_reached\n")
+  cat("Predictions, Maximum Effect, gAIC, Model Weights, Significance, MED, MED Effect & effect_reached\n")
   print(out_table, ...)
 
 }

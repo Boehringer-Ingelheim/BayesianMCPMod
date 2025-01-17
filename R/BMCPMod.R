@@ -427,6 +427,7 @@ performBayesianMCPMod <- function (
 
   })
 
+
   bmcpmod        <- list(BayesianMCP = b_mcp, Mod = fits_list)
   class(bmcpmod) <- "BayesianMCPMod"
 
