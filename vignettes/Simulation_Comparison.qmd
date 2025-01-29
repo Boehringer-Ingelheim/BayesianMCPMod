@@ -28,7 +28,7 @@ library(MCPModPack)
 
 library(dplyr)
 
-# library(kableExtra)
+library(kableExtra)
 # library(reactable)
 
 # library(clinDR)
@@ -188,13 +188,11 @@ exp_eff_fix   <- 0.2
 exp_eff       <- c(0.0001, 0.05, 0.1, 0.2, 0.3, 0.5)
 
 # Simulation parameters
-n_sim         <- 1000 # to be upscaled to 10000
+n_sim         <- 100 # to be up-scaled to 10000
 
 set.seed(7015)
 plan(multisession)
 ```
-
-## Monotonic Scenario
 
 In the following, the candidate models are specified and plotted.
 
@@ -283,8 +281,8 @@ To calculate success probabilities for the different assumed dose-response model
 
 ```{r}
 # Parallelization across the expected effects for maximum dose
-results_list_Bay_monotonic <- foreach(
-  k = seq_along(exp_eff),
+success_rates_BayesianMCPMod <- foreach(
+  k               = seq_along(exp_eff),
   .options.future = list(seed = TRUE)) %dofuture% {
     
     exp_eff_k <- exp_eff[k]
@@ -307,14 +305,12 @@ results_list_Bay_monotonic <- foreach(
   
     # Perform Simulations
     sim_result <- assessDesign(n_patients     = n_sample,
-                 mods           = models_BayesianMCPMod,
-                 prior_list     = prior_list_vague,
-                 sd             = sd_sim,
-                 n_sim          = n_sim,
-                 alpha_crit_val = alpha,
-                 contr          = contr)
-    
-    
+                               mods           = models_BayesianMCPMod,
+                               prior_list     = prior_list_vague,
+                               sd             = sd_sim,
+                               n_sim          = n_sim,
+                               alpha_crit_val = alpha,
+                               contr          = contr)
     
     do.call(rbind, lapply(sim_result, function (x) {
       
@@ -324,10 +320,10 @@ results_list_Bay_monotonic <- foreach(
   
 }
 
-results_monotonic_Bay <- extract_success_rates(results_list_Bay_monotonic, names(monotonic_models))
+results_monotonic_Bay <- extract_success_rates(success_rates_BayesianMCPMod, names(monotonic_models))
 monotonic_Bay         <- print_result_Bay_max_eff(results_monotonic_Bay,
                                                   c(names(monotonic_models), "average"),
-                                                  round(exp_eff,3))
+                                                  round(exp_eff, 3))
 ```
 
 ## Comparison
@@ -399,7 +395,7 @@ ggplot(data = data_plot_eff_monotonic, aes(x = max_eff_num)) +
   scale_color_manual(name = "Assumed true model",
                      values = c("linear" = "red", "exponential" = "blue", "emax" = "darkgreen",
                                 "logistic" = "orange", "sigemax" = "purple")) +
-  scale_size_manual(name = "Package", values = c("MCPModPack" = 0.5, "BayesianMCPMod" = 2)) +
+  scale_size_manual(name = "Package", values = c("MCPModPack" = 0.5, "BayesianMCPMod" = 2)) + 
   theme_minimal() +
   ylab("Power") +
   xlab("expected effect for maximum dose") +
