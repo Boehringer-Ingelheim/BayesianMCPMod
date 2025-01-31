@@ -26,9 +26,9 @@ library(BayesianMCPMod)
 library(DoseFinding)
 library(MCPModPack)
 
-library(dplyr)
-
+library(tidyr)
 library(kableExtra)
+
 # library(reactable)
 
 # library(clinDR)
@@ -38,113 +38,17 @@ library(kableExtra)
 
 library(doFuture)
 
-# function to solve power results for tables (different max eff) BayesianMCPMod
-# return(successrates, models, average)
-
-extract_success_rates <- function (results_list, models) {
-  
-  success_rates <- list()
-
-  for (i in seq_along(results_list)) {
-    
-    success_rate <- c()
-    
-    for (model in models) {
-      
-      success_rate <- c(success_rate, attr(results_list[[i]][[model]]$BayesianMCP, "successRate"))
-      
-    }
-    
-    success_rates[[paste0("Bay_",  attr(results_list[[i]],"maxEff"))]] <- c(success_rate, attr(results_list[[i]], "avgSuccessRate"))
-    
-  }
-
-  return (success_rates)
-  
-}
-
-# function to solve power results for tables (different nsample) BayesianMCPMod
-extract_success_rates_nsim <- function (results_list, models, n_sim) {
-  
-  success_rates <- list()
-  
-  for (model in models) {
-    
-    success_rate <- c()
-    
-    for (i in seq_along(n_sim)) {
-
-      success_rate <- c(success_rate, attr(results_list[[i]][[model]]$BayesianMCP, "successRate"))
-      
-    }
-    
-    success_rates[[paste0("Bay_", model)]] <- c(success_rate)
-    
-  }
-
-  return (success_rates)
-  
-}
-
-
-print_result_Bay_max_eff <- function (results, scenario, variable) {
-
-  result_table <- t(data.table(
-    Bay_0.00 = results$`Bay_1e-04`,
-    Bay_0.05 = results$Bay_0.05,
-    Bay_0.1  = results$Bay_0.1,
-    Bay_0.2  = results$Bay_0.2,
-    Bay_0.3  = results$Bay_0.3,
-    Bay_0.5  = results$Bay_0.5))
-
-  result_table <- as.data.table(result_table)
-  names(result_table) <- scenario
-
-  kable_result <- kable(cbind(variable, result_table)) %>%
-    kable_classic(full_width = TRUE) %>%
-    add_header_above(c("Power results different expected effects " = length(scenario) + 1), font_size = 15, bold = TRUE) %>%
-    add_header_above(c("BayesianMCPMod " = length(scenario) + 1), font_size = 15, bold = TRUE)
-
-  table_list <- list(result_table = result_table, kable_result = kable_result)
-  
-  return (table_list)
-  
-}
-
-plot_power_deviation <- function(data, x, xlab) {
-  
-  plot <- ggplot2::ggplot(data, aes(x = x, y = value, color = variable, group = variable)) +
-    geom_point() +
-    geom_line() +
-    scale_x_continuous(breaks = c(0, 100, 500, 1000, 2500, 5000, 10000),
-    labels = c("", "100", "", "1000", "2500", "5000", "10000")) +
-    geom_hline(aes(yintercept = 0), linetype = 2) +
-    geom_hline(aes(yintercept = -0.05), linetype = 2, color = "darkgrey") +
-    geom_hline(aes(yintercept = 0.05), linetype = 2, color = "darkgrey") +
-    geom_hline(aes(yintercept = -0.1), linetype = 2, color = "darkgrey") +
-    geom_hline(aes(yintercept = 0.1), linetype = 2, color = "darkgrey") +
-    scale_color_manual(name = "assumed true model",
-                       values = c("linear" = "red", "exponential" = "blue", "emax" = "darkgreen",
-                                  "logistic" = "orange", "sigemax" = "purple")) +
-    labs(x = xlab, y = "power deviation") +
-    ylim(-0.15, 0.15) +        
-    theme_classic()
-  
-  return(plot)
-  
-}
-
-func_sim <- function(models, sim_models, sim_parameters){
-
-  sim_result = MCPModSimulation(endpoint_type = "Normal",
-                                models = models,
-                                alpha = alpha,
-                                direction = "increasing",
-                                model_selection = "aveAIC",
-                                Delta = 0.1,
-                                sim_models = sim_models,
-                                sim_parameters = sim_parameters)
-}
+# func_sim <- function(models, sim_models, sim_parameters){
+# 
+#   sim_result = MCPModSimulation(endpoint_type = "Normal",
+#                                 models = models,
+#                                 alpha = alpha,
+#                                 direction = "increasing",
+#                                 model_selection = "aveAIC",
+#                                 Delta = 0.1,
+#                                 sim_models = sim_models,
+#                                 sim_parameters = sim_parameters)
+# }
 ```
 
 # Introduction
@@ -261,9 +165,11 @@ powers_MCPModPack <- foreach(
 
 # Post-processing result for printing
 colnames(powers_MCPModPack) <- names(models_MCPModPack)
-results_MCPModPack <- cbind(max_eff = exp_eff, powers_MCPModPack) %>%
+results_MCPModPack <- cbind(max_eff = round(exp_eff, digits = 2),
+                            powers_MCPModPack) %>%
   data.frame() %>%
-  mutate(average = rowMeans(select(., linear:sigemax)))
+  rename(sigEmax = sigemax) %>%
+  mutate(average = rowMeans(select(., linear:sigEmax)))
 ```
 
 ## Bayesian MCPMod Implementation
@@ -273,7 +179,9 @@ The following simulations will be conducted utilizing the 'BayesianMCPMod' packa
 First, a vague prior is specified for each dose group:
 
 ```{r}
-prior_list_vague <- rep(list(RBesT::mixnorm(comp1 = c(w = 1, m = 0, n = 1), sigma = sd_sim, param = "mn")), times = length(doses_sim))
+prior_list_vague <- rep(list(RBesT::mixnorm(comp1 = c(w = 1, m = 0, n = 1),
+                                            sigma = sd_sim, param = "mn")),
+                        times = length(doses_sim))
 names(prior_list_vague) <- c("Ctrl", "DG_1", "DG_2", "DG_3", "DG_4")
 ```
 
@@ -283,6 +191,7 @@ To calculate success probabilities for the different assumed dose-response model
 # Parallelization across the expected effects for maximum dose
 success_rates_BayesianMCPMod <- foreach(
   k               = seq_along(exp_eff),
+  .combine        = rbind, 
   .options.future = list(seed = TRUE)) %dofuture% {
     
     exp_eff_k <- exp_eff[k]
@@ -312,101 +221,79 @@ success_rates_BayesianMCPMod <- foreach(
                                alpha_crit_val = alpha,
                                contr          = contr)
     
-    do.call(rbind, lapply(sim_result, function (x) {
+    
+    ## diag takes the success rate of model_x in case model_x is the true model
+    c(diag(do.call(rbind, lapply(sim_result, function (x) {
       
       getModelSuccesses(x$BayesianMCP)
       
-    }))
+    }))), average = attr(sim_result, "avgSuccessRate"))
   
-}
+  }
 
-results_monotonic_Bay <- extract_success_rates(success_rates_BayesianMCPMod, names(monotonic_models))
-monotonic_Bay         <- print_result_Bay_max_eff(results_monotonic_Bay,
-                                                  c(names(monotonic_models), "average"),
-                                                  round(exp_eff, 3))
+# Post-processing result for printing
+rownames(success_rates_BayesianMCPMod) <- NULL
+results_BayesianMCPMod <- data.frame(cbind(max_eff = round(exp_eff, digits = 2),
+                                                 success_rates_BayesianMCPMod))
 ```
 
 ## Comparison
 
 In the following, the comparisons between the success probabilities (i.e., power values for frequentist set-up) of various scenarios and different parameters are visualized.
 
-The following plots show the difference between the results from MCPModPack and BayesianMCPMod.
-The results of MCPModPack are shown as a line and the difference to the result with BayesianMCPMod is presented as a bar.
-The results for the different assumed true dose-response models, which were the basis for simulating the data, are shown in different colours.
-
 ```{r}
 #table with results
 kable(results_MCPModPack) %>%
   kable_classic(full_width = TRUE) %>%
-    add_header_above(c("Power results different expected effects " = 7), font_size = 15, bold = TRUE) %>%
-    add_header_above(c("MCPModPack " = 7), font_size = 15, bold = TRUE)
-    
-monotonic_Bay$kable_result
-
-data_plot_eff_monotonic <- data.frame(
-  max_eff        = exp_eff,
-  max_eff_num    = c(1, 2, 3, 4, 5, 6),
-  start_linear   = results_MCPModPack$linear,
-  end_linear     = monotonic_Bay$result_table$linear,
-  start_exp      = results_MCPModPack$exp,
-  end_exp        = monotonic_Bay$result_table$exponential,
-  start_emax     = results_MCPModPack$emax,
-  end_emax       = monotonic_Bay$result_table$emax,
-  start_logistic = results_MCPModPack$logistic,
-  end_logistic   = monotonic_Bay$result_table$logistic,
-  start_sigemax  = results_MCPModPack$sigEmax,
-  end_sigemax    = monotonic_Bay$result_table$sigEmax
-)
-
-# Create the plot
-ggplot(data = data_plot_eff_monotonic, aes(x = max_eff_num)) +
-  geom_segment(aes(x = max_eff_num - 0.4, xend = max_eff_num - 0.4,
-                   y = start_linear, yend = end_linear,
-                   color = "linear", size = "BayesianMCPMod")) +
-  geom_segment(aes(x = max_eff_num - 0.45, xend = max_eff_num - 0.35 ,
-                   y = start_linear, yend = start_linear,
-                   color = "linear", size = "MCPModPack")) +
-  geom_segment(aes(x = max_eff_num - 0.2, xend = max_eff_num - 0.2 ,
-                   y = start_exp, yend = end_exp,
-                   color = "exponential", size = "BayesianMCPMod")) +
-  geom_segment(aes(x = max_eff_num- 0.25, xend = max_eff_num - 0.15,
-                   y = start_exp, yend = start_exp, 
-                   color = "exponential", size = "MCPModPack")) +
-  geom_segment(aes(x = max_eff_num, xend = max_eff_num, 
-                   y = start_emax, yend = end_emax, 
-                   color = "emax", size = "BayesianMCPMod")) +
-  geom_segment(aes(x = max_eff_num - 0.05, xend = max_eff_num + 0.05, 
-                   y = start_emax, yend = start_emax, 
-                   color = "emax", size = "MCPModPack")) +
-  geom_segment(aes(x = max_eff_num + 0.2, xend = max_eff_num + 0.2,
-                   y = start_logistic, yend = end_logistic, 
-                   color = "logistic", size = "BayesianMCPMod")) +
-  geom_segment(aes(x = max_eff_num + 0.15, xend = max_eff_num + 0.25, 
-                   y = start_logistic, yend = start_logistic, 
-                   color = "logistic", size = "MCPModPack")) +
-  geom_segment(aes(x = max_eff_num + 0.4, xend = max_eff_num + 0.4, 
-                   y = start_sigemax, yend = end_sigemax,
-                   color = "sigemax", size = "BayesianMCPMod")) +
-  geom_segment(aes(x = max_eff_num + 0.35, xend = max_eff_num + 0.45, 
-                   y = start_sigemax, yend = start_sigemax, 
-                   color = "sigemax", size = "MCPModPack")) +
-  scale_x_continuous(breaks = data_plot_eff_monotonic$max_eff_num,
-                     labels = data_plot_eff_monotonic$max_eff) +
-  scale_color_manual(name = "Assumed true model",
-                     values = c("linear" = "red", "exponential" = "blue", "emax" = "darkgreen",
-                                "logistic" = "orange", "sigemax" = "purple")) +
-  scale_size_manual(name = "Package", values = c("MCPModPack" = 0.5, "BayesianMCPMod" = 2)) + 
-  theme_minimal() +
-  ylab("Power") +
-  xlab("expected effect for maximum dose") +
-  ggtitle("Power Values for Different Expected Effect for Maximum Dose") +
-  geom_vline(xintercept = data_plot_eff_monotonic$max_eff_num + 0.5, linetype = "dashed", color = "darkgrey") +
-  theme(legend.position = "bottom") +
-  guides(color = guide_legend(nrow = 2, byrow = TRUE ), size = guide_legend(nrow = 2, byrow = TRUE)) 
-
+    add_header_above(c("Power Results Across Different Expected Effects" = 7),
+                     font_size = 15, bold = TRUE) %>%
+    add_header_above(c("MCPModPack" = 7), font_size = 15, bold = TRUE)
+  
+kable(results_BayesianMCPMod) %>%
+  kable_classic(full_width = TRUE) %>%
+    add_header_above(c("Success Rates Across Different Expected Effects" = 7),
+                     font_size = 15, bold = TRUE) %>%
+    add_header_above(c("BayesianMCPMod" = 7), font_size = 15, bold = TRUE) 
 ```
 
-As expected, operating characteristics of BayesianMCPMod with non-informative prior match the operating characteristics of frequentist MCPMod.
+The following plot shows the difference between the results from MCPModPack and BayesianMCPMod.
+The results of MCPModPack are shown as a line and the difference to the result with BayesianMCPMod is presented as a bar.
+The results for the different assumed true dose-response models, which were the basis for simulating the data, are shown in different colours.
+As expected, the operating characteristics of BayesianMCPMod with non-informative prior match the operating characteristics of frequentist MCPMod.
+```{r}
+
+## pre-processing the data
+df_plot <- rbind(results_MCPModPack %>% 
+                   mutate(package_name = "MCPModPack"),
+                 results_BayesianMCPMod %>% 
+                   mutate(package_name = "BayesianMCPMod")) %>%
+  pivot_longer(cols      = names(results_BayesianMCPMod)[-1],
+               names_to  = "model_shape",
+               values_to = "success_rate") %>%
+  filter(model_shape != "average") %>%
+  spread(key = package_name, value = success_rate)  %>%
+  mutate(model_shape = as.factor(model_shape),
+         max_eff     = as.factor(max_eff)) %>%
+  group_by(max_eff) %>%
+  mutate(offset = 0.1 * (seq_along(model_shape) - ceiling(length(model_shape) / 2)))
+
+# Plot with short horizontal dashes for each model_shape
+ggplot(df_plot, aes(x = as.numeric(max_eff) + offset, y = BayesianMCPMod, color = model_shape)) +
+  geom_segment(aes(x = as.numeric(max_eff) + offset - 0.05, xend = as.numeric(max_eff) + offset + 0.05,
+                   y = BayesianMCPMod, yend = BayesianMCPMod)) +
+  geom_segment(aes(xend = as.numeric(max_eff) + offset, yend = MCPModPack)) +
+  scale_x_continuous(breaks = unique(as.numeric(df_plot$max_eff)), labels = levels(df_plot$max_eff)) +
+  labs(title    = "Comparing Power and Success Rate for Different Expected Effects for Maximum Dose",
+       x        = "Expected Effect for Maximum Dose",
+       y        = "Power or Success Rate",
+       color    = "Assumed True Model Shapes",
+       linetype = "Type",
+       caption  = "Horizontal lines represent the BayesianMCPMod success rates \n and vertical lines mark the distance to the MCPModPack power.") +
+  theme_minimal() + 
+  theme(legend.position = "bottom")
+```
+
+
 
 # Convergence of Power Values
 
@@ -437,13 +324,13 @@ results_list_nsim_MCP_monotonic <- foreach(k = chunks, .combine = c, .export = c
   
   lapply(k, function (i) {
 
-  sim_parameters = list(n = n_sample,
-                      doses = doses_sim,
+  sim_parameters = list(n          = n_sample,
+                      doses        = doses_sim,
                       dropout_rate = 0.0,
                       go_threshold = 0.1,
-                      nsims = n_sim_values_list[[i]])
+                      nsims        = n_sim_values_list[[i]])
     
-    func_sim(models_MCPModPack, list_models[[i]], sim_parameters) 
+    func_sim(models_MCPModPack, list_models[[i]], sim_parameters)
     
   })
   
@@ -459,20 +346,20 @@ n_sim_values_list <- list(10, 50, 100, 250, 500, 1000)
 # Initialize a list to store the results
 results_list_nsim_Bay_monotonic <- list()
  
-monotonic_models <- Mods(linear = NULL,
+monotonic_models <- Mods(linear      = NULL,
                          exponential = exp_guess,
-                         emax = emax_guess,
-                         logistic = logit_guess,
-                         sigEmax = sig_emax_guess,
-                         doses = doses_sim,
-                         placEff = plc_eff_guess,
-                         maxEff = exp_eff_fix,
-                         direction = "increasing")
+                         emax        = emax_guess,
+                         logistic    = logit_guess,
+                         sigEmax     = sig_emax_guess,
+                         doses       = doses_sim,
+                         placEff     = plc_eff_guess,
+                         maxEff      = exp_eff_fix,
+                         direction   = "increasing")
 
 #optimal contrasts
-contM <- getContr(mods = monotonic_models,
-                  dose_levels = doses_sim,
-                  prior_list = prior_list_vague,
+contM <- getContr(mods         = monotonic_models,
+                  dose_levels  = doses_sim,
+                  prior_list   = prior_list_vague,
                   dose_weights = c(1, 1, 1, 1, 1))
 
 chunks <- chunkVector(seq_along(n_sim_values_list), getDoParWorkers())
@@ -484,11 +371,11 @@ results_list_nsim_Bay_monotonic <- foreach(k = chunks, .combine = c, .export = c
 
  # Simulation step
   success_probabilities_monotonic <- assessDesign(
-    n_patients  = n_sample,
-    mods        = monotonic_models,
-    prior_list  = prior_list_vague,
-    sd          = sd_sim,
-    n_sim       = n_sim_values_list[[i]],
+    n_patients     = n_sample,
+    mods           = monotonic_models,
+    prior_list     = prior_list_vague,
+    sd             = sd_sim,
+    n_sim          = n_sim_values_list[[i]],
     alpha_crit_val = alpha,
     contr = contM)
 
