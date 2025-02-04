@@ -1,5 +1,5 @@
 #' @title assessDesign
-#'.
+#'
 #' @description This function performs simulation based trial design evaluations for a set of specified dose-response models
 #'
 #' @param n_patients Vector specifying the planned number of patients per dose group
@@ -8,6 +8,7 @@
 #' @param sd A positive value, specification of assumed sd
 #' @param n_sim Number of simulations to be performed
 #' @param alpha_crit_val (Un-adjusted) Critical value to be used for the MCP testing step. Passed to the getCritProb() function for the calculation of adjusted critical values (on the probability scale). Default is 0.05.
+#' @param modelling Boolean variable defining whether the Mod part of Bayesian MCP-Mod will be performed in the assessment. More heavy on ressources. Default FALSE.
 #' @param simple Boolean variable defining whether simplified fit will be applied. Passed to the getModelFits function. Default FALSE.
 #' @param reestimate Boolean variable defining whether critical value should be calculated with re-estimated contrasts (see getCritProb function for more details). Default FALSE
 #' @param contr An object of class 'optContr' as created by the getContr() function. Allows specification of a fixed contrasts matrix. Default NULL
@@ -54,6 +55,7 @@ assessDesign <- function (
 
   n_sim          = 1e3,
   alpha_crit_val = 0.05,
+  modelling      = FALSE,
   simple         = TRUE,
   reestimate     = FALSE,
 
@@ -69,6 +71,7 @@ assessDesign <- function (
   checkmate::check_double(n_sim, lower = 1, upper = Inf)
   checkmate::check_double(alpha_crit_val, lower = 0, upper = 1)
   checkmate::check_logical(simple)
+  checkmate::check_logical(modelling)
   # TODO: check that prior_list has 'sd_tot' attribute, and that it's numeric # this is not applicable at the moment
 
   dose_levels <- attr(mods, "doses")
@@ -115,19 +118,34 @@ assessDesign <- function (
         sd_posterior   = post_sd))
 
     }
-
-    b_mcp_mod <- performBayesianMCPMod(
-      posterior_list = posterior_list,
-      contr          = contr,
-      crit_prob_adj  = crit_prob_adj,
-      simple         = simple)
+    
+    if (identical(modelling, FALSE)) {
+      
+      b_mcp <- performBayesianMCP(
+        posterior_list = posterior_list,
+        contr          = contr,
+        crit_prob_adj  = crit_prob_adj)
+      
+    } else {
+      
+      b_mcp_mod <- performBayesianMCPMod(
+        posterior_list = posterior_list,
+        contr          = contr,
+        crit_prob_adj  = crit_prob_adj,
+        simple         = simple)
+      
+    }
 
   })
 
-  avg_success_rate <- mean(sapply(eval_design, function (bmcpmod) {
-    attr(bmcpmod$BayesianMCP, "successRate")
+  avg_success_rate <- mean(sapply(eval_design, function (x) {
+    
+    ifelse(identical(modelling, FALSE),
+           attr(x, "successRate"),
+           attr(x$BayesianMCP, "successRate"))
+    
   }))
-
+  
   names(eval_design) <- model_names
 
   attr(eval_design, "avgSuccessRate") <- avg_success_rate
@@ -156,7 +174,7 @@ assessDesign <- function (
 #' 2) Frequentist approach: If only dose_weights are provided optimal contrast vectors are calculated from the
 #'    regular MCPMod for these specific weights
 #' 3) Bayesian approach + re-estimation: If only a sd_posterior (i.e. variability of the posterior distribution) is provided, pseudo-optimal contrasts based on these posterior weights will be calculated
-#' 4) Frequentist approach+re-estimation:If only a se_new_trial (i.e. the estimated variability per dose group of a new trial) is provided, optimal contrast vectors are calculated from the
+#' 4) Frequentist approach+re-estimation: If only a se_new_trial (i.e. the estimated variability per dose group of a new trial) is provided, optimal contrast vectors are calculated from the
 #'    regular MCPMod for this specific vector of standard errors. For the actual evaluation this vector of standard errors is translated into a (diagonal) matrix of variances
 #'
 #' @param mods An object of class 'Mods' as created by the function 'DoseFinding::Mods()'

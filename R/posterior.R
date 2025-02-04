@@ -193,9 +193,7 @@ getPosteriorI <- function(
 #' @title getESS
 #'
 #' @description This function calculates the effective sample size for every dose group via the RBesT function ess().
-#'
 #' @param post_list A posterior list object, for which the effective sample size for each dose group should be calculated
-#'
 #' @return A vector of the effective sample sizes for each dose group
 #'
 #' @export
