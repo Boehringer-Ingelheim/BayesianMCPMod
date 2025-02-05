@@ -2,13 +2,13 @@
 #'
 #' @description This function performs simulation based trial design evaluations for a set of specified dose-response models
 #'
-#' @param n_patients Vector specifying the planned number of patients per dose group
+#' @param n_patients Vector specifying the planned number of patients per dose group. A minimum of 2 patients are required in each group.
 #' @param mods An object of class "Mods" as specified in the DoseFinding package.
 #' @param prior_list A prior_list object specifying the utilized prior for the different dose groups
 #' @param sd A positive value, specification of assumed sd
 #' @param n_sim Number of simulations to be performed
 #' @param alpha_crit_val (Un-adjusted) Critical value to be used for the MCP testing step. Passed to the getCritProb() function for the calculation of adjusted critical values (on the probability scale). Default is 0.05.
-#' @param modelling Boolean variable defining whether the Mod part of Bayesian MCP-Mod will be performed in the assessment. More heavy on ressources. Default FALSE.
+#' @param modeling Boolean variable defining whether the Mod part of Bayesian MCP-Mod will be performed in the assessment. More heavy on resources. Default FALSE.
 #' @param simple Boolean variable defining whether simplified fit will be applied. Passed to the getModelFits function. Default FALSE.
 #' @param reestimate Boolean variable defining whether critical value should be calculated with re-estimated contrasts (see getCritProb function for more details). Default FALSE
 #' @param contr An object of class 'optContr' as created by the getContr() function. Allows specification of a fixed contrasts matrix. Default NULL
@@ -55,7 +55,7 @@ assessDesign <- function (
 
   n_sim          = 1e3,
   alpha_crit_val = 0.05,
-  modelling      = FALSE,
+  modeling       = FALSE,
   simple         = TRUE,
   reestimate     = FALSE,
 
@@ -65,13 +65,14 @@ assessDesign <- function (
 ) {
 
   checkmate::assert_vector(n_patients, len = length(attr(mods, "doses")), any.missing = FALSE)
+  checkmate::assert_double(n_patients, lower = 2, upper = Inf)
   checkmate::check_class(mods, classes = "Mods")
   checkmate::check_list(prior_list, names = "named", len = length(attr(mods, "doses")), any.missing = FALSE)
   # sensitive to how DoseFinding labels their attributes for "Mods" class
   checkmate::check_double(n_sim, lower = 1, upper = Inf)
   checkmate::check_double(alpha_crit_val, lower = 0, upper = 1)
   checkmate::check_logical(simple)
-  checkmate::check_logical(modelling)
+  checkmate::check_logical(modeling)
   # TODO: check that prior_list has 'sd_tot' attribute, and that it's numeric # this is not applicable at the moment
 
   dose_levels <- attr(mods, "doses")
@@ -119,7 +120,7 @@ assessDesign <- function (
 
     }
     
-    if (identical(modelling, FALSE)) {
+    if (identical(modeling, FALSE)) {
       
       b_mcp <- performBayesianMCP(
         posterior_list = posterior_list,
@@ -140,7 +141,7 @@ assessDesign <- function (
 
   avg_success_rate <- mean(sapply(eval_design, function (x) {
     
-    ifelse(identical(modelling, FALSE),
+    ifelse(identical(modeling, FALSE),
            attr(x, "successRate"),
            attr(x$BayesianMCP, "successRate"))
     
@@ -564,7 +565,6 @@ performBayesianMCP <- function(
 
 }
 
-#' @export
 getModelSuccesses <- function (b_mcp) {
 
   stopifnot(inherits(b_mcp, "BayesianMCP"))

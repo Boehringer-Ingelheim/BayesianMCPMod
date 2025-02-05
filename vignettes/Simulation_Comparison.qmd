@@ -39,7 +39,7 @@ load_path <- "/fsx/home/wojcieko/GitHub/BayesianMCPMod/inst/extdata"
 
 ```
 
-# Introduction {#sec-introduction}
+# Introduction
 
 This vignette demonstrates the application of the [BayesianMCPMod](https://CRAN.R-project.org/package=BayesianMCPMod) package for sample size calculations and the comparison with the [MCPModPack](https://CRAN.R-project.org/package=MCPModPack) package.
 Bayesian MCPMod is set up in a way that it  mimics the results (and operating characteristics) of the frequentist MCPMod for vague priors.
@@ -74,11 +74,11 @@ Given the number of simulations and applying the law of large numbers, the diffe
 ```{r}
 #| code-summary: Simulation Parameters
 #| code-fold: true
-plan(multisession)
-registerDoFuture()
-
 set.seed(7015)
 n_sim <- 10000
+
+plan(multisession)
+registerDoFuture()
 ```
 
 ```{r, echo = FALSE}
@@ -87,7 +87,7 @@ n_sim <- 10
 
 ```
 
-In the following plot shows the considered candidate models.
+In the following figure shows the considered candidate models.
 
 ```{r}
 #| code-summary: Candidate Models
@@ -241,9 +241,9 @@ results_BayesianMCPMod_eff <- readRDS(file.path(load_path, "results_BayesianMCPM
 ```
 
 The following plot shows the differences between the results obtained with MCPModPack and BayesianMCPMod.
-The results of BayesianMCPMod are shown as a horizontal line and the difference to the result of MCPModPack is presented as a vertical line.
-As the results are so close to one another, the vertical lines are barely visible.
-The results of the different assumed true dose-response models, which are the basis for simulating the data, are shown in different colours.
+The results of BayesianMCPMod are shown as horizontal lines and the differences to the results of MCPModPack are presented as vertical lines.
+As the results are close to one another, the vertical lines are barely visible.
+The colours indicate the different assumed true dose-response models, which were the basis for simulating the data.
 
 ```{r}
 #| code-summary: Comparing Power and Success Rates
@@ -281,12 +281,12 @@ ggplot(df_plot_eff, aes(x = as.numeric(max_eff) + offset, y = BayesianMCPMod, co
 
 As expected, the operating characteristics of BayesianMCPMod with vague priors match the operating characteristics of frequentist MCPMod.
 
-Numerical results are shown in the following two tables.
+Numerical results are shown in the two tables below.
 
 ```{r}
 #| code-summary:  MCPModPack Power
 kable(results_MCPModPack_eff) %>%
-  kable_classic(full_width = TRUE) %>%
+  kable_classic() %>%
     add_header_above(c("Power Values Across Different Expected Effects" = 7),
                      font_size = 15, bold = TRUE) %>%
     add_header_above(c("MCPModPack" = 7), font_size = 15, bold = TRUE)
@@ -306,25 +306,25 @@ kable(results_BayesianMCPMod_eff) %>%
 # Convergence of Power Values
 
 In the following simulations, we examine the convergence of power and success rate values for an increasing number of simulations.
-For this, the same simulation settings apply as in @sec-introduction, only the expected maximum effect is fixed at 0.2. 
+For this, the expected maximum effect is fixed at 0.2. 
 
 ```{r}
 #| code-summary: Fixed expected maximum effect
 exp_eff_fix <- 0.2
 ```
 
-The R package MCPModPack provides a final power result for a certain number of simulations and does not allow accessing intermediate power values.
+The R package MCPModPack provides a final power result for a given number of simulations and does not allow accessing intermediate power values.
 
 ```{r}
-#| code-summary: Number of simulations for power values
-n_sim_vec <- c(10, 125, 250, 500, 1000, 2000)
+#| code-summary: Numbers of simulations for power values
+n_sim_vec <- seq(2, 10, 1)^4
 ```
 
 ```{r, echo = FALSE}
 n_sim_vec <- c(5, 10)
 ```
 
-This is why the simulation is repeated for different values of number of simulations.
+This is why the simulation is repeated for different values of number of simulations for the implementation with MCPModPack.
 
 ```{r}
 #| code-summary: MCPModPack Implementation
@@ -372,6 +372,8 @@ results_MCPModPack_conv <- cbind(sim_grid, powers_MCPModPack_conv) %>%
 results_MCPModPack_conv <- readRDS(file.path(load_path, "results_MCPModPack_conv.rds"))
 
 ```
+
+In the BayesianMCPMod implementation, only one simulation run is required to access the estimated success rate values at different numbers of simulations.
 
 ```{r}
 #| code-summary: BayesianMCPMod Implementation
@@ -426,7 +428,7 @@ results_BayesianMCPMod_conv <- readRDS(file.path(load_path, "results_BayesianMCP
 
 ```
 
-The following plot shows the convergence of the power and success rate values for an increasing number of simulations.
+The figure below shows the convergence of the power and success rate values for an increasing number of simulations.
 
 ```{r}
 #| code-summary: BayesianMCPMod Implementation
@@ -440,7 +442,7 @@ ggplot(df_plot_conv, aes(x = n_sim, y = success_rate_diff, color = model_name)) 
   geom_point() +
   geom_line() +
   geom_hline(yintercept = 0, linetype = "dashed", color = "grey")+
-  scale_x_continuous(breaks = unique(df_plot_conv$n_sim)) + 
+  scale_x_continuous(breaks = unique(df_plot_conv$n_sim)[-c(2, 3)]) +
   labs(
     title   = "Success Rate Difference vs Number of Simulations",
     x       = "Number of Simulations",

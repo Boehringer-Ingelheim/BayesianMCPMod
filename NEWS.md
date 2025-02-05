@@ -1,10 +1,10 @@
-## BayesianMCPMod 1.0.2 (xx-Aug-2024)
+## BayesianMCPMod 1.0.2 (xx-Feb-2024)
 
-- addition of new vignette comparing frequentist and bayesian MCPMod (using non-informative prior) 
-- extension of posterior function to allow also input of fully populated variance-covariance matrices 
-- added non-monotonic models (beta and quadratic)  
-- more tests 
-
+- Addition of new vignette comparing frequentist and Bayesian MCPMod (using vague priors) 
+- Extension of getPosterior to allow also input of fully populated variance-covariance matrices 
+- Added non-monotonic models (beta and quadratic)  
+- New argument in assessDesign() to skip the Mod part of Bayesian MCPMod
+- More tests 
 
 ## BayesianMCPMod 1.0.1 (03-Apr-2024)
 

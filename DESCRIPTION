@@ -28,7 +28,8 @@ Description: Bayesian MCPMod (Fleischer et al. (2022)
     Estimated dose-response relationships can be bootstrapped and
     visualized.
 License: Apache License (>= 2)
-URL: https://boehringer-ingelheim.github.io/BayesianMCPMod/, https://github.com/Boehringer-Ingelheim/BayesianMCPMod
+URL: https://boehringer-ingelheim.github.io/BayesianMCPMod/,
+    https://github.com/Boehringer-Ingelheim/BayesianMCPMod
 BugReports: https://github.com/Boehringer-Ingelheim/BayesianMCPMod/issues
 Depends:
     R (>= 4.2)
@@ -36,6 +37,7 @@ Imports:
     checkmate,
     DoseFinding (>= 1.1-1),
     ggplot2,
+    methods,
     nloptr,
     RBesT,
     stats
@@ -43,7 +45,6 @@ Suggests:
     clinDR,
     data.table,
     doFuture,
-    quarto,
     doRNG,
     dplyr,
     kableExtra,
@@ -53,8 +54,10 @@ Suggests:
     rmarkdown,
     spelling,
     testthat (>= 3.0.0),
-    tibble
-VignetteBuilder: quarto
+    tibble,
+    tidyr
+VignetteBuilder: 
+    quarto
 Config/testthat/edition: 3
 Encoding: UTF-8
 Language: en-US
