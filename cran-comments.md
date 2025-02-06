@@ -51,7 +51,7 @@ Status: 1 NOTE
    
 ## From NEWS.md
 
-### BayesianMCPMod 1.0.2 (06-Feb-2024)
+### BayesianMCPMod 1.0.2 (06-Feb-2025)
 
 - Addition of new vignette comparing frequentist and Bayesian MCPMod using vague priors
 - Extension of getPosterior to allow the input of a fully populated variance-covariance matrix
