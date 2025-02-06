@@ -28,14 +28,16 @@ library(MCPModPack)
 
 library(tidyr)
 library(dplyr)
+
 library(kableExtra)
+library(ggplot2)
 
 library(doFuture)
 ```
 
 ```{r, echo = FALSE}
 
-load_path <- "/fsx/home/wojcieko/GitHub/BayesianMCPMod/inst/extdata"
+load_path <- file.path(getwd(), "data", "simulation_comparison")
 
 ```
 
@@ -89,7 +91,7 @@ n_sim <- 10
 
 In the following figure shows the considered candidate models.
 
-```{r}
+```{r fig.height=5}
 #| code-summary: Candidate Models
 #| code-fold: true
 emax_guess     <- guesst(d = doses_sim[2], p = 0.6, "emax") 
@@ -245,7 +247,7 @@ The results of BayesianMCPMod are shown as horizontal lines and the differences 
 As the results are close to one another, the vertical lines are barely visible.
 The colours indicate the different assumed true dose-response models, which were the basis for simulating the data.
 
-```{r}
+```{r fig.height=5}
 #| code-summary: Comparing Power and Success Rates
 ## pre-processing the data
 df_plot_eff <- rbind(results_MCPModPack_eff %>% 
@@ -430,7 +432,7 @@ results_BayesianMCPMod_conv <- readRDS(file.path(load_path, "results_BayesianMCP
 
 The figure below shows the convergence of the power and success rate values for an increasing number of simulations.
 
-```{r}
+```{r fig.height=5}
 #| code-summary: BayesianMCPMod Implementation
 df_plot_conv <- inner_join(results_BayesianMCPMod_conv,
                            results_MCPModPack_conv,
@@ -443,6 +445,7 @@ ggplot(df_plot_conv, aes(x = n_sim, y = success_rate_diff, color = model_name)) 
   geom_line() +
   geom_hline(yintercept = 0, linetype = "dashed", color = "grey")+
   scale_x_continuous(breaks = unique(df_plot_conv$n_sim)[-c(2, 3)]) +
+  scale_y_continuous(breaks = c(-0.05, 0, 0.05, 0.1, 0.15)) +
   labs(
     title   = "Success Rate Difference vs Number of Simulations",
     x       = "Number of Simulations",
