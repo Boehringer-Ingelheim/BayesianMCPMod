@@ -12,7 +12,7 @@ format:
     warning: false
 vignette: >
   %\VignetteIndexEntry{Comparison of Bayesian MCPMod and MCPMod}
-  %\VignetteEngine{quarto::html}
+  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 

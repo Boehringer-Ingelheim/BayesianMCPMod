@@ -31,9 +31,7 @@ urlchecker::url_update()
 
 # check on other distributions
 # _rhub
-devtools::check_rhub()
-rhub::check_on_windows(check_args = "--force-multiarch")
-rhub::check_on_solaris()
+rhub::rhub_check(platforms = c("linux", "macos-arm64", "windows")) 
 # _win devel CRAN
 devtools::check_win_devel()
 # _macos CRAN
