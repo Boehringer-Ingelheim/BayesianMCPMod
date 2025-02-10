@@ -27,9 +27,9 @@
 #'                                simple      = TRUE)
 #'
 #' getBootstrapQuantiles(model_fits = fit,
-#'                     quantiles  = c(0.025, 0.5, 0.975),
-#'                     n_samples  = 10, # speeding up example run time
-#'                     doses      = c(0, 6, 8))
+#'                       quantiles  = c(0.025, 0.5, 0.975),
+#'                       n_samples  = 10, # speeding up example run time
+#'                       doses      = c(0, 6, 8))
 #'
 #' @return  A data frame with columns for model, dose, and bootstrapped samples
 #'
@@ -57,11 +57,12 @@ getBootstrapQuantiles <- function (
     doses <- seq(min(dose_levels), max(dose_levels), length.out = 100L)
 
   }
-
-  preds <- apply(mu_hat_samples, 1, function (mu_hat) {
-
+  
+  # predictions[(dose1 model1, dose1 model2, ..., dose2 model1, ...), samples]
+  preds <- future.apply::future_apply(mu_hat_samples, 1, function (mu_hat) {
+    
     preds_mu_hat <- sapply(model_names, function (model) {
-
+      
       fit <- DoseFinding::fitMod(
         dose  = model_fits[[1]]$dose_levels,
         resp  = mu_hat,
@@ -70,25 +71,26 @@ getBootstrapQuantiles <- function (
         type  = "general",
         bnds  = DoseFinding::defBnds(
           mD = max(model_fits[[1]]$dose_levels))[[model]])
-
+      
       preds <- stats::predict(fit, doseSeq = doses, predType = "ls-means")
       attr(preds, "gAIC") <- DoseFinding::gAIC(fit)
-
+      
       return (preds)
-
+      
     }, simplify = FALSE)
-
+    
     preds_mu_mat <- do.call(rbind, preds_mu_hat)
-
+    
     if (avg_fit) {
-
+      
       avg_fit_indx <- which.min(sapply(preds_mu_hat, attr, "gAIC"))
       preds_mu_mat <- rbind(preds_mu_mat, avgFit = preds_mu_mat[avg_fit_indx, ])
-
+      
     }
-
+    
+    # predictions[models, doses]
     return (preds_mu_mat)
-
+    
   })
 
   if (avg_fit) {
@@ -97,12 +99,12 @@ getBootstrapQuantiles <- function (
 
   }
 
+  # predictions[(dose1 model1, dose2 model1, ..., dose1 model2, ...), samples]
   sort_indx <- order(rep(seq_along(model_names), length(doses)))
   quant_mat <- t(apply(X      = preds[sort_indx, ],
                        MARGIN = 1,
                        FUN    = stats::quantile,
                        probs  = quantile_probs))
-
 
   cr_bounds_data <- cbind(
     doses  = doses,

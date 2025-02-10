@@ -1,3 +1,24 @@
+addSignificance <- function (
+    
+  model_fits,
+  sign_models
+  
+) {
+  
+  names(sign_models) <- NULL
+  
+  model_fits_out <- lapply(seq_along(model_fits), function (i) {
+    
+    c(model_fits[[i]], significant = sign_models[i])
+    
+  })
+  
+  attributes(model_fits_out) <- attributes(model_fits)
+  
+  return (model_fits_out)
+  
+}
+
 #' @title assessDesign
 #'
 #' @description This function performs simulation based trial design evaluations for a set of specified dose-response models
@@ -38,9 +59,19 @@
 #'   mods        = mods,
 #'   prior_list  = prior_list,
 #'   sd          = sd,
-#'   n_sim       = 1e2) # speed up exammple run time
+#'   n_sim       = 1e2) # speed up example run time
 #'
 #' success_probabilities
+#' 
+#' success_probabilities <- assessDesign(
+#'   n_patients  = n_patients,
+#'   mods        = mods,
+#'   prior_list  = prior_list,
+#'   sd          = sd,
+#'   modeling    = TRUE,
+#'   n_sim       = 1e2) # speed up example run time
+#'   
+#'   success_probabilities
 #'
 #' }
 #'
@@ -119,7 +150,7 @@ assessDesign <- function (
         sd_posterior   = post_sd))
 
     }
-    
+
     if (identical(modeling, FALSE)) {
       
       b_mcp <- performBayesianMCP(
@@ -161,6 +192,49 @@ assessDesign <- function (
 
   return (eval_design)
 
+}
+
+BayesMCPi <- function (
+    
+  posterior_i,
+  contr,
+  crit_prob_adj
+  
+) {
+  
+  getPostProb <- function (
+    
+    contr_j,     # j: dose level
+    post_combs_i # i: simulation outcome
+    
+  ) {
+    
+    ## Test statistic = sum over all components of
+    ## posterior weight * normal probability distribution of
+    ## critical values for doses * estimated mean / sqrt(product of critical values for doses)
+    
+    ## Calculation for each component of the posterior
+    contr_theta   <- apply(post_combs_i$means, 1, `%*%`, contr_j)
+    contr_var     <- apply(post_combs_i$vars, 1, `%*%`, contr_j^2)
+    contr_weights <- post_combs_i$weights
+    
+    ## P(c_m * theta > 0 | Y = y) for a shape m (and dose j)
+    post_probs <- sum(contr_weights * stats::pnorm(contr_theta / sqrt(contr_var)))
+    
+    return (post_probs)
+    
+  }
+  
+  post_combs_i <- getPostCombsI(posterior_i)
+  post_probs   <- apply(contr$contMat, 2, getPostProb, post_combs_i)
+  
+  res <- c(sign          = ifelse(max(post_probs) > crit_prob_adj, 1, 0),
+           crit_prob_adj = crit_prob_adj,
+           max_post_prob = max(post_probs),
+           post_probs    = post_probs)
+  
+  return (res)
+  
 }
 
 #' @title getContr
@@ -339,6 +413,22 @@ getCritProb <- function (
 
 }
 
+getModelSuccesses <- function (b_mcp) {
+  
+  stopifnot(inherits(b_mcp, "BayesianMCP"))
+  
+  model_indices <- grepl("post_probs.", colnames(b_mcp))
+  model_names   <- colnames(b_mcp)[model_indices] |>
+    sub(pattern = "post_probs.", replacement = "", x = _)
+  
+  model_successes <- colMeans(b_mcp[, model_indices] > b_mcp[, "crit_prob_adj"])
+  
+  names(model_successes) <- model_names
+  
+  return (model_successes)
+  
+}
+
 #' @title performBayesianMCPMod
 #'
 #' @description Performs Bayesian MCP Test step and modeling in a combined fashion. See performBayesianMCP() function for MCP Test step and getModelFits() for the modeling step
@@ -423,54 +513,18 @@ performBayesianMCPMod <- function (
     posterior_list = posterior_list,
     contr          = contr,
     crit_prob_adj  = crit_prob_adj)
+  
+  b_mod <- performBayesianMod(
+    b_mcp          = b_mcp,
+    posterior_list = posterior_list,
+    model_shapes   = model_shapes,
+    dose_levels    = dose_levels,
+    simple         = simple)
 
-  fits_list <- lapply(seq_along(posterior_list), function (i) {
-
-    if (b_mcp[i, 1]) {
-
-      sign_models <- b_mcp[i, -c(1, 2)] > attr(b_mcp, "crit_prob_adj")
-
-      model_fits  <- getModelFits(
-        models      = model_shapes,
-        dose_levels = dose_levels,
-        posterior   = posterior_list[[i]],
-        simple      = simple)
-
-      model_fits  <- addSignificance(model_fits, sign_models)
-
-    } else {
-
-      NULL
-
-    }
-
-  })
-
-  bmcpmod        <- list(BayesianMCP = b_mcp, Mod = fits_list)
+  bmcpmod        <- list(BayesianMCP = b_mcp, Mod = b_mod)
   class(bmcpmod) <- "BayesianMCPMod"
 
   return (bmcpmod)
-
-}
-
-addSignificance <- function (
-
-  model_fits,
-  sign_models
-
-) {
-
-  names(sign_models) <- NULL
-
-  model_fits_out <- lapply(seq_along(model_fits), function (i) {
-
-    c(model_fits[[i]], significant = sign_models[i])
-
-  })
-
-  attributes(model_fits_out) <- attributes(model_fits)
-
-  return (model_fits_out)
 
 }
 
@@ -565,61 +619,36 @@ performBayesianMCP <- function(
 
 }
 
-getModelSuccesses <- function (b_mcp) {
-
-  stopifnot(inherits(b_mcp, "BayesianMCP"))
-
-  model_indices <- grepl("post_probs.", colnames(b_mcp))
-  model_names   <- colnames(b_mcp)[model_indices] |>
-    sub(pattern = "post_probs.", replacement = "", x = _)
-
-  model_successes <- colMeans(b_mcp[, model_indices] > b_mcp[, "crit_prob_adj"])
-
-  names(model_successes) <- model_names
-
-  return (model_successes)
-
-}
-
-BayesMCPi <- function (
-
-  posterior_i,
-  contr,
-  crit_prob_adj
-
+performBayesianMod <- function (
+    
+  b_mcp,
+  posterior_list,
+  model_shapes,
+  dose_levels,
+  simple
+  
 ) {
-
-  getPostProb <- function (
-
-    contr_j,     # j: dose level
-    post_combs_i # i: simulation outcome
-
-  ) {
-
-    ## Test statistic = sum over all components of
-    ## posterior weight * normal probability distribution of
-    ## critical values for doses * estimated mean / sqrt(product of critical values for doses)
-
-    ## Calculation for each component of the posterior
-    contr_theta   <- apply(post_combs_i$means, 1, `%*%`, contr_j)
-    contr_var     <- apply(post_combs_i$vars, 1, `%*%`, contr_j^2)
-    contr_weights <- post_combs_i$weights
-
-    ## P(c_m * theta > 0 | Y = y) for a shape m (and dose j)
-    post_probs <- sum(contr_weights * stats::pnorm(contr_theta / sqrt(contr_var)))
-
-    return (post_probs)
-
-  }
-
-  post_combs_i <- getPostCombsI(posterior_i)
-  post_probs   <- apply(contr$contMat, 2, getPostProb, post_combs_i)
-
-  res <- c(sign          = ifelse(max(post_probs) > crit_prob_adj, 1, 0),
-           crit_prob_adj = crit_prob_adj,
-           max_post_prob = max(post_probs),
-           post_probs    = post_probs)
-
-  return (res)
-
+  
+  fits_list <- future.apply::future_lapply(seq_along(posterior_list), function (i) {
+    
+    if (b_mcp[i, 1]) {
+      
+      sign_models <- b_mcp[i, -c(1, 2)] > attr(b_mcp, "crit_prob_adj")
+      
+      model_fits  <- getModelFits(
+        models      = model_shapes,
+        dose_levels = dose_levels,
+        posterior   = posterior_list[[i]],
+        simple      = simple) 
+      
+      model_fits  <- addSignificance(model_fits, sign_models)
+      
+    } else {
+      
+      NULL
+      
+    }
+    
+  })
+  
 }

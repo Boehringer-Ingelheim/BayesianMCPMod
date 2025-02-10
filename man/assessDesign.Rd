@@ -69,9 +69,19 @@ success_probabilities <- assessDesign(
   mods        = mods,
   prior_list  = prior_list,
   sd          = sd,
-  n_sim       = 1e2) # speed up exammple run time
+  n_sim       = 1e2) # speed up example run time
 
 success_probabilities
+
+success_probabilities <- assessDesign(
+  n_patients  = n_patients,
+  mods        = mods,
+  prior_list  = prior_list,
+  sd          = sd,
+  modeling    = TRUE,
+  n_sim       = 1e2) # speed up example run time
+  
+  success_probabilities
 
 }
 
