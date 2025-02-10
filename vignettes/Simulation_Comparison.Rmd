@@ -16,7 +16,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r}
+```{r, collapse=TRUE}
 #| code-summary: Setup
 #| code-fold: true
 #| message: false
@@ -57,7 +57,7 @@ The following dose-finding scenario is considered to compare Bayesian MCPMod and
 
 -   Alpha level of 5%
 
-```{r}
+```{r, collapse=TRUE}
 #| code-summary: Scenario Parameters
 #| code-fold: true
 doses_sim     <- c(0, 1, 2, 4, 8) 
@@ -73,7 +73,7 @@ alpha         <- 0.05
 Simulations are performed with 10000 runs. 
 Given the number of simulations and applying the law of large numbers, the difference in success probabilities should be in the range of 1% - 3%.
 
-```{r}
+```{r, collapse=TRUE}
 #| code-summary: Simulation Parameters
 #| code-fold: true
 set.seed(7015)
@@ -91,7 +91,7 @@ n_sim <- 10
 
 In the following figure shows the considered candidate models.
 
-```{r fig.height=5}
+```{r fig.height=5, collapse=TRUE}
 #| code-summary: Candidate Models
 #| code-fold: true
 emax_guess     <- guesst(d = doses_sim[2], p = 0.6, "emax") 
@@ -116,7 +116,7 @@ The following expected effects are studied:
 
 -   Expected effect for maximum dose of 0.0001, 0.05, 0.1, 0.2, 0.3, and 0.5
 
-```{r}
+```{r, collapse=TRUE}
 #| code-summary: Expected Effects
 #| code-fold: true
 exp_eff <- c(0.0001, 0.05, 0.1, 0.2, 0.3, 0.5)
@@ -125,7 +125,7 @@ exp_eff <- c(0.0001, 0.05, 0.1, 0.2, 0.3, 0.5)
 The value of 0.0001 was chosen instead of 0 due to technical reasons.
 This case should mimic the null scenario (where we expect a success probability close to the alpha level).
 
-```{r}
+```{r, collapse=TRUE}
 #| code-summary: MCPModPack Implementation
 #| code-fold: true
 #| warning: false
@@ -170,7 +170,7 @@ powers_MCPModPack_eff <- foreach(
 # Post-processing result for printing
 colnames(powers_MCPModPack_eff) <- names(models_MCPModPack)
 results_MCPModPack_eff <- cbind(max_eff = round(exp_eff, digits = 2),
-                            powers_MCPModPack_eff) %>%
+                                powers_MCPModPack_eff) %>%
   data.frame() %>%
   rename(sigEmax = sigemax) %>%
   mutate(average = rowMeans(select(., linear:sigEmax)))
@@ -183,7 +183,7 @@ results_MCPModPack_eff <- readRDS(file.path(load_path, "results_MCPModPack_eff.r
 ```
 
 
-```{r}
+```{r, collapse=TRUE}
 #| code-summary: Bayesian MCPMod Implementation
 #| code-fold: true
 # Vague prior specification
@@ -251,9 +251,9 @@ The colours indicate the different assumed true dose-response models, which were
 #| code-summary: Comparing Power and Success Rates
 ## pre-processing the data
 df_plot_eff <- rbind(results_MCPModPack_eff %>% 
-                   mutate(package_name = "MCPModPack"),
-                 results_BayesianMCPMod_eff %>% 
-                   mutate(package_name = "BayesianMCPMod")) %>%
+                     mutate(package_name = "MCPModPack"),
+                     results_BayesianMCPMod_eff %>% 
+                     mutate(package_name = "BayesianMCPMod")) %>%
   pivot_longer(cols      = names(results_BayesianMCPMod_eff)[-1],
                names_to  = "model_shape",
                values_to = "success_rate") %>%
@@ -456,4 +456,5 @@ ggplot(df_plot_conv, aes(x = n_sim, y = success_rate_diff, color = model_name)) 
   theme_minimal() + 
   theme(panel.grid.minor.x = element_blank())
 ```
+
 As expected, the differences are within the range of 1% - 3%.
