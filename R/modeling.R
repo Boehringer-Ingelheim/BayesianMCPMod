@@ -51,6 +51,7 @@ getModelFits <- function (
   delta
 
 ) {
+  
   if (inherits(models, "character")) {
     models <- stats::setNames(as.list(models), models)
   }
@@ -77,7 +78,6 @@ getModelFits <- function (
   names(model_fits)             <- model_names
   attr(model_fits, "posterior") <- posterior
   class(model_fits)             <- "modelFits"
-
 
   return (model_fits)
 
@@ -137,6 +137,7 @@ getModelFitOpt <- function (
     delta
 
   ) {
+    
     switch (
       model,
       "emax" = {
@@ -173,14 +174,10 @@ getModelFitOpt <- function (
         lb     <- c(-Inf, -Inf, 0.05, 0.05)
         ub     <- c(Inf, Inf, 4, 4)
         scal   <- ifelse(is.null(addArgs), 1.2 * max(dose_levels), addArgs[["scal"]]) #for betaMod shape
-        expr_i <- substitute(
-          sum(
-              ((post_combs$means[i, ] - (theta[1] + theta[2] * (((theta[3] + theta[4])^(theta[3] + theta[4])) / ((theta[3] ^ theta[3]) * (theta[4]^theta[4]))) * (dose_levels / scal)^(theta[3]) * ((1 - dose_levels / scal)^(theta[4]))))^2 / (post_combs$vars[i, ])))
-          ,
-          list(scal = scal)
-        )
+        expr_i <- substitute(sum(((post_combs$means[i, ] - (theta[1] + theta[2] * (((theta[3] + theta[4])^(theta[3] + theta[4])) / ((theta[3] ^ theta[3]) * (theta[4]^theta[4]))) * (dose_levels / scal)^(theta[3]) * ((1 - dose_levels / scal)^(theta[4]))))^2 / (post_combs$vars[i, ]))),
+                             list(scal = scal))
       },
-      stop(paste("error:", model, "shape not yet implemented"))
+      stop(paste("error:", model, "shape not (yet) implemented"))
     )
 
     # plot_res   <- 1e3

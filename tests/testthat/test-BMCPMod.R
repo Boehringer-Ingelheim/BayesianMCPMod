@@ -24,13 +24,13 @@ test_that("base case input throws no error and has correct properties", {
 
   # assessDesign result should have rows = n_sim
   expect_equal(
-    attr(eval_design$linear$BayesianMCP, "dim")[1],
+    attr(eval_design$linear, "dim")[1],
     n_sim
   )
 
   # assessDesign result (in this base case) should have crit_prob = 1 - alpha_crit_val
   expect_equal(
-    attr(eval_design$linear$BayesianMCP, "critProb"),
+    attr(eval_design$linear, "critProb"),
     1 - alpha_crit_val
   )
 
@@ -39,6 +39,31 @@ test_that("base case input throws no error and has correct properties", {
     dose_levels = dose_levels,
     dose_weights = n_patients,
     prior_list = prior_list
+  )
+  
+  expect_no_error(
+    eval_design <- assessDesign(
+      n_patients = n_patients,
+      mods = mods,
+      sd = sd,
+      prior_list = prior_list,
+      n_sim = n_sim,
+      alpha_crit_val = alpha_crit_val,
+      simple = TRUE,
+      modeling = TRUE
+    )
+  )
+  
+  # assessDesign result should have rows = n_sim
+  expect_equal(
+    attr(eval_design$linear$BayesianMCP, "dim")[1],
+    n_sim
+  )
+  
+  # assessDesign result (in this base case) should have crit_prob = 1 - alpha_crit_val
+  expect_equal(
+    attr(eval_design$linear$BayesianMCP, "critProb"),
+    1 - alpha_crit_val
   )
 
   expect_no_error(
@@ -124,6 +149,7 @@ test_that("assessDesign validates n_patients parameter input and give appropriat
   expect_error(
     assessDesign(n_patients = rep(1, length(n_patients)), sd = sd, mods = mods, prior_list = prior_list, n_sim = n_sim),
   )
+  
 })
 
 ### mods param ###

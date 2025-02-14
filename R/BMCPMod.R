@@ -1,13 +1,35 @@
+addSignificance <- function (
+
+  model_fits,
+  sign_models
+
+) {
+
+  names(sign_models) <- NULL
+
+  model_fits_out <- lapply(seq_along(model_fits), function (i) {
+
+    c(model_fits[[i]], significant = sign_models[i])
+
+  })
+
+  attributes(model_fits_out) <- attributes(model_fits)
+
+  return (model_fits_out)
+
+}
+
 #' @title assessDesign
-#'.
+#'
 #' @description This function performs simulation based trial design evaluations for a set of specified dose-response models
 #'
-#' @param n_patients Vector specifying the planned number of patients per dose group
+#' @param n_patients Vector specifying the planned number of patients per dose group. A minimum of 2 patients are required in each group.
 #' @param mods An object of class "Mods" as specified in the DoseFinding package.
 #' @param prior_list A prior_list object specifying the utilized prior for the different dose groups
 #' @param sd A positive value, specification of assumed sd
 #' @param n_sim Number of simulations to be performed
 #' @param alpha_crit_val (Un-adjusted) Critical value to be used for the MCP testing step. Passed to the getCritProb() function for the calculation of adjusted critical values (on the probability scale). Default is 0.05.
+#' @param modeling Boolean variable defining whether the Mod part of Bayesian MCP-Mod will be performed in the assessment. More heavy on resources. Default FALSE.
 #' @param simple Boolean variable defining whether simplified fit will be applied. Passed to the getModelFits function. Default FALSE.
 #' @param reestimate Boolean variable defining whether critical value should be calculated with re-estimated contrasts (see getCritProb function for more details). Default FALSE
 #' @param contr An object of class 'optContr' as created by the getContr() function. Allows specification of a fixed contrasts matrix. Default NULL
@@ -37,9 +59,19 @@
 #'   mods        = mods,
 #'   prior_list  = prior_list,
 #'   sd          = sd,
-#'   n_sim       = 1e2) # speed up exammple run time
+#'   n_sim       = 1e2) # speed up example run time
 #'
 #' success_probabilities
+#'
+#' success_probabilities <- assessDesign(
+#'   n_patients  = n_patients,
+#'   mods        = mods,
+#'   prior_list  = prior_list,
+#'   sd          = sd,
+#'   modeling    = TRUE,
+#'   n_sim       = 1e2) # speed up example run time
+#'
+#'   success_probabilities
 #'
 #' }
 #'
@@ -54,6 +86,7 @@ assessDesign <- function (
 
   n_sim          = 1e3,
   alpha_crit_val = 0.05,
+  modeling       = FALSE,
   simple         = TRUE,
   reestimate     = FALSE,
 
@@ -63,12 +96,14 @@ assessDesign <- function (
 ) {
 
   checkmate::assert_vector(n_patients, len = length(attr(mods, "doses")), any.missing = FALSE)
+  checkmate::assert_double(n_patients, lower = 2, upper = Inf)
   checkmate::check_class(mods, classes = "Mods")
   checkmate::check_list(prior_list, names = "named", len = length(attr(mods, "doses")), any.missing = FALSE)
   # sensitive to how DoseFinding labels their attributes for "Mods" class
   checkmate::check_double(n_sim, lower = 1, upper = Inf)
   checkmate::check_double(alpha_crit_val, lower = 0, upper = 1)
   checkmate::check_logical(simple)
+  checkmate::check_logical(modeling)
   # TODO: check that prior_list has 'sd_tot' attribute, and that it's numeric # this is not applicable at the moment
 
   dose_levels <- attr(mods, "doses")
@@ -116,16 +151,31 @@ assessDesign <- function (
 
     }
 
-    b_mcp_mod <- performBayesianMCPMod(
-      posterior_list = posterior_list,
-      contr          = contr,
-      crit_prob_adj  = crit_prob_adj,
-      simple         = simple)
+    if (identical(modeling, FALSE)) {
+
+      b_mcp <- performBayesianMCP(
+        posterior_list = posterior_list,
+        contr          = contr,
+        crit_prob_adj  = crit_prob_adj)
+
+    } else {
+
+      b_mcp_mod <- performBayesianMCPMod(
+        posterior_list = posterior_list,
+        contr          = contr,
+        crit_prob_adj  = crit_prob_adj,
+        simple         = simple)
+
+    }
 
   })
 
-  avg_success_rate <- mean(sapply(eval_design, function (bmcpmod) {
-    attr(bmcpmod$BayesianMCP, "successRate")
+  avg_success_rate <- mean(sapply(eval_design, function (x) {
+
+    ifelse(identical(modeling, FALSE),
+           attr(x, "successRate"),
+           attr(x$BayesianMCP, "successRate"))
+
   }))
 
   names(eval_design) <- model_names
@@ -144,6 +194,49 @@ assessDesign <- function (
 
 }
 
+BayesMCPi <- function (
+
+  posterior_i,
+  contr,
+  crit_prob_adj
+
+) {
+
+  getPostProb <- function (
+
+    contr_j,     # j: dose level
+    post_combs_i # i: simulation outcome
+
+  ) {
+
+    ## Test statistic = sum over all components of
+    ## posterior weight * normal probability distribution of
+    ## critical values for doses * estimated mean / sqrt(product of critical values for doses)
+
+    ## Calculation for each component of the posterior
+    contr_theta   <- apply(post_combs_i$means, 1, `%*%`, contr_j)
+    contr_var     <- apply(post_combs_i$vars, 1, `%*%`, contr_j^2)
+    contr_weights <- post_combs_i$weights
+
+    ## P(c_m * theta > 0 | Y = y) for a shape m (and dose j)
+    post_probs <- sum(contr_weights * stats::pnorm(contr_theta / sqrt(contr_var)))
+
+    return (post_probs)
+
+  }
+
+  post_combs_i <- getPostCombsI(posterior_i)
+  post_probs   <- apply(contr$contMat, 2, getPostProb, post_combs_i)
+
+  res <- c(sign          = ifelse(max(post_probs) > crit_prob_adj, 1, 0),
+           crit_prob_adj = crit_prob_adj,
+           max_post_prob = max(post_probs),
+           post_probs    = post_probs)
+
+  return (res)
+
+}
+
 #' @title getContr
 #'
 #' @description This function calculates contrast vectors that are optimal for detecting certain alternatives via applying the function optContr() of the DoseFinding package.
@@ -156,7 +249,7 @@ assessDesign <- function (
 #' 2) Frequentist approach: If only dose_weights are provided optimal contrast vectors are calculated from the
 #'    regular MCPMod for these specific weights
 #' 3) Bayesian approach + re-estimation: If only a sd_posterior (i.e. variability of the posterior distribution) is provided, pseudo-optimal contrasts based on these posterior weights will be calculated
-#' 4) Frequentist approach+re-estimation:If only a se_new_trial (i.e. the estimated variability per dose group of a new trial) is provided, optimal contrast vectors are calculated from the
+#' 4) Frequentist approach+re-estimation: If only a se_new_trial (i.e. the estimated variability per dose group of a new trial) is provided, optimal contrast vectors are calculated from the
 #'    regular MCPMod for this specific vector of standard errors. For the actual evaluation this vector of standard errors is translated into a (diagonal) matrix of variances
 #'
 #' @param mods An object of class 'Mods' as created by the function 'DoseFinding::Mods()'
@@ -320,6 +413,22 @@ getCritProb <- function (
 
 }
 
+getModelSuccesses <- function (b_mcp) {
+
+  stopifnot(inherits(b_mcp, "BayesianMCP"))
+
+  model_indices <- grepl("post_probs.", colnames(b_mcp))
+  model_names   <- colnames(b_mcp)[model_indices] |>
+    sub(pattern = "post_probs.", replacement = "", x = _)
+
+  model_successes <- colMeans(b_mcp[, model_indices] > b_mcp[, "crit_prob_adj"])
+
+  names(model_successes) <- model_names
+
+  return (model_successes)
+
+}
+
 #' @title performBayesianMCPMod
 #'
 #' @description Performs Bayesian MCP Test step and modeling in a combined fashion. See performBayesianMCP() function for MCP Test step and getModelFits() for the modeling step
@@ -405,6 +514,13 @@ performBayesianMCPMod <- function (
     contr          = contr,
     crit_prob_adj  = crit_prob_adj)
 
+  b_mod <- performBayesianMod(
+    b_mcp          = b_mcp,
+    posterior_list = posterior_list,
+    model_shapes   = model_shapes,
+    dose_levels    = dose_levels,
+    simple         = simple)
+
   fits_list <- lapply(seq_along(posterior_list), function (i) {
 
     if (b_mcp[i, 1]) {
@@ -427,32 +543,10 @@ performBayesianMCPMod <- function (
 
   })
 
-
-  bmcpmod        <- list(BayesianMCP = b_mcp, Mod = fits_list)
+  bmcpmod        <- list(BayesianMCP = b_mcp, Mod = b_mod)
   class(bmcpmod) <- "BayesianMCPMod"
 
   return (bmcpmod)
-
-}
-
-addSignificance <- function (
-
-  model_fits,
-  sign_models
-
-) {
-
-  names(sign_models) <- NULL
-
-  model_fits_out <- lapply(seq_along(model_fits), function (i) {
-
-    c(model_fits[[i]], significant = sign_models[i])
-
-  })
-
-  attributes(model_fits_out) <- attributes(model_fits)
-
-  return (model_fits_out)
 
 }
 
@@ -547,61 +641,36 @@ performBayesianMCP <- function(
 
 }
 
-getModelSuccesses <- function (b_mcp) {
+performBayesianMod <- function (
 
-  stopifnot(inherits(b_mcp, "BayesianMCP"))
-
-  model_indices <- grepl("post_probs.", colnames(b_mcp))
-  model_names   <- colnames(b_mcp)[model_indices] |>
-    sub(pattern = "post_probs.", replacement = "", x = _)
-
-  model_successes <- colMeans(b_mcp[, model_indices] > b_mcp[, "crit_prob_adj"])
-
-  names(model_successes) <- model_names
-
-  return (model_successes)
-
-}
-
-BayesMCPi <- function (
-
-  posterior_i,
-  contr,
-  crit_prob_adj
+  b_mcp,
+  posterior_list,
+  model_shapes,
+  dose_levels,
+  simple
 
 ) {
 
-  getPostProb <- function (
+  fits_list <- future.apply::future_lapply(seq_along(posterior_list), function (i) {
 
-    contr_j,     # j: dose level
-    post_combs_i # i: simulation outcome
+    if (b_mcp[i, 1]) {
 
-  ) {
+      sign_models <- b_mcp[i, -c(1, 2)] > attr(b_mcp, "crit_prob_adj")
 
-    ## Test statistic = sum over all components of
-    ## posterior weight * normal probability distribution of
-    ## critical values for doses * estimated mean / sqrt(product of critical values for doses)
+      model_fits  <- getModelFits(
+        models      = model_shapes,
+        dose_levels = dose_levels,
+        posterior   = posterior_list[[i]],
+        simple      = simple)
 
-    ## Calculation for each component of the posterior
-    contr_theta   <- apply(post_combs_i$means, 1, `%*%`, contr_j)
-    contr_var     <- apply(post_combs_i$vars, 1, `%*%`, contr_j^2)
-    contr_weights <- post_combs_i$weights
+      model_fits  <- addSignificance(model_fits, sign_models)
 
-    ## P(c_m * theta > 0 | Y = y) for a shape m (and dose j)
-    post_probs <- sum(contr_weights * stats::pnorm(contr_theta / sqrt(contr_var)))
+    } else {
 
-    return (post_probs)
+      NULL
 
-  }
+    }
 
-  post_combs_i <- getPostCombsI(posterior_i)
-  post_probs   <- apply(contr$contMat, 2, getPostProb, post_combs_i)
-
-  res <- c(sign          = ifelse(max(post_probs) > crit_prob_adj, 1, 0),
-           crit_prob_adj = crit_prob_adj,
-           max_post_prob = max(post_probs),
-           post_probs    = post_probs)
-
-  return (res)
+  })
 
 }

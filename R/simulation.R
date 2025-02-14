@@ -31,7 +31,7 @@
 #'                          mods        = models,
 #'                          n_sim       = 100)
 #' 
-#' sim_data
+#' head(sim_data)
 #'
 #' @return A list object, containing patient level simulated data for all assumed true models.
 #' Also providing information about simulation iteration, patient number as well as dosage levels.

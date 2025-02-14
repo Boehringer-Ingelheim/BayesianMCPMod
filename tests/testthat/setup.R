@@ -108,7 +108,7 @@ hist_data <- data.frame(
   n     = rep(1, n_hist_trials)
 )
 
-n_patients <- c(2, 1)
+n_patients <- c(2, 3)
 dose_levels <- c(0, 2.5)
 mean <- c(8, 12)
 sd <- c(0.5, 0.8)
