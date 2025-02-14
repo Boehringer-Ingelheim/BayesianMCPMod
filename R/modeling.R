@@ -64,6 +64,14 @@ getModelFits <- function (
   getModelFit <- ifelse(simple, getModelFitSimple, getModelFitOpt)
   model_fits  <- lapply(model_names, getModelFit, dose_levels, posterior, list("scal" = attr(models, "scal")), delta = delta)
   model_fits  <- addModelWeights(model_fits)
+  # browser()
+  MED <- getMED(
+    fit = model_fits,
+    doses = dose_levels,
+    threshold = delta,
+    grid = FALSE,
+    addArgs = addArgs
+  )
 
 
   names(model_fits)             <- model_names
@@ -205,13 +213,7 @@ getModelFitOpt <- function (
     #   effect_reached <- 1
     # }
 
-    MED <- getMED(
-      fit = simple_fit,
-      doses = dose_levels,
-      threshold = delta,
-      grid = FALSE,
-      addArgs = addArgs
-    )
+
 
     param_list <- list(
       expr_i  = expr_i,
@@ -220,9 +222,9 @@ getModelFitOpt <- function (
         x0 = simple_fit$coeffs,
         lb = lb,
         ub = ub),
-      c_names = names(simple_fit$coeffs),
-      MED = attributes(MED)$MED,
-      MED_effect = attributes(MED)$MED_EFFECT
+      c_names = names(simple_fit$coeffs)
+      # MED = attributes(MED)$MED,
+      # MED_effect = attributes(MED)$MED_EFFECT
       )
 
     return (param_list)
@@ -263,18 +265,18 @@ getModelFitOpt <- function (
     coeffs      = fit$solution,
     dose_levels = dose_levels)
 
- if(!is.na(param_list$MED_effect)) {
-    effect_reached <- 1
-  } else {
-    effect_reached <- 0
-  }
+ # if(!is.na(param_list$MED_effect)) {
+ #    effect_reached <- 1
+ #  } else {
+ #    effect_reached <- 0
+ #  }
 
   model_fit$pred_values <- predictModelFit(model_fit = model_fit, doses = model_fit$dose_levels, addArgs = addArgs)
   model_fit$max_effect  <- max(model_fit$pred_values) - min(model_fit$pred_values)
   model_fit$gAIC        <- getGenAIC(model_fit, post_combs)
-  model_fit$MED         <- unlist(param_list$MED)
-  model_fit$MED_effect <- unlist(param_list$MED_effect)
-  model_fit$effect_reached <- effect_reached
+  # model_fit$MED         <- unlist(param_list$MED)
+  # model_fit$MED_effect <- unlist(param_list$MED_effect)
+  # model_fit$effect_reached <- effect_reached
 
   return (model_fit)
 
@@ -470,6 +472,19 @@ getMED <- function(
   names(post_fits) <- fit$model
   med_list <- list()
   med_effect_list <- list()
+  browser()
+  preds_models <- sapply(fit, predictModelFit, doses = dose_seq)
+  model_names  <- names(post_fits)
+
+  if (avg_fit) {
+
+    mod_weights <- sapply(post_fits, function (x) x$model_weight)
+    avg_preds   <- preds_models %*% mod_weights
+
+    preds_models <- cbind(preds_models, avg_preds)
+    model_names  <- c(model_names, "avgFit")
+
+  }
 
   for (i in 1:length(post_fits)) {
 
