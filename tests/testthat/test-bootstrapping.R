@@ -27,10 +27,10 @@ test_that("test getBootstrapBands", {
   result_2 <- bootstrap_quantiles <- BayesianMCPMod::getBootstrapQuantiles(
     model_fits = fit,
     quantiles  = c(0.025, 0.5, 0.975),
-    avg_fit    = FALSE,
     doses      = c(0, 2.5, 4, 5, 7, 10),
     n_samples  = 6
   )
 
   expect_type(result_2, "list")
+  
 })

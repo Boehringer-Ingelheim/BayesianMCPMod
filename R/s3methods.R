@@ -128,8 +128,22 @@ predict.modelFits <- function (
   ...
 
 ) {
+  
+  model_fits  <- object
+  
+  model_names <- names(model_fits)
 
-  predictions <- lapply(object, predictModelFit, doses = doses)
+  predictions <- lapply(model_fits[model_names != "avgFit"],
+                        predictModelFit, doses = doses)
+  
+  if ("avgFit" %in% model_names) {
+    
+    preds_avg_fit <- predictAvgFit(model_fits, doses = doses)
+    
+    predictions <- c(predictions, list(avgFit = preds_avg_fit))
+    
+  }
+  
   attr(predictions, "doses") <- doses
 
   return (predictions)
@@ -140,11 +154,10 @@ predict.modelFits <- function (
 print.modelFits <- function (
 
   x,
+  n_digits = 1,
   ...
 
 ) {
-
-  n_digits = 1
 
   dose_levels <- x[[1]]$dose_levels
   dose_names  <- names(attr(x, "posterior"))
@@ -156,14 +169,19 @@ print.modelFits <- function (
                           mEff = sapply(x, function (y) y$max_effect),
                           gAIC = sapply(x, function (y) y$gAIC),
                           w    = sapply(x, function (y) y$model_weight))
-  out_table <- apply(as.matrix(out_table), 2, round, digits = n_digits)
 
   if (!is.null(x[[1]]$significant)) {
 
-    out_table <- as.data.frame(out_table)
+    model_sig      <- TRUE
     out_table$Sign <- sapply(x, function (y) y$significant)
 
+  } else {
+    
+    model_sig <- FALSE
+    
   }
+  
+  out_table <- apply(as.matrix(out_table), 2, round, digits = n_digits)
 
   model_names <- names(x) |>
     gsub("exponential", "exponential", x = _) |>
@@ -171,25 +189,45 @@ print.modelFits <- function (
     gsub("linear",      "linear     ", x = _) |>
     gsub("logistic",    "logistic   ", x = _) |>
     gsub("emax",        "emax       ", x = _) |>
+    gsub("avgFit",      "avgFit     ", x = _) |>
     gsub("sigEmax",     "sigEmax    ", x = _)
 
-  # cat("Bayesian MCP Model Fits\n\n")
   cat("Model Coefficients\n")
   for (i in seq_along(model_names)) {
-
-    coeff_values <- x[[i]]$coeff
-    coeff_names  <- names(coeff_values)
-
-    cat(model_names[i],
-        paste(coeff_names, round(coeff_values, n_digits), sep = " = "), "\n",
-        sep = " ")
+    
+    if (model_names[i] != "avgFit     ") {
+      
+      coeff_values <- x[[i]]$coeff
+      coeff_names  <- names(coeff_values)
+      
+      cat(model_names[i],
+          paste(coeff_names, round(coeff_values, n_digits),
+                sep      = " = ",
+                collapse = ", "), "\n",
+          sep = " ")
+      
+    }
 
   }
+  
   cat("\n")
   cat("Dose Levels\n",
-      paste(dose_names, round(dose_levels, n_digits), sep = " = "), "\n")
+      paste(dose_names, round(dose_levels, n_digits),
+            sep      = " = ",
+            collapse = ", "), "\n")
   cat("\n")
-  cat("Predictions, Maximum Effect, gAIC, Model Weights & Significance\n")
+  cat("Predictions, Maximum Effect, gAIC")
+  
+  if (model_sig) {
+    
+    cat(", Model Weights & Significance\n")
+    
+  } else {
+    
+    cat(" & Model Weights\n")
+    
+  }
+  
   print(out_table, ...)
 
 }
