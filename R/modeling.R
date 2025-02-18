@@ -96,7 +96,7 @@ addAvgFit <- function (
   
   avg_fit  <- list(model        = "avgFit",
                    coeff        = NA,
-                   dose_levels  = dose_levels,
+                   dose_levels  = model_fits[[1]]$dose_levels,
                    pred_values  = pred_vals,
                    max_effect   = max(pred_vals) - min(pred_vals),
                    gAIC         = NA,
