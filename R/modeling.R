@@ -18,9 +18,10 @@
 #' }
 #' where \eqn{Q} denotes the number of models included in the averaging procedure.
 #' @references Schorning K, Bornkamp B, Bretz F, Dette H. 2016. Model selection versus model averaging in dose finding studies. Stat Med; 35; 4021-4040.
-#' @param models List of model names for which a fit will be performed.
+#' @param models List (or vector) of model names for which a fit will be performed.
 #' @param dose_levels A vector containing the different dosage levels.
 #' @param posterior A getPosterior object, containing the (multivariate) posterior distribution per dosage level.
+#' @param avg_fit Boolean variable, defining whether an average fit (based on generalized AIC weights) should be performed in addition to the individual models. Default TRUE.
 #' @param simple Boolean variable, defining whether simplified fit will be applied. Default FALSE.
 #' @examples
 #' posterior_list <- list(Ctrl = RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 1), sigma = 2),
@@ -47,16 +48,19 @@ getModelFits <- function (
   models,
   dose_levels,
   posterior,
-  simple = FALSE
+  avg_fit = TRUE,
+  simple  = FALSE
 
 ) {
   
   if (inherits(models, "character")) {
     models <- stats::setNames(as.list(models), models)
   }
+  
   checkmate::check_list(models, any.missing = FALSE)
   checkmate::check_double(dose_levels, lower = 0, any.missing = FALSE, len = length(models))
   checkmate::check_class(posterior, "postList")
+  checkmate::check_logical(avg_fit)
   checkmate::check_logical(simple)
 
   model_names <- unique(gsub("\\d", "", names(models)))
@@ -65,13 +69,75 @@ getModelFits <- function (
 
   model_fits  <- lapply(model_names, getModelFit, dose_levels, posterior, list("scal" = attr(models, "scal")))
   model_fits  <- addModelWeights(model_fits)
+  
+  names(model_fits) <- model_names
+  
+  if (avg_fit) {
+    
+    model_fits <- addAvgFit(model_fits)
+    
+  }
 
-  names(model_fits)             <- model_names
   attr(model_fits, "posterior") <- posterior
   class(model_fits)             <- "modelFits"
 
   return (model_fits)
 
+}
+
+addAvgFit <- function (
+    
+  model_fits,
+  doses = NULL
+  
+) {
+  
+  pred_vals  <- predictAvgFit(model_fits = model_fits, doses = doses)
+  
+  avg_fit  <- list(model        = "avgFit",
+                   coeff        = NA,
+                   dose_levels  = model_fits[[1]]$dose_levels,
+                   pred_values  = pred_vals,
+                   max_effect   = max(pred_vals) - min(pred_vals),
+                   gAIC         = NA,
+                   model_weight = NA)
+  
+  model_fits <- c(model_fits, avgFit = list(avg_fit))
+  
+  return (model_fits)
+  
+}
+
+predictAvgFit <- function (
+    
+  model_fits,
+  doses = NULL
+    
+) {
+  
+  model_fits_sub <- model_fits[names(model_fits) != "avgFit"]
+  
+  if (is.null(doses)) {
+    
+    dose_levels <- model_fits_sub[[1]]$dose_levels
+    
+    stopifnot(all(sapply(model_fits_sub,
+                         function (x) identical(x$dose_levels, dose_levels))))
+    
+    mod_preds <- sapply(model_fits_sub, function (x) x$pred_values)
+    
+  } else {
+    
+    mod_preds <- do.call(cbind, predict.modelFits(model_fits_sub, doses = doses))
+    
+  }
+  
+  mod_weights <- sapply(model_fits_sub, function (x) x$model_weight)
+  
+  pred_vals   <- as.vector(mod_preds %*% mod_weights)
+  
+  return (pred_vals)
+  
 }
 
 ## ignoring mixture posterior
@@ -80,7 +146,7 @@ getModelFitSimple <- function (
   model,
   dose_levels,
   posterior,
-  addArgs = NULL
+  add_args = NULL
 
 ) {
 
@@ -114,7 +180,7 @@ getModelFitOpt <- function (
   model,
   dose_levels,
   posterior,
-  addArgs = NULL
+  add_args = NULL
 
 ) {
 
@@ -123,7 +189,7 @@ getModelFitOpt <- function (
     model,
     dose_levels,
     posterior,
-    addArgs = NULL
+    add_args = NULL
 
   ) {
     
@@ -162,7 +228,7 @@ getModelFitOpt <- function (
       "betaMod" = {
         lb     <- c(-Inf, -Inf, 0.05, 0.05)
         ub     <- c(Inf, Inf, 4, 4)
-        scal   <- ifelse(is.null(addArgs), 1.2 * max(dose_levels), addArgs[["scal"]]) #for betaMod shape
+        scal   <- ifelse(is.null(add_args), 1.2 * max(dose_levels), add_args[["scal"]]) #for betaMod shape
         expr_i <- substitute(sum(((post_combs$means[i, ] - (theta[1] + theta[2] * (((theta[3] + theta[4])^(theta[3] + theta[4])) / ((theta[3] ^ theta[3]) * (theta[4]^theta[4]))) * (dose_levels / scal)^(theta[3]) * ((1 - dose_levels / scal)^(theta[4]))))^2 / (post_combs$vars[i, ]))),
                              list(scal = scal))
       },
@@ -221,7 +287,7 @@ getModelFitOpt <- function (
     coeffs      = fit$solution,
     dose_levels = dose_levels)
 
-  model_fit$pred_values <- predictModelFit(model_fit = model_fit, doses = model_fit$dose_levels, addArgs = addArgs)
+  model_fit$pred_values <- predictModelFit(model_fit = model_fit, doses = model_fit$dose_levels, add_args = add_args)
   model_fit$max_effect  <- max(model_fit$pred_values) - min(model_fit$pred_values)
   model_fit$gAIC        <- getGenAIC(model_fit, post_combs)
 
@@ -229,16 +295,21 @@ getModelFitOpt <- function (
 
 }
 
+
+
 predictModelFit <- function (
 
   model_fit,
-  doses = NULL,
-  addArgs = NULL
+  doses    = NULL,
+  add_args = NULL
 
 ) {
+  
   if (is.null(doses)) {
     doses <- model_fit$dose_levels
   }
+
+  ## cannot predict average values as model_fits required instead of model_fit
   pred_vals <- switch (
     model_fit$model,
     "emax" = {DoseFinding::emax(
@@ -278,7 +349,8 @@ predictModelFit <- function (
       model_fit$coeffs["eMax"],
       model_fit$coeffs["delta1"],
       model_fit$coeffs["delta2"],
-      ifelse(is.null(addArgs) | is.null(addArgs[["scal"]]), 1.2 * max(doses), addArgs[["scal"]]))},
+      ifelse(is.null(add_args) | is.null(add_args[["scal"]]), 1.2 * max(doses), add_args[["scal"]]))},
+    "avgFit" = {stop("error: use predictAvgFit for the avgFit")},
     {stop(paste("error:", model_fit$model, "shape not yet implemented"))})
 
   return (pred_vals)
@@ -306,6 +378,7 @@ addModelWeights <- function (
   model_fits
 
 ) {
+  
   g_aics        <- sapply(model_fits, function (model_fit) model_fit$gAIC)
   exp_values    <- exp(-0.5 * g_aics)
   model_weights <- exp_values / sum(exp_values)
