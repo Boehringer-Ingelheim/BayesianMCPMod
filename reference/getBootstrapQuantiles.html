@@ -43,7 +43,7 @@ Instead of drawing n bootstrap samples from the sampling distribution of the tri
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>getBootstrapQuantiles</h1>
-      <small class="dont-index">Source: <a href="https://github.com/Boehringer-Ingelheim/BayesianMCPMod/blob/v1.0.2/R/bootstrapping.R" class="external-link"><code>R/bootstrapping.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/Boehringer-Ingelheim/BayesianMCPMod/blob/main/R/bootstrapping.R" class="external-link"><code>R/bootstrapping.R</code></a></small>
       <div class="d-none name"><code>getBootstrapQuantiles.Rd</code></div>
     </div>
 
@@ -57,13 +57,7 @@ Instead of drawing n bootstrap samples from the sampling distribution of the tri
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">getBootstrapQuantiles</span><span class="op">(</span></span>
-<span>  <span class="va">model_fits</span>,</span>
-<span>  <span class="va">quantiles</span>,</span>
-<span>  n_samples <span class="op">=</span> <span class="fl">1000</span>,</span>
-<span>  doses <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  avg_fit <span class="op">=</span> <span class="cn">TRUE</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">getBootstrapQuantiles</span><span class="op">(</span><span class="va">model_fits</span>, <span class="va">quantiles</span>, n_samples <span class="op">=</span> <span class="fl">1000</span>, doses <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -83,11 +77,7 @@ Instead of drawing n bootstrap samples from the sampling distribution of the tri
 
 
 <dt id="arg-doses">doses<a class="anchor" aria-label="anchor" href="#arg-doses"></a></dt>
-<dd><p>A vector of doses for which a prediction should be performed</p></dd>
-
-
-<dt id="arg-avg-fit">avg_fit<a class="anchor" aria-label="anchor" href="#arg-avg-fit"></a></dt>
-<dd><p>Boolean variable, defining whether an average fit (based on generalized AIC weights) should be performed in addition to the individual models. Default TRUE.</p></dd>
+<dd><p>A vector of doses for which a prediction should be performed. If NULL, the dose levels of the model_fits will be used. Default NULL.</p></dd>
 
 </dl></div>
     <div class="section level2">

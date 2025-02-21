@@ -67,7 +67,7 @@ where \(Q\) denotes the number of models included in the averaging procedure."><
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>getModelFits</h1>
-      <small class="dont-index">Source: <a href="https://github.com/Boehringer-Ingelheim/BayesianMCPMod/blob/v1.0.2/R/modeling.R" class="external-link"><code>R/modeling.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/Boehringer-Ingelheim/BayesianMCPMod/blob/main/R/modeling.R" class="external-link"><code>R/modeling.R</code></a></small>
       <div class="d-none name"><code>getModelFits.Rd</code></div>
     </div>
 
@@ -93,7 +93,7 @@ where \(Q\) denotes the number of models included in the averaging procedure.</p
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">getModelFits</span><span class="op">(</span><span class="va">models</span>, <span class="va">dose_levels</span>, <span class="va">posterior</span>, simple <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">getModelFits</span><span class="op">(</span><span class="va">models</span>, <span class="va">dose_levels</span>, <span class="va">posterior</span>, avg_fit <span class="op">=</span> <span class="cn">TRUE</span>, simple <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -101,7 +101,7 @@ where \(Q\) denotes the number of models included in the averaging procedure.</p
 
 
 <dl><dt id="arg-models">models<a class="anchor" aria-label="anchor" href="#arg-models"></a></dt>
-<dd><p>List of model names for which a fit will be performed.</p></dd>
+<dd><p>List (or vector) of model names for which a fit will be performed.</p></dd>
 
 
 <dt id="arg-dose-levels">dose_levels<a class="anchor" aria-label="anchor" href="#arg-dose-levels"></a></dt>
@@ -110,6 +110,10 @@ where \(Q\) denotes the number of models included in the averaging procedure.</p
 
 <dt id="arg-posterior">posterior<a class="anchor" aria-label="anchor" href="#arg-posterior"></a></dt>
 <dd><p>A getPosterior object, containing the (multivariate) posterior distribution per dosage level.</p></dd>
+
+
+<dt id="arg-avg-fit">avg_fit<a class="anchor" aria-label="anchor" href="#arg-avg-fit"></a></dt>
+<dd><p>Boolean variable, defining whether an average fit (based on generalized AIC weights) should be performed in addition to the individual models. Default TRUE.</p></dd>
 
 
 <dt id="arg-simple">simple<a class="anchor" aria-label="anchor" href="#arg-simple"></a></dt>
