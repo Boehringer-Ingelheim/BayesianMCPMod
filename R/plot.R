@@ -8,14 +8,14 @@
 #' The default setting is that these credible bands are not calculated.
 #' @param x An object of type modelFits
 #' @param gAIC Logical value indicating whether gAIC values are shown in the plot. Default TRUE
-#' @param avg_fit Logical value indicating whether average fit is presented in the plot. Default TRUE
 #' @param cr_intv Logical value indicating whether credible intervals are included in the plot. Default TRUE
 #' @param alpha_CrI Numerical value of the width of the credible intervals. Default is set to 0.05 (i.e 95% CI are shown).
 #' @param cr_bands Logical value indicating whether bootstrapped based credible bands are shown in the plot. Default FALSE
-#' @param alpha_CrB Numerical vector of the width of the credible bands. Default is set to 0.05 and 0.5 (i.e 95% CB and median are shown).
-#' @param n_bs_smpl Number of bootstrap samples being used. Default set to 1000.
-#' @param acc_color Color of the credible bands. Default set to "orange"
-#' @param ... optional parameter to be passed.
+#' @param alpha_CrB Numerical vector of the width of the credible bands. Default is set to 0.05 and 0.5 (i.e 95% CB and 50% CB  are shown).
+#' @param n_bs_smpl Number of bootstrap samples being used. Default 1000.
+#' @param acc_color Color of the credible bands. Default "orange".
+#' @param plot_res Number of plotted doses within the range of the dose levels, i.e., the resolution of the plot. Default 100.
+#' @param ... optional parameter to be passed to plot().
 #' @examples
 #' posterior_list <- list(Ctrl = RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 1), sigma = 2),
 #'                        DG_1 = RBesT::mixnorm(comp1 = c(w = 1, m = 3, s = 1.2), sigma = 2),
@@ -36,30 +36,29 @@ plot.modelFits <- function (
 
   x,
   gAIC      = TRUE,
-  avg_fit   = TRUE,
   cr_intv   = TRUE,
   alpha_CrI = 0.05,
   cr_bands  = FALSE,
   alpha_CrB = c(0.05, 0.5),
   n_bs_smpl = 1e3,
   acc_color = "orange",
+  plot_res  = 1e2,
   ...
 
 ) {
+  
   ## R CMD --as-cran appeasement
   .data <- NULL
 
-  checkmate::check_class(x, "modelFits")
   checkmate::check_logical(gAIC)
-  checkmate::check_logical(avg_fit)
   checkmate::check_logical(cr_intv)
   checkmate::check_double(alpha_CrI, lower = 0, upper = 1)
   checkmate::check_logical(cr_bands)
   checkmate::check_double(alpha_CrB, lower = 0, upper = 1, len = 2)
   checkmate::check_integer(n_bs_smpl, lower = 1, upper = Inf)
   checkmate::check_string(acc_color, na.ok = TRUE)
+  checkmate::check_integer(plot_res, lower = 1, upper = Inf)
 
-  plot_res   <- 1e2
   model_fits <- x
 
   dose_levels  <- model_fits[[1]]$dose_levels
@@ -70,18 +69,10 @@ plot.modelFits <- function (
                   to         = max(dose_levels),
                   length.out = plot_res)
 
-  preds_models <- sapply(model_fits, predictModelFit, doses = dose_seq)
+  preds_models <- do.call(c, predict.modelFits(model_fits, doses = dose_seq))
   model_names  <- names(model_fits)
-
-  if (avg_fit) {
-
-    mod_weights <- sapply(model_fits, function (x) x$model_weight)
-    avg_preds   <- preds_models %*% mod_weights
-
-    preds_models <- cbind(preds_models, avg_preds)
-    model_names  <- c(model_names, "avgFit")
-
-  }
+  
+  avg_fit <- "avgFit" %in% model_names
 
   gg_data <- data.frame(
     doses  = rep(dose_seq, length(model_names)),
@@ -95,6 +86,8 @@ plot.modelFits <- function (
     label_gAUC <- paste("AIC:", round(g_AICs, digits = 1))
 
     if (avg_fit) {
+      
+      mod_weights <- sapply(model_fits, function (y) y$model_weight)[-length(model_names)]
 
       mod_weights <- sort(mod_weights, decreasing = TRUE)
       paste_names <- names(mod_weights) |>
@@ -108,7 +101,7 @@ plot.modelFits <- function (
 
       label_avg  <- paste0(paste_names, "=", round(mod_weights, 1),
                            collapse = ", ")
-      label_gAUC <- c(label_gAUC, label_avg)
+      label_gAUC <- c(label_gAUC[-length(label_gAUC)], label_avg)
 
     }
 
@@ -119,14 +112,19 @@ plot.modelFits <- function (
     crB_data <- getBootstrapQuantiles(
       model_fits = model_fits,
       n_samples  = n_bs_smpl,
-      quantiles  = c(0.5, sort(unique(c(alpha_CrB / 2, 1 - alpha_CrB / 2)))),
-      avg_fit    = avg_fit,
+      quantiles  = sort(unique(c(0.5, alpha_CrB / 2, 1 - alpha_CrB / 2))),
       doses      = dose_seq)
 
     getInx <- function (alpha_CrB) {
-      n        <- length(alpha_CrB)
-      inx_list <- lapply(seq_len(n), function (i) c(i, 2 * n - i + 1) + 3)
-      return (inx_list)}
+      
+      vec_length  <- length(alpha_CrB) * 2 + 1
+      middle_indx <- (vec_length + 1) / 2
+      indx_list   <- lapply(seq_len(middle_indx - 1),
+                            function (i) c(i, vec_length - i + 1) + 2)
+      
+      return (indx_list)
+      
+    }
 
   }
 

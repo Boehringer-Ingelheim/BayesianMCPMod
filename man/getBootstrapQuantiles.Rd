@@ -4,13 +4,7 @@
 \alias{getBootstrapQuantiles}
 \title{getBootstrapQuantiles}
 \usage{
-getBootstrapQuantiles(
-  model_fits,
-  quantiles,
-  n_samples = 1000,
-  doses = NULL,
-  avg_fit = TRUE
-)
+getBootstrapQuantiles(model_fits, quantiles, n_samples = 1000, doses = NULL)
 }
 \arguments{
 \item{model_fits}{An object of class modelFits, i.e. information about fitted models & corresponding model coefficients as well as the posterior distribution that was the basis for the model fitting}
@@ -19,9 +13,7 @@ getBootstrapQuantiles(
 
 \item{n_samples}{Number of samples that should be drawn as basis for the bootstrapped quantiles}
 
-\item{doses}{A vector of doses for which a prediction should be performed}
-
-\item{avg_fit}{Boolean variable, defining whether an average fit (based on generalized AIC weights) should be performed in addition to the individual models. Default TRUE.}
+\item{doses}{A vector of doses for which a prediction should be performed. If NULL, the dose levels of the model_fits will be used. Default NULL.}
 }
 \value{
 A data frame with columns for model, dose, and bootstrapped samples

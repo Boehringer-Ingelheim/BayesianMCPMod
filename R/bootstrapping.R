@@ -10,8 +10,7 @@
 #' @param model_fits An object of class modelFits, i.e. information about fitted models & corresponding model coefficients as well as the posterior distribution that was the basis for the model fitting
 #' @param quantiles A vector of quantiles that should be evaluated
 #' @param n_samples Number of samples that should be drawn as basis for the bootstrapped quantiles
-#' @param doses A vector of doses for which a prediction should be performed
-#' @param avg_fit Boolean variable, defining whether an average fit (based on generalized AIC weights) should be performed in addition to the individual models. Default TRUE.
+#' @param doses A vector of doses for which a prediction should be performed. If NULL, the dose levels of the model_fits will be used. Default NULL.
 #'
 #' @examples
 #' posterior_list <- list(Ctrl = RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 1), sigma = 2),
@@ -39,8 +38,7 @@ getBootstrapQuantiles <- function (
   model_fits,
   quantiles,
   n_samples = 1e3,
-  doses     = NULL,
-  avg_fit   = TRUE
+  doses     = NULL
 
 ) {
 
@@ -54,8 +52,16 @@ getBootstrapQuantiles <- function (
 
   if (is.null(doses)) {
 
-    doses <- seq(min(dose_levels), max(dose_levels), length.out = 100L)
+    doses <- dose_levels
 
+  }
+  
+  avg_fit <- "avgFit" %in% model_names
+  
+  if (avg_fit) {
+    
+    model_names <- setdiff(model_names, "avgFit")
+    
   }
   
   # predictions[(dose1 model1, dose1 model2, ..., dose2 model1, ...), samples]
@@ -64,13 +70,12 @@ getBootstrapQuantiles <- function (
     preds_mu_hat <- sapply(model_names, function (model) {
       
       fit <- DoseFinding::fitMod(
-        dose  = model_fits[[1]]$dose_levels,
+        dose  = dose_levels,
         resp  = mu_hat,
         S     = diag(sd_hat^2),
         model = model,
         type  = "general",
-        bnds  = DoseFinding::defBnds(
-          mD = max(model_fits[[1]]$dose_levels))[[model]])
+        bnds  = DoseFinding::defBnds(mD = max(dose_levels))[[model]])
       
       preds <- stats::predict(fit, doseSeq = doses, predType = "ls-means")
       attr(preds, "gAIC") <- DoseFinding::gAIC(fit)

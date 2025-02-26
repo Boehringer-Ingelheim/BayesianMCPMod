@@ -47,11 +47,11 @@ getPosterior <- function(
   checkmate::check_vector(S_hat, any.missing = FALSE, null.ok = TRUE)
   checkmate::check_double(S_hat, null.ok = TRUE, lower = 0, upper = Inf)
 
-  is_matrix_S_hat <- FALSE
-
   stopifnot("prior_list must be an object of RBesT package" =
-              all(sapply(prior_list, function(x) methods::is(x, "normMix") |
-                           methods::is(x, "betaMix") | methods::is(x, "mix"))))
+              all(sapply(prior_list, function(x)
+                methods::is(x, "normMix") |
+                  methods::is(x, "betaMix") |
+                  methods::is(x, "mix"))))
 
   if (!is.null(mu_hat) && !is.null(S_hat) && is.null(data)) {
 
@@ -88,9 +88,9 @@ getPosterior <- function(
         posterior_list = posterior,
         prior_list     = prior_list,
         calc_ess       = calc_ess)
-
-    } else if (!is_matrix_S_hat) {
-
+      
+    } else {
+      
       posterior_list <- getPosteriorI(
         prior_list = prior_list,
         mu_hat     = mu_hat,

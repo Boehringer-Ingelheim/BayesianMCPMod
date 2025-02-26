@@ -4,14 +4,16 @@
 \alias{getModelFits}
 \title{getModelFits}
 \usage{
-getModelFits(models, dose_levels, posterior, simple = FALSE)
+getModelFits(models, dose_levels, posterior, avg_fit = TRUE, simple = FALSE)
 }
 \arguments{
-\item{models}{List of model names for which a fit will be performed.}
+\item{models}{List (or vector) of model names for which a fit will be performed.}
 
 \item{dose_levels}{A vector containing the different dosage levels.}
 
 \item{posterior}{A getPosterior object, containing the (multivariate) posterior distribution per dosage level.}
+
+\item{avg_fit}{Boolean variable, defining whether an average fit (based on generalized AIC weights) should be performed in addition to the individual models. Default TRUE.}
 
 \item{simple}{Boolean variable, defining whether simplified fit will be applied. Default FALSE.}
 }

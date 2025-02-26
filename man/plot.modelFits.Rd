@@ -7,13 +7,13 @@
 \method{plot}{modelFits}(
   x,
   gAIC = TRUE,
-  avg_fit = TRUE,
   cr_intv = TRUE,
   alpha_CrI = 0.05,
   cr_bands = FALSE,
   alpha_CrB = c(0.05, 0.5),
   n_bs_smpl = 1000,
   acc_color = "orange",
+  plot_res = 100,
   ...
 )
 }
@@ -22,21 +22,21 @@
 
 \item{gAIC}{Logical value indicating whether gAIC values are shown in the plot. Default TRUE}
 
-\item{avg_fit}{Logical value indicating whether average fit is presented in the plot. Default TRUE}
-
 \item{cr_intv}{Logical value indicating whether credible intervals are included in the plot. Default TRUE}
 
 \item{alpha_CrI}{Numerical value of the width of the credible intervals. Default is set to 0.05 (i.e 95\% CI are shown).}
 
 \item{cr_bands}{Logical value indicating whether bootstrapped based credible bands are shown in the plot. Default FALSE}
 
-\item{alpha_CrB}{Numerical vector of the width of the credible bands. Default is set to 0.05 and 0.5 (i.e 95\% CB and median are shown).}
+\item{alpha_CrB}{Numerical vector of the width of the credible bands. Default is set to 0.05 and 0.5 (i.e 95\% CB and 50\% CB  are shown).}
 
-\item{n_bs_smpl}{Number of bootstrap samples being used. Default set to 1000.}
+\item{n_bs_smpl}{Number of bootstrap samples being used. Default 1000.}
 
-\item{acc_color}{Color of the credible bands. Default set to "orange"}
+\item{acc_color}{Color of the credible bands. Default "orange".}
 
-\item{...}{optional parameter to be passed.}
+\item{plot_res}{Number of plotted doses within the range of the dose levels, i.e., the resolution of the plot. Default 100.}
+
+\item{...}{optional parameter to be passed to plot().}
 }
 \value{
 A ggplot2 object
