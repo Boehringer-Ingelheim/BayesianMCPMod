@@ -26,7 +26,7 @@
 #'                                simple      = TRUE)
 #'
 #' getBootstrapQuantiles(model_fits = fit,
-#'                       quantiles  = c(0.025, 0.5, 0.975),
+#'                       quantiles  = c(0.025, 0.5, 0.8, 0.975),
 #'                       n_samples  = 10, # speeding up example run time
 #'                       doses      = c(0, 6, 8))
 #'

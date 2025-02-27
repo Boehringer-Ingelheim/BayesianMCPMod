@@ -394,3 +394,133 @@ addModelWeights <- function (
   return (model_fits_out)
 
 }
+
+#' @title getMED
+#'
+#' @description This function provides information on the minimally effective dose (MED). The MED evaluation can either be based on the model_fits or on bootstrapped quantiles.
+#' 
+#' @param delta A numeric value for the threshold delta.
+#' @param evidence_level A numeric value in [0, 1] for the evidence level gamma. Used for the bs_quantiles based evaluation and not used for the model_fits based evaluation. Default 0.5.
+#' @param dose_levels A vector of numerics containing the different dosage levels. Default NULL.
+#' @param model_fits An object of class modelFits as created with getModelFits(). Default NULL.
+#' @param bs_quantiles A dataframe created with getBootstrapQuantiles(). Default NULL.
+#' 
+#' @return  A matrix with rows for MED reached, MED, and MED index in the vector of dose levels and columns for the dose-response shapes.
+#'
+#' @examples
+#' posterior_list <- list(Ctrl = RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 1), sigma = 2),
+#'                        DG_1 = RBesT::mixnorm(comp1 = c(w = 1, m = 3, s = 1.2), sigma = 2),
+#'                        DG_2 = RBesT::mixnorm(comp1 = c(w = 1, m = 4, s = 1.5), sigma = 2) ,
+#'                        DG_3 = RBesT::mixnorm(comp1 = c(w = 1, m = 6, s = 1.2), sigma = 2) ,
+#'                        DG_4 = RBesT::mixnorm(comp1 = c(w = 1, m = 6.5, s = 1.1), sigma = 2))
+#' models         <- c("exponential", "linear")
+#' dose_levels    <- c(0, 1, 2, 4, 8)
+#' model_fits     <- getModelFits(models      = models,
+#'                                posterior   = posterior_list,
+#'                                dose_levels = dose_levels,
+#'                                simple      = TRUE)
+#' 
+#' # MED based on the model_fit:
+#' getMED(delta = 5, model_fits = model_fits)
+#'                                
+#' # MED based on bootstrapped quantiles
+#' bs_quantiles <- getBootstrapQuantiles(model_fits = model_fits,
+#'                                       quantiles  = c(0.5, 0.8, 0.975),
+#'                                       n_samples  = 100) # speeding up example run time
+#'                                       
+#' getMED(delta          = 5,
+#'        evidence_level = 0.8,
+#'        bs_quantiles   = bs_quantiles)
+#'
+#' @export
+getMED <- function (
+    
+  delta,
+  evidence_level = 0.5,
+  dose_levels    = NULL,
+  model_fits     = NULL,
+  bs_quantiles   = NULL
+  
+) {
+  
+  stopifnot("Either model_fits or bs_quantiles must be not NULL, but not both" =
+              is.null(model_fits) & !is.null(bs_quantiles) |
+              !is.null(model_fits) & is.null(bs_quantiles))
+  
+  checkmate::check_double(delta)
+  checkmate::check_double(evidence_level, lower = 0, upper = 1)
+  checkmate::check_double(dose_levels, lower = 0, any.missing = FALSE)
+  
+  if (!is.null(model_fits)) {
+    
+    checkmate::check_class(model_fits, "modelFits")
+    
+    if (is.null(dose_levels)) {
+      
+      dose_levels <- model_fits[[1]]$dose_levels
+      
+    }
+    
+    preds <- do.call(rbind, predict.modelFits(model_fits, doses = dose_levels))
+    
+  } else {
+    
+    if (is.null(dose_levels)) {
+      
+      dose_levels <- unique(bs_quantiles$doses)
+      
+    }
+    
+    bs_quantiles_long <- bs_quantiles |>
+      tidyr::pivot_longer(cols = tidyr::ends_with("%"), names_to = "q_names", values_to = "q_values") |>
+      dplyr::mutate(q_names = as.numeric(gsub("%", "", q_names)) * 0.01)
+    
+    stopifnot("evidence_level not in bootstrapped quantiles matrix" = 
+                evidence_level %in% bs_quantiles_long$q_names)
+    
+    stopifnot("dose_levels not in bootstrapped quantiles matrix" = 
+                all(dose_levels %in% bs_quantiles_long$doses))
+    
+    preds <- bs_quantiles_long |>
+      dplyr::filter(q_names %in% evidence_level) |>
+      dplyr::filter(doses %in% dose_levels) |>
+      tidyr::pivot_wider(names_from = doses, values_from = q_values)
+    
+    model_names <- preds$models
+    
+    preds <- preds |>
+      dplyr::select(-models, -q_names) |>
+      as.matrix()
+    
+    rownames(preds) <- model_names
+    
+  }
+  
+  med_info <- apply(preds, 1, function (model_preds) {
+    
+    med_indx_m <- abs(model_preds[2:length(model_preds)] - model_preds[1]) > delta
+    
+    if (!any(med_indx_m)) {
+      
+      med_reached <- FALSE
+      med_indx    <- NA_integer_
+      med         <- NA_real_
+      
+    } else {
+      
+      med_reached <- TRUE
+      med_indx    <- min(which(med_indx_m))
+      med         <- dose_levels[med_indx]
+      
+    }
+    
+    return (c(med_reached = med_reached,
+              med         = med,
+              med_indx    = med_indx))
+    
+  })
+  
+  return (med_info)
+  
+}
+
