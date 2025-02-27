@@ -5,7 +5,7 @@
 #' For the default case, the Nelder-Mead algorithm is used.
 #' In detail, for both approaches the mean vector \eqn{\theta^{Y}} and the covariance \eqn{\Sigma} of the (mixture) posterior distributions and the corresponding posterior weights \eqn{\tilde{\omega}_{l}} for \eqn{l \in {1,...,L}} are used as basis
 #' For the full fit a GLS estimator is used to minimize the following expression for the respective dose-response models \eqn{m}
-#' \deqn{ \hat{\theta}_{m}=argmin_{\theta_{m}} \sum_{l=1}^{L} \tilde{\omega}_{l}(\theta_{l_{i}}^{Y}-f(dose_{i},\hat{\theta}_{m}))'\Sigma_{l}^{-1}(\theta_{l_{i}}^{Y}-f(dose_{i},\hat{\theta}_{m}))}
+#' \deqn{ \hat{\theta}_{m}=\text{arg min}_{\theta_{m}} \sum_{l=1}^{L} \tilde{\omega}_{l}(\theta_{l_{i}}^{Y}-f(dose_{i},\hat{\theta}_{m}))'\Sigma_{l}^{-1}(\theta_{l_{i}}^{Y}-f(dose_{i},\hat{\theta}_{m}))}
 #' Therefore the function nloptr of the nloptr package is utilized.
 #' In the simplified case \eqn{L=1}, as the dimension of the posterior is reduced to 1 first.
 #' The generalized AIC values are calculated via the formula
@@ -397,16 +397,18 @@ addModelWeights <- function (
 
 #' @title getMED
 #'
-#' @description This function provides information on the minimally effective dose (MED). The MED evaluation can either be based on the model_fits or on bootstrapped quantiles.
-#' 
-#' @param delta A numeric value for the threshold delta.
-#' @param evidence_level A numeric value in [0, 1] for the evidence level gamma. Used for the bs_quantiles based evaluation and not used for the model_fits based evaluation. Default 0.5.
+#' @description This function provides information on the minimally efficacious dose (MED).
+#' The MED evaluation can either be based on the fitted model shapes (model_fits) or on bootstrapped quantiles (bs_quantiles). 
+#' @details
+#' The bootstrapp approach allows for an MED based on decision rules of the form
+#' \deqn{\widehat{\text{MED}} = \text{arg min}_{d\in\{d_1, \dots, d_k\}} \left\{ \text{Pr}\left(f(d, \hat\theta) - f(d_1, \hat\theta) > \Delta\right) > \gamma \right\} .}
+#' The model-shape approach takes the point estimate of the model into account.
+#' @param delta A numeric value for the threshold Delta.
+#' @param evidence_level A numeric value between 0 and 1 for the evidence level gamma. Used for the bs_quantiles-based evaluation and not used for the model_fits-based evaluation. Default 0.5.
 #' @param dose_levels A vector of numerics containing the different dosage levels. Default NULL.
 #' @param model_fits An object of class modelFits as created with getModelFits(). Default NULL.
 #' @param bs_quantiles A dataframe created with getBootstrapQuantiles(). Default NULL.
-#' 
 #' @return  A matrix with rows for MED reached, MED, and MED index in the vector of dose levels and columns for the dose-response shapes.
-#'
 #' @examples
 #' posterior_list <- list(Ctrl = RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 1), sigma = 2),
 #'                        DG_1 = RBesT::mixnorm(comp1 = c(w = 1, m = 3, s = 1.2), sigma = 2),
@@ -470,6 +472,9 @@ getMED <- function (
       dose_levels <- unique(bs_quantiles$doses)
       
     }
+    
+    # R CMD Check Appeasement
+    q_names <- doses <- q_values <- models <- NULL
     
     bs_quantiles_long <- bs_quantiles |>
       tidyr::pivot_longer(cols = tidyr::ends_with("%"), names_to = "q_names", values_to = "q_values") |>

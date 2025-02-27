@@ -26,7 +26,7 @@ For the simplified fit, multivariate normal distributions will be approximated a
 For the default case, the Nelder-Mead algorithm is used.
 In detail, for both approaches the mean vector \eqn{\theta^{Y}} and the covariance \eqn{\Sigma} of the (mixture) posterior distributions and the corresponding posterior weights \eqn{\tilde{\omega}_{l}} for \eqn{l \in {1,...,L}} are used as basis
 For the full fit a GLS estimator is used to minimize the following expression for the respective dose-response models \eqn{m}
-\deqn{ \hat{\theta}_{m}=argmin_{\theta_{m}} \sum_{l=1}^{L} \tilde{\omega}_{l}(\theta_{l_{i}}^{Y}-f(dose_{i},\hat{\theta}_{m}))'\Sigma_{l}^{-1}(\theta_{l_{i}}^{Y}-f(dose_{i},\hat{\theta}_{m}))}
+\deqn{ \hat{\theta}_{m}=\text{arg min}_{\theta_{m}} \sum_{l=1}^{L} \tilde{\omega}_{l}(\theta_{l_{i}}^{Y}-f(dose_{i},\hat{\theta}_{m}))'\Sigma_{l}^{-1}(\theta_{l_{i}}^{Y}-f(dose_{i},\hat{\theta}_{m}))}
 Therefore the function nloptr of the nloptr package is utilized.
 In the simplified case \eqn{L=1}, as the dimension of the posterior is reduced to 1 first.
 The generalized AIC values are calculated via the formula

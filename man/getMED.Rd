@@ -13,9 +13,9 @@ getMED(
 )
 }
 \arguments{
-\item{delta}{A numeric value for the threshold delta.}
+\item{delta}{A numeric value for the threshold Delta.}
 
-\item{evidence_level}{A numeric value in \link{0, 1} for the evidence level gamma. Used for the bs_quantiles based evaluation and not used for the model_fits based evaluation. Default 0.5.}
+\item{evidence_level}{A numeric value between 0 and 1 for the evidence level gamma. Used for the bs_quantiles-based evaluation and not used for the model_fits-based evaluation. Default 0.5.}
 
 \item{dose_levels}{A vector of numerics containing the different dosage levels. Default NULL.}
 
@@ -27,7 +27,13 @@ getMED(
 A matrix with rows for MED reached, MED, and MED index in the vector of dose levels and columns for the dose-response shapes.
 }
 \description{
-This function provides information on the minimally effective dose (MED). The MED evaluation can either be based on the model_fits or on bootstrapped quantiles.
+This function provides information on the minimally efficacious dose (MED).
+The MED evaluation can either be based on the fitted model shapes (model_fits) or on bootstrapped quantiles (bs_quantiles).
+}
+\details{
+The bootstrapp approach allows for an MED based on decision rules of the form
+\deqn{\widehat{\text{MED}} = \text{arg min}_{d\in\{d_1, \dots, d_k\}} \left\{ \text{Pr}\left(f(d, \hat\theta) - f(d_1, \hat\theta) > \Delta\right) > \gamma \right\} .}
+The model-shape approach takes the point estimate of the model into account.
 }
 \examples{
 posterior_list <- list(Ctrl = RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 1), sigma = 2),
