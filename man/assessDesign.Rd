@@ -13,9 +13,13 @@ assessDesign(
   alpha_crit_val = 0.05,
   modeling = FALSE,
   simple = TRUE,
+  avg_fit = TRUE,
   reestimate = FALSE,
   contr = NULL,
-  dr_means = NULL
+  dr_means = NULL,
+  delta = NULL,
+  evidence_level = NULL,
+  med_selection = c("avgFit", "bestFit")
 )
 }
 \arguments{
@@ -35,11 +39,19 @@ assessDesign(
 
 \item{simple}{Boolean variable defining whether simplified fit will be applied. Passed to the getModelFits function. Default FALSE.}
 
+\item{avg_fit}{Boolean variable, defining whether an average fit (based on generalized AIC weights) should be performed in addition to the individual models. Default TRUE.}
+
 \item{reestimate}{Boolean variable defining whether critical value should be calculated with re-estimated contrasts (see getCritProb function for more details). Default FALSE}
 
 \item{contr}{An object of class 'optContr' as created by the getContr() function. Allows specification of a fixed contrasts matrix. Default NULL}
 
 \item{dr_means}{A vector, allows specification of  individual (not model based) assumed effects per dose group. Default NULL}
+
+\item{delta}{A numeric value for the threshold Delta for the MED assessment. If NULL, no MED assessment is performed. Default NULL.}
+
+\item{evidence_level}{A numeric value between 0 and 1 for the evidence level gamma for the MED assessment. Only required for Bayesian MED assessment, see ?getMED for details. Default NULL.}
+
+\item{med_selection}{A string, either "avgFit" or "bestFit", for the method of MED selection. Default "avgFit".}
 }
 \value{
 Returns success probabilities for the different assumed dose-response shapes, attributes also includes information around average success rate (across all assumed models) and prior Effective sample size
@@ -48,10 +60,7 @@ Returns success probabilities for the different assumed dose-response shapes, at
 This function performs simulation based trial design evaluations for a set of specified dose-response models
 }
 \examples{
-if (interactive()) { # takes typically > 5 seconds
-
 mods <- DoseFinding::Mods(linear      = NULL,
-                          linlog      = NULL,
                           emax        = c(0.5, 1.2),
                           exponential = 2,
                           doses       = c(0, 0.5, 2,4, 8),
@@ -73,13 +82,20 @@ success_probabilities <- assessDesign(
 
 success_probabilities
 
+if (interactive()) { # takes typically > 5 seconds
+
+# with MED estimation with bootstrapping
+# see ?getMED for details
+
 success_probabilities <- assessDesign(
-  n_patients  = n_patients,
-  mods        = mods,
-  prior_list  = prior_list,
-  sd          = sd,
-  modeling    = TRUE,
-  n_sim       = 1e2) # speed up example run time
+  n_patients     = n_patients,
+  mods           = mods,
+  prior_list     = prior_list,
+  sd             = sd,
+  modeling       = TRUE,
+  n_sim          = 10, # speed up example run time
+  delta          = 7,
+  evidence_level = 0.8)
   
   success_probabilities
 

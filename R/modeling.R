@@ -400,6 +400,8 @@ addModelWeights <- function (
 #' @description This function provides information on the minimally efficacious dose (MED).
 #' The MED evaluation can either be based on the fitted model shapes (model_fits) or on bootstrapped quantiles (bs_quantiles). 
 #' @details
+#' The function assumes that the 1st dose group is the control dose group.
+#' 
 #' The bootstrapp approach allows for an MED based on decision rules of the form
 #' \deqn{\widehat{\text{MED}} = \text{arg min}_{d\in\{d_1, \dots, d_k\}} \left\{ \text{Pr}\left(f(d, \hat\theta) - f(d_1, \hat\theta) > \Delta\right) > \gamma \right\} .}
 #' The model-shape approach takes the point estimate of the model into account.
@@ -427,7 +429,7 @@ addModelWeights <- function (
 #'                                
 #' # MED based on bootstrapped quantiles
 #' bs_quantiles <- getBootstrapQuantiles(model_fits = model_fits,
-#'                                       quantiles  = c(0.5, 0.8, 0.975),
+#'                                       quantiles  = c(0.025, 0.2, 0.5),
 #'                                       n_samples  = 100) # speeding up example run time
 #'                                       
 #' getMED(delta          = 5,
@@ -480,14 +482,14 @@ getMED <- function (
       tidyr::pivot_longer(cols = tidyr::ends_with("%"), names_to = "q_names", values_to = "q_values") |>
       dplyr::mutate(q_names = as.numeric(gsub("%", "", q_names)) * 0.01)
     
-    stopifnot("evidence_level not in bootstrapped quantiles matrix" = 
-                evidence_level %in% bs_quantiles_long$q_names)
+    stopifnot("corresponding quantile (i.e. 1 - evidence_level) not in bootstrapped quantiles matrix" = 
+                evidence_level %in% (1 - bs_quantiles_long$q_names))
     
     stopifnot("dose_levels not in bootstrapped quantiles matrix" = 
                 all(dose_levels %in% bs_quantiles_long$doses))
     
     preds <- bs_quantiles_long |>
-      dplyr::filter(q_names %in% evidence_level) |>
+      dplyr::filter((1 - q_names) %in% evidence_level) |>
       dplyr::filter(doses %in% dose_levels) |>
       tidyr::pivot_wider(names_from = doses, values_from = q_values)
     
@@ -503,25 +505,24 @@ getMED <- function (
   
   med_info <- apply(preds, 1, function (model_preds) {
     
+    # assumes 1st DG to be control DG
     med_indx_m <- abs(model_preds[2:length(model_preds)] - model_preds[1]) > delta
     
     if (!any(med_indx_m)) {
       
       med_reached <- FALSE
-      med_indx    <- NA_integer_
       med         <- NA_real_
       
     } else {
       
       med_reached <- TRUE
-      med_indx    <- min(which(med_indx_m))
+      med_indx    <- min(which(med_indx_m)) + 1
       med         <- dose_levels[med_indx]
       
     }
     
     return (c(med_reached = med_reached,
-              med         = med,
-              med_indx    = med_indx))
+              med         = med))
     
   })
   

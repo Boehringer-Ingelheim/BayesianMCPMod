@@ -4,7 +4,17 @@
 \alias{performBayesianMCPMod}
 \title{performBayesianMCPMod}
 \usage{
-performBayesianMCPMod(posterior_list, contr, crit_prob_adj, simple = FALSE)
+performBayesianMCPMod(
+  posterior_list,
+  contr,
+  crit_prob_adj,
+  simple = FALSE,
+  avg_fit = TRUE,
+  delta = NULL,
+  evidence_level = NULL,
+  med_selection = c("avgFit", "bestFit"),
+  n_samples = 1000
+)
 }
 \arguments{
 \item{posterior_list}{An object of class 'postList' as created by getPosterior() containing information about the (mixture) posterior distribution per dose group}
@@ -14,6 +24,16 @@ performBayesianMCPMod(posterior_list, contr, crit_prob_adj, simple = FALSE)
 \item{crit_prob_adj}{A getCritProb object, specifying the critical value to be used for the testing (on the probability scale).}
 
 \item{simple}{Boolean variable, defining whether simplified fit will be applied. Passed to the getModelFits() function. Default FALSE.}
+
+\item{avg_fit}{Boolean variable, defining whether an average fit (based on generalized AIC weights) should be performed in addition to the individual models. Default TRUE.}
+
+\item{delta}{A numeric value for the threshold Delta for the MED assessment. If NULL, no MED assessment is performed. Default NULL.}
+
+\item{evidence_level}{A numeric value between 0 and 1 for the evidence level gamma for the MED assessment. Only required for Bayesian MED assessment, see ?getMED for details. Default NULL.}
+
+\item{med_selection}{A string, either "avgFit" or "bestFit", for the method of MED selection. Default "avgFit".}
+
+\item{n_samples}{A numerical for the number of bootstrapped samples in case the Bayesian MED assessment is performed. Default 1e3.}
 }
 \value{
 Bayesian MCP test result as well as modeling result.

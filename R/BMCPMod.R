@@ -31,17 +31,18 @@ addSignificance <- function (
 #' @param alpha_crit_val (Un-adjusted) Critical value to be used for the MCP testing step. Passed to the getCritProb() function for the calculation of adjusted critical values (on the probability scale). Default is 0.05.
 #' @param modeling Boolean variable defining whether the Mod part of Bayesian MCP-Mod will be performed in the assessment. More heavy on resources. Default FALSE.
 #' @param simple Boolean variable defining whether simplified fit will be applied. Passed to the getModelFits function. Default FALSE.
+#' @param avg_fit Boolean variable, defining whether an average fit (based on generalized AIC weights) should be performed in addition to the individual models. Default TRUE.
 #' @param reestimate Boolean variable defining whether critical value should be calculated with re-estimated contrasts (see getCritProb function for more details). Default FALSE
 #' @param contr An object of class 'optContr' as created by the getContr() function. Allows specification of a fixed contrasts matrix. Default NULL
 #' @param dr_means A vector, allows specification of  individual (not model based) assumed effects per dose group. Default NULL
-#'
+#' @param delta A numeric value for the threshold Delta for the MED assessment. If NULL, no MED assessment is performed. Default NULL.
+#' @param evidence_level A numeric value between 0 and 1 for the evidence level gamma for the MED assessment. Only required for Bayesian MED assessment, see ?getMED for details. Default NULL.
+#' @param med_selection A string, either "avgFit" or "bestFit", for the method of MED selection. Default "avgFit".
+#' 
 #' @return Returns success probabilities for the different assumed dose-response shapes, attributes also includes information around average success rate (across all assumed models) and prior Effective sample size
 #'
 #' @examples
-#' if (interactive()) { # takes typically > 5 seconds
-#'
 #' mods <- DoseFinding::Mods(linear      = NULL,
-#'                           linlog      = NULL,
 #'                           emax        = c(0.5, 1.2),
 #'                           exponential = 2,
 #'                           doses       = c(0, 0.5, 2,4, 8),
@@ -63,13 +64,20 @@ addSignificance <- function (
 #'
 #' success_probabilities
 #' 
+#' if (interactive()) { # takes typically > 5 seconds
+#' 
+#' # with MED estimation with bootstrapping
+#' # see ?getMED for details
+#' 
 #' success_probabilities <- assessDesign(
-#'   n_patients  = n_patients,
-#'   mods        = mods,
-#'   prior_list  = prior_list,
-#'   sd          = sd,
-#'   modeling    = TRUE,
-#'   n_sim       = 1e2) # speed up example run time
+#'   n_patients     = n_patients,
+#'   mods           = mods,
+#'   prior_list     = prior_list,
+#'   sd             = sd,
+#'   modeling       = TRUE,
+#'   n_sim          = 10, # speed up example run time
+#'   delta          = 7,
+#'   evidence_level = 0.8)
 #'   
 #'   success_probabilities
 #'
@@ -88,10 +96,15 @@ assessDesign <- function (
   alpha_crit_val = 0.05,
   modeling       = FALSE,
   simple         = TRUE,
+  avg_fit        = TRUE,
   reestimate     = FALSE,
 
   contr          = NULL,
-  dr_means       = NULL
+  dr_means       = NULL,
+  
+  delta          = NULL,
+  evidence_level = NULL,
+  med_selection  = c("avgFit", "bestFit")
 
 ) {
 
@@ -102,10 +115,12 @@ assessDesign <- function (
   # sensitive to how DoseFinding labels their attributes for "Mods" class
   checkmate::check_double(n_sim, lower = 1, upper = Inf)
   checkmate::check_double(alpha_crit_val, lower = 0, upper = 1)
-  checkmate::check_logical(simple)
   checkmate::check_logical(modeling)
-  # TODO: check that prior_list has 'sd_tot' attribute, and that it's numeric # this is not applicable at the moment
 
+  # TODO: check that prior_list has 'sd_tot' attribute, and that it's numeric # this is not applicable at the moment
+  
+  modeling <- ifelse(!is.null(delta), TRUE, modeling)
+  
   dose_levels <- attr(mods, "doses")
 
   data <- simulateData(
@@ -151,21 +166,26 @@ assessDesign <- function (
 
     }
 
-    if (identical(modeling, FALSE)) {
-      
-      b_mcp <- performBayesianMCP(
-        posterior_list = posterior_list,
-        contr          = contr,
-        crit_prob_adj  = crit_prob_adj)
-      
-    } else {
-      
+    if (modeling) {
+
       b_mcp_mod <- performBayesianMCPMod(
         posterior_list = posterior_list,
         contr          = contr,
         crit_prob_adj  = crit_prob_adj,
-        simple         = simple)
-      
+        simple         = simple,
+        avg_fit        = avg_fit,
+        delta          = delta,
+        evidence_level = evidence_level,
+        med_selection  = med_selection,
+        n_samples      = n_sim)
+
+    } else {
+
+      b_mcp <- performBayesianMCP(
+        posterior_list = posterior_list,
+        contr          = contr,
+        crit_prob_adj  = crit_prob_adj)
+
     }
 
   })
@@ -437,6 +457,11 @@ getModelSuccesses <- function (b_mcp) {
 #' @param contr An object of class 'optContr' as created by the getContr() function. It contains the contrast matrix to be used for the testing step.
 #' @param crit_prob_adj A getCritProb object, specifying the critical value to be used for the testing (on the probability scale).
 #' @param simple Boolean variable, defining whether simplified fit will be applied. Passed to the getModelFits() function. Default FALSE.
+#' @param avg_fit Boolean variable, defining whether an average fit (based on generalized AIC weights) should be performed in addition to the individual models. Default TRUE.
+#' @param delta A numeric value for the threshold Delta for the MED assessment. If NULL, no MED assessment is performed. Default NULL.
+#' @param evidence_level A numeric value between 0 and 1 for the evidence level gamma for the MED assessment. Only required for Bayesian MED assessment, see ?getMED for details. Default NULL.
+#' @param med_selection A string, either "avgFit" or "bestFit", for the method of MED selection. Default "avgFit".
+#' @param n_samples A numerical for the number of bootstrapped samples in case the Bayesian MED assessment is performed. Default 1e3.
 #' @examples
 #' mods <- DoseFinding::Mods(linear      = NULL,
 #'                           linlog      = NULL,
@@ -478,7 +503,13 @@ performBayesianMCPMod <- function (
   posterior_list,
   contr,
   crit_prob_adj,
-  simple = FALSE
+  simple = FALSE,
+  avg_fit = TRUE,
+  
+  delta          = NULL,
+  evidence_level = NULL,
+  med_selection  = c("avgFit", "bestFit"),
+  n_samples      = 1e3
 
 ) {
 
@@ -486,6 +517,21 @@ performBayesianMCPMod <- function (
   checkmate::check_class(contr, "optContr")
   checkmate::check_class(crit_prob_adj, "numeric")
   checkmate::check_logical(simple)
+  checkmate::check_logical(avg_fit)
+  
+  checkmate::check_double(delta)
+  checkmate::check_double(evidence_level, lower = 0, upper = 1)
+  checkmate::check_character(med_selection)
+  checkmate::check_double(n_samples, lower = 1)
+  
+  med_selection <- match.arg(med_selection, choices = c("avgFit", "bestFit"))
+  get_med       <- ifelse(is.null(delta), FALSE, TRUE)
+  
+  if (!is.null(evidence_level)) {
+    
+    stopifnot("delta must not be NULL if evidence_level is not NULL" = !is.null(delta))
+    
+  }
 
   if (inherits(posterior_list,  "postList")) {
 
@@ -495,13 +541,13 @@ performBayesianMCPMod <- function (
 
   if (inherits(contr, "optContr")) {
 
-    model_shapes <- colnames(contr$contMat)
-    dose_levels  <- as.numeric(rownames(contr$contMat))
+    model_names <- colnames(contr$contMat)
+    dose_levels <- as.numeric(rownames(contr$contMat))
 
   } else if (length(contr) == length(posterior_list)) {
 
-    model_shapes <- colnames(contr[[1]]$contMat)
-    dose_levels  <- as.numeric(rownames(contr[[1]]$contMat))
+    model_names <- colnames(contr[[1]]$contMat)
+    dose_levels <- as.numeric(rownames(contr[[1]]$contMat))
 
   } else {
 
@@ -517,14 +563,67 @@ performBayesianMCPMod <- function (
   b_mod <- performBayesianMod(
     b_mcp          = b_mcp,
     posterior_list = posterior_list,
-    model_shapes   = model_shapes,
+    model_names    = model_names,
     dose_levels    = dose_levels,
-    simple         = simple)
+    simple         = simple,
+    avg_fit        = avg_fit)
 
-  bmcpmod        <- list(BayesianMCP = b_mcp, Mod = b_mod)
-  class(bmcpmod) <- "BayesianMCPMod"
+  b_mcp_mod <- list(BayesianMCP = b_mcp, Mod = b_mod)
+  
+  if (get_med) {
+    
+    med_info <- t(sapply(b_mcp_mod$Mod, function (model_fits) {
+      
+      if (!is.null(model_fits)) {
+        
+        if (!is.null(evidence_level)) {
+          
+          bs_quantiles <- getBootstrapQuantiles(
+            model_fits = model_fits,
+            quantiles  = 1 - evidence_level,
+            n_samples  = n_samples)
+          
+          med_info <- getMED(
+            delta          = delta,
+            evidence_level = evidence_level,
+            bs_quantiles   = bs_quantiles)
+          
+        } else {
+          
+          med_info <- getMED(
+            delta      = delta,
+            model_fits = model_fits)
+          
+        }
+        
+        if (med_selection == "avgFit") {
+          
+          return (med_info[, "avgFit"])
+          
+        } else if (med_selection == "bestFit") {
+          
+          model_min <- which.min(sapply(model_fits, function (x) x$gAIC))
+          
+          return (med_info[, model_min])
+          
+        }
+        
+      } else {
+        
+        return (c(med_reached  = 0, med = NA))
+        
+      }
+      
+    }))
+    
+    attr(b_mcp_mod, "MED")          <- med_info
+    attr(b_mcp_mod, "MEDSelection") <- med_selection
+    
+  }
+  
+  class(b_mcp_mod) <- "BayesianMCPMod"
 
-  return (bmcpmod)
+  return (b_mcp_mod)
 
 }
 
@@ -623,9 +722,10 @@ performBayesianMod <- function (
     
   b_mcp,
   posterior_list,
-  model_shapes,
+  model_names,
   dose_levels,
-  simple
+  simple,
+  avg_fit
   
 ) {
   
@@ -633,14 +733,14 @@ performBayesianMod <- function (
     
     if (b_mcp[i, 1]) {
       
-      sign_models <- b_mcp[i, -c(1, 2)] > attr(b_mcp, "crit_prob_adj")
-      
-      model_fits  <- getModelFits(
-        models      = model_shapes,
+      model_fits <- getModelFits(
+        models      = model_names,
         dose_levels = dose_levels,
         posterior   = posterior_list[[i]],
+        avg_fit     = avg_fit,
         simple      = simple) 
       
+      sign_models <- b_mcp[i, -c(1, 2)] > attr(b_mcp, "critProbAdj")
       model_fits  <- addSignificance(model_fits, sign_models)
       
     } else {

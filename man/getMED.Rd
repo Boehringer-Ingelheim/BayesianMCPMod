@@ -31,6 +31,8 @@ This function provides information on the minimally efficacious dose (MED).
 The MED evaluation can either be based on the fitted model shapes (model_fits) or on bootstrapped quantiles (bs_quantiles).
 }
 \details{
+The function assumes that the 1st dose group is the control dose group.
+
 The bootstrapp approach allows for an MED based on decision rules of the form
 \deqn{\widehat{\text{MED}} = \text{arg min}_{d\in\{d_1, \dots, d_k\}} \left\{ \text{Pr}\left(f(d, \hat\theta) - f(d_1, \hat\theta) > \Delta\right) > \gamma \right\} .}
 The model-shape approach takes the point estimate of the model into account.
@@ -53,7 +55,7 @@ getMED(delta = 5, model_fits = model_fits)
                                
 # MED based on bootstrapped quantiles
 bs_quantiles <- getBootstrapQuantiles(model_fits = model_fits,
-                                      quantiles  = c(0.5, 0.8, 0.975),
+                                      quantiles  = c(0.025, 0.2, 0.5),
                                       n_samples  = 100) # speeding up example run time
                                       
 getMED(delta          = 5,

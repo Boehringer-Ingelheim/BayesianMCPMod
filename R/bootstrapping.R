@@ -49,6 +49,12 @@ getBootstrapQuantiles <- function (
   dose_levels    <- model_fits[[1]]$dose_levels
   model_names    <- names(model_fits)
   quantile_probs <- sort(unique(quantiles))
+  
+  if (length(quantiles) == 1) {
+    
+    quantile_probs <- c(quantile_probs, 1 - 1e-6)
+    
+  }
 
   if (is.null(doses)) {
 
@@ -110,13 +116,19 @@ getBootstrapQuantiles <- function (
                        MARGIN = 1,
                        FUN    = stats::quantile,
                        probs  = quantile_probs))
-
+  
   cr_bounds_data <- cbind(
     doses  = doses,
     models = rep(
       x    = factor(model_names, levels = model_names),
       each = length(doses)),
     as.data.frame(quant_mat))
+  
+  if (length(quantiles) == 1) {
+    
+    cr_bounds_data <- cr_bounds_data[, -ncol(cr_bounds_data)]
+    
+  }
 
   return (cr_bounds_data)
 

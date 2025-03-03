@@ -9,6 +9,34 @@ print.BayesianMCPMod <- function (
 ) {
 
   print(x$BayesianMCP)
+  
+  if (any(!is.na(attr(x, "MED")))) {
+    
+    i = 1
+    while (is.null(x$Mod[[i]])) {
+      i <- i + 1
+    }
+    dose_levels <- x$Mod[[i]]$linear$dose_levels[-1]
+    rm(i)
+    
+    med_info <- attr(x, "MED")
+    
+    med_table      <- table(factor(med_info[, "med"], levels = dose_levels), useNA = "always")
+    med_vec        <- as.vector(med_table)
+    med_vec_names <- names(med_table)
+    
+    print_width <- max(nchar(med_vec), nchar(med_vec_names), na.rm = TRUE) + 2
+    
+    cat("MED Dose Frequencies\n")
+    cat("  Selection Method:    ", attr(x, "MEDSelection"), "\n")
+    cat("  Identification Rate: ", mean(med_info[, "med_reached"]), "\n")
+    
+    cat(" ", format(med_vec_names, width = print_width, justify = "right"), "\n")
+    cat(" ", format(med_vec, width = print_width))
+    
+  }
+  
+  cat("\n")
 
 }
 
@@ -64,33 +92,6 @@ print.BayesianMCP <- function(x, ...) {
   invisible(x)
   
 }
-# print.BayesianMCP <- function (
-    #
-#   x,
-#   ...
-#
-# ) {
-#
-#   n_sim <- nrow(x)
-#
-#   cat("Bayesian Multiple Comparison Procedure\n")
-#
-#   if (n_sim == 1L) {
-#
-#     attr(x, "crit_prob_adj") <- NULL
-#     attr(x, "success_rate")  <- NULL
-#     class(x) <- NULL
-#
-#     print.default(x, ...)
-#
-#   } else {
-#
-#     cat("  Estimated Success Rate: ", attr(x, "successRate"), "\n")
-#     cat("  N Simulations:          ", n_sim)
-#
-#   }
-#
-# }
 
 
 ## ModelFits ----------------------------------------------

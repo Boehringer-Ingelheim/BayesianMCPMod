@@ -19,7 +19,7 @@ vignette: >
 
 
 
-```{r}
+```{r, collapse=TRUE}
 #| code-summary: setup
 #| code-fold: true
 #| message: false
@@ -453,7 +453,7 @@ bootstrap_quantiles <- getBootstrapQuantiles(
 )
 ```
 
-```{r}
+```{r, collapse=TRUE}
 #| code-fold: true
 reactable::reactable(
   data = bootstrap_quantiles,
