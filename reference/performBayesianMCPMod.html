@@ -45,7 +45,17 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">performBayesianMCPMod</span><span class="op">(</span><span class="va">posterior_list</span>, <span class="va">contr</span>, <span class="va">crit_prob_adj</span>, simple <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">performBayesianMCPMod</span><span class="op">(</span></span>
+<span>  <span class="va">posterior_list</span>,</span>
+<span>  <span class="va">contr</span>,</span>
+<span>  <span class="va">crit_prob_adj</span>,</span>
+<span>  simple <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  avg_fit <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  delta <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  evidence_level <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  med_selection <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"avgFit"</span>, <span class="st">"bestFit"</span><span class="op">)</span>,</span>
+<span>  n_samples <span class="op">=</span> <span class="fl">1000</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -66,6 +76,26 @@
 
 <dt id="arg-simple">simple<a class="anchor" aria-label="anchor" href="#arg-simple"></a></dt>
 <dd><p>Boolean variable, defining whether simplified fit will be applied. Passed to the getModelFits() function. Default FALSE.</p></dd>
+
+
+<dt id="arg-avg-fit">avg_fit<a class="anchor" aria-label="anchor" href="#arg-avg-fit"></a></dt>
+<dd><p>Boolean variable, defining whether an average fit (based on generalized AIC weights) should be performed in addition to the individual models. Default TRUE.</p></dd>
+
+
+<dt id="arg-delta">delta<a class="anchor" aria-label="anchor" href="#arg-delta"></a></dt>
+<dd><p>A numeric value for the threshold Delta for the MED assessment. If NULL, no MED assessment is performed. Default NULL.</p></dd>
+
+
+<dt id="arg-evidence-level">evidence_level<a class="anchor" aria-label="anchor" href="#arg-evidence-level"></a></dt>
+<dd><p>A numeric value between 0 and 1 for the evidence level gamma for the MED assessment. Only required for Bayesian MED assessment, see ?getMED for details. Default NULL.</p></dd>
+
+
+<dt id="arg-med-selection">med_selection<a class="anchor" aria-label="anchor" href="#arg-med-selection"></a></dt>
+<dd><p>A string, either "avgFit" or "bestFit", for the method of MED selection. Default "avgFit".</p></dd>
+
+
+<dt id="arg-n-samples">n_samples<a class="anchor" aria-label="anchor" href="#arg-n-samples"></a></dt>
+<dd><p>A numerical for the number of bootstrapped samples in case the Bayesian MED assessment is performed. Default 1e3.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -109,7 +139,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> Bayesian Multiple Comparison Procedure</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Summary:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   Sign: 0 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   Critical Probability: 0.9749707 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Critical Probability: 0.9754201 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   Maximum Posterior Probability: 0.6446552 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Posterior Probabilities for Model Shapes:</span>
@@ -119,6 +149,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span>        emax1   0.6412959</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        emax2   0.6410572</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  exponential   0.5839261</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

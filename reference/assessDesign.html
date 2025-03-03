@@ -54,9 +54,13 @@
 <span>  alpha_crit_val <span class="op">=</span> <span class="fl">0.05</span>,</span>
 <span>  modeling <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  simple <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  avg_fit <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  reestimate <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  contr <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  dr_means <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  dr_means <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  delta <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  evidence_level <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  med_selection <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"avgFit"</span>, <span class="st">"bestFit"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -96,6 +100,10 @@
 <dd><p>Boolean variable defining whether simplified fit will be applied. Passed to the getModelFits function. Default FALSE.</p></dd>
 
 
+<dt id="arg-avg-fit">avg_fit<a class="anchor" aria-label="anchor" href="#arg-avg-fit"></a></dt>
+<dd><p>Boolean variable, defining whether an average fit (based on generalized AIC weights) should be performed in addition to the individual models. Default TRUE.</p></dd>
+
+
 <dt id="arg-reestimate">reestimate<a class="anchor" aria-label="anchor" href="#arg-reestimate"></a></dt>
 <dd><p>Boolean variable defining whether critical value should be calculated with re-estimated contrasts (see getCritProb function for more details). Default FALSE</p></dd>
 
@@ -107,6 +115,18 @@
 <dt id="arg-dr-means">dr_means<a class="anchor" aria-label="anchor" href="#arg-dr-means"></a></dt>
 <dd><p>A vector, allows specification of  individual (not model based) assumed effects per dose group. Default NULL</p></dd>
 
+
+<dt id="arg-delta">delta<a class="anchor" aria-label="anchor" href="#arg-delta"></a></dt>
+<dd><p>A numeric value for the threshold Delta for the MED assessment. If NULL, no MED assessment is performed. Default NULL.</p></dd>
+
+
+<dt id="arg-evidence-level">evidence_level<a class="anchor" aria-label="anchor" href="#arg-evidence-level"></a></dt>
+<dd><p>A numeric value between 0 and 1 for the evidence level gamma for the MED assessment. Only required for Bayesian MED assessment, see ?getMED for details. Default NULL.</p></dd>
+
+
+<dt id="arg-med-selection">med_selection<a class="anchor" aria-label="anchor" href="#arg-med-selection"></a></dt>
+<dd><p>A string, either "avgFit" or "bestFit", for the method of MED selection. Default "avgFit".</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -115,10 +135,7 @@
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span> <span class="co"># takes typically &gt; 5 seconds</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">mods</span> <span class="op">&lt;-</span> <span class="fu">DoseFinding</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/DoseFinding/man/Mods.html" class="external-link">Mods</a></span><span class="op">(</span>linear      <span class="op">=</span> <span class="cn">NULL</span>,</span></span>
-<span class="r-in"><span>                          linlog      <span class="op">=</span> <span class="cn">NULL</span>,</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">mods</span> <span class="op">&lt;-</span> <span class="fu">DoseFinding</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/DoseFinding/man/Mods.html" class="external-link">Mods</a></span><span class="op">(</span>linear      <span class="op">=</span> <span class="cn">NULL</span>,</span></span>
 <span class="r-in"><span>                          emax        <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">1.2</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                          exponential <span class="op">=</span> <span class="fl">2</span>,</span></span>
 <span class="r-in"><span>                          doses       <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.5</span>, <span class="fl">2</span>,<span class="fl">4</span>, <span class="fl">8</span><span class="op">)</span>,</span></span>
@@ -139,14 +156,64 @@
 <span class="r-in"><span>  n_sim       <span class="op">=</span> <span class="fl">1e2</span><span class="op">)</span> <span class="co"># speed up example run time</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">success_probabilities</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $linear</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Bayesian Multiple Comparison Procedure</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Estimated Success Rate:  0.86 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   N Simulations:           100</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Model Significance Frequencies</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      linear       emax1       emax2 exponential </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        0.81        0.62        0.78        0.76 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $emax1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Bayesian Multiple Comparison Procedure</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Estimated Success Rate:  0.9 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   N Simulations:           100</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Model Significance Frequencies</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      linear       emax1       emax2 exponential </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        0.58        0.87        0.82        0.29 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $emax2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Bayesian Multiple Comparison Procedure</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Estimated Success Rate:  0.9 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   N Simulations:           100</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Model Significance Frequencies</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      linear       emax1       emax2 exponential </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        0.72        0.87        0.85        0.46 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $exponential</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Bayesian Multiple Comparison Procedure</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Estimated Success Rate:  0.89 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   N Simulations:           100</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Model Significance Frequencies</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      linear       emax1       emax2 exponential </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        0.83        0.40        0.60        0.88 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"avgSuccessRate")</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.8875</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"placEff")</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"maxEff")</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"sampleSize")</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 40 60 60 60 60</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"priorESS")</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Ctrl DG_1 DG_2 DG_3 DG_4 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    0    0    0    0    0 </span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span> <span class="co"># takes typically &gt; 5 seconds</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># with MED estimation with bootstrapping</span></span></span>
+<span class="r-in"><span><span class="co"># see ?getMED for details</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">success_probabilities</span> <span class="op">&lt;-</span> <span class="fu">assessDesign</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  n_patients  <span class="op">=</span> <span class="va">n_patients</span>,</span></span>
-<span class="r-in"><span>  mods        <span class="op">=</span> <span class="va">mods</span>,</span></span>
-<span class="r-in"><span>  prior_list  <span class="op">=</span> <span class="va">prior_list</span>,</span></span>
-<span class="r-in"><span>  sd          <span class="op">=</span> <span class="va">sd</span>,</span></span>
-<span class="r-in"><span>  modeling    <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
-<span class="r-in"><span>  n_sim       <span class="op">=</span> <span class="fl">1e2</span><span class="op">)</span> <span class="co"># speed up example run time</span></span></span>
+<span class="r-in"><span>  n_patients     <span class="op">=</span> <span class="va">n_patients</span>,</span></span>
+<span class="r-in"><span>  mods           <span class="op">=</span> <span class="va">mods</span>,</span></span>
+<span class="r-in"><span>  prior_list     <span class="op">=</span> <span class="va">prior_list</span>,</span></span>
+<span class="r-in"><span>  sd             <span class="op">=</span> <span class="va">sd</span>,</span></span>
+<span class="r-in"><span>  modeling       <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>  n_sim          <span class="op">=</span> <span class="fl">10</span>, <span class="co"># speed up example run time</span></span></span>
+<span class="r-in"><span>  delta          <span class="op">=</span> <span class="fl">7</span>,</span></span>
+<span class="r-in"><span>  evidence_level <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  </span></span>
 <span class="r-in"><span>  <span class="va">success_probabilities</span></span></span>
 <span class="r-in"><span></span></span>
