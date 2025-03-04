@@ -10,7 +10,7 @@
   cr_intv = TRUE,
   alpha_CrI = 0.05,
   cr_bands = FALSE,
-  alpha_CrB = c(0.05, 0.5),
+  alpha_CrB = c(0.05, 0.2),
   n_bs_smpl = 1000,
   acc_color = "orange",
   plot_res = 100,
@@ -55,12 +55,19 @@ posterior_list <- list(Ctrl = RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 1), sig
                        DG_2 = RBesT::mixnorm(comp1 = c(w = 1, m = 4, s = 1.5), sigma = 2) ,
                        DG_3 = RBesT::mixnorm(comp1 = c(w = 1, m = 6, s = 1.2), sigma = 2) ,
                        DG_4 = RBesT::mixnorm(comp1 = c(w = 1, m = 6.5, s = 1.1), sigma = 2))
-models <- c("exponential", "linear")
+models <- c("exponential", "linear", "emax")
 dose_levels <- c(0, 1, 2, 4, 8)
-fit <- getModelFits(models      = models,
-                    posterior   = posterior_list,
-                    dose_levels = dose_levels,
-                    simple      = TRUE)
+model_fits <- getModelFits(models      = models,
+                           posterior   = posterior_list,
+                           dose_levels = dose_levels,
+                           simple       = TRUE)
 
-plot(fit)
+plot(model_fits)
+
+# plot with credible bands
+
+plot(model_fits,
+     cr_bands  = TRUE,
+     n_bs_smpl = 1e2) 
+
 }

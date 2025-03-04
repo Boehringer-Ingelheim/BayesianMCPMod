@@ -402,7 +402,7 @@ addModelWeights <- function (
 #' @details
 #' The function assumes that the 1st dose group is the control dose group.
 #' 
-#' The bootstrapp approach allows for an MED based on decision rules of the form
+#' The bootstrap approach allows for an MED based on decision rules of the form
 #' \deqn{\widehat{\text{MED}} = \text{arg min}_{d\in\{d_1, \dots, d_k\}} \left\{ \text{Pr}\left(f(d, \hat\theta) - f(d_1, \hat\theta) > \Delta\right) > \gamma \right\} .}
 #' The model-shape approach takes the point estimate of the model into account.
 #' @param delta A numeric value for the threshold Delta.
@@ -476,27 +476,23 @@ getMED <- function (
     }
     
     # R CMD Check Appeasement
-    q_names <- doses <- q_values <- models <- NULL
-    
-    bs_quantiles_long <- bs_quantiles |>
-      tidyr::pivot_longer(cols = tidyr::ends_with("%"), names_to = "q_names", values_to = "q_values") |>
-      dplyr::mutate(q_names = as.numeric(gsub("%", "", q_names)) * 0.01)
+    q_probs <- doses <- q_values <- models <- NULL
     
     stopifnot("corresponding quantile (i.e. 1 - evidence_level) not in bootstrapped quantiles matrix" = 
-                evidence_level %in% (1 - bs_quantiles_long$q_names))
+                evidence_level %in% (1 - bs_quantiles$q_probs))
     
     stopifnot("dose_levels not in bootstrapped quantiles matrix" = 
-                all(dose_levels %in% bs_quantiles_long$doses))
+                all(dose_levels %in% bs_quantiles$doses))
     
-    preds <- bs_quantiles_long |>
-      dplyr::filter((1 - q_names) %in% evidence_level) |>
+    preds <- bs_quantiles |>
+      dplyr::filter((1 - q_probs) %in% evidence_level) |>
       dplyr::filter(doses %in% dose_levels) |>
       tidyr::pivot_wider(names_from = doses, values_from = q_values)
     
     model_names <- preds$models
     
     preds <- preds |>
-      dplyr::select(-models, -q_names) |>
+      dplyr::select(-models, -q_probs) |>
       as.matrix()
     
     rownames(preds) <- model_names
@@ -510,12 +506,12 @@ getMED <- function (
     
     if (!any(med_indx_m)) {
       
-      med_reached <- FALSE
+      med_reached <- 0
       med         <- NA_real_
       
     } else {
       
-      med_reached <- TRUE
+      med_reached <- 1
       med_indx    <- min(which(med_indx_m)) + 1
       med         <- dose_levels[med_indx]
       

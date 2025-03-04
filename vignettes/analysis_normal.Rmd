@@ -238,7 +238,7 @@ For example, you can get a betaMod model by specifying `delta1` and `delta2`
 parameters (`scale` is assumed to be `1.2` of the maximum dose), or a quadratic model with the `delta2` parameter.
 
 ```{r}
-betaMod_params <- c(delta1 = 1, delta2 = 1)
+betaMod_params   <- c(delta1 = 1, delta2 = 1)
 quadratic_params <- c(delta2 = -0.1)
 ```
 
@@ -288,9 +288,9 @@ data("metaData")
 
 trial_data <- dplyr::filter(
   dplyr::filter(tibble::tibble(metaData), bname == "BRINTELLIX"),
-  primtime == 8,
+  primtime   == 8,
   indication == "MAJOR DEPRESSIVE DISORDER",
-  protid == 5
+  protid     == 5
 )
 
 n_patients <- c(128, 124, 129, 122)
@@ -304,9 +304,9 @@ the prior information with the estimated results of the trial [@fleischer_2022].
 ```{r}
 posterior <- getPosterior(
   prior_list = prior_list,
-  mu_hat = trial_data$rslt,
-  S_hat = trial_data$se,
-  calc_ess = TRUE
+  mu_hat     = trial_data$rslt,
+  S_hat      = trial_data$se,
+  calc_ess   = TRUE
 )
 
 knitr::kable(summary(posterior))
@@ -456,13 +456,14 @@ bootstrap_quantiles <- getBootstrapQuantiles(
 ```{r, collapse=TRUE}
 #| code-fold: true
 reactable::reactable(
-  data = bootstrap_quantiles,
+  data = bootstrap_quantiles |>
+      tidyr::pivot_wider(names_from = q_probs, values_from = q_values),
   groupBy = "models",
   columns = list(
-    doses = colDef(aggregate = "count", format = list(aggregated = colFormat(suffix = " doses"))),
-    "2.5%" = colDef(aggregate = "mean", format = list(aggregated = colFormat(prefix = "mean = ", digits = 2), cell = colFormat(digits = 4))),
-    "50%" = colDef(aggregate = "mean", format = list(aggregated = colFormat(prefix = "mean = ", digits = 2), cell = colFormat(digits = 4))),
-    "97.5%" = colDef(aggregate = "mean", format = list(aggregated = colFormat(prefix = "mean = ", digits = 2), cell = colFormat(digits = 4)))
+    doses   = colDef(aggregate = "count", format = list(aggregated = colFormat(suffix = " doses"))),
+    "0.025"  = colDef(aggregate = "mean", format = list(aggregated = colFormat(prefix = "mean = ", digits = 2), cell = colFormat(digits = 4))),
+    "0.5"   = colDef(aggregate = "mean", format = list(aggregated = colFormat(prefix = "mean = ", digits = 2), cell = colFormat(digits = 4))),
+    "0.975" = colDef(aggregate = "mean", format = list(aggregated = colFormat(prefix = "mean = ", digits = 2), cell = colFormat(digits = 4)))
   )
 )
 ```

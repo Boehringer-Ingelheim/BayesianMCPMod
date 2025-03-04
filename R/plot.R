@@ -22,14 +22,21 @@
 #'                        DG_2 = RBesT::mixnorm(comp1 = c(w = 1, m = 4, s = 1.5), sigma = 2) ,
 #'                        DG_3 = RBesT::mixnorm(comp1 = c(w = 1, m = 6, s = 1.2), sigma = 2) ,
 #'                        DG_4 = RBesT::mixnorm(comp1 = c(w = 1, m = 6.5, s = 1.1), sigma = 2))
-#' models <- c("exponential", "linear")
+#' models <- c("exponential", "linear", "emax")
 #' dose_levels <- c(0, 1, 2, 4, 8)
-#' fit <- getModelFits(models      = models,
-#'                     posterior   = posterior_list,
-#'                     dose_levels = dose_levels,
-#'                     simple      = TRUE)
+#' model_fits <- getModelFits(models      = models,
+#'                            posterior   = posterior_list,
+#'                            dose_levels = dose_levels,
+#'                            simple       = TRUE)
 #'
-#' plot(fit)
+#' plot(model_fits)
+#' 
+#' # plot with credible bands
+#' 
+#' plot(model_fits,
+#'      cr_bands  = TRUE,
+#'      n_bs_smpl = 1e2) 
+#' 
 #' @return A ggplot2 object
 #' @export
 plot.modelFits <- function (
@@ -39,7 +46,7 @@ plot.modelFits <- function (
   cr_intv   = TRUE,
   alpha_CrI = 0.05,
   cr_bands  = FALSE,
-  alpha_CrB = c(0.05, 0.5),
+  alpha_CrB = c(0.05, 0.2),
   n_bs_smpl = 1e3,
   acc_color = "orange",
   plot_res  = 1e2,
@@ -48,7 +55,7 @@ plot.modelFits <- function (
 ) {
   
   ## R CMD --as-cran appeasement
-  .data <- NULL
+  .data <- q_probs <- q_values <- NULL
 
   checkmate::check_logical(gAIC)
   checkmate::check_logical(cr_intv)
@@ -108,23 +115,18 @@ plot.modelFits <- function (
   }
 
   if (cr_bands) {
+  
+    quantile_pairs <- matrix(
+      data = c(alpha_CrB / 2, rep(1, times = length(alpha_CrB))),
+      ncol = 2)
+    quantile_pairs[, 2] <- quantile_pairs[, 2] - quantile_pairs[, 1]
 
     crB_data <- getBootstrapQuantiles(
       model_fits = model_fits,
       n_samples  = n_bs_smpl,
-      quantiles  = sort(unique(c(0.5, alpha_CrB / 2, 1 - alpha_CrB / 2))),
-      doses      = dose_seq)
-
-    getInx <- function (alpha_CrB) {
-      
-      vec_length  <- length(alpha_CrB) * 2 + 1
-      middle_indx <- (vec_length + 1) / 2
-      indx_list   <- lapply(seq_len(middle_indx - 1),
-                            function (i) c(i, vec_length - i + 1) + 2)
-      
-      return (indx_list)
-      
-    }
+      quantiles  = sort(unique(c(0.5, as.vector(quantile_pairs)))),
+      doses      = dose_seq) |>
+      tidyr::pivot_wider(names_from = q_probs, values_from = q_values)
 
   }
 
@@ -146,33 +148,35 @@ plot.modelFits <- function (
         x = -Inf, y = Inf, hjust = "inward", vjust = "inward",
         size = 3)
 
-    }
+      }
     }
 
   if (cr_bands) {
-
+    
     ## Bootstrapped Credible Bands
-    for (inx in getInx(alpha_CrB)) {
+    for (i in seq_len(nrow(quantile_pairs))) {
+
+      q_pair <- quantile_pairs[i, ]
 
       loop_txt <- paste0(
         "ggplot2::geom_ribbon(
           data    = crB_data,
-          mapping = ggplot2::aes(x    = doses,
-                                 ymin = crB_data[, ", inx[1], "],
-                                 ymax = crB_data[, ", inx[2], "]),
+          mapping = ggplot2::aes(x    = .data$doses,
+                                 ymin = .data$'", as.character(q_pair[1]),"',
+                                 ymax = .data$'", as.character(q_pair[2]),"'),
           fill    = acc_color,
           alpha   = 0.25)")
 
       plts <- plts + eval(parse(text = loop_txt))
 
     }
-    rm(inx)
-
+    rm(i)
+    
     ## Bootstrapped Fit
     plts <- plts +
       ggplot2::geom_line(
         data    = crB_data,
-        mapping = ggplot2::aes(.data$doses, .data$`50%`),
+        mapping = ggplot2::aes(.data$doses, .data$`0.5`),
         color   = acc_color)
 
   }

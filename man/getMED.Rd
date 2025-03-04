@@ -33,7 +33,7 @@ The MED evaluation can either be based on the fitted model shapes (model_fits) o
 \details{
 The function assumes that the 1st dose group is the control dose group.
 
-The bootstrapp approach allows for an MED based on decision rules of the form
+The bootstrap approach allows for an MED based on decision rules of the form
 \deqn{\widehat{\text{MED}} = \text{arg min}_{d\in\{d_1, \dots, d_k\}} \left\{ \text{Pr}\left(f(d, \hat\theta) - f(d_1, \hat\theta) > \Delta\right) > \gamma \right\} .}
 The model-shape approach takes the point estimate of the model into account.
 }
