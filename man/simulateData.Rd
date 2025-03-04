@@ -57,6 +57,6 @@ sim_data <- simulateData(n_patients  = n_patients,
                          mods        = models,
                          n_sim       = 100)
 
-sim_data
+head(sim_data)
 
 }

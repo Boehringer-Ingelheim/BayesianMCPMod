@@ -1,13 +1,13 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^LICENSE$
-
 docs
 ^\.github$
 ^_pkgdown\.yml$
 ^dev$
 ^doc$
-^Meta$
 ^cran-comments\.md$
 ^cran_submission_script\.R$
 ^CRAN-SUBMISSION$
+^vignettes/*_files$
+^revdep$

@@ -1,7 +1,17 @@
 ---
 title: "Simulation Example of Bayesian MCPMod for Continuous Data"
-output: rmarkdown::html_vignette
 number_sections: true
+format: 
+  html:
+    fig-height: 3.5
+    self-contained: true
+    toc: true
+    number-sections: true
+    bibliography: references.bib
+    code-summary: setup
+    #code-fold: true
+    message: false
+    warning: false
 vignette: >
   %\VignetteIndexEntry{Simulation Example of Bayesian MCPMod for Continuous Data}
   %\VignetteEngine{knitr::rmarkdown}
@@ -15,7 +25,13 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
+```{r}
+#| code-summary: setup
+#| code-fold: true
+#| message: false
+#| warning: false
+
+
 library(BayesianMCPMod)
 library(clinDR)
 library(dplyr)
@@ -87,7 +103,7 @@ prior_list  <- list(
 
 # Specification of new trial design 
 
-For the hypothetical new trial, we plan with 4 active dose levels \eqn{2.5, 5, 10, 20} and we specify a broad set of potential dose-response relationships, including a linear, an exponential, an emax and 2 sigEMax models.  
+For the hypothetical new trial, we plan with 4 active dose levels \eqn{2.5, 5, 10, 20} and we specify a broad set of potential dose-response relationships, including a linear, an exponential, an emax and 2 sigEMAX models.  
 Furthermore, we assume a maximum effect of -3 on top of control (i.e. assuming that active treatment can reduce the MADRS score after 8 weeks by up to 15.8) and plan a trial with 80 patients for all active groups and 60 patients for control.
 ```{r}
 exp     <- DoseFinding::guesst(
@@ -147,6 +163,7 @@ success_probabilities_uneq <- assessDesign(
   n_sim       = 100) # speed up example run-time
 success_probabilities_uneq
 ```
+
 For this specific trial setting the adapted allocation ratio leads to increased success probabilities under all assumed dose response relationships.
 
 Instead of specifying the assumed effects via the models it is also possible to directly specify the effects for the individual dose levels via the dr_means input.

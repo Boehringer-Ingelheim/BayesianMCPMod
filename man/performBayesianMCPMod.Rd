@@ -4,7 +4,17 @@
 \alias{performBayesianMCPMod}
 \title{performBayesianMCPMod}
 \usage{
-performBayesianMCPMod(posterior_list, contr, crit_prob_adj, simple = FALSE)
+performBayesianMCPMod(
+  posterior_list,
+  contr,
+  crit_prob_adj,
+  simple = FALSE,
+  avg_fit = TRUE,
+  delta = NULL,
+  evidence_level = NULL,
+  med_selection = c("avgFit", "bestFit"),
+  n_samples = 1000
+)
 }
 \arguments{
 \item{posterior_list}{An object of class 'postList' as created by getPosterior() containing information about the (mixture) posterior distribution per dose group}
@@ -14,12 +24,22 @@ performBayesianMCPMod(posterior_list, contr, crit_prob_adj, simple = FALSE)
 \item{crit_prob_adj}{A getCritProb object, specifying the critical value to be used for the testing (on the probability scale).}
 
 \item{simple}{Boolean variable, defining whether simplified fit will be applied. Passed to the getModelFits() function. Default FALSE.}
+
+\item{avg_fit}{Boolean variable, defining whether an average fit (based on generalized AIC weights) should be performed in addition to the individual models. Default TRUE.}
+
+\item{delta}{A numeric value for the threshold Delta for the MED assessment. If NULL, no MED assessment is performed. Default NULL.}
+
+\item{evidence_level}{A numeric value between 0 and 1 for the evidence level gamma for the MED assessment. Only required for Bayesian MED assessment, see ?getMED for details. Default NULL.}
+
+\item{med_selection}{A string, either "avgFit" or "bestFit", for the method of MED selection. Default "avgFit".}
+
+\item{n_samples}{A numerical for the number of bootstrapped samples in case the Bayesian MED assessment is performed. Default 1e3.}
 }
 \value{
-Bayesian MCP test result as well as modelling result.
+Bayesian MCP test result as well as modeling result.
 }
 \description{
-Performs Bayesian MCP Test step and modeling in a combined fashion. See performBayesianMCP() function for MCP Test step and getModelFits() for the modelling step
+Performs Bayesian MCP Test step and modeling in a combined fashion. See performBayesianMCP() function for MCP Test step and getModelFits() for the modeling step
 }
 \examples{
 mods <- DoseFinding::Mods(linear      = NULL,
@@ -40,15 +60,15 @@ critVal <- getCritProb(
   alpha_crit_val = 0.05)
 prior_list <- list(Ctrl = RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 5), sigma = 2),
                    DG_1 = RBesT::mixnorm(comp1 = c(w = 1, m = 1, s = 12), sigma = 2),
-                   DG_2 = RBesT::mixnorm(comp1 = c(w = 1, m = 1.2, s = 11), sigma = 2) ,  
+                   DG_2 = RBesT::mixnorm(comp1 = c(w = 1, m = 1.2, s = 11), sigma = 2) ,
                    DG_3 = RBesT::mixnorm(comp1 = c(w = 1, m = 1.3, s = 11), sigma = 2) ,
                    DG_4 = RBesT::mixnorm(comp1 = c(w = 1, m = 2, s = 13), sigma = 2))
 mu <- c(0, 1, 1.5, 2, 2.5)
-se <- c(5, 4, 6, 7, 8)
+S_hat <- c(5, 4, 6, 7, 8)
 posterior_list <- getPosterior(
   prior_list = prior_list,
   mu_hat     = mu,
-  se_hat     = se)
+  S_hat     = S_hat)
 performBayesianMCPMod(posterior_list = posterior_list,
                       contr          = contr_mat,
                       crit_prob_adj  = critVal,

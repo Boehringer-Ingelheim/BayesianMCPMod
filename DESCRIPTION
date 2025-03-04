@@ -1,15 +1,15 @@
 Package: BayesianMCPMod
 Title: Simulate, Evaluate, and Analyze Dose Finding Trials with Bayesian
     MCPMod
-Version: 1.0.0
+Version: 1.0.2
 Authors@R: c(
     person("Boehringer Ingelheim Pharma GmbH & Co. KG", role = c("cph", "fnd")),
     person("Stephan", "Wojciekowski", , "stephan.wojciekowski@boehringer-ingelheim.com", role = c("aut", "cre")),
     person("Lars", "Andersen", , "lars.andersen@boehringer-ingelheim.com", role = "aut"),
-    person("Steven", "Brooks", , "steven.brooks@boehringer-ingelheim.com", role = "ctb"),
+    person("Jonas", "Schick", , "jonas.schick@boehringer-ingelheim.com", role = "ctb"),
     person("Sebastian", "Bossert", , "sebastian.bossert@boehringer-ingelheim.com", role = "aut")
   )
-Description: Bayesian MCPMod (Fleischer et al. (2022) 
+Description: Bayesian MCPMod (Fleischer et al. (2022)
     <doi:10.1002/pst.2193>) is an innovative method that improves the
     traditional MCPMod by systematically incorporating historical data,
     such as previous placebo group data. This R package offers functions
@@ -26,29 +26,40 @@ Description: Bayesian MCPMod (Fleischer et al. (2022)
     Estimated dose-response relationships can be bootstrapped and
     visualized.
 License: Apache License (>= 2)
-URL: https://github.com/Boehringer-Ingelheim/BayesianMCPMod
+URL: https://boehringer-ingelheim.github.io/BayesianMCPMod/,
+    https://github.com/Boehringer-Ingelheim/BayesianMCPMod
 BugReports: https://github.com/Boehringer-Ingelheim/BayesianMCPMod/issues
 Depends:
     R (>= 4.2)
 Imports:
     checkmate,
     DoseFinding (>= 1.1-1),
+    future.apply,
     ggplot2,
+    methods,
     nloptr,
     RBesT,
     stats
 Suggests:
     clinDR,
+    data.table,
+    doFuture,
+    doRNG,
     dplyr,
+    kableExtra,
     knitr,
+    MCPModPack,
+    reactable,
     rmarkdown,
     spelling,
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    tibble,
+    tidyr
 VignetteBuilder: 
     knitr
 Config/testthat/edition: 3
 Encoding: UTF-8
+Language: en-US
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.3
-Language: en-US
+RoxygenNote: 7.3.2

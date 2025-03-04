@@ -41,7 +41,7 @@ regular MCPMod for these specific weights
 \item Frequentist approach: If only dose_weights are provided optimal contrast vectors are calculated from the
 regular MCPMod for these specific weights
 \item Bayesian approach + re-estimation: If only a sd_posterior (i.e. variability of the posterior distribution) is provided, pseudo-optimal contrasts based on these posterior weights will be calculated
-\item Frequentist approach+re-estimation:If only a se_new_trial (i.e. the estimated variability per dose group of a new trial) is provided, optimal contrast vectors are calculated from the
+\item Frequentist approach+re-estimation: If only a se_new_trial (i.e. the estimated variability per dose group of a new trial) is provided, optimal contrast vectors are calculated from the
 regular MCPMod for this specific vector of standard errors. For the actual evaluation this vector of standard errors is translated into a (diagonal) matrix of variances
 }
 }
@@ -59,6 +59,6 @@ sd_posterior <- c(2.8, 3, 2.5, 3.5, 4)
 contr_mat <- getContr(
   mods         = mods,
   dose_levels  = dose_levels,
-  sd_posterior = sd_posterior) 
+  sd_posterior = sd_posterior)
 
 }

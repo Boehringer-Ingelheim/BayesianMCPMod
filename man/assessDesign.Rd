@@ -2,8 +2,7 @@
 % Please edit documentation in R/BMCPMod.R
 \name{assessDesign}
 \alias{assessDesign}
-\title{assessDesign
-.}
+\title{assessDesign}
 \usage{
 assessDesign(
   n_patients,
@@ -12,14 +11,19 @@ assessDesign(
   sd,
   n_sim = 1000,
   alpha_crit_val = 0.05,
+  modeling = FALSE,
   simple = TRUE,
+  avg_fit = TRUE,
   reestimate = FALSE,
   contr = NULL,
-  dr_means = NULL
+  dr_means = NULL,
+  delta = NULL,
+  evidence_level = NULL,
+  med_selection = c("avgFit", "bestFit")
 )
 }
 \arguments{
-\item{n_patients}{Vector specifying the planned number of patients per dose group}
+\item{n_patients}{Vector specifying the planned number of patients per dose group. A minimum of 2 patients are required in each group.}
 
 \item{mods}{An object of class "Mods" as specified in the DoseFinding package.}
 
@@ -31,13 +35,23 @@ assessDesign(
 
 \item{alpha_crit_val}{(Un-adjusted) Critical value to be used for the MCP testing step. Passed to the getCritProb() function for the calculation of adjusted critical values (on the probability scale). Default is 0.05.}
 
+\item{modeling}{Boolean variable defining whether the Mod part of Bayesian MCP-Mod will be performed in the assessment. More heavy on resources. Default FALSE.}
+
 \item{simple}{Boolean variable defining whether simplified fit will be applied. Passed to the getModelFits function. Default FALSE.}
+
+\item{avg_fit}{Boolean variable, defining whether an average fit (based on generalized AIC weights) should be performed in addition to the individual models. Default TRUE.}
 
 \item{reestimate}{Boolean variable defining whether critical value should be calculated with re-estimated contrasts (see getCritProb function for more details). Default FALSE}
 
 \item{contr}{An object of class 'optContr' as created by the getContr() function. Allows specification of a fixed contrasts matrix. Default NULL}
 
 \item{dr_means}{A vector, allows specification of  individual (not model based) assumed effects per dose group. Default NULL}
+
+\item{delta}{A numeric value for the threshold Delta for the MED assessment. If NULL, no MED assessment is performed. Default NULL.}
+
+\item{evidence_level}{A numeric value between 0 and 1 for the evidence level gamma for the MED assessment. Only required for Bayesian MED assessment, see ?getMED for details. Default NULL.}
+
+\item{med_selection}{A string, either "avgFit" or "bestFit", for the method of MED selection. Default "avgFit".}
 }
 \value{
 Returns success probabilities for the different assumed dose-response shapes, attributes also includes information around average success rate (across all assumed models) and prior Effective sample size
@@ -46,10 +60,7 @@ Returns success probabilities for the different assumed dose-response shapes, at
 This function performs simulation based trial design evaluations for a set of specified dose-response models
 }
 \examples{
-if (interactive()) { # takes typically > 5 seconds
-
 mods <- DoseFinding::Mods(linear      = NULL,
-                          linlog      = NULL,
                           emax        = c(0.5, 1.2),
                           exponential = 2,
                           doses       = c(0, 0.5, 2,4, 8),
@@ -57,7 +68,7 @@ mods <- DoseFinding::Mods(linear      = NULL,
 sd <- 12
 prior_list <- list(Ctrl = RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 12), sigma = 2),
                    DG_1 = RBesT::mixnorm(comp1 = c(w = 1, m = 1, s = 12), sigma = 2),
-                   DG_2 = RBesT::mixnorm(comp1 = c(w = 1, m = 1.2, s = 11), sigma = 2) ,  
+                   DG_2 = RBesT::mixnorm(comp1 = c(w = 1, m = 1.2, s = 11), sigma = 2) ,
                    DG_3 = RBesT::mixnorm(comp1 = c(w = 1, m = 1.3, s = 11), sigma = 2) ,
                    DG_4 = RBesT::mixnorm(comp1 = c(w = 1, m = 2, s = 13), sigma = 2))
 n_patients <- c(40, 60, 60, 60, 60)
@@ -67,9 +78,26 @@ success_probabilities <- assessDesign(
   mods        = mods,
   prior_list  = prior_list,
   sd          = sd,
-  n_sim       = 1e2) # speed up exammple run time
+  n_sim       = 1e2) # speed up example run time
 
 success_probabilities
+
+if (interactive()) { # takes typically > 5 seconds
+
+# with MED estimation with bootstrapping
+# see ?getMED for details
+
+success_probabilities <- assessDesign(
+  n_patients     = n_patients,
+  mods           = mods,
+  prior_list     = prior_list,
+  sd             = sd,
+  modeling       = TRUE,
+  n_sim          = 10, # speed up example run time
+  delta          = 7,
+  evidence_level = 0.8)
+  
+  success_probabilities
 
 }
 

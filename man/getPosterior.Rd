@@ -8,7 +8,7 @@ getPosterior(
   prior_list,
   data = NULL,
   mu_hat = NULL,
-  se_hat = NULL,
+  S_hat = NULL,
   calc_ess = FALSE
 )
 }
@@ -20,32 +20,36 @@ Also a simulateData object can be provided.}
 
 \item{mu_hat}{vector of estimated mean values (per dose group).}
 
-\item{se_hat}{vector of estimated standard deviations (per dose group).}
+\item{S_hat}{Either a vector or a covariance matrix specifying the (estimated) variability can be specified. The length of the vector (resp. the dimension of the matrix) needs to match the number of dose groups. Please note that for a vector input the numbers should reflect the standard error per dose group (i.e. square root of variance), while for a matrix input the variance-covariance matrix should be provided.}
 
 \item{calc_ess}{boolean variable, indicating whether effective sample size should be calculated. Default FALSE}
 }
 \value{
-posterior_list, a posterior list object is returned with information about (mixture) posterior distribution per dose group
+posterior_list, a posterior list object is returned with information about (mixture) posterior distribution per dose group (more detailed information about the conjugate posterior in case of covariance input for S_hat is provided in the attributes)
 }
 \description{
-Either the patient level data or both mu_hat as well as sd_hat must to be provided.
-If patient level data is provided mu_hat and se_hat are calculated within the function using a linear model.
-This function calculates the posterior for every dose group independently via the RBesT function postmix().
+Either the patient level data or both mu_hat as well as S_hat must to be provided.
+If patient level data is provided mu_hat and S_hat are calculated within the function using a linear model.
+This function calculates the posterior distribution. Depending on the input for S_hat this step is either performed for every dose group independently via the RBesT function postmix() or the mvpostmix() function of the DoseFinding package is utilized.
+In the latter case conjugate posterior mixture of multivariate normals are calculated (DeGroot 1970, Bernardo and Smith 1994)
 }
 \examples{
 prior_list <- list(Ctrl = RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 5), sigma = 2),
                    DG_1 = RBesT::mixnorm(comp1 = c(w = 1, m = 1, s = 12), sigma = 2),
-                   DG_2 = RBesT::mixnorm(comp1 = c(w = 1, m = 1.2, s = 11), sigma = 2) ,  
+                   DG_2 = RBesT::mixnorm(comp1 = c(w = 1, m = 1.2, s = 11), sigma = 2) ,
                    DG_3 = RBesT::mixnorm(comp1 = c(w = 1, m = 1.3, s = 11), sigma = 2) ,
                    DG_4 = RBesT::mixnorm(comp1 = c(w = 1, m = 2, s = 13), sigma = 2))
 mu <- c(0, 1, 1.5, 2, 2.5)
-se <- c(5, 4, 6, 7, 8)
+S_hat <- c(5, 4, 6, 7, 8)
 
 posterior_list <- getPosterior(
    prior_list = prior_list,
    mu_hat     = mu,
-   se_hat     = se)
-   
+   S_hat     = S_hat)
+
 summary(posterior_list)
 
+}
+\references{
+BERNARDO, Jl. M., and Smith, AFM (1994). Bayesian Theory. 81.
 }
