@@ -88,7 +88,7 @@ The MED evaluation can either be based on the fitted model shapes (model_fits) o
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>The function assumes that the 1st dose group is the control dose group.</p>
-<p>The bootstrapp approach allows for an MED based on decision rules of the form
+<p>The bootstrap approach allows for an MED based on decision rules of the form
 $$\widehat{\text{MED}} = \text{arg min}_{d\in\{d_1, \dots, d_k\}} \left\{ \text{Pr}\left(f(d, \hat\theta) - f(d_1, \hat\theta) &gt; \Delta\right) &gt; \gamma \right\} .$$
 The model-shape approach takes the point estimate of the model into account.</p>
     </div>
@@ -121,9 +121,9 @@ The model-shape approach takes the point estimate of the model into account.</p>
 <span class="r-in"><span><span class="fu">getMED</span><span class="op">(</span>delta          <span class="op">=</span> <span class="fl">5</span>,</span></span>
 <span class="r-in"><span>       evidence_level <span class="op">=</span> <span class="fl">0.8</span>,</span></span>
 <span class="r-in"><span>       bs_quantiles   <span class="op">=</span> <span class="va">bs_quantiles</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             exponential linear avgFit</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> med_reached           1      1      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> med                   8      8      8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>             avgFit exponential linear</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> med_reached      1           1      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> med              8           8      8</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
