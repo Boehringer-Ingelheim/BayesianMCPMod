@@ -15,7 +15,8 @@ rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"))
 
 # Check content
 # install.packages('checkhelper', repos = 'https://thinkr-open.r-universe.dev')
-checkhelper::find_missing_tags()
+missing_tags <- checkhelper::find_missing_tags()
+View(missing_tags$functions)
 # Check that you let the house clean after the check, examples and tests
 all_files_remaining <- checkhelper::check_clean_userspace()
 all_files_remaining
@@ -31,7 +32,9 @@ urlchecker::url_update()
 
 # check on other distributions
 # _rhub
-rhub::rhub_check(platforms = c("linux", "macos-arm64", "windows")) 
+# rhub::rhub_check(platforms = c("linux", "macos-arm64", "windows")) 
+# rhub::check_for_cran()
+devtools::check_rhub()
 # _win devel CRAN
 devtools::check_win_devel()
 # _macos CRAN
