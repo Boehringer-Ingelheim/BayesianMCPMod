@@ -66,8 +66,21 @@ addSignificance <- function (
 #' 
 #' if (interactive()) { # takes typically > 5 seconds
 #' 
-#' # with MED estimation with bootstrapping
+#' # with MED estimation without bootstrapping
 #' # see ?getMED for details
+#' 
+#' success_probabilities <- assessDesign(
+#'   n_patients     = n_patients,
+#'   mods           = mods,
+#'   prior_list     = prior_list,
+#'   sd             = sd,
+#'   modeling       = TRUE,
+#'   n_sim          = 10, # speed up example run time
+#'   delta          = 7)
+#'   
+#'   success_probabilities
+#'   
+#' # with MED estimation with bootstrapping
 #' 
 #' success_probabilities <- assessDesign(
 #'   n_patients     = n_patients,
