@@ -41,9 +41,11 @@ set.seed(7015)
 
 # Background and data
 
-In this vignette, we will show the use of the Bayesian MCPMod package for trial planning for continuous distributed data. 
-As in [the analysis example vignette](analysis_normal.html), we focus on the indication MDD and make use of historical data that is included in the clinDR package. 
+In this vignette, we will show the use of the BayesianMCPMod R package for trial planning for continuously distributed data. 
+As in the [analysis example vignette](analysis_normal.html), we focus on the indication MDD and make use of historical data that is included in the clinDR package. 
 More specifically, trial results for BRINTELLIX will be utilized to establish an informative prior for the control group.
+
+A more general overview of the R package was provided with a [poster](https://github.com/Boehringer-Ingelheim/BayesianMCPMod/blob/80931dc20901e4880540bb477648d45c0cbe2549/PSI_Poster_2024.pdf) presented during the PSI 2024 Conference.
 
 # Calculation of a MAP prior
 In a first step, a meta analytic predictive prior will be calculated using historical data from 5 trials with main endpoint Change from baseline in MADRS score after 8 weeks.
