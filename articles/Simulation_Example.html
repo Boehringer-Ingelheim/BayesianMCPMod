@@ -336,8 +336,9 @@ will be applied, see also <code>?getMED()</code>. The computational cost
 for the Bayesian decision rule within the <code><a href="../reference/assessDesign.html">assessDesign()</a></code>
 function is rather high depending on the number of simulated trial
 outcomes, as the required quantiles need to be bootstrapped for each
-true model shape and each simulated outcome. Thus, using the is only
-recommended when using parallel computing.</p>
+true model shape and each simulated outcome. Thus, using the Bayesian
+decision rule when assessing the trial’s design is only recommended when
+using parallel computing.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">success_probabilities_med</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/assessDesign.html">assessDesign</a></span><span class="op">(</span></span>
 <span>  n_patients  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">60</span>, <span class="fl">80</span>, <span class="fl">80</span>, <span class="fl">80</span>, <span class="fl">80</span><span class="op">)</span>,</span>
