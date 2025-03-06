@@ -192,7 +192,7 @@ If both the arguments `delta` and `evidence_level` are provided, a Bayesian deci
 $$\widehat{\text{MED}} = \text{arg min}_{d\in\{d_1, \dots, d_k\}} \left\{ \text{Pr}\left(f(d, \hat\theta) - f(d_1, \hat\theta) > \Delta\right) > \gamma \right\}$$
 will be applied, see also `?getMED()`.
 The computational cost for the Bayesian decision rule within the `assessDesign()` function is rather high depending on the number of simulated trial outcomes, as the required quantiles need to be bootstrapped for each true model shape and each simulated outcome.
-Thus, using the  is only recommended when using parallel computing.
+Thus, using the Bayesian decision rule when assessing the trial's design is only recommended when using parallel computing.
 ```{r}
 success_probabilities_med <- assessDesign(
   n_patients  = c(60, 80, 80, 80, 80),
