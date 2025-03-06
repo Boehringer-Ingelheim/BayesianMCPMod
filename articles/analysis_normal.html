@@ -142,14 +142,18 @@
 <div class="section level2">
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
-<p>This vignette demonstrates the application of the BayesianMCPMod
-package for analyzing a phase 2 dose-finding trial using the Bayesian
-MCPMod approach.</p>
+<p>This vignette demonstrates the application of the
+<code>BayesianMCPMod</code> package for analyzing a phase 2 dose-finding
+trial using the Bayesian MCPMod approach.</p>
 <p>A more general overview of the R package was provided with a <a href="https://github.com/Boehringer-Ingelheim/BayesianMCPMod/blob/f942d941cb9fc1c457717b71dd07363f0a7b8966/inst/PSI_Poster_2024.pdf" class="external-link">poster</a>
 presented during the PSI 2024 Conference.</p>
+<p>This package makes use of the <a href="https://cran.r-project.org/package=future" class="external-link">future</a> framework
+for parallel processing, which can be set up as follows:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="fu">future</span><span class="fu">::</span><span class="va"><a href="https://future.futureverse.org/reference/multisession.html" class="external-link">multisession</a></span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="calculation-of-a-map-prior">Calculation of a MAP prior<a class="anchor" aria-label="anchor" href="#calculation-of-a-map-prior"></a>
+<h2 id="calculation-of-a-map-prior">Calculation of a MAP Prior<a class="anchor" aria-label="anchor" href="#calculation-of-a-map-prior"></a>
 </h2>
 <p>In a first step, a meta analytic prior will be calculated using
 historical data from 4 trials with main endpoint Change from baseline in
@@ -157,7 +161,7 @@ MADRS score after 8 weeks. Please note that only information from the
 control group will be integrated leading to an informative mixture prior
 for the control group, while for the active groups a non-informative
 prior will be specified.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"metaData"</span><span class="op">)</span></span>
 <span><span class="va">dataset</span>     <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">metaData</span><span class="op">)</span>, <span class="va">bname</span> <span class="op">==</span> <span class="st">"BRINTELLIX"</span><span class="op">)</span></span>
 <span><span class="va">histcontrol</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span></span>
@@ -177,7 +181,7 @@ prior will be specified.</p>
 distributions for the different dose groups. This function is adapted to
 the needs of this example. Other applications may need a different way
 to construct prior distributions.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">getPriorList</span> <span class="op">&lt;-</span> <span class="kw">function</span> <span class="op">(</span></span>
 <span>  </span>
 <span>  <span class="va">hist_data</span>,</span>
@@ -231,7 +235,7 @@ to construct prior distributions.</p>
 <span><span class="op">}</span></span></code></pre></div>
 <p>With the dose levels to be investigated, the prior distribution can
 be constructed.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dose_levels</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">2.5</span>, <span class="fl">5</span>, <span class="fl">10</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">prior_list</span>  <span class="op">&lt;-</span> <span class="fu">getPriorList</span><span class="op">(</span></span>
@@ -257,7 +261,7 @@ used and not currently supported by
 <code><a href="https://rdrr.io/pkg/DoseFinding/man/guesst.html" class="external-link">DoseFinding::guesst</a></code> function. The <code>d</code> option
 usually takes a single value (a dose level), and the corresponding
 <code>p</code> for the maximum effect achieved at <code>d</code>.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Guesstimate estimation</span></span>
 <span><span class="va">exp_guesst</span>  <span class="op">&lt;-</span> <span class="fu">DoseFinding</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/DoseFinding/man/guesst.html" class="external-link">guesst</a></span><span class="op">(</span></span>
 <span>  model <span class="op">=</span> <span class="st">"exponential"</span>, </span>
@@ -287,12 +291,12 @@ scale (without using <code><a href="https://rdrr.io/pkg/DoseFinding/man/guesst.h
 <code>delta1</code> and <code>delta2</code> parameters
 (<code>scale</code> is assumed to be <code>1.2</code> of the maximum
 dose), or a quadratic model with the <code>delta2</code> parameter.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">betaMod_params</span>   <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>delta1 <span class="op">=</span> <span class="fl">1</span>, delta2 <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="va">quadratic_params</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>delta2 <span class="op">=</span> <span class="op">-</span><span class="fl">0.1</span><span class="op">)</span></span></code></pre></div>
 <p>Now, we can go ahead and create a <code>Mods</code> object, which
 will be used in the remainder of the vignette.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mods</span> <span class="op">&lt;-</span> <span class="fu">DoseFinding</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/DoseFinding/man/Mods.html" class="external-link">Mods</a></span><span class="op">(</span></span>
 <span>  linear      <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="co"># guesstimate scale</span></span>
@@ -314,7 +318,7 @@ will be used in the remainder of the vignette.</p>
 <p>The <code>mods</code> object we just created above contains the full
 model parameters, which can be helpful for understanding how the
 guesstimates are translated onto the parameter scale.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">display_params_table</span><span class="op">(</span><span class="va">mods</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
@@ -362,7 +366,7 @@ guesstimates are translated onto the parameter scale.</p>
 </table>
 <p>And we can see the assumed treatment effects for the specified dose
 groups below:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="fu">DoseFinding</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/DoseFinding/man/Mods.html" class="external-link">getResp</a></span><span class="op">(</span><span class="va">mods</span>, doses <span class="op">=</span> <span class="va">dose_levels</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <table style="width:100%;" class="table">
 <colgroup>
@@ -433,7 +437,7 @@ groups below:</p>
 </h3>
 <p>We will use the trial with ct.gov number NCT00735709 as our phase 2
 trial data, available in the <code>{clinDR}</code> package <span class="citation">[@nct00735709_2024a]</span>.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"metaData"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">trial_data</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span></span>
@@ -452,7 +456,7 @@ trial data, available in the <code>{clinDR}</code> package <span class="citation
 <p>In the first step of Bayesian MCPMod, the posterior is calculated by
 combining the prior information with the estimated results of the trial
 <span class="citation">[@fleischer_2022]</span>.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">posterior</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getPosterior.html">getPosterior</a></span><span class="op">(</span></span>
 <span>  prior_list <span class="op">=</span> <span class="va">prior_list</span>,</span>
 <span>  mu_hat     <span class="op">=</span> <span class="va">trial_data</span><span class="op">$</span><span class="va">rslt</span>,</span>
@@ -516,7 +520,7 @@ frequentist MCPMod to ensure error control when using weakly-informative
 priors.</p>
 <p>A pseudo-optimal contrast matrix is generated based on the
 variability of the posterior distribution (see <span class="citation">[@fleischer_2022]</span> for more details).</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">crit_pval</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getCritProb.html">getCritProb</a></span><span class="op">(</span></span>
 <span>  mods           <span class="op">=</span> <span class="va">mods</span>,</span>
 <span>  dose_levels    <span class="op">=</span> <span class="va">dose_levels</span>,</span>
@@ -532,7 +536,7 @@ variability of the posterior distribution (see <span class="citation">[@fleische
 <p>Please note that there are different ways to derive the contrasts.
 The following code shows the implementation of some of these ways but it
 is not executed and the contrast specification above is used.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># i) the frequentist contrast</span></span>
 <span><span class="va">contr_mat_prior</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getContr.html">getContr</a></span><span class="op">(</span></span>
 <span>  mods           <span class="op">=</span> <span class="va">mods</span>,</span>
@@ -551,20 +555,18 @@ is not executed and the contrast specification above is used.</p>
 <span>  dose_weights   <span class="op">=</span> <span class="va">n_patients</span>,</span>
 <span>  prior_list     <span class="op">=</span> <span class="va">prior_list</span><span class="op">)</span></span></code></pre></div>
 <p>The Bayesian MCP testing step is then executed:</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">BMCP_result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/performBayesianMCP.html">performBayesianMCP</a></span><span class="op">(</span></span>
 <span>  posterior_list <span class="op">=</span> <span class="va">posterior</span>,</span>
 <span>  contr          <span class="op">=</span> <span class="va">contr_mat</span>, </span>
 <span>  crit_prob_adj  <span class="op">=</span> <span class="va">crit_pval</span><span class="op">)</span></span></code></pre></div>
 <p>Summary information:</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">BMCP_result</span></span></code></pre></div>
 <pre><code><span><span class="co">## Bayesian Multiple Comparison Procedure</span></span>
-<span><span class="co">## Summary:</span></span>
-<span><span class="co">##   Sign: 1 </span></span>
-<span><span class="co">##   Critical Probability: 0.9842778 </span></span>
+<span><span class="co">##   Significant:                   1 </span></span>
+<span><span class="co">##   Critical Probability:          0.9842778 </span></span>
 <span><span class="co">##   Maximum Posterior Probability: 0.9999998 </span></span>
-<span><span class="co">## </span></span>
 <span><span class="co">## Posterior Probabilities for Model Shapes:</span></span>
 <span><span class="co">##        Model Probability</span></span>
 <span><span class="co">##       linear   0.9999581</span></span>
@@ -575,8 +577,8 @@ is not executed and the contrast specification above is used.</p>
 <span><span class="co">##      betaMod   0.9999930</span></span>
 <span><span class="co">##    quadratic   0.9883779</span></span>
 <span><span class="co">## Average Posterior ESS</span></span>
-<span><span class="co">##   Ctr  DG_1  DG_2  DG_3 </span></span>
-<span><span class="co">## 189.9 186.6 188.2 180.0</span></span></code></pre>
+<span><span class="co">##   Dose Level:     Ctr  DG_1  DG_2  DG_3 </span></span>
+<span><span class="co">##   Avg Post ESS: 189.9 186.6 188.2 180.0</span></span></code></pre>
 <p>The testing step is significant, indicating a non-flat dose-response
 shape. All models are significant, with the <code>emax</code> model
 indicating the greatest deviation from the null hypothesis.</p>
@@ -599,18 +601,18 @@ implemented by the <a href="https://github.com/astamm/nloptr" class="external-li
 effects for the included dose levels, the generalized AIC, and the
 corresponding weights.</p>
 <p>For the considered case, the simplified and the full fit are very
-similar, so we present the full fit.</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+similar, so wepresent the full fit.</p>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># If simple = TRUE, uses approx posterior</span></span>
 <span><span class="co"># Here we use complete posterior distribution</span></span>
-<span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getModelFits.html">getModelFits</a></span><span class="op">(</span></span>
+<span><span class="va">model_fits</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getModelFits.html">getModelFits</a></span><span class="op">(</span></span>
 <span>  models      <span class="op">=</span> <span class="va">mods</span>,</span>
 <span>  dose_levels <span class="op">=</span> <span class="va">dose_levels</span>,</span>
 <span>  posterior   <span class="op">=</span> <span class="va">posterior</span>,</span>
 <span>  simple      <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <p>Estimates for dose levels not included in the trial:</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">display_params_table</span><span class="op">(</span><span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">fit</span>, doses <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">2.5</span>, <span class="fl">4</span>, <span class="fl">5</span>, <span class="fl">7</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">display_params_table</span><span class="op">(</span><span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">model_fits</span>, doses <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">2.5</span>, <span class="fl">4</span>, <span class="fl">5</span>, <span class="fl">7</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="left">Name</th>
@@ -661,8 +663,8 @@ similar, so we present the full fit.</p>
 </table>
 <p>Plots of fitted dose-response models and an AIC-based average
 model:</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">model_fits</span><span class="op">)</span></span></code></pre></div>
 <p><img src="analysis_normal_files/figure-html/unnamed-chunk-15-1.png" width="700"></p>
 <p>To assess the uncertainty, one can additionally visualize credible
 bands (orange shaded areas, default levels are 50% and 95%).</p>
@@ -675,21 +677,22 @@ performed.</p></li>
 <li><p>These predictions are then used to identify and visualize the
 specified quantiles.</p></li>
 </ul>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">fit</span>, cr_bands <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="analysis_normal_files/figure-html/unnamed-chunk-16-1.png" width="700"></p>
-<p>The bootstrap based quantiles can also be directly calculated via the
-<code><a href="../reference/getBootstrapQuantiles.html">getBootstrapQuantiles()</a></code> function.</p>
-<p>For this example, only 6 quantiles are bootstrapped for each model
-fit.</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">model_fits</span>, cr_bands <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<p><img src="analysis_normal_files/figure-html/unnamed-chunk-16-1.png" width="700"></p>
+<p>The bootstrap-based quantiles can also be directly calculated via the
+<code><a href="../reference/getBootstrapQuantiles.html">getBootstrapQuantiles()</a></code> function and a sample from the
+model fits can bootstrapped using
+<code><a href="../reference/getBootstrapSamples.html">getBootstrapSamples()</a></code>.</p>
+<p>For this example, only 10 samples are bootstrapped for each model
+fit.</p>
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">bootstrap_quantiles</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getBootstrapQuantiles.html">getBootstrapQuantiles</a></span><span class="op">(</span></span>
-<span>  model_fits <span class="op">=</span> <span class="va">fit</span>,</span>
+<span>  model_fits <span class="op">=</span> <span class="va">model_fits</span>,</span>
 <span>  quantiles  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.025</span>, <span class="fl">0.5</span>, <span class="fl">0.975</span><span class="op">)</span>,</span>
 <span>  doses      <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">2.5</span>, <span class="fl">4</span>, <span class="fl">5</span>, <span class="fl">7</span>, <span class="fl">10</span><span class="op">)</span>,</span>
-<span>  n_samples  <span class="op">=</span> <span class="fl">6</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<span>  n_samples  <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">reactable</span><span class="fu">::</span><span class="fu"><a href="https://glin.github.io/reactable/reference/reactable.html" class="external-link">reactable</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">bootstrap_quantiles</span> <span class="op">|&gt;</span></span>
 <span>      <span class="fu">tidyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_wider.html" class="external-link">pivot_wider</a></span><span class="op">(</span>names_from <span class="op">=</span> <span class="va">q_probs</span>, values_from <span class="op">=</span> <span class="va">q_values</span><span class="op">)</span>,</span>
@@ -702,7 +705,7 @@ fit.</p>
 <span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <div class="reactable html-widget html-fill-item" id="htmlwidget-ac96cb3ee4656e2e9ec3" style="width:auto;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-ac96cb3ee4656e2e9ec3">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"models":["avgFit","avgFit","avgFit","avgFit","avgFit","avgFit","betaMod","betaMod","betaMod","betaMod","betaMod","betaMod","emax","emax","emax","emax","emax","emax","exponential","exponential","exponential","exponential","exponential","exponential","linear","linear","linear","linear","linear","linear","logistic","logistic","logistic","logistic","logistic","logistic","quadratic","quadratic","quadratic","quadratic","quadratic","quadratic","sigEmax","sigEmax","sigEmax","sigEmax","sigEmax","sigEmax"],"doses":[0,2.5,4,5,7,10,0,2.5,4,5,7,10,0,2.5,4,5,7,10,0,2.5,4,5,7,10,0,2.5,4,5,7,10,0,2.5,4,5,7,10,0,2.5,4,5,7,10,0,2.5,4,5,7,10],"0.025":[-11.646189585536,-14.8730967832037,-15.7660294265364,-16.2100378072612,-16.4540198119135,-16.7710849560102,-11.6285938194733,-14.89671499343,-15.7514550354925,-16.1716880451265,-16.4080320920349,-16.8026462248597,-11.6416731799938,-15.0519897386315,-15.3344133331624,-15.550866582509,-16.0991670950034,-16.7710849560102,-13.1048205523731,-13.7162265099188,-14.1775923755691,-14.6183117856235,-15.6123003300297,-17.3069747631322,-12.8987600091255,-13.7170567287172,-14.3170853623399,-14.7964237537268,-15.7881787896257,-17.2771075870663,-11.6978621874408,-14.8798494656965,-15.5854248181771,-15.7526569067175,-16.2393322318676,-16.7397605460501,-11.7402800459507,-14.5762529110546,-15.788406675516,-16.2849643070493,-16.7162985468221,-16.8045386530233,-11.6270465036995,-14.8798494655928,-15.5754457398374,-15.7152278274876,-16.0566694491882,-16.7956172167185],"0.5":[-10.9202823032139,-14.7126596498369,-15.0960987106328,-15.4499552173286,-15.8164021260252,-15.4855813805411,-10.9325995682791,-14.7186319614732,-15.0345870944529,-15.3838594163641,-15.959167371651,-15.4421502225303,-10.9202823032139,-14.7883487564283,-15.0960987106328,-15.3866667981041,-15.6116135986728,-15.7795152789655,-12.5014584175372,-13.3013511582269,-13.9145597376767,-14.3561678762441,-15.134059462043,-16.4397896206514,-12.2978195437434,-13.3305241009571,-14.0516092426011,-14.5180391418358,-15.3185859278051,-16.5142211323903,-10.9282992011266,-14.7134209482901,-15.2115732841461,-15.5589727806986,-15.6948065791955,-15.7120054518532,-11.2903000312862,-13.9195436014136,-15.0813791563316,-15.6136584246432,-16.3488812329791,-15.4743484125352,-10.9195971424424,-14.7191318840764,-15.0388502737227,-15.379792911906,-15.6769439916178,-15.7785624277111],"0.975":[-10.3820708166082,-14.1547896707146,-14.8096569468348,-14.811831174205,-14.814318664009,-14.8161861451173,-10.3866179838481,-14.2072714827949,-14.9232914887433,-14.9280039084996,-14.8676464245048,-14.5906496026573,-10.3820708166082,-14.1547896707146,-14.8096569468348,-14.811831174205,-14.814318664009,-14.8161861451173,-12.3396633320667,-13.1009630408385,-13.5115768070746,-13.8013129136996,-14.4261120284161,-15.4886503690921,-12.0861424289856,-13.1043038936457,-13.5982930207673,-13.9266477344377,-14.5833571617786,-15.5684213027899,-10.3818583948437,-14.0291427540503,-14.8105947782323,-14.8105947782323,-14.8105947782323,-14.8105947782323,-10.6722375006769,-13.8574309440381,-14.7868524475166,-15.2272658092206,-15.614977466244,-14.5143503929904,-10.3817001951748,-14.2053521523091,-14.8105947782697,-14.8105947782809,-14.8105947782841,-14.8105947782845]},"columns":[{"id":"models","name":"models","type":"character"},{"id":"doses","name":"doses","type":"numeric","aggregate":"count","format":{"aggregated":{"suffix":" doses"}}},{"id":"0.025","name":"0.025","type":"numeric","aggregate":"mean","format":{"aggregated":{"prefix":"mean = ","digits":2},"cell":{"digits":4}}},{"id":"0.5","name":"0.5","type":"numeric","aggregate":"mean","format":{"aggregated":{"prefix":"mean = ","digits":2},"cell":{"digits":4}}},{"id":"0.975","name":"0.975","type":"numeric","aggregate":"mean","format":{"aggregated":{"prefix":"mean = ","digits":2},"cell":{"digits":4}}}],"groupBy":["models"],"dataKey":"b1e2fb461bd1c74cea90c36a5a977256"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script><p><strong>Technical note:</strong> The median quantile of the bootstrap
+<script type="application/json" data-for="htmlwidget-ac96cb3ee4656e2e9ec3">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"models":["avgFit","avgFit","avgFit","avgFit","avgFit","avgFit","betaMod","betaMod","betaMod","betaMod","betaMod","betaMod","emax","emax","emax","emax","emax","emax","exponential","exponential","exponential","exponential","exponential","exponential","linear","linear","linear","linear","linear","linear","logistic","logistic","logistic","logistic","logistic","logistic","quadratic","quadratic","quadratic","quadratic","quadratic","quadratic","sigEmax","sigEmax","sigEmax","sigEmax","sigEmax","sigEmax"],"doses":[0,2.5,4,5,7,10,0,2.5,4,5,7,10,0,2.5,4,5,7,10,0,2.5,4,5,7,10,0,2.5,4,5,7,10,0,2.5,4,5,7,10,0,2.5,4,5,7,10,0,2.5,4,5,7,10],"0.025":[-11.6302901658796,-15.6858061261757,-16.3066870094852,-16.8745956382321,-17.2990180654728,-16.5532814902111,-11.6523753385539,-15.7449308950415,-16.2250552435916,-16.5342650419179,-17.1004800399551,-16.4300093954382,-11.6406701113545,-15.6858061261757,-15.8331430516352,-16.0628100312915,-16.3979617850699,-16.6976749894879,-13.26138634169,-13.8524520681154,-14.3187359641631,-14.7631619128007,-15.7629193159779,-17.5222554328992,-13.0236689026523,-13.8627377376779,-14.4492089961939,-14.9564058765798,-15.990241643647,-17.586999879267,-11.6694195868588,-15.7017302740853,-16.4778429074477,-16.4778596037075,-16.4778596101737,-16.4778596101737,-11.7280984485472,-14.9260271871075,-16.3248278035262,-16.88546488815,-17.3850080504312,-16.3891686122107,-11.6517406142631,-15.6871708627604,-16.4582997085414,-16.4767312601921,-16.4788793066013,-16.4789540829117],"0.5":[-10.853542430396,-14.7685446998513,-15.6316760607189,-15.9510112171476,-16.0442342632704,-15.6587429759489,-10.7865959179375,-14.9246530832337,-15.7069185721711,-16.030673878634,-16.1759005953647,-15.4970279025871,-10.7852701023978,-15.1422488224923,-15.4674080202169,-15.566219289191,-15.6240771449872,-15.7662658651708,-12.6833141444265,-13.5195534024413,-14.1570625646601,-14.5016794606138,-15.1250737394192,-16.39196964373,-12.4345851875941,-13.5392603297307,-14.258904574245,-14.6459794802295,-15.2984549596098,-16.425854521947,-10.786595725371,-14.9246519297681,-15.6383964166777,-15.6383966040737,-15.6383966041157,-15.7499367653362,-10.9974598953367,-14.502957596046,-15.7811141527042,-16.2713349802568,-16.5982861019125,-15.4874149707007,-10.7865958025144,-14.9247331594856,-15.6376999242179,-15.638147268008,-15.6381992295378,-15.776054231315],"0.975":[-10.2578731001912,-13.6217672156534,-14.3409640112479,-14.5571974786829,-14.8404731479261,-14.46589080596,-10.2491284504874,-13.6447975083993,-14.3294518099114,-14.6951120473589,-15.086701258252,-14.4673789672073,-10.2439878149974,-13.6217672156534,-14.3409640112479,-14.5571974786829,-14.7832027121018,-14.9270195136408,-12.0136592961869,-12.8455397278342,-13.3337347460469,-13.6801435692752,-14.3568058501741,-15.4801257062753,-11.8197463984501,-12.8696456263286,-13.4410042764336,-13.8219100431703,-14.5122931666522,-15.5417255629236,-10.2468430308116,-13.4787460471657,-14.438265978616,-14.7494153321937,-14.8638870928926,-14.8651667662587,-10.615444021713,-13.3554228701519,-14.3594789542182,-14.8810340312239,-15.4407735705939,-14.46589080596,-10.2468358669656,-13.6463331177416,-14.3884232855655,-14.7002309517427,-14.8616339485292,-14.865166889868]},"columns":[{"id":"models","name":"models","type":"character"},{"id":"doses","name":"doses","type":"numeric","aggregate":"count","format":{"aggregated":{"suffix":" doses"}}},{"id":"0.025","name":"0.025","type":"numeric","aggregate":"mean","format":{"aggregated":{"prefix":"mean = ","digits":2},"cell":{"digits":4}}},{"id":"0.5","name":"0.5","type":"numeric","aggregate":"mean","format":{"aggregated":{"prefix":"mean = ","digits":2},"cell":{"digits":4}}},{"id":"0.975","name":"0.975","type":"numeric","aggregate":"mean","format":{"aggregated":{"prefix":"mean = ","digits":2},"cell":{"digits":4}}}],"groupBy":["models"],"dataKey":"13cad85357c7129ecd2f95eb7399483a"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script><p><strong>Technical note:</strong> The median quantile of the bootstrap
 based procedure is not necessary similar to the main model fit, as they
 are derived via different procedures.</p>
 <p>The main fit (black line) minimizes residuals for the posterior
@@ -710,15 +713,31 @@ distribution, while the bootstrap median is the median fit of random
 sampling.</p>
 </div>
 <div class="section level2">
-<h2 id="additional-note">Additional note<a class="anchor" aria-label="anchor" href="#additional-note"></a>
+<h2 id="assessment-of-the-minimally-efficacious-dose">Assessment of the Minimally Efficacious Dose<a class="anchor" aria-label="anchor" href="#assessment-of-the-minimally-efficacious-dose"></a>
 </h2>
-<p>Testing and modeling can also be combined via
-<code><a href="../reference/performBayesianMCPMod.html">performBayesianMCPMod()</a></code>, but this is not run here.</p>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<p>The Minimally Efficacious Dose (MED) per model shape can be assessed
+with the function <code><a href="../reference/getMED.html">getMED()</a></code>.</p>
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/getMED.html">getMED</a></span><span class="op">(</span>delta       <span class="op">=</span> <span class="fl">4</span>,</span>
+<span>       model_fits  <span class="op">=</span> <span class="va">model_fits</span>,</span>
+<span>       dose_levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">dose_levels</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">dose_levels</span><span class="op">)</span>, by <span class="op">=</span> <span class="fl">0.01</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">##             linear exponential emax sigEmax logistic betaMod quadratic avgFit</span></span>
+<span><span class="co">## med_reached      0           0 1.00    1.00      1.0    1.00      1.00   1.00</span></span>
+<span><span class="co">## med             NA          NA 4.88    5.25      3.8    5.01      4.59   4.86</span></span></code></pre>
+<p>For an optional Bayesian decision rule for the MED assessment and
+further details, please see <code>?getMED()</code>.</p>
+</div>
+<div class="section level2">
+<h2 id="additional-note">Additional Note<a class="anchor" aria-label="anchor" href="#additional-note"></a>
+</h2>
+<p>Testing, modeling, and MED assessment can also be combined via
+<code><a href="../reference/performBayesianMCPMod.html">performBayesianMCPMod()</a></code>:</p>
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/performBayesianMCPMod.html">performBayesianMCPMod</a></span><span class="op">(</span></span>
 <span>  posterior_list   <span class="op">=</span> <span class="va">posterior</span>,</span>
 <span>  contr            <span class="op">=</span> <span class="va">contr_mat</span>,</span>
 <span>  crit_prob_adj    <span class="op">=</span> <span class="va">crit_pval</span>,</span>
+<span>  delta            <span class="op">=</span> <span class="fl">4</span>,</span>
 <span>  simple           <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
