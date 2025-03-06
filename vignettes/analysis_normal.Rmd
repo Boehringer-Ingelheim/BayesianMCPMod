@@ -102,7 +102,7 @@ display_params_table <- function(named_list) {
 This vignette demonstrates the application of the BayesianMCPMod package for 
 analyzing a phase 2 dose-finding trial using the Bayesian MCPMod approach.
 
-A more general overview of the R package was provided with a [poster](https://github.com/Boehringer-Ingelheim/BayesianMCPMod/blob/80931dc20901e4880540bb477648d45c0cbe2549/PSI_Poster_2024.pdf) presented during the PSI 2024 Conference.
+A more general overview of the R package was provided with a [poster](https://github.com/Boehringer-Ingelheim/BayesianMCPMod/blob/f942d941cb9fc1c457717b71dd07363f0a7b8966/inst/PSI_Poster_2024.pdf) presented during the PSI 2024 Conference.
 
 # Calculation of a MAP prior
 
