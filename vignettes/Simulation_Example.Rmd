@@ -188,7 +188,7 @@ success_probabilities
 
 The assessment of the Minimally Efficacious Dose (MED) is integrated in the `assessDesign()` function via the arguments `delta` and `evidence_level`.
 If only the argument `delta` is provided, the estimated model shapes will be used to assess the MED.
-If both the arguments `delta` and `evidence_level` are provided, a Bayesian decision rule for the MED of the form
+If both the arguments `delta` and `evidence_level` are provided, a Bayesian decision rule of the form
 $$\widehat{\text{MED}} = \text{arg min}_{d\in\{d_1, \dots, d_k\}} \left\{ \text{Pr}\left(f(d, \hat\theta) - f(d_1, \hat\theta) > \Delta\right) > \gamma \right\}$$
 will be applied, see also `?getMED()`.
 The computational cost for the Bayesian decision rule within the `assessDesign()` function is rather high depending on the number of simulated trial outcomes, as the required quantiles need to be bootstrapped for each true model shape and each simulated outcome.
