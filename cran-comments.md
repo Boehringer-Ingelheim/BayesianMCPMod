@@ -53,8 +53,9 @@ Status: 1 NOTE
 
 ## BayesianMCPMod 1.1.0 (05-Mar-2025)
 
-- Fixed a bug in plot.modelFits() that would plot credible bands based on incorrectly selected bootstrapped quantiles.
-- Added getMED(), a function to assess the minimally efficacious dose (MED) and integrated getMED() into assessDesign().
-- Added parallel processing using the future framework.
-- Modified the handling of the fit of an average model: Now, getModelFits() has an argument to fit an average model and this will be carried forward for all subsequent functions.
-- Re-introduced getBootstrapSamples(), a separate function for bootstrapping samples from the posterior distributions of the dose levels.
+- Fixed a bug in plot.modelFits() that would plot credible bands based on incorrectly selected bootstrapped quantiles
+- Added getMED(), a function to assess the minimally efficacious dose (MED) and integrated getMED() into assessDesign() and performBayesianMCPMod
+- Added parallel processing using the future framework
+- Modified the handling of the fit of an average model: Now, getModelFits() has an argument to fit an average model and this will be carried forward for all subsequent functions
+- Re-introduced getBootstrapSamples(), a separate function for bootstrapping samples from the posterior distributions of the dose levels
+- Adapted the vignettes to new features

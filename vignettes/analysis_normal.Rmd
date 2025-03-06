@@ -17,9 +17,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-
-
-```{r, collapse=TRUE}
+```{r setup, collapse=TRUE}
 #| code-summary: setup
 #| code-fold: true
 #| message: false
@@ -99,12 +97,17 @@ display_params_table <- function(named_list) {
 
 # Introduction 
 
-This vignette demonstrates the application of the BayesianMCPMod package for 
+This vignette demonstrates the application of the `BayesianMCPMod` package for 
 analyzing a phase 2 dose-finding trial using the Bayesian MCPMod approach.
 
 A more general overview of the R package was provided with a [poster](https://github.com/Boehringer-Ingelheim/BayesianMCPMod/blob/f942d941cb9fc1c457717b71dd07363f0a7b8966/inst/PSI_Poster_2024.pdf) presented during the PSI 2024 Conference.
 
-# Calculation of a MAP prior
+This package makes use of the [future](https://cran.r-project.org/package=future) framework for parallel processing, which can be set up as follows:
+```{r}
+future::plan(future::multisession)
+```
+
+# Calculation of a MAP Prior
 
 In a first step, a meta analytic prior will be calculated using historical data from 4 trials with main endpoint Change from baseline in MADRS score after 8 weeks.
 Please note that only information from the control group will be integrated leading to an informative mixture prior for the control group, while for the active groups a non-informative prior will be specified.
@@ -316,14 +319,11 @@ knitr::kable(summary(posterior))
 
 # Bayesian MCPMod Test Step
 
-The testing step of Bayesian MCPMod is executed using a critical value on the 
-probability scale and a pseudo-optimal contrast matrix. 
+The testing step of Bayesian MCPMod is executed using a critical value on the probability scale and a pseudo-optimal contrast matrix. 
 
-The critical value is calculated using (re-estimated) contrasts for frequentist 
-MCPMod to ensure error control when using weakly-informative priors.
+The critical value is calculated using (re-estimated) contrasts for frequentist MCPMod to ensure error control when using weakly-informative priors.
 
-A pseudo-optimal contrast matrix is generated based on the variability of the 
-posterior distribution (see [@fleischer_2022] for more details).
+A pseudo-optimal contrast matrix is generated based on the variability of the posterior distribution (see [@fleischer_2022] for more details).
 
 ```{r}
 crit_pval <- getCritProb(
@@ -341,8 +341,7 @@ contr_mat <- getContr(
 ```
 
 Please note that there are different ways to derive the contrasts.
-The following code shows the implementation of some of these ways but it is not 
-executed and the contrast specification above is used.
+The following code shows the implementation of some of these ways but it is not executed and the contrast specification above is used.
 
 ```{r}
 #| eval: false
@@ -382,8 +381,7 @@ BMCP_result
 ```
 
 The testing step is significant, indicating a non-flat dose-response shape.
-All models are significant, with the `emax` model indicating the greatest deviation 
-from the null hypothesis.
+All models are significant, with the `emax` model indicating the greatest deviation from the null hypothesis.
 
 # Model Fitting and Visualization
 
@@ -391,24 +389,18 @@ In the model fitting step the posterior distribution is used as basis.
 
 Both simplified and full fitting are performed. 
 
-For the simplified fit, the multivariate normal distribution of the control group 
-is approximated and reduced by a one-dimensional normal distribution.
+For the simplified fit, the multivariate normal distribution of the control group is approximated and reduced by a one-dimensional normal distribution.
 
-The actual fit (on this approximated posterior distribution) is then performed 
-using generalized least squares criterion. In contrast, for the full fit, the 
-non-linear optimization problem is addressed via the Nelder-Mead algorithm 
-[@neldermead_2024a] implemented by the `{nloptr}` package.
+The actual fit (on this approximated posterior distribution) is then performed using generalized least squares criterion. In contrast, for the full fit, the non-linear optimization problem is addressed via the Nelder-Mead algorithm [@neldermead_2024a] implemented by the `{nloptr}` package.
 
-The output of the fit includes information about the predicted effects for the 
-included dose levels, the generalized AIC, and the corresponding weights.
+The output of the fit includes information about the predicted effects for the included dose levels, the generalized AIC, and the corresponding weights.
 
-For the considered case, the simplified and the full fit are very similar, so we
-present the full fit.
+For the considered case, the simplified and the full fit are very similar, so wepresent the full fit.
 
 ```{r}
 # If simple = TRUE, uses approx posterior
 # Here we use complete posterior distribution
-fit <- getModelFits(
+model_fits <- getModelFits(
   models      = mods,
   dose_levels = dose_levels,
   posterior   = posterior,
@@ -418,17 +410,16 @@ fit <- getModelFits(
 Estimates for dose levels not included in the trial:
 
 ```{r}
-display_params_table(stats::predict(fit, doses = c(0, 2.5, 4, 5, 7, 10)))
+display_params_table(stats::predict(model_fits, doses = c(0, 2.5, 4, 5, 7, 10)))
 ```
 
 Plots of fitted dose-response models and an AIC-based average model:
 
 ```{r}
-plot(fit)
+plot(model_fits)
 ```
 
-To assess the uncertainty, one can additionally visualize credible bands 
-(orange shaded areas, default levels are 50% and 95%).
+To assess the uncertainty, one can additionally visualize credible bands (orange shaded areas, default levels are 50% and 95%).
 
 These credible bands are calculated with a bootstrap method as follows:
 
@@ -438,24 +429,23 @@ simplified fitting step and a prediction is performed.
 - These predictions are then used to identify and visualize the specified quantiles.
 
 ```{r}
-plot(fit, cr_bands = TRUE)
+plot(model_fits, cr_bands = TRUE)
 ```
 
-The bootstrap based quantiles can also be directly calculated via the 
-`getBootstrapQuantiles()` function.
+The bootstrap-based quantiles can also be directly calculated via the 
+`getBootstrapQuantiles()` function and a sample from the model fits can bootstrapped using `getBootstrapSamples()`.
 
-For this example, only 6 quantiles are bootstrapped for each model fit.
+For this example, only 10 samples are bootstrapped for each model fit.
 
 ```{r}
 bootstrap_quantiles <- getBootstrapQuantiles(
-  model_fits = fit,
+  model_fits = model_fits,
   quantiles  = c(0.025, 0.5, 0.975),
   doses      = c(0, 2.5, 4, 5, 7, 10),
-  n_samples  = 6
-)
+  n_samples  = 10)
 ```
 
-```{r, collapse=TRUE}
+```{r, collapse = TRUE}
 #| code-fold: true
 reactable::reactable(
   data = bootstrap_quantiles |>
@@ -476,10 +466,19 @@ necessary similar to the main model fit, as they are derived via different proce
 The main fit (black line) minimizes residuals for the posterior distribution, 
 while the bootstrap median is the median fit of random sampling.
 
-# Additional note
+# Assessment of the Minimally Efficacious Dose
 
-Testing and modeling can also be combined via `performBayesianMCPMod()`, 
-but this is not run here.
+The Minimally Efficacious Dose (MED) per model shape can be assessed with the function `getMED()`.
+```{r}
+getMED(delta       = 4,
+       model_fits  = model_fits,
+       dose_levels = seq(min(dose_levels), max(dose_levels), by = 0.01))
+```
+For an optional Bayesian decision rule for the MED assessment and further details, please see `?getMED()`.
+
+# Additional Note
+
+Testing, modeling, and MED assessment can also be combined via `performBayesianMCPMod()`:
 
 ```{r}
 #| eval: false
@@ -487,5 +486,6 @@ performBayesianMCPMod(
   posterior_list   = posterior,
   contr            = contr_mat,
   crit_prob_adj    = crit_pval,
+  delta            = 4,
   simple           = FALSE)
 ```

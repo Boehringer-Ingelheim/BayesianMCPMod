@@ -97,18 +97,11 @@ plot.modelFits <- function (
       mod_weights <- sapply(model_fits, function (y) y$model_weight)[-length(model_names)]
 
       mod_weights <- sort(mod_weights, decreasing = TRUE)
-      paste_names <- names(mod_weights) |>
-        gsub("exponential", "exp", x = _) |>
-        gsub("quadratic",  "quad", x = _) |>
-        gsub("linear",      "lin", x = _) |>
-        gsub("logistic",    "log", x = _) |>
-        gsub("sigEmax",    "sigE", x = _) |>
-        gsub("betaMod",   "betaM", x = _) |>
-        gsub("quadratic",  "quad", x = _)
+      paste_names <- shortenModelNames(names(mod_weights))
 
       label_avg  <- paste0(paste_names, "=", round(mod_weights, 1),
                            collapse = ", ")
-      label_gAUC <- c(label_gAUC[-length(label_gAUC)], label_avg)
+      label_gAUC <- paste0(" ", c(label_gAUC[-length(label_gAUC)], label_avg))
 
     }
 
@@ -213,4 +206,19 @@ plot.modelFits <- function (
 
   return (plts)
 
+}
+
+shortenModelNames <- function (model_names) {
+  
+  model_names_out <- model_names |>
+    gsub("exponential", "exp", x = _) |>
+    gsub("quadratic",  "quad", x = _) |>
+    gsub("linear",      "lin", x = _) |>
+    gsub("logistic",    "log", x = _) |>
+    gsub("sigEmax",    "sigE", x = _) |>
+    gsub("betaMod",   "betaM", x = _) |>
+    gsub("quadratic",  "quad", x = _)
+  
+  return (model_names_out)
+  
 }

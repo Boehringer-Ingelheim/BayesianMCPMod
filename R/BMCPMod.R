@@ -507,6 +507,12 @@ getModelSuccesses <- function (b_mcp) {
 #'                       contr          = contr_mat,
 #'                       crit_prob_adj  = critVal,
 #'                       simple         = FALSE)
+#'                       
+#' performBayesianMCPMod(posterior_list = posterior_list,
+#'                       contr          = contr_mat,
+#'                       crit_prob_adj  = critVal,
+#'                       simple         = FALSE,
+#'                       delta          = 3)
 #'
 #' @return Bayesian MCP test result as well as modeling result.
 #'

@@ -25,7 +25,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r}
+```{r setup, collapse = TRUE}
 #| code-summary: setup
 #| code-fold: true
 #| message: false
@@ -38,16 +38,19 @@ library(dplyr)
 
 set.seed(7015)
 ```
+# Background and Data
 
-# Background and data
-
-In this vignette, we will show the use of the BayesianMCPMod R package for trial planning for continuously distributed data. 
+In this vignette, we will show the use of the `BayesianMCPMod` R package for trial planning for continuously distributed data. 
 As in the [analysis example vignette](analysis_normal.html), we focus on the indication MDD and make use of historical data that is included in the clinDR package. 
 More specifically, trial results for BRINTELLIX will be utilized to establish an informative prior for the control group.
 
 A more general overview of the R package was provided with a [poster](https://github.com/Boehringer-Ingelheim/BayesianMCPMod/blob/f942d941cb9fc1c457717b71dd07363f0a7b8966/inst/PSI_Poster_2024.pdf) presented during the PSI 2024 Conference.
 
-# Calculation of a MAP prior
+This package makes use of the [future](https://cran.r-project.org/package=future) framework for parallel processing, which can be set up as follows:
+```{r}
+future::plan(future::multisession)
+```
+# Calculation of a MAP Prior
 In a first step, a meta analytic predictive prior will be calculated using historical data from 5 trials with main endpoint Change from baseline in MADRS score after 8 weeks.
 Please note that only information from the control group will be integrated leading to an informative mixture prior for the control group, while for the active groups a non-informative prior will be specified.
 
@@ -66,7 +69,7 @@ hist_data <- data.frame(
 
 sd_tot <- with(hist_data, sum(sd * n) / sum(n))
 ```
-We will make use of the same getPriorList() function as in the [analysis example vignette](analysis_normal.html) to create a MAP prior.
+We will make use of the same `getPriorList()` function as in the [analysis example vignette](analysis_normal.html) to create a MAP prior.
 ```{r Setting Prior without execution, eval = FALSE}
 dose_levels <- c(0, 2.5, 5, 10, 20)
 
@@ -103,7 +106,7 @@ prior_list  <- list(
 )
 ```
 
-# Specification of new trial design 
+# Specification of the New Trial Design 
 
 For the hypothetical new trial, we plan with 4 active dose levels \eqn{2.5, 5, 10, 20} and we specify a broad set of potential dose-response relationships, including a linear, an exponential, an emax and 2 sigEMAX models.  
 Furthermore, we assume a maximum effect of -3 on top of control (i.e. assuming that active treatment can reduce the MADRS score after 8 weeks by up to 15.8) and plan a trial with 80 patients for all active groups and 60 patients for control.
@@ -141,7 +144,7 @@ mods <- DoseFinding::Mods(
 n_patients <- c(60, 80, 80, 80, 80)
 ```
 
-# Calculation of success probabilities
+# Calculation of the Success Probabilities
 
 To calculate success probabilities for the different assumed dose-response models and the specified trial design we will apply the assessDesign function. 
 For illustration purposes, the number of simulated trial results is reduced to 100 in this example.
@@ -168,7 +171,7 @@ success_probabilities_uneq
 
 For this specific trial setting the adapted allocation ratio leads to increased success probabilities under all assumed dose response relationships.
 
-Instead of specifying the assumed effects via the models it is also possible to directly specify the effects for the individual dose levels via the dr_means input.
+Instead of specifying the assumed effects via the models, it is also possible to directly specify the effects for the individual dose levels via the dr_means input.
 This allows e.g. also the simulation of scenarios with a prior-data conflict.
 ```{r}
 success_probabilities <- assessDesign(
@@ -179,4 +182,24 @@ success_probabilities <- assessDesign(
   dr_means    = c(-12, -14, -15, -16, -17),
   n_sim       = 100) # speed up example run-time
 success_probabilities
+```
+
+# Assessment of the Minimally Efficacious Dose
+
+The assessment of the Minimally Efficacious Dose (MED) is integrated in the `assessDesign()` function via the arguments `delta` and `evidence_level`.
+If only the argument `delta` is provided, the estimated model shapes will be used to assess the MED.
+If both the arguments `delta` and `evidence_level` are provided, a Bayesian decision rule for the MED of the form
+$$\widehat{\text{MED}} = \text{arg min}_{d\in\{d_1, \dots, d_k\}} \left\{ \text{Pr}\left(f(d, \hat\theta) - f(d_1, \hat\theta) > \Delta\right) > \gamma \right\}$$
+will be applied, see also `?getMED()`.
+The computational cost for the Bayesian decision rule within the `assessDesign()` function is rather high depending on the number of simulated trial outcomes, as the required quantiles need to be bootstrapped for each true model shape and each simulated outcome.
+Thus, using the  is only recommended when using parallel computing.
+```{r}
+success_probabilities_med <- assessDesign(
+  n_patients  = c(60, 80, 80, 80, 80),
+  mods        = mods,
+  prior_list  = prior_list,
+  sd          = sd_tot,
+  delta       = 2,
+  n_sim       = 100) # speed up example run-time
+success_probabilities_med
 ```

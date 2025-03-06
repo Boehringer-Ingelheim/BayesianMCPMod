@@ -12,31 +12,46 @@ print.BayesianMCPMod <- function (
   
   if (any(!is.na(attr(x, "MED")))) {
     
-    i = 1
-    while (is.null(x$Mod[[i]])) {
-      i <- i + 1
+    sign_indx <- as.logical(x$BayesianMCP[, "sign"])
+    med_info  <- attr(x, "MED")
+    
+    cat("MED Assessment\n")
+    cat("  Selection Method:   ", attr(x, "MEDSelection"), "\n")
+    cat("  Identification Rate:", mean(med_info[, "med_reached"]), "\n")
+    
+    if (!any(sign_indx)) {
+      
+      cat("    No model shapes are significant.")
+      
+    } else {
+      
+      # Frequency of Test not passed
+      freq_not_passed <- 1 - mean(sign_indx)
+      
+      # Frequency of MED not reached in passed tests
+      freq_not_reached <- mean(as.numeric(!med_info[, "med_reached"]) * as.numeric(sign_indx))
+      
+      # MED Dose Frequencies
+      dose_levels   <- x$Mod[[which(sign_indx)[1]]][[1]]$dose_levels[-1]
+      med_table     <- table(factor(med_info[, "med"], levels = dose_levels), useNA = "no")
+      
+      med_vec       <- as.vector(med_table) / nrow(med_info)
+      med_vec_names <- names(med_table)
+      
+      print_width <- max(nchar(med_vec), nchar(med_vec_names), na.rm = TRUE)
+      
+      cat("   Dose Level:", format(med_vec_names, width = print_width, justify = "right"), "\n")
+      cat("   MED Freq:  ", format(med_vec, width = print_width), "\n")
+      cat("  MED not reached Freq:       ", freq_not_reached, "\n")
+      cat("  No success in MCP step Freq:", freq_not_passed)
+      
     }
-    dose_levels <- x$Mod[[i]]$linear$dose_levels[-1]
-    rm(i)
-    
-    med_info <- attr(x, "MED")
-    
-    med_table      <- table(factor(med_info[, "med"], levels = dose_levels), useNA = "always")
-    med_vec        <- as.vector(med_table)
-    med_vec_names <- names(med_table)
-    
-    print_width <- max(nchar(med_vec), nchar(med_vec_names), na.rm = TRUE) + 2
-    
-    cat("MED Dose Frequencies\n")
-    cat("  Selection Method:    ", attr(x, "MEDSelection"), "\n")
-    cat("  Identification Rate: ", mean(med_info[, "med_reached"]), "\n")
-    
-    cat(" ", format(med_vec_names, width = print_width, justify = "right"), "\n")
-    cat(" ", format(med_vec, width = print_width))
     
   }
   
   cat("\n")
+  
+  invisible(x)
 
 }
 
@@ -44,35 +59,38 @@ print.BayesianMCPMod <- function (
 
 #' @export
 print.BayesianMCP <- function(x, ...) {
-  #cat("Bayesian Multiple Comparison Procedure\n\n")
+
   n_sim <- nrow(x)
-  #cat("Effective Sample Size (ESS) per Dose Group:\n")
-  #print(attr(x, "ess_avg"), row.names = FALSE)
-  #cat("\n")
+
   cat("Bayesian Multiple Comparison Procedure\n")
 
   if (n_sim == 1L) {
 
-    cat("Summary:\n")
-    cat("  Sign:", x[1, "sign"], "\n")
-    cat("  Critical Probability:", x[1, "crit_prob_adj"], "\n")
-    cat("  Maximum Posterior Probability:", x[1, "max_post_prob"], "\n\n")
+    cat("  Significant:                  ", x[1, "sign"], "\n")
+    cat("  Critical Probability:         ", x[1, "crit_prob_adj"], "\n")
+    cat("  Maximum Posterior Probability:", x[1, "max_post_prob"], "\n")
     
-    attr(x, "critProbAdj") <- NULL
-    attr(x, "successRate") <- NULL
-    class(x)               <- NULL
+    # attr(x, "critProbAdj") <- NULL
+    # attr(x, "successRate") <- NULL
+    # class(x)               <- NULL
     cat("Posterior Probabilities for Model Shapes:\n")
     model_probs <- x[1, grep("^post_probs\\.", colnames(x))]
     model_names <- gsub("post_probs\\.", "", names(model_probs))
     model_df <- data.frame(Model = model_names, Probability = unlist(model_probs))
     print(model_df, row.names = FALSE)
-    
-   # print.default(x, ...)
 
     if (any(!is.na(attr(x, "essAvg")))) {
 
       cat("Average Posterior ESS\n")
-      print(attr(x, "essAvg"), ...)
+      # print(attr(x, "essAvg"), ...)
+      
+      ess_vec       <- as.vector(attr(x, "essAvg"))
+      ess_vec_names <- names(attr(x, "essAvg"))
+      
+      print_width <- max(nchar(ess_vec), nchar(ess_vec_names), na.rm = TRUE)
+      
+      cat("  Dose Level:  ", format(ess_vec_names, width = print_width, justify = "right"), "\n")
+      cat("  Avg Post ESS:", format(ess_vec, width = print_width), "\n")
 
     }
 
@@ -80,12 +98,16 @@ print.BayesianMCP <- function(x, ...) {
 
     model_successes <- getModelSuccesses(x)
 
-    cat("  Estimated Success Rate: ", attr(x, "successRate"), "\n")
-    cat("  N Simulations:          ", n_sim)
-
-    cat("\n")
-    cat("Model Significance Frequencies\n")
-    print(model_successes, ...)
+    cat("  Estimated Success Rate:", attr(x, "successRate"), "\n")
+    cat("  N Simulations:         ", n_sim, "\n")
+    
+    m_succ       <- as.vector(model_successes)
+    m_succ_names <- shortenModelNames(names(model_successes))
+    
+    print_width <- max(nchar(m_succ), nchar(m_succ_names), na.rm = TRUE)
+    
+    cat("   Model Shape:      ", format(m_succ_names, width = print_width, justify = "right"), "\n")
+    cat("   Significance Freq:", format(m_succ, width = print_width), "\n")
 
   }
 
