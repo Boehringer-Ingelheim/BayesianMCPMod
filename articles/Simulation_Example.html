@@ -329,8 +329,8 @@ in the <code><a href="../reference/assessDesign.html">assessDesign()</a></code> 
 <code>delta</code> and <code>evidence_level</code>. If only the argument
 <code>delta</code> is provided, the estimated model shapes will be used
 to assess the MED. If both the arguments <code>delta</code> and
-<code>evidence_level</code> are provided, a Bayesian decision rule for
-the MED of the form
+<code>evidence_level</code> are provided, a Bayesian decision rule of
+the form
 <math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mtext mathvariant="normal">MED</mtext><mo accent="true">̂</mo></mover><mo>=</mo><msub><mtext mathvariant="normal">arg min</mtext><mrow><mi>d</mi><mo>∈</mo><mo stretchy="false" form="prefix">{</mo><msub><mi>d</mi><mn>1</mn></msub><mo>,</mo><mi>…</mi><mo>,</mo><msub><mi>d</mi><mi>k</mi></msub><mo stretchy="false" form="postfix">}</mo></mrow></msub><mrow><mo stretchy="true" form="prefix">{</mo><mtext mathvariant="normal">Pr</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>f</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>d</mi><mo>,</mo><mover><mi>θ</mi><mo accent="true">̂</mo></mover><mo stretchy="true" form="postfix">)</mo></mrow><mo>−</mo><mi>f</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>d</mi><mn>1</mn></msub><mo>,</mo><mover><mi>θ</mi><mo accent="true">̂</mo></mover><mo stretchy="true" form="postfix">)</mo></mrow><mo>&gt;</mo><mi>Δ</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>&gt;</mo><mi>γ</mi><mo stretchy="true" form="postfix">}</mo></mrow></mrow><annotation encoding="application/x-tex">\widehat{\text{MED}} = \text{arg min}_{d\in\{d_1, \dots, d_k\}} \left\{ \text{Pr}\left(f(d, \hat\theta) - f(d_1, \hat\theta) &gt; \Delta\right) &gt; \gamma \right\}</annotation></semantics></math>
 will be applied, see also <code>?getMED()</code>. The computational cost
 for the Bayesian decision rule within the <code><a href="../reference/assessDesign.html">assessDesign()</a></code>
