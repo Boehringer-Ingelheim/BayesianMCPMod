@@ -51,7 +51,7 @@ Status: 1 NOTE
    
 ## From NEWS.md
 
-## BayesianMCPMod 1.1.0 (05-Mar-2025)
+## BayesianMCPMod 1.1.0 (07-Mar-2025)
 
 - Fixed a bug in plot.modelFits() that would plot credible bands based on incorrectly selected bootstrapped quantiles
 - Added getMED(), a function to assess the minimally efficacious dose (MED) and integrated getMED() into assessDesign() and performBayesianMCPMod

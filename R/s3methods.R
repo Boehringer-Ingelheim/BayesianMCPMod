@@ -21,8 +21,6 @@ printMatrixWithPrefix <- function (
   row_names <- rownames(mat)
   col_names <- colnames(mat)
   
-  # stopifnot(!is.null(col_names))
-  
   if (!is.null(row_names)) {
     
     if (!is.null(col_names)) {
@@ -40,8 +38,9 @@ printMatrixWithPrefix <- function (
   
   if (!is.null(col_names)) {
     
-    cat(prefix, format(col_names, width = print_width, justify = "right"), "\n",
-        sep = "")
+    cat(prefix)
+    cat(format(col_names, width = print_width, justify = "right"))
+    cat("\n")
     
   }
   
@@ -86,12 +85,12 @@ shortenModelNames <- function (model_names, pad_string = FALSE) {
 
 #' @export
 print.BayesianMCPMod <- function (
-
+    
   x,
   ...
-
+  
 ) {
-
+  
   print(x$BayesianMCP, ...)
   
   if (any(!is.na(attr(x, "MED")))) {
@@ -119,15 +118,14 @@ print.BayesianMCPMod <- function (
       dose_levels   <- x$Mod[[which(sign_indx)[1]]][[1]]$dose_levels[-1]
       med_table     <- table(factor(med_info[, "med"], levels = dose_levels), useNA = "no")
       
-      # printMatrixWithPrefix()
+      med_mat <- matrix(data  = c(as.numeric(names(med_table)),
+                                  as.vector(med_table) / nrow(med_info)),
+                        nrow  = 2,
+                        byrow = TRUE)
+      rownames(med_mat) <- c("Dose Level:", "MED Freq:")
       
-      med_vec       <- as.vector(med_table) / nrow(med_info)
-      med_vec_names <- names(med_table)
+      printMatrixWithPrefix(med_mat, prefix = "   ")
       
-      print_width <- max(nchar(med_vec), nchar(med_vec_names), na.rm = TRUE)
-      
-      cat("   Dose Level:", format(med_vec_names, width = print_width, justify = "right"), "\n")
-      cat("   MED Freq:  ", format(med_vec, width = print_width), "\n")
       cat("  MED not reached Freq:       ", freq_not_reached, "\n")
       cat("  No success in MCP step Freq:", freq_not_passed, "\n")
       
@@ -142,20 +140,20 @@ print.BayesianMCPMod <- function (
   }
   
   invisible(x)
-
+  
 }
 
 ## BayesianMCP --------------------------------------------
 
 #' @export
 print.BayesianMCP <- function(x, ...) {
-
+  
   n_sim <- nrow(x)
-
+  
   cat("Bayesian Multiple Comparison Procedure\n")
-
+  
   if (n_sim == 1L) {
-
+    
     cat("  Significant:                  ", x[1, "sign"], "\n")
     cat("  Critical Probability:         ", x[1, "crit_prob_adj"], "\n")
     cat("  Maximum Posterior Probability:", x[1, "max_post_prob"], "\n")
@@ -165,17 +163,18 @@ print.BayesianMCP <- function(x, ...) {
     model_probs <- x[1, grep("^post_probs\\.", colnames(x))]
     model_mat   <- matrix(
       data     = model_probs,
-      ncol     = 1,
-      dimnames = list(shortenModelNames(gsub(
-        pattern     = "post_probs\\.",
-        replacement = "",
-        x           = names(model_probs))),
-        "Post Prob"))
-
+      nrow     = 1,
+      dimnames = list(
+        "Posterior Prob",
+        shortenModelNames(gsub(
+          pattern     = "post_probs\\.",
+          replacement = "",
+          x           = names(model_probs)))))
+    
     printMatrixWithPrefix(model_mat)
-
+    
     if (any(!is.na(attr(x, "essAvg")))) {
-
+      
       cat("Average Posterior ESS\n")
       
       ess_vec       <- as.vector(attr(x, "essAvg"))
@@ -185,26 +184,26 @@ print.BayesianMCP <- function(x, ...) {
       
       cat("  Dose Level:  ", format(ess_vec_names, width = print_width, justify = "right"), "\n")
       cat("  Avg Post ESS:", format(ess_vec, width = print_width), "\n")
-
+      
     }
-
+    
   } else {
-
+    
     model_successes <- getModelSuccesses(x)
-
+    
     cat("  Estimated Success Rate:", attr(x, "successRate"), "\n")
     cat("  N Simulations:         ", n_sim, "\n")
     
     m_succ       <- as.vector(model_successes)
     m_succ_names <- shortenModelNames(names(model_successes))
     
-    print_width <- max(nchar(m_succ), nchar(m_succ_names), na.rm = TRUE)
+    print_width  <- max(nchar(m_succ), nchar(m_succ_names), na.rm = TRUE)
     
     cat("   Model Shape:      ", format(m_succ_names, width = print_width, justify = "right"), "\n")
     cat("   Significance Freq:", format(m_succ, width = print_width), "\n")
-
+    
   }
-
+  
   invisible(x)
   
 }
@@ -239,17 +238,17 @@ print.BayesianMCP <- function(x, ...) {
 #'
 #' @export
 predict.modelFits <- function (
-
+    
   object,
   doses = NULL,
   ...
-
+  
 ) {
   
   model_fits  <- object
   
   model_names <- names(model_fits)
-
+  
   predictions <- lapply(model_fits[model_names != "avgFit"],
                         predictModelFit, doses = doses)
   
@@ -261,36 +260,36 @@ predict.modelFits <- function (
   }
   
   attr(predictions, "doses") <- doses
-
+  
   return (predictions)
-
+  
 }
 
 #' @export
 print.modelFits <- function (
-
+    
   x,
   n_digits = 1,
   ...
-
+  
 ) {
-
+  
   dose_levels <- x[[1]]$dose_levels
   dose_names  <- names(attr(x, "posterior"))
-
+  
   predictions <- t(sapply(x, function (y) y$pred_values))
   colnames(predictions) <- dose_names
-
+  
   out_table <- data.frame(predictions,
                           mEff = sapply(x, function (y) y$max_effect),
                           gAIC = sapply(x, function (y) y$gAIC),
                           w    = sapply(x, function (y) y$model_weight))
-
+  
   if (!is.null(x[[1]]$significant)) {
-
+    
     model_sig      <- TRUE
     out_table$Sign <- sapply(x, function (y) y$significant)
-
+    
   } else {
     
     model_sig <- FALSE
@@ -299,7 +298,7 @@ print.modelFits <- function (
   
   out_table   <- apply(as.matrix(out_table), 2, round, digits = n_digits)
   model_names <- setdiff(shortenModelNames(names(x), pad_string = TRUE), "avgFit")
-
+  
   cat("Model Coefficients\n")
   for (i in seq_along(model_names)) {
     
@@ -315,7 +314,7 @@ print.modelFits <- function (
           sep = " ")
       
     }
-
+    
   }
   cat("Dose Levels\n", "", # "" is required for proper indentation
       paste(dose_names, round(dose_levels, n_digits),
@@ -338,7 +337,7 @@ print.modelFits <- function (
   printMatrixWithPrefix(out_table)
   
   invisible(x)
-
+  
 }
 
 ## plot.ModelFits()
@@ -348,56 +347,56 @@ print.modelFits <- function (
 
 #' @export
 summary.postList <- function (
-
+    
   object,
   ...
-
+  
 ) {
-
+  
   summary_list        <- lapply(object, summary, ...)
   names(summary_list) <- names(object)
   summary_tab         <- do.call(rbind, summary_list)
-
+  
   return (summary_tab)
-
+  
 }
 
 #' @export
 print.postList <- function (
-
+    
   x,
   ...
-
+  
 ) {
-
+  
   getMaxDiff <- function (
-
+    
     medians
-
+    
   ) {
-
+    
     diffs <- medians - medians[1]
-
+    
     max_diff       <- max(diffs)
     max_diff_level <- which.max(diffs) - 1
-
+    
     out <- c(max_diff, max_diff_level)
     names(out) <- c("max_diff", "DG")
-
+    
     return (out)
-
+    
   }
-
+  
   summary_tab <- summary.postList(x)
-
+  
   names(x) <- rownames(summary_tab)
   class(x) <- NULL
-
+  
   list_out <- list(summary_tab, getMaxDiff(summary_tab[, 4]), x)
   names(list_out) <- c("Summary of Posterior Distributions",
                        "Maximum Difference to Control and Dose Group",
                        "Posterior Distributions")
-
+  
   print(list_out, ...)
-
+  
 }

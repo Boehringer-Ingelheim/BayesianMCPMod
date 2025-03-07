@@ -98,29 +98,29 @@ addSignificance <- function (
 #'
 #' @export
 assessDesign <- function (
-
+    
   n_patients,
   mods,
   prior_list,
-
+  
   sd,
-
+  
   n_sim          = 1e3,
   alpha_crit_val = 0.05,
   modeling       = FALSE,
   simple         = TRUE,
   avg_fit        = TRUE,
   reestimate     = FALSE,
-
+  
   contr          = NULL,
   dr_means       = NULL,
   
   delta          = NULL,
   evidence_level = NULL,
   med_selection  = c("avgFit", "bestFit")
-
+  
 ) {
-
+  
   checkmate::assert_vector(n_patients, len = length(attr(mods, "doses")), any.missing = FALSE)
   checkmate::assert_double(n_patients, lower = 2, upper = Inf)
   checkmate::check_class(mods, classes = "Mods")
@@ -129,13 +129,13 @@ assessDesign <- function (
   checkmate::check_double(n_sim, lower = 1, upper = Inf)
   checkmate::check_double(alpha_crit_val, lower = 0, upper = 1)
   checkmate::check_logical(modeling)
-
+  
   # TODO: check that prior_list has 'sd_tot' attribute, and that it's numeric # this is not applicable at the moment
   
   modeling <- ifelse(!is.null(delta), TRUE, modeling)
   
   dose_levels <- attr(mods, "doses")
-
+  
   data <- simulateData(
     n_patients  = n_patients,
     dose_levels = dose_levels,
@@ -143,44 +143,44 @@ assessDesign <- function (
     mods        = mods,
     n_sim       = n_sim,
     dr_means    = dr_means)
-
+  
   model_names <- colnames(data)[-c(1:3)]
-
+  
   crit_prob_adj <- getCritProb(
     mods           = mods,
     dose_levels    = dose_levels,
     dose_weights   = n_patients,
     alpha_crit_val = alpha_crit_val)
-
+  
   if (!reestimate & is.null(contr)) {
-
+    
     contr <- getContr(
       mods           = mods,
       dose_levels    = dose_levels,
       dose_weights   = n_patients,
       prior_list     = prior_list)
-
+    
   }
-
+  
   eval_design <- lapply(model_names, function (model_name) {
-
+    
     posterior_list <- getPosterior(
       data       = getModelData(data, model_name),
       prior_list = prior_list)
-
+    
     if (reestimate & is.null(contr)) {
-
+      
       post_sds <- sapply(posterior_list, function (post) summary(post)[, 2])
-
+      
       contr <- apply(post_sds, 2, function (post_sd) getContr(
         mods           = mods,
         dose_levels    = dose_levels,
         sd_posterior   = post_sd))
-
+      
     }
-
+    
     if (modeling) {
-
+      
       b_mcp_mod <- performBayesianMCPMod(
         posterior_list = posterior_list,
         contr          = contr,
@@ -191,18 +191,18 @@ assessDesign <- function (
         evidence_level = evidence_level,
         med_selection  = med_selection,
         n_samples      = n_sim)
-
+      
     } else {
-
+      
       b_mcp <- performBayesianMCP(
         posterior_list = posterior_list,
         contr          = contr,
         crit_prob_adj  = crit_prob_adj)
-
+      
     }
-
+    
   })
-
+  
   avg_success_rate <- mean(sapply(eval_design, function (x) {
     
     ifelse(identical(modeling, FALSE),
@@ -212,7 +212,7 @@ assessDesign <- function (
   }))
   
   names(eval_design) <- model_names
-
+  
   attr(eval_design, "avgSuccessRate") <- avg_success_rate
   attr(eval_design, "placEff")        <- ifelse(test = is.null(dr_means),
                                                 yes  = attr(mods, "placEff"),
@@ -222,9 +222,9 @@ assessDesign <- function (
                                                 no   = diff(range(dr_means)))
   attr(eval_design, "sampleSize")     <- n_patients
   attr(eval_design, "priorESS")       <- round(getESS(prior_list), 1)
-
+  
   return (eval_design)
-
+  
 }
 
 BayesMCPi <- function (
@@ -273,7 +273,7 @@ BayesMCPi <- function (
 #' @title getContr
 #'
 #' @description This function calculates contrast vectors that are optimal for detecting certain alternatives via applying the function optContr() of the DoseFinding package.
-#' Hereby 4 different options can be distinguished that are automatically executed based on the input that is provided
+#' Hereby, 4 different options can be distinguished that are automatically executed based on the input that is provided
 #' 1) Bayesian approach: If dose_weights and a prior_list are provided an optimized contrasts for the posterior sample size is calculated.
 #'    In detail,  in a first step the dose_weights (typically the number of patients per dose group) and the prior information is combined by calculating for
 #'    each dose group a posterior effective sample. Based on this posterior effective sample sizes the allocation ratio is derived, which allows for a calculation on
@@ -297,7 +297,6 @@ BayesMCPi <- function (
 #' dose_levels  <- c(0, 0.5, 2, 4, 8)
 #' mods <- DoseFinding::Mods(
 #'   linear      = NULL,
-#'   linlog      = NULL,
 #'   emax        = c(0.5, 1.2),
 #'   exponential = 2,
 #'   doses       = dose_levels,
@@ -313,76 +312,76 @@ BayesMCPi <- function (
 #'
 #' @export
 getContr <- function (
-
+    
   mods,
   dose_levels,
   dose_weights = NULL,
   prior_list   = NULL,
   sd_posterior = NULL,
   se_new_trial = NULL
-
+  
 ) {
-
+  
   checkmate::check_class(mods, classes = "Mods")
   checkmate::check_double(dose_levels, lower = 0, any.missing = FALSE, len = length(attr(mods, "doses")))
   checkmate::check_double(dose_weights, any.missing = FALSE, len = length(attr(mods, "doses")))
   checkmate::check_list(prior_list, names = "named", len = length(attr(mods, "doses")), any.missing = FALSE)
-
+  
   # frequentist & re-estimation
   if (!is.null(se_new_trial) &
       is.null(dose_weights) & is.null(prior_list) & is.null(sd_posterior)) {
-
+    
     w <- NULL
     S <- diag((se_new_trial)^2)
-
+    
     # frequentist & no re-estimation
   } else if (!is.null(dose_weights) &
              is.null(se_new_trial) & is.null(prior_list) & is.null(sd_posterior)) {
-
+    
     w <- dose_weights
     S <- NULL
-
+    
     # Bayesian & re-estimation
   } else if (!is.null(sd_posterior) &
              is.null(se_new_trial) & is.null(prior_list) & is.null(dose_weights)) {
-
+    
     w <- NULL
     S <- diag((sd_posterior)^2)
-
+    
     # Bayesian & no re-estimation
   } else if (!is.null(dose_weights) & !is.null(prior_list) &
              is.null(se_new_trial) & is.null(sd_posterior)) {
-
+    
     w <- dose_weights +
       suppressMessages(round(unlist(lapply(prior_list, RBesT::ess))))
     S <- NULL
-
+    
   } else {
-
+    
     stop (paste("Provided combiations of 'se_new_trial',",
                 "'dose_weights', 'prior_list', 'sd_posterior' not allowed.",
                 "See ?getContr for allowed combinations."))
-
+    
   }
-
+  
   if (is.null(w)) {
-
+    
     contr <- DoseFinding::optContr(
       models = mods,
       doses  = dose_levels,
       S      = S)
-
+    
   } else {
-
+    
     contr <- DoseFinding::optContr(
       models = mods,
       doses  = dose_levels,
       w      = w)
-
+    
   }
-
+  
   return (contr)
-
+  
 }
 
 #' @title getCritProb
@@ -403,7 +402,6 @@ getContr <- function (
 #'
 #' @examples
 #' mods <- DoseFinding::Mods(linear      = NULL,
-#'                           linlog      = NULL,
 #'                           emax        = c(0.5, 1.2),
 #'                           exponential = 2,
 #'                           doses       = c(0, 0.5, 2,4, 8))
@@ -417,33 +415,33 @@ getContr <- function (
 #'
 #' @export
 getCritProb <- function (
-
+    
   mods,
   dose_levels,
   dose_weights   = NULL,
   se_new_trial   = NULL,
   alpha_crit_val = 0.025
-
+  
 ) {
-
+  
   checkmate::check_class(mods, classes = "Mods")
   checkmate::check_double(dose_levels, lower = 0, any.missing = FALSE, len = length(dose_weights))
   checkmate::check_double(dose_weights, any.missing = FALSE, len = length(dose_levels))
   checkmate::check_double(alpha_crit_val, lower = 0, upper = 1)
-
+  
   contr <- getContr(mods           = mods,
                     dose_levels    = dose_levels ,
                     dose_weights   = dose_weights,
                     se_new_trial   = se_new_trial)
-
+  
   crit_prob <- stats::pnorm(DoseFinding::critVal(
     corMat      = contr$corMat,
     alpha       = alpha_crit_val,
     df          = 0,
     alternative = "one.sided"))
-
+  
   return (crit_prob)
-
+  
 }
 
 getModelSuccesses <- function (b_mcp) {
@@ -501,7 +499,8 @@ getModelSuccesses <- function (b_mcp) {
 #' posterior_list <- getPosterior(
 #'   prior_list = prior_list,
 #'   mu_hat     = mu,
-#'   S_hat     = S_hat)
+#'   S_hat      = S_hat,
+#'   calc_ess   = TRUE)
 #'                       
 #' performBayesianMCPMod(posterior_list = posterior_list,
 #'                       contr          = contr_mat,
@@ -513,7 +512,7 @@ getModelSuccesses <- function (b_mcp) {
 #'
 #' @export
 performBayesianMCPMod <- function (
-
+    
   posterior_list,
   contr,
   crit_prob_adj,
@@ -524,9 +523,9 @@ performBayesianMCPMod <- function (
   evidence_level = NULL,
   med_selection  = c("avgFit", "bestFit"),
   n_samples      = 1e3
-
+  
 ) {
-
+  
   checkmate::check_class(posterior_list, "postList")
   checkmate::check_class(contr, "optContr")
   checkmate::check_class(crit_prob_adj, "numeric")
@@ -546,29 +545,29 @@ performBayesianMCPMod <- function (
     stopifnot("delta must not be NULL if evidence_level is not NULL" = !is.null(delta))
     
   }
-
+  
   if (inherits(posterior_list,  "postList")) {
-
+    
     posterior_list <- list(posterior_list)
-
+    
   }
-
+  
   if (inherits(contr, "optContr")) {
-
+    
     model_names <- colnames(contr$contMat)
     dose_levels <- as.numeric(rownames(contr$contMat))
-
+    
   } else if (length(contr) == length(posterior_list)) {
-
+    
     model_names <- colnames(contr[[1]]$contMat)
     dose_levels <- as.numeric(rownames(contr[[1]]$contMat))
-
+    
   } else {
-
+    
     stop ("Argument 'contr' must be of type 'optContr'")
-
+    
   }
-
+  
   b_mcp <- performBayesianMCP(
     posterior_list = posterior_list,
     contr          = contr,
@@ -581,7 +580,7 @@ performBayesianMCPMod <- function (
     dose_levels    = dose_levels,
     simple         = simple,
     avg_fit        = avg_fit)
-
+  
   b_mcp_mod <- list(BayesianMCP = b_mcp, Mod = b_mod)
   
   if (get_med) {
@@ -636,9 +635,9 @@ performBayesianMCPMod <- function (
   }
   
   class(b_mcp_mod) <- "BayesianMCPMod"
-
+  
   return (b_mcp_mod)
-
+  
 }
 
 #' @title performBayesianMCP
@@ -653,7 +652,6 @@ performBayesianMCPMod <- function (
 #'
 #' @examples
 #' mods <- DoseFinding::Mods(linear      = NULL,
-#'                           linlog      = NULL,
 #'                           emax        = c(0.5, 1.2),
 #'                           exponential = 2,
 #'                           doses       = c(0, 0.5, 2,4, 8))
@@ -678,7 +676,8 @@ performBayesianMCPMod <- function (
 #' posterior_list <- getPosterior(
 #'   prior_list = prior_list,
 #'   mu_hat     = mu,
-#'   S_hat     = S_hat)
+#'   S_hat      = S_hat,
+#'   calc_ess   = TRUE)
 #'
 #' performBayesianMCP(posterior_list = posterior_list,
 #'                    contr          = contr_mat,
@@ -688,34 +687,34 @@ performBayesianMCPMod <- function (
 #'
 #' @export
 performBayesianMCP <- function(
-
+    
   posterior_list,
   contr,
   crit_prob_adj
-
+  
 ) {
-
+  
   checkmate::check_class(posterior_list, "postList")
   checkmate::check_class(contr, "optContr")
   checkmate::check_class(crit_prob_adj, "numeric")
   checkmate::check_numeric(crit_prob_adj, lower = 0, upper = Inf)
-
+  
   if (inherits(posterior_list,  "postList")) {
-
+    
     posterior_list <- list(posterior_list)
-
+    
   }
-
+  
   if (inherits(contr, "optContr")) {
-
+    
     b_mcp <- t(sapply(posterior_list, BayesMCPi, contr, crit_prob_adj))
-
+    
   } else {
-
+    
     b_mcp <- t(mapply(BayesMCPi, posterior_list, contr, crit_prob_adj))
-
+    
   }
-
+  
   class(b_mcp)               <- "BayesianMCP"
   attr(b_mcp, "critProbAdj") <- crit_prob_adj
   attr(b_mcp, "successRate") <- mean(b_mcp[, 1])
@@ -723,13 +722,13 @@ performBayesianMCP <- function(
     test = is.na(attr(posterior_list[[1]], "ess")),
     yes  = numeric(0),
     no   = rowMeans(sapply(posterior_list, function (posteriors) {
-
+      
       attr(posteriors, "ess")
-
+      
     })))
-
+  
   return (b_mcp)
-
+  
 }
 
 performBayesianMod <- function (
