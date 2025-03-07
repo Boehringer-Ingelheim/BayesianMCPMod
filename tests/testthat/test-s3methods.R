@@ -43,6 +43,54 @@ test_that("print.BayesianMCP works as intented", {
   expect_s3_class(b_mcp, "BayesianMCP")
   expect_no_error(print(b_mcp))
   expect_type(print(b_mcp), "double")
+
+  mods <- DoseFinding::Mods(
+  linear = NULL,
+  emax = c(0.5, 1.2),
+  exponential = 2,
+  doses = c(0, 0.5, 2, 4, 8)
+)
+dose_levels <- c(0, 0.5, 2, 4, 8)
+sd_posterior <- c(2.8, 3, 2.5, 3.5, 4)
+contr_mat <- getContr(
+  mods         = mods,
+  dose_levels  = dose_levels,
+  sd_posterior = sd_posterior
+)
+critVal <- getCritProb(
+  mods           = mods,
+  dose_weights   = c(50, 50, 50, 50, 50), # reflecting the planned sample size
+  dose_levels    = dose_levels,
+  alpha_crit_val = 0.6
+)
+prior_list <- list(
+  Ctrl = RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 5), sigma = 2),
+  DG_1 = RBesT::mixnorm(comp1 = c(w = 1, m = 1, s = 12), sigma = 2),
+  DG_2 = RBesT::mixnorm(comp1 = c(w = 1, m = 1.2, s = 11), sigma = 2),
+  DG_3 = RBesT::mixnorm(comp1 = c(w = 1, m = 1.3, s = 11), sigma = 2),
+  DG_4 = RBesT::mixnorm(comp1 = c(w = 1, m = 2, s = 13), sigma = 2)
+)
+mu <- c(0, 1, 1.5, 2, 2.5)
+S_hat <- c(5, 4, 6, 7, 8)
+posterior_list <- getPosterior(
+  prior_list = prior_list,
+  mu_hat = mu,
+  S_hat = S_hat
+)
+
+x <- performBayesianMCPMod(
+  posterior_list = posterior_list,
+  contr = contr_mat,
+  crit_prob_adj = critVal,
+  simple = FALSE,
+  delta = 1
+)
+
+expect_s3_class(x, "BayesianMCPMod")
+expect_no_error(print(x))
+expect_type(print(x), "list")
+
+
 })
 
 test_that("predict.ModelFits works as intented", {
