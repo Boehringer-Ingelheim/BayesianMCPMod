@@ -162,8 +162,9 @@ print.BayesianMCP <- function(x, ...) {
     
     cat("Posterior Probabilities for Model Shapes\n")
     
+    model_probs <- x[1, grep("^post_probs\\.", colnames(x))]
     model_mat   <- matrix(
-      data     = x[1, grep("^post_probs\\.", colnames(x))],
+      data     = model_probs,
       ncol     = 1,
       dimnames = list(shortenModelNames(gsub(
         pattern     = "post_probs\\.",
