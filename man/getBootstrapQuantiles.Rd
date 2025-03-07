@@ -43,7 +43,7 @@ bs_quantiles <- getBootstrapQuantiles(model_fits = model_fits,
                                       n_samples  = 10, # speeding up example run time
                                       doses      = c(0, 6, 8))
                       
-bs_quantiles#'
+bs_quantiles
 }
 \references{
 O'Quigley J, Iasonos A, Bornkamp B. 2017. Handbook of Methods for Designing, Monitoring, and Analyzing Dose-Finding Trials (1st ed.). Chapman and Hall/CRC. doi:10.1201/9781315151984

@@ -6,6 +6,7 @@ usethis::use_build_ignore(c(".github", "_pkgdown.yml", "dev", "cran_submission_s
 attachment::att_amend_desc()
 
 # Run tests and examples
+devtools::document()
 devtools::test()
 devtools::run_examples()
 # autotest::autotest_package(test = TRUE)
@@ -33,8 +34,6 @@ urlchecker::url_update()
 # check on other distributions
 # _rhub
 rhub::rhub_check(platforms = c("linux", "macos-arm64", "windows"))
-# rhub::check_for_cran()
-# devtools::check_rhub()
 # _win devel CRAN
 devtools::check_win_devel()
 # _macos CRAN

@@ -30,7 +30,7 @@
 #'                                       n_samples  = 10, # speeding up example run time
 #'                                       doses      = c(0, 6, 8))
 #'                       
-#' bs_quantiles#'
+#' bs_quantiles
 #' @return  A data frame with columns for model, dose, and bootstrapped samples
 #'
 #' @export

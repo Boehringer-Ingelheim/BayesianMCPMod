@@ -473,11 +473,10 @@ getModelSuccesses <- function (b_mcp) {
 #' @param avg_fit Boolean variable, defining whether an average fit (based on generalized AIC weights) should be performed in addition to the individual models. Default TRUE.
 #' @param delta A numeric value for the threshold Delta for the MED assessment. If NULL, no MED assessment is performed. Default NULL.
 #' @param evidence_level A numeric value between 0 and 1 for the evidence level gamma for the MED assessment. Only required for Bayesian MED assessment, see ?getMED for details. Default NULL.
-#' @param med_selection A string, either "avgFit" or "bestFit", for the method of MED selection. Default "avgFit".
+#' @param med_selection A string, either "avgFit" or "bestFit" based on the lowest gAIC, for the method of MED selection. Default "avgFit".
 #' @param n_samples A numerical for the number of bootstrapped samples in case the Bayesian MED assessment is performed. Default 1e3.
 #' @examples
 #' mods <- DoseFinding::Mods(linear      = NULL,
-#'                           linlog      = NULL,
 #'                           emax        = c(0.5, 1.2),
 #'                           exponential = 2,
 #'                           doses       = c(0, 0.5, 2,4, 8))
@@ -491,7 +490,7 @@ getModelSuccesses <- function (b_mcp) {
 #'   mods           = mods,
 #'   dose_weights   = c(50, 50, 50, 50, 50), #reflecting the planned sample size
 #'   dose_levels    = dose_levels,
-#'   alpha_crit_val = 0.05)
+#'   alpha_crit_val = 0.6)
 #' prior_list <- list(Ctrl = RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 5), sigma = 2),
 #'                    DG_1 = RBesT::mixnorm(comp1 = c(w = 1, m = 1, s = 12), sigma = 2),
 #'                    DG_2 = RBesT::mixnorm(comp1 = c(w = 1, m = 1.2, s = 11), sigma = 2) ,
@@ -512,7 +511,7 @@ getModelSuccesses <- function (b_mcp) {
 #'                       contr          = contr_mat,
 #'                       crit_prob_adj  = critVal,
 #'                       simple         = FALSE,
-#'                       delta          = 3)
+#'                       delta          = 1)
 #'
 #' @return Bayesian MCP test result as well as modeling result.
 #'

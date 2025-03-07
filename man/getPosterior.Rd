@@ -33,6 +33,9 @@ If patient level data is provided mu_hat and S_hat are calculated within the fun
 This function calculates the posterior distribution. Depending on the input for S_hat this step is either performed for every dose group independently via the RBesT function postmix() or the mvpostmix() function of the DoseFinding package is utilized.
 In the latter case conjugate posterior mixture of multivariate normals are calculated (DeGroot 1970, Bernardo and Smith 1994)
 }
+\details{
+Kindly note that one can sample for the posterior list with \code{lapply(posterior_list, RBesT::rmix, n = 5)}.
+}
 \examples{
 prior_list <- list(Ctrl = RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 5), sigma = 2),
                    DG_1 = RBesT::mixnorm(comp1 = c(w = 1, m = 1, s = 12), sigma = 2),

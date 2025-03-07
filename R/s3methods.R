@@ -8,7 +8,7 @@ print.BayesianMCPMod <- function (
 
 ) {
 
-  print(x$BayesianMCP)
+  print(x$BayesianMCP, ...)
   
   if (any(!is.na(attr(x, "MED")))) {
     
@@ -50,6 +50,12 @@ print.BayesianMCPMod <- function (
   }
   
   cat("\n")
+  
+  if (length(x$Mod) == 1) {
+    
+    print (x$Mod[[1]], ...)
+    
+  }
   
   invisible(x)
 
