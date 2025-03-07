@@ -51,10 +51,15 @@ dose_levels    <- c(0, 1, 2, 4, 8)
 fit        <- getModelFits(models      = models,
                            posterior   = posterior_list,
                            dose_levels = dose_levels)
+                           
+fit
+                           
 fit_simple <- getModelFits(models      = models,
                            posterior   = posterior_list,
                            dose_levels = dose_levels,
                            simple      = TRUE)
+                           
+fit_simple
 
 }
 \references{

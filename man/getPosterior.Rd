@@ -34,7 +34,7 @@ This function calculates the posterior distribution. Depending on the input for 
 In the latter case conjugate posterior mixture of multivariate normals are calculated (DeGroot 1970, Bernardo and Smith 1994)
 }
 \details{
-Kindly note that one can sample for the posterior list with \code{lapply(posterior_list, RBesT::rmix, n = 5)}.
+Kindly note that one can sample from the \code{posterior_list} with \code{lapply(posterior_list, RBesT::rmix, n = 10)}.
 }
 \examples{
 prior_list <- list(Ctrl = RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 5), sigma = 2),

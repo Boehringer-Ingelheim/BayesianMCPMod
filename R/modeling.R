@@ -35,10 +35,15 @@
 #' fit        <- getModelFits(models      = models,
 #'                            posterior   = posterior_list,
 #'                            dose_levels = dose_levels)
+#'                            
+#' fit
+#'                            
 #' fit_simple <- getModelFits(models      = models,
 #'                            posterior   = posterior_list,
 #'                            dose_levels = dose_levels,
 #'                            simple      = TRUE)
+#'                            
+#' fit_simple
 #'
 #' @return An object of class modelFits. A list containing information about the fitted model coefficients, the prediction per dose group as well as maximum effect and generalized AIC (and corresponding weight) per model.
 #'

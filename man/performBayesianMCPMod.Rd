@@ -31,7 +31,7 @@ performBayesianMCPMod(
 
 \item{evidence_level}{A numeric value between 0 and 1 for the evidence level gamma for the MED assessment. Only required for Bayesian MED assessment, see ?getMED for details. Default NULL.}
 
-\item{med_selection}{A string, either "avgFit" or "bestFit", for the method of MED selection. Default "avgFit".}
+\item{med_selection}{A string, either "avgFit" or "bestFit" based on the lowest gAIC, for the method of MED selection. Default "avgFit".}
 
 \item{n_samples}{A numerical for the number of bootstrapped samples in case the Bayesian MED assessment is performed. Default 1e3.}
 }
@@ -43,7 +43,6 @@ Performs Bayesian MCP Test step and modeling in a combined fashion. See performB
 }
 \examples{
 mods <- DoseFinding::Mods(linear      = NULL,
-                          linlog      = NULL,
                           emax        = c(0.5, 1.2),
                           exponential = 2,
                           doses       = c(0, 0.5, 2,4, 8))
@@ -57,7 +56,7 @@ critVal <- getCritProb(
   mods           = mods,
   dose_weights   = c(50, 50, 50, 50, 50), #reflecting the planned sample size
   dose_levels    = dose_levels,
-  alpha_crit_val = 0.05)
+  alpha_crit_val = 0.6) # unreasonable alpha for this example, rather choose 0.05
 prior_list <- list(Ctrl = RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 5), sigma = 2),
                    DG_1 = RBesT::mixnorm(comp1 = c(w = 1, m = 1, s = 12), sigma = 2),
                    DG_2 = RBesT::mixnorm(comp1 = c(w = 1, m = 1.2, s = 11), sigma = 2) ,
@@ -69,15 +68,11 @@ posterior_list <- getPosterior(
   prior_list = prior_list,
   mu_hat     = mu,
   S_hat     = S_hat)
-performBayesianMCPMod(posterior_list = posterior_list,
-                      contr          = contr_mat,
-                      crit_prob_adj  = critVal,
-                      simple         = FALSE)
                       
 performBayesianMCPMod(posterior_list = posterior_list,
                       contr          = contr_mat,
                       crit_prob_adj  = critVal,
                       simple         = FALSE,
-                      delta          = 3)
+                      delta          = 1)
 
 }

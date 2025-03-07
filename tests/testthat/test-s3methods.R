@@ -143,5 +143,5 @@ test_that("test modelFits s3 methods", {
   expect_type(pred, "list")
   expect_true(is.null(attr(pred, "doses")))
   expect_identical(attr(pred_dosage, "doses"), dose_levels)
-  expect_type(print(model_fits), "double")
+  expect_type(print(model_fits), "list")
 })

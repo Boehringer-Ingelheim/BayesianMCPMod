@@ -173,13 +173,10 @@ print.BayesianMCP <- function(x, ...) {
         "Post Prob"))
 
     printMatrixWithPrefix(model_mat)
-    
-    # print(model_df, row.names = FALSE)
 
     if (any(!is.na(attr(x, "essAvg")))) {
 
       cat("Average Posterior ESS\n")
-      # print(attr(x, "essAvg"), ...)
       
       ess_vec       <- as.vector(attr(x, "essAvg"))
       ess_vec_names <- names(attr(x, "essAvg"))
