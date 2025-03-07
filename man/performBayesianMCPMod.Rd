@@ -67,7 +67,8 @@ S_hat <- c(5, 4, 6, 7, 8)
 posterior_list <- getPosterior(
   prior_list = prior_list,
   mu_hat     = mu,
-  S_hat     = S_hat)
+  S_hat      = S_hat,
+  calc_ess   = TRUE)
                       
 performBayesianMCPMod(posterior_list = posterior_list,
                       contr          = contr_mat,

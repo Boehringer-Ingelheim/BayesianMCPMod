@@ -23,7 +23,6 @@ In order to obtain significant test decision we consider the maximum of the post
 }
 \examples{
 mods <- DoseFinding::Mods(linear      = NULL,
-                          linlog      = NULL,
                           emax        = c(0.5, 1.2),
                           exponential = 2,
                           doses       = c(0, 0.5, 2,4, 8))
@@ -48,7 +47,8 @@ S_hat <- c(5, 4, 6, 7, 8)
 posterior_list <- getPosterior(
   prior_list = prior_list,
   mu_hat     = mu,
-  S_hat     = S_hat)
+  S_hat      = S_hat,
+  calc_ess   = TRUE)
 
 performBayesianMCP(posterior_list = posterior_list,
                    contr          = contr_mat,

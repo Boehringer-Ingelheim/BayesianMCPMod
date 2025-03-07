@@ -31,7 +31,7 @@ An object of class 'optContr' as provided by the function 'DoseFinding::optContr
 }
 \description{
 This function calculates contrast vectors that are optimal for detecting certain alternatives via applying the function optContr() of the DoseFinding package.
-Hereby 4 different options can be distinguished that are automatically executed based on the input that is provided
+Hereby, 4 different options can be distinguished that are automatically executed based on the input that is provided
 \enumerate{
 \item Bayesian approach: If dose_weights and a prior_list are provided an optimized contrasts for the posterior sample size is calculated.
 In detail,  in a first step the dose_weights (typically the number of patients per dose group) and the prior information is combined by calculating for
@@ -49,7 +49,6 @@ regular MCPMod for this specific vector of standard errors. For the actual evalu
 dose_levels  <- c(0, 0.5, 2, 4, 8)
 mods <- DoseFinding::Mods(
   linear      = NULL,
-  linlog      = NULL,
   emax        = c(0.5, 1.2),
   exponential = 2,
   doses       = dose_levels,

@@ -39,7 +39,6 @@ regular MCPMod for this specific vector of standard errors. Here as well the cri
 }
 \examples{
 mods <- DoseFinding::Mods(linear      = NULL,
-                          linlog      = NULL,
                           emax        = c(0.5, 1.2),
                           exponential = 2,
                           doses       = c(0, 0.5, 2,4, 8))

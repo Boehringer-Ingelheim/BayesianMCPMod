@@ -33,7 +33,7 @@ urlchecker::url_update()
 
 # check on other distributions
 # _rhub
-rhub::rhub_check(platforms = c("linux", "macos-arm64", "windows"))
+rhub::rhub_check(platforms = c("ubuntu-next", "macos-arm64", "windows"))
 # _win devel CRAN
 devtools::check_win_devel()
 # _macos CRAN
