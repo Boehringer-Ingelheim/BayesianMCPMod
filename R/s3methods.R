@@ -1,3 +1,87 @@
+padStrings <- function(strings) {
+  
+  max_length     <- max(nchar(strings))
+  padded_strings <- sapply(strings, function(x) {
+    
+    paste0(x, strrep(" ", max_length - nchar(x)))
+    
+  })
+  
+  return (padded_strings)
+  
+}
+
+printMatrixWithPrefix <- function (
+    
+  mat,
+  prefix = "  "
+  
+) {
+  
+  row_names <- rownames(mat)
+  col_names <- colnames(mat)
+  
+  # stopifnot(!is.null(col_names))
+  
+  if (!is.null(row_names)) {
+    
+    if (!is.null(col_names)) {
+      
+      cat(rep(" ", max(nchar(row_names))), " ", sep = "")
+      
+    }
+    
+    row_names <- padStrings(row_names)
+    
+  }
+  
+  print_width <- max(nchar(round(mat, options()$digits)),
+                     nchar(col_names), na.rm = TRUE)
+  
+  if (!is.null(col_names)) {
+    
+    cat(prefix, format(col_names, width = print_width, justify = "right"), "\n",
+        sep = "")
+    
+  }
+  
+  for (i in seq_len(nrow(mat))) {
+    
+    cat(prefix)
+    
+    if (!is.null(row_names)) {
+      
+      cat(row_names[i], " ", sep = "")
+      
+    }
+    
+    cat(format(mat[i, ], width = print_width), "\n")
+    
+  }
+  
+}
+
+shortenModelNames <- function (model_names, pad_string = FALSE) {
+  
+  model_names_out <- model_names |>
+    gsub("exponential", "exp", x = _) |>
+    gsub("quadratic",  "quad", x = _) |>
+    gsub("linear",      "lin", x = _) |>
+    gsub("logistic",    "log", x = _) |>
+    gsub("sigEmax",    "sigE", x = _) |>
+    gsub("betaMod",   "betaM", x = _) |>
+    gsub("quadratic",  "quad", x = _)
+  
+  if (pad_string) {
+    
+    model_names_out <- padStrings(model_names_out)
+    
+  }
+  
+  return (model_names_out)
+  
+}
+
 ## BayesianMCPMod -----------------------------------------
 
 #' @export
@@ -35,6 +119,8 @@ print.BayesianMCPMod <- function (
       dose_levels   <- x$Mod[[which(sign_indx)[1]]][[1]]$dose_levels[-1]
       med_table     <- table(factor(med_info[, "med"], levels = dose_levels), useNA = "no")
       
+      # printMatrixWithPrefix()
+      
       med_vec       <- as.vector(med_table) / nrow(med_info)
       med_vec_names <- names(med_table)
       
@@ -43,13 +129,11 @@ print.BayesianMCPMod <- function (
       cat("   Dose Level:", format(med_vec_names, width = print_width, justify = "right"), "\n")
       cat("   MED Freq:  ", format(med_vec, width = print_width), "\n")
       cat("  MED not reached Freq:       ", freq_not_reached, "\n")
-      cat("  No success in MCP step Freq:", freq_not_passed)
+      cat("  No success in MCP step Freq:", freq_not_passed, "\n")
       
     }
     
   }
-  
-  cat("\n")
   
   if (length(x$Mod) == 1) {
     
@@ -76,14 +160,20 @@ print.BayesianMCP <- function(x, ...) {
     cat("  Critical Probability:         ", x[1, "crit_prob_adj"], "\n")
     cat("  Maximum Posterior Probability:", x[1, "max_post_prob"], "\n")
     
-    # attr(x, "critProbAdj") <- NULL
-    # attr(x, "successRate") <- NULL
-    # class(x)               <- NULL
-    cat("Posterior Probabilities for Model Shapes:\n")
-    model_probs <- x[1, grep("^post_probs\\.", colnames(x))]
-    model_names <- gsub("post_probs\\.", "", names(model_probs))
-    model_df <- data.frame(Model = model_names, Probability = unlist(model_probs))
-    print(model_df, row.names = FALSE)
+    cat("Posterior Probabilities for Model Shapes\n")
+    
+    model_mat   <- matrix(
+      data     = x[1, grep("^post_probs\\.", colnames(x))],
+      ncol     = 1,
+      dimnames = list(shortenModelNames(gsub(
+        pattern     = "post_probs\\.",
+        replacement = "",
+        x           = names(model_probs))),
+        "Post Prob"))
+
+    printMatrixWithPrefix(model_mat)
+    
+    # print(model_df, row.names = FALSE)
 
     if (any(!is.na(attr(x, "essAvg")))) {
 
@@ -168,8 +258,7 @@ predict.modelFits <- function (
   if ("avgFit" %in% model_names) {
     
     preds_avg_fit <- predictAvgFit(model_fits, doses = doses)
-    
-    predictions <- c(predictions, list(avgFit = preds_avg_fit))
+    predictions   <- c(predictions, list(avgFit = preds_avg_fit))
     
   }
   
@@ -210,16 +299,8 @@ print.modelFits <- function (
     
   }
   
-  out_table <- apply(as.matrix(out_table), 2, round, digits = n_digits)
-
-  model_names <- names(x) |>
-    gsub("exponential", "exponential", x = _) |>
-    gsub("quadratic",   "quadratic  ", x = _) |>
-    gsub("linear",      "linear     ", x = _) |>
-    gsub("logistic",    "logistic   ", x = _) |>
-    gsub("emax",        "emax       ", x = _) |>
-    gsub("avgFit",      "avgFit     ", x = _) |>
-    gsub("sigEmax",     "sigEmax    ", x = _)
+  out_table   <- apply(as.matrix(out_table), 2, round, digits = n_digits)
+  model_names <- setdiff(shortenModelNames(names(x), pad_string = TRUE), "avgFit")
 
   cat("Model Coefficients\n")
   for (i in seq_along(model_names)) {
@@ -229,7 +310,7 @@ print.modelFits <- function (
       coeff_values <- x[[i]]$coeff
       coeff_names  <- names(coeff_values)
       
-      cat(model_names[i],
+      cat(" ", model_names[i],
           paste(coeff_names, round(coeff_values, n_digits),
                 sep      = " = ",
                 collapse = ", "), "\n",
@@ -238,13 +319,10 @@ print.modelFits <- function (
     }
 
   }
-  
-  cat("\n")
-  cat("Dose Levels\n",
+  cat("Dose Levels\n", "", # "" is required for proper indentation
       paste(dose_names, round(dose_levels, n_digits),
             sep      = " = ",
             collapse = ", "), "\n")
-  cat("\n")
   cat("Predictions, Maximum Effect, gAIC")
   
   if (model_sig) {
@@ -257,7 +335,11 @@ print.modelFits <- function (
     
   }
   
-  print(out_table, ...)
+  rownames(out_table) <- shortenModelNames(rownames(out_table))
+  
+  printMatrixWithPrefix(out_table)
+  
+  invisible(x)
 
 }
 
@@ -321,4 +403,3 @@ print.postList <- function (
   print(list_out, ...)
 
 }
-

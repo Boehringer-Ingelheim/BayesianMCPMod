@@ -207,18 +207,3 @@ plot.modelFits <- function (
   return (plts)
 
 }
-
-shortenModelNames <- function (model_names) {
-  
-  model_names_out <- model_names |>
-    gsub("exponential", "exp", x = _) |>
-    gsub("quadratic",  "quad", x = _) |>
-    gsub("linear",      "lin", x = _) |>
-    gsub("logistic",    "log", x = _) |>
-    gsub("sigEmax",    "sigE", x = _) |>
-    gsub("betaMod",   "betaM", x = _) |>
-    gsub("quadratic",  "quad", x = _)
-  
-  return (model_names_out)
-  
-}

@@ -490,7 +490,7 @@ getModelSuccesses <- function (b_mcp) {
 #'   mods           = mods,
 #'   dose_weights   = c(50, 50, 50, 50, 50), #reflecting the planned sample size
 #'   dose_levels    = dose_levels,
-#'   alpha_crit_val = 0.6)
+#'   alpha_crit_val = 0.6) # unreasonable alpha for this example, rather choose 0.05
 #' prior_list <- list(Ctrl = RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 5), sigma = 2),
 #'                    DG_1 = RBesT::mixnorm(comp1 = c(w = 1, m = 1, s = 12), sigma = 2),
 #'                    DG_2 = RBesT::mixnorm(comp1 = c(w = 1, m = 1.2, s = 11), sigma = 2) ,
@@ -502,10 +502,6 @@ getModelSuccesses <- function (b_mcp) {
 #'   prior_list = prior_list,
 #'   mu_hat     = mu,
 #'   S_hat     = S_hat)
-#' performBayesianMCPMod(posterior_list = posterior_list,
-#'                       contr          = contr_mat,
-#'                       crit_prob_adj  = critVal,
-#'                       simple         = FALSE)
 #'                       
 #' performBayesianMCPMod(posterior_list = posterior_list,
 #'                       contr          = contr_mat,
