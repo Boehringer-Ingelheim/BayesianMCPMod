@@ -47,7 +47,7 @@ More specifically, trial results for BRINTELLIX will be utilized to establish an
 A more general overview of the R package was provided with a [poster](https://github.com/Boehringer-Ingelheim/BayesianMCPMod/blob/f942d941cb9fc1c457717b71dd07363f0a7b8966/inst/PSI_Poster_2024.pdf) presented during the PSI 2024 Conference.
 
 This package makes use of the [future](https://cran.r-project.org/package=future) framework for parallel processing, which can be set up as follows:
-```{r}
+```{r, eval = FALSE}
 future::plan(future::multisession)
 ```
 # Calculation of a MAP Prior
