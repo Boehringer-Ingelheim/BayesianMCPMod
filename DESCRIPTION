@@ -46,6 +46,7 @@ Suggests:
     doFuture,
     doRNG,
     dplyr,
+    future,
     kableExtra,
     knitr,
     MCPModPack,
