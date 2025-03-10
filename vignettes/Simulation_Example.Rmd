@@ -106,6 +106,14 @@ prior_list  <- list(
 )
 ```
 
+Kindly note that a vague prior could be implemented via
+```{r Setting Prior without execution, eval = FALSE}
+prior_list_vague <- rep(list(RBesT::mixnorm(comp1 = c(w = 1, m = 0, n = 1),
+                                            sigma = sd_sim, param = "mn")),
+                        times = length(dose_levels))
+names(prior_list_vague) <- c("Ctrl", "DG_1", "DG_2", "DG_3", "DG_4")
+```
+
 # Specification of the New Trial Design 
 
 For the hypothetical new trial, we plan with 4 active dose levels \eqn{2.5, 5, 10, 20} and we specify a broad set of potential dose-response relationships, including a linear, an exponential, an emax and 2 sigEMAX models.  
