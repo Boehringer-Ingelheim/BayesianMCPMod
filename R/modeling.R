@@ -434,7 +434,7 @@ addModelWeights <- function (
 #'                                
 #' # MED based on bootstrapped quantiles
 #' bs_quantiles <- getBootstrapQuantiles(model_fits = model_fits,
-#'                                       quantiles  = c(0.025, 0.2, 0.5),
+#'                                       quantiles  = c(0.025, 0.2, 0.5, 0.8),
 #'                                       n_samples  = 100) # speeding up example run time
 #'                                       
 #' getMED(delta          = 5,
@@ -483,14 +483,17 @@ getMED <- function (
     # R CMD Check Appeasement
     q_probs <- doses <- q_values <- models <- NULL
     
+    # Floating-point precision handling to pick up correct rows of bs_quantiles
+    tolerance <- 1e-9
+    
     stopifnot("corresponding quantile (i.e. 1 - evidence_level) not in bootstrapped quantiles matrix" = 
-                evidence_level %in% (1 - bs_quantiles$q_probs))
+                any(abs((1 - bs_quantiles$q_probs) - evidence_level) < tolerance))
     
     stopifnot("dose_levels not in bootstrapped quantiles matrix" = 
                 all(dose_levels %in% bs_quantiles$doses))
     
     preds <- bs_quantiles |>
-      dplyr::filter((1 - q_probs) %in% evidence_level) |>
+      dplyr::filter(abs((1 - q_probs) - evidence_level) < tolerance) |>
       dplyr::filter(doses %in% dose_levels) |>
       tidyr::pivot_wider(names_from = doses, values_from = q_values)
     
