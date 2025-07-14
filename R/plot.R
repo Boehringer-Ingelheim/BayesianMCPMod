@@ -101,7 +101,7 @@ plot.modelFits <- function (
 
       label_avg  <- paste0(paste_names, "=", round(mod_weights, 1),
                            collapse = ", ")
-      label_gAUC <- paste0(" ", c(label_gAUC[-length(label_gAUC)], label_avg))
+      label_gAUC <- paste0(" ", c(label_avg, label_gAUC[-length(label_gAUC)]))
 
     }
 
