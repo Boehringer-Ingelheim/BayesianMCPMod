@@ -255,7 +255,7 @@ predict.modelFits <- function (
   if ("avgFit" %in% model_names) {
     
     preds_avg_fit <- predictAvgFit(model_fits, doses = doses)
-    predictions   <- c(predictions, list(avgFit = preds_avg_fit))
+    predictions   <- c(list(avgFit = preds_avg_fit), predictions)
     
   }
   
@@ -324,11 +324,11 @@ print.modelFits <- function (
   
   if (model_sig) {
     
-    cat(", Model Weights & Significance\n")
+    cat(", avgFit Model Weights & Significance\n")
     
   } else {
     
-    cat(" & Model Weights\n")
+    cat(" & avgFit Model Weights\n")
     
   }
   

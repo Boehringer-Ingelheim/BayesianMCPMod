@@ -7,7 +7,9 @@
 getModelFits(models, dose_levels, posterior, avg_fit = TRUE, simple = FALSE)
 }
 \arguments{
-\item{models}{List (or vector) of model names for which a fit will be performed.}
+\item{models}{List (or vector) of model names for which a fit will be performed.
+Implemented model shapes are \code{"linear"}, \code{"exponential"}, \code{"logistic"},
+\code{"emax"}, \code{"sigEmax"}, \code{"quadratic"}, and \code{"betaMod"}.}
 
 \item{dose_levels}{A vector containing the different dosage levels.}
 
