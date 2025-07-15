@@ -759,7 +759,14 @@ performBayesianMod <- function (
   
 ) {
   
-  fits_list <- future.apply::future_lapply(seq_along(posterior_list), function (i) {
+  ## Make parallel processing optional
+  if (requireNamespace("future.apply", quietly = TRUE)) {
+    optPar_lapply <- future.apply::future_lapply
+  } else {
+    optPar_lapply <- lapply
+  }
+  
+  fits_list <- optPar_lapply(seq_along(posterior_list), function (i) {
     
     if (b_mcp[i, 1]) {
       

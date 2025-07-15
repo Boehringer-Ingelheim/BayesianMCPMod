@@ -122,6 +122,13 @@ getBootstrapSamples <- function (
   ## R CMD --as-cran appeasement
   name <- dose <- sample_type <- sample_id <- NULL
   
+  ## Make parallel processing optional
+  if (requireNamespace("future.apply", quietly = TRUE)) {
+    optPar_apply <- future.apply::future_apply
+  } else {
+    optPar_apply <- apply
+  }
+  
   mu_hat_samples <- sapply(attr(model_fits, "posterior"),
                            RBesT::rmix, n = n_samples)
   sd_hat         <- summary.postList(attr(model_fits, "posterior"))[, 2]
@@ -144,7 +151,7 @@ getBootstrapSamples <- function (
   }
   
   # predictions[samples, (dose1 model1, dose1 model2, ..., dose2 model1, ...)]
-  preds <- t(future.apply::future_apply(mu_hat_samples, 1, function (mu_hat) {
+  preds <- t(optPar_apply(mu_hat_samples, 1, function (mu_hat) {
     
     preds_mu_hat <- sapply(model_names, function (model) {
       
