@@ -449,11 +449,12 @@ bootstrap_quantiles <- getBootstrapQuantiles(
 #| code-fold: true
 reactable::reactable(
   data = bootstrap_quantiles |>
-      tidyr::pivot_wider(names_from = q_probs, values_from = q_values),
-  groupBy = "models",
+    tidyr::pivot_wider(names_from = q_prob, values_from = q_val) |>
+    dplyr::select(-sample_type),
+  groupBy = "model",
   columns = list(
-    doses   = colDef(aggregate = "count", format = list(aggregated = colFormat(suffix = " doses"))),
-    "0.025"  = colDef(aggregate = "mean", format = list(aggregated = colFormat(prefix = "mean = ", digits = 2), cell = colFormat(digits = 4))),
+    dose    = colDef(aggregate = "count", format = list(aggregated = colFormat(suffix = " dose"))),
+    "0.025" = colDef(aggregate = "mean", format = list(aggregated = colFormat(prefix = "mean = ", digits = 2), cell = colFormat(digits = 4))),
     "0.5"   = colDef(aggregate = "mean", format = list(aggregated = colFormat(prefix = "mean = ", digits = 2), cell = colFormat(digits = 4))),
     "0.975" = colDef(aggregate = "mean", format = list(aggregated = colFormat(prefix = "mean = ", digits = 2), cell = colFormat(digits = 4)))
   )

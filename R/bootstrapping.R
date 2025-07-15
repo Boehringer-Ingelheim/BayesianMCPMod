@@ -44,7 +44,7 @@ getBootstrapQuantiles <- function (
 ) {
   
   ## R CMD --as-cran appeasement
-  models <- q_prob <- NULL
+  model <- dose <- sample_q <- sample_diff_q <- q_prob <- NULL
 
   bs_samples <- getBootstrapSamples(
     model_fits = model_fits,
@@ -69,7 +69,6 @@ getBootstrapQuantiles <- function (
       names_pattern = "^(sample(?:_diff)?)_(.+)%$",
       values_to     = "q_val"
     ) |>
-    dplyr::mutate() |>
     dplyr::mutate(q_prob      = as.numeric(gsub("%", "", q_prob)),
                   sample_type = dplyr::case_when(
                     sample_type == "sample" ~ "abs",
@@ -121,7 +120,7 @@ getBootstrapSamples <- function (
 ) {
   
   ## R CMD --as-cran appeasement
-  name <- NULL
+  name <- dose <- sample_type <- sample_id <- NULL
   
   mu_hat_samples <- sapply(attr(model_fits, "posterior"),
                            RBesT::rmix, n = n_samples)

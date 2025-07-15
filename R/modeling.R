@@ -454,6 +454,9 @@ getMED <- function (
   
 ) {
   
+  ## R CMD --as-cran appeasement
+  model <- sample_type <- NULL
+  
   stopifnot("Either model_fits or bs_quantiles must be not NULL, but not both" =
               is.null(model_fits) & !is.null(bs_quantiles) |
               !is.null(model_fits) & is.null(bs_quantiles))

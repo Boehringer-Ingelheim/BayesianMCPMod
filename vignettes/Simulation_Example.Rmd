@@ -70,7 +70,7 @@ hist_data <- data.frame(
 sd_tot <- with(hist_data, sum(sd * n) / sum(n))
 ```
 We will make use of the same `getPriorList()` function as in the [analysis example vignette](analysis_normal.html) to create a MAP prior.
-```{r Setting Prior without execution, eval = FALSE}
+```{r Setting Prior Without Execution, eval = FALSE}
 dose_levels <- c(0, 2.5, 5, 10, 20)
 
 prior_list  <- getPriorList(
@@ -107,7 +107,7 @@ prior_list  <- list(
 ```
 
 Kindly note that a vague prior could be implemented via
-```{r Setting Prior without execution, eval = FALSE}
+```{r Setting Vague Prior Without Execution, eval = FALSE}
 prior_list_vague <- rep(list(RBesT::mixnorm(comp1 = c(w = 1, m = 0, n = 1),
                                             sigma = sd_sim, param = "mn")),
                         times = length(dose_levels))

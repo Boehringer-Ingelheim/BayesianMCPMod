@@ -55,7 +55,7 @@ plot.modelFits <- function (
 ) {
   
   ## R CMD --as-cran appeasement
-  .data <- q_prob <- q_val <- NULL
+  .data <- q_prob <- q_val <- model <- sample_type <- NULL
 
   checkmate::check_logical(gAIC)
   checkmate::check_logical(cr_intv)
