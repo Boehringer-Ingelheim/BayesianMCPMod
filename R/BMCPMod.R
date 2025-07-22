@@ -411,7 +411,7 @@ getContr <- function(
 #' @param mods An object of class "Mods" as specified in the DoseFinding package.
 #' @param dose_levels Vector containing the different dosage levels.
 #' @param dose_weights Vector specifying weights for the different doses, only required for Option i). Default NULL
-#' @param se_new_trial A vector of positive values, only required for Option ii). Default NULL
+#' @param cov_new_trial A covariance matrix, only required for Option ii). Default NULL
 #' @param alpha_crit_val Significance level. Default set to 0.025.
 #'
 #' @examples
@@ -433,7 +433,7 @@ getCritProb <- function (
   mods,
   dose_levels,
   dose_weights   = NULL,
-  se_new_trial   = NULL,
+  cov_new_trial   = NULL,
   alpha_crit_val = 0.025
 
 ) {
@@ -443,19 +443,23 @@ getCritProb <- function (
   checkmate::check_double(dose_weights, any.missing = FALSE, len = length(dose_levels))
   checkmate::check_double(alpha_crit_val, lower = 0, upper = 1)
 
-  contr <- getContr(mods           = mods,
-                    dose_levels    = dose_levels ,
-                    dose_weights   = dose_weights,
-                    se_new_trial   = se_new_trial)
+  # Get contrast using updated getContr
+  contr <- getContr(
+    mods = mods,
+    dose_levels = dose_levels,
+    dose_weights = dose_weights,
+    cov_new_trial = cov_new_trial
+  )
 
+  # Calculate critical probability
   crit_prob <- stats::pnorm(DoseFinding::critVal(
-    corMat      = contr$corMat,
-    alpha       = alpha_crit_val,
-    df          = 0,
-    alternative = "one.sided"))
+    corMat = contr$corMat,
+    alpha = alpha_crit_val,
+    df = 0,
+    alternative = "one.sided"
+  ))
 
-  return (crit_prob)
-
+  return(crit_prob)
 }
 
 getModelSuccesses <- function (b_mcp) {
