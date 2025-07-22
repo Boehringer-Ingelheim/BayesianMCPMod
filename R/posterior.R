@@ -56,8 +56,8 @@ getPosterior <- function(
 
   if (!is.null(mu_hat) && !is.null(S_hat) && is.null(data)) {
 
-  # stopifnot("S_hat has to be a symmetrical matrix",
-  #           !isSymmetric(S_hat))
+  stopifnot("S_hat has to be a symmetrical matrix" =
+            isSymmetric(S_hat))
 
   if(!is_off_diagonal_zero(S_hat)) {
     is_matrix_S_hat <- TRUE
