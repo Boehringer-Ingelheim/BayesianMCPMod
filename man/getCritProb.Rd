@@ -8,7 +8,7 @@ getCritProb(
   mods,
   dose_levels,
   dose_weights = NULL,
-  se_new_trial = NULL,
+  cov_new_trial = NULL,
   alpha_crit_val = 0.025
 )
 }
@@ -19,7 +19,7 @@ getCritProb(
 
 \item{dose_weights}{Vector specifying weights for the different doses, only required for Option i). Default NULL}
 
-\item{se_new_trial}{A vector of positive values, only required for Option ii). Default NULL}
+\item{cov_new_trial}{A covariance matrix, only required for Option ii). Default NULL}
 
 \item{alpha_crit_val}{Significance level. Default set to 0.025.}
 }
