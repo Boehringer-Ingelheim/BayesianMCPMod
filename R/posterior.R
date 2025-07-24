@@ -232,17 +232,21 @@ priorList2priorMix <- function (prior_list) {
   checkmate::assert_list(prior_list, names = "named", any.missing = FALSE, null.ok = FALSE)
   
   # create mapping
-  args <- createMapping(prior_list)
-  comp_ind <- do.call("expand.grid", args)
+  args          <- createMapping(prior_list)
+  comp_ind      <- do.call("expand.grid", args)
   n_comps_prior <- nrow(comp_ind)
   
   # map information -> mapping function?
   prior_weight <- matrix(
-    sapply(1:length(prior_list), function (x) sapply(1:n_comps_prior,
-                                                     function (y) prior_list[[x]][1, comp_ind[y, x]])), nrow = n_comps_prior)
+    sapply(1:length(prior_list), function (x) sapply(1:n_comps_prior, function (y)
+      prior_list[[x]][1, comp_ind[y, x]])), nrow = n_comps_prior)
   
-  prior_mean   <- matrix(sapply(1:length(prior_list), function (x) sapply(1:n_comps_prior, function (y) prior_list[[x]][2, comp_ind[y, x]])), nrow = n_comps_prior)
-  prior_sd     <- matrix(sapply(1:length(prior_list), function (x) sapply(1:n_comps_prior, function (y) prior_list[[x]][3, comp_ind[y, x]])), nrow = n_comps_prior)
+  prior_mean   <- matrix(sapply(1:length(prior_list), function (x)
+    sapply(1:n_comps_prior, function (y)
+      prior_list[[x]][2, comp_ind[y, x]])), nrow = n_comps_prior)
+  prior_sd     <- matrix(sapply(1:length(prior_list), function (x)
+    sapply(1:n_comps_prior, function (y)
+      prior_list[[x]][3, comp_ind[y, x]])), nrow = n_comps_prior)
   
   prior_weight <- apply(prior_weight, 1, prod)
   
@@ -267,7 +271,7 @@ postMix2posteriorList <- function (
   checkmate::assert_list(posterior_list, names = "named", any.missing = FALSE, null.ok = FALSE)
   checkmate::assert_list(prior_list, names = "named", any.missing = FALSE, null.ok = FALSE)
   
-  getIndx       <- function (x, y) which(comp_mat_ind[, x] == comp_indx[[x]][y])
+  getIndx <- function (x, y) which(comp_mat_ind[, x] == comp_indx[[x]][y])
   
   # create mapping
   comp_indx    <- createMapping(prior_list)
