@@ -232,8 +232,8 @@ priorList2priorMix <- function (prior_list) {
   checkmate::assert_list(prior_list, names = "named", any.missing = FALSE, null.ok = FALSE)
   
   # create mapping
-  args <- createMapping(prior_list)
-  comp_ind <- do.call("expand.grid", args)
+  args          <- createMapping(prior_list)
+  comp_ind      <- do.call("expand.grid", args)
   n_comps_prior <- nrow(comp_ind)
   
   # map information -> mapping function?
