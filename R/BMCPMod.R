@@ -252,12 +252,51 @@ BayesMCPi <- function (
   
 ) {
   
+  # getPostProb <- function (
+  #   
+  #   contr_j,     # j: dose level
+  #   post_combs_i # i: simulation outcome
+  #   
+  # ) {
+  #   
+  #   ## Test statistic = sum over all components of
+  #   ## posterior weight * normal probability distribution of
+  #   ## critical values for doses * estimated mean / sqrt(product of critical values for doses)
+  #   
+  #   ## Calculation for each component of the posterior
+  #   contr_theta   <- apply(post_combs_i$means, 1, `%*%`, contr_j)
+  #   contr_var     <- apply(post_combs_i$vars, 1, `%*%`, contr_j^2)
+  #   contr_weights <- post_combs_i$weights
+  #   
+  #   ## P(c_m * theta > 0 | Y = y) for a shape m (and dose j)
+  #   post_probs <- sum(contr_weights * stats::pnorm(contr_theta / sqrt(contr_var)))
+  #   
+  #   return (post_probs)
+  #   
+  # }
+  # 
+  # post_combs_i <- getPostCombsI(posterior_i)
+  # post_probs   <- apply(contr$contMat, 2, getPostProb, post_combs_i)
+  # 
+  # res <- c(sign          = ifelse(max(post_probs) > crit_prob_adj, 1, 0),
+  #          crit_prob_adj = crit_prob_adj,
+  #          max_post_prob = max(post_probs),
+  #          post_probs    = post_probs)
+  # 
+  # return (res)
+  
   getPostProb <- function (
     
     contr_j,     # j: dose level
     post_combs_i # i: simulation outcome
     
   ) {
+    
+    if (is.data.frame(post_combs_i$vars)) {
+      
+      post_combs_i$vars <- apply(post_combs_i$vars, 1, diag, simplify = FALSE)
+      
+    }
     
     ## Test statistic = sum over all components of
     ## posterior weight * normal probability distribution of
