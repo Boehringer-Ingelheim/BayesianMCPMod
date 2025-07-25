@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">BayesianMCPMod</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -123,6 +123,12 @@ create a MAP prior.</p>
 <span>  hist_data     <span class="op">=</span> <span class="va">hist_data</span>,</span>
 <span>  dose_levels   <span class="op">=</span> <span class="va">dose_levels</span>,</span>
 <span>  robust_weight <span class="op">=</span> <span class="fl">0.3</span><span class="op">)</span></span></code></pre></div>
+<p>Kindly note that a vague prior could be implemented via</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">prior_list_vague</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu">RBesT</span><span class="fu">::</span><span class="fu"><a href="https://opensource.nibr.com/RBesT/reference/mixnorm.html" class="external-link">mixnorm</a></span><span class="op">(</span>comp1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>w <span class="op">=</span> <span class="fl">1</span>, m <span class="op">=</span> <span class="fl">0</span>, n <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>,</span>
+<span>                                            sigma <span class="op">=</span> <span class="va">sd_sim</span>, param <span class="op">=</span> <span class="st">"mn"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>                        times <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">dose_levels</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">prior_list_vague</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Ctrl"</span>, <span class="st">"DG_1"</span>, <span class="st">"DG_2"</span>, <span class="st">"DG_3"</span>, <span class="st">"DG_4"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="specification-of-the-new-trial-design">Specification of the New Trial Design<a class="anchor" aria-label="anchor" href="#specification-of-the-new-trial-design"></a>
@@ -134,7 +140,7 @@ Furthermore, we assume a maximum effect of -3 on top of control
 (i.e. assuming that active treatment can reduce the MADRS score after 8
 weeks by up to 15.8) and plan a trial with 80 patients for all active
 groups and 60 patients for control.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">exp</span>     <span class="op">&lt;-</span> <span class="fu">DoseFinding</span><span class="fu">::</span><span class="fu"><a href="https://openpharma.github.io/DoseFinding/reference/guesst.html" class="external-link">guesst</a></span><span class="op">(</span></span>
 <span>  d     <span class="op">=</span> <span class="fl">5</span>,</span>
 <span>  p     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.2</span><span class="op">)</span>,</span>
@@ -174,7 +180,7 @@ groups and 60 patients for control.</p>
 dose-response models and the specified trial design we will apply the
 assessDesign function. For illustration purposes, the number of
 simulated trial results is reduced to 100 in this example.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">success_probabilities</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/assessDesign.html">assessDesign</a></span><span class="op">(</span></span>
 <span>  n_patients  <span class="op">=</span> <span class="va">n_patients</span>,</span>
 <span>  mods        <span class="op">=</span> <span class="va">mods</span>,</span>
@@ -232,7 +238,7 @@ simulated trial results is reduced to 100 in this example.</p>
 <p>As an alternative, we will evaluate a design with the same overall
 sample size but allocating more patients on the highest dose group and
 control.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">success_probabilities_uneq</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/assessDesign.html">assessDesign</a></span><span class="op">(</span></span>
 <span>  n_patients  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">80</span>, <span class="fl">60</span>, <span class="fl">60</span>, <span class="fl">60</span>, <span class="fl">120</span><span class="op">)</span>,</span>
 <span>  mods        <span class="op">=</span> <span class="va">mods</span>,</span>
@@ -293,7 +299,7 @@ relationships.</p>
 possible to directly specify the effects for the individual dose levels
 via the dr_means input. This allows e.g. also the simulation of
 scenarios with a prior-data conflict.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">success_probabilities</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/assessDesign.html">assessDesign</a></span><span class="op">(</span></span>
 <span>  n_patients  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">60</span>, <span class="fl">80</span>, <span class="fl">80</span>, <span class="fl">80</span>, <span class="fl">80</span><span class="op">)</span>,</span>
 <span>  mods        <span class="op">=</span> <span class="va">mods</span>,</span>
@@ -339,7 +345,7 @@ outcomes, as the required quantiles need to be bootstrapped for each
 true model shape and each simulated outcome. Thus, using the Bayesian
 decision rule when assessing the trial’s design is only recommended when
 using parallel computing.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">success_probabilities_med</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/assessDesign.html">assessDesign</a></span><span class="op">(</span></span>
 <span>  n_patients  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">60</span>, <span class="fl">80</span>, <span class="fl">80</span>, <span class="fl">80</span>, <span class="fl">80</span><span class="op">)</span>,</span>
 <span>  mods        <span class="op">=</span> <span class="va">mods</span>,</span>
@@ -420,6 +426,8 @@ using parallel computing.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; attr(,"avgSuccessRate")</span></span>
 <span><span class="co">#&gt; [1] 0.794</span></span>
+<span><span class="co">#&gt; attr(,"avgMEDIdentificationRate")</span></span>
+<span><span class="co">#&gt; [1] 0.788</span></span>
 <span><span class="co">#&gt; attr(,"placEff")</span></span>
 <span><span class="co">#&gt; [1] -12.8</span></span>
 <span><span class="co">#&gt; attr(,"maxEff")</span></span>

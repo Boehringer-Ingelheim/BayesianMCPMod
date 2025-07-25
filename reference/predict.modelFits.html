@@ -9,7 +9,7 @@ model and dose specifications"></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">BayesianMCPMod</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -89,6 +89,9 @@ done</p></dd>
 <span class="r-in"><span>                               dose_levels <span class="op">=</span> <span class="va">dose_levels</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">fit</span>, doses <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">3</span>, <span class="fl">4</span>, <span class="fl">6</span>, <span class="fl">8</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $avgFit</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.2056172 2.8416974 4.9413358 5.4821866 6.2174408 6.7364367</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $emax</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] -0.008147777  2.977266585  5.136083687  5.647278697  6.271281080</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [6]  6.637935274</span>
@@ -96,14 +99,11 @@ done</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $exponential</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1.636554 2.207315 3.461645 4.150114 5.663125 7.377590</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $sigEmax</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.00731386 2.89049046 5.22947029 5.72787171 6.28978958 6.59200716</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $linear</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1.419597 2.167297 3.662695 4.410394 5.905792 7.401191</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $avgFit</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.2056172 2.8416974 4.9413358 5.4821866 6.2174408 6.7364367</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $sigEmax</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.00731386 2.89049046 5.22947029 5.72787171 6.28978958 6.59200716</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"doses")</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0 1 3 4 6 8</span>

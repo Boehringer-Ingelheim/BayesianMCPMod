@@ -9,7 +9,7 @@ The MED evaluation can either be based on the fitted model shapes (model_fits) o
 
     <a class="navbar-brand me-2" href="../index.html">BayesianMCPMod</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -109,21 +109,21 @@ The model-shape approach takes the point estimate of the model into account.</p>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># MED based on the model_fit:</span></span></span>
 <span class="r-in"><span><span class="fu">getMED</span><span class="op">(</span>delta <span class="op">=</span> <span class="fl">5</span>, model_fits <span class="op">=</span> <span class="va">model_fits</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             exponential linear avgFit</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> med_reached           1      1      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> med                   8      8      8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>             avgFit exponential linear</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> med_reached      1           1      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> med              8           8      8</span>
 <span class="r-in"><span>                               </span></span>
 <span class="r-in"><span><span class="co"># MED based on bootstrapped quantiles</span></span></span>
 <span class="r-in"><span><span class="va">bs_quantiles</span> <span class="op">&lt;-</span> <span class="fu"><a href="getBootstrapQuantiles.html">getBootstrapQuantiles</a></span><span class="op">(</span>model_fits <span class="op">=</span> <span class="va">model_fits</span>,</span></span>
-<span class="r-in"><span>                                      quantiles  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.025</span>, <span class="fl">0.2</span>, <span class="fl">0.5</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                                      quantiles  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.025</span>, <span class="fl">0.2</span>, <span class="fl">0.5</span>, <span class="fl">0.8</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                                      n_samples  <span class="op">=</span> <span class="fl">100</span><span class="op">)</span> <span class="co"># speeding up example run time</span></span></span>
 <span class="r-in"><span>                                      </span></span>
 <span class="r-in"><span><span class="fu">getMED</span><span class="op">(</span>delta          <span class="op">=</span> <span class="fl">5</span>,</span></span>
 <span class="r-in"><span>       evidence_level <span class="op">=</span> <span class="fl">0.8</span>,</span></span>
 <span class="r-in"><span>       bs_quantiles   <span class="op">=</span> <span class="va">bs_quantiles</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>             avgFit exponential linear</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> med_reached      1           1      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> med              8           8      8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> med_reached      0           0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> med             NA          NA     NA</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
