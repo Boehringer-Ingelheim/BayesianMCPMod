@@ -55,7 +55,7 @@ plot.modelFits <- function (
 ) {
   
   ## R CMD --as-cran appeasement
-  .data <- q_probs <- q_values <- NULL
+  .data <- q_prob <- q_val <- model <- sample_type <- NULL
 
   checkmate::check_logical(gAIC)
   checkmate::check_logical(cr_intv)
@@ -101,7 +101,7 @@ plot.modelFits <- function (
 
       label_avg  <- paste0(paste_names, "=", round(mod_weights, 1),
                            collapse = ", ")
-      label_gAUC <- paste0(" ", c(label_gAUC[-length(label_gAUC)], label_avg))
+      label_gAUC <- paste0(" ", c(label_avg, label_gAUC[-length(label_gAUC)]))
 
     }
 
@@ -119,7 +119,9 @@ plot.modelFits <- function (
       n_samples  = n_bs_smpl,
       quantiles  = sort(unique(c(0.5, as.vector(quantile_pairs)))),
       doses      = dose_seq) |>
-      tidyr::pivot_wider(names_from = q_probs, values_from = q_values)
+      dplyr::filter(sample_type == "abs") |>
+      tidyr::pivot_wider(names_from = q_prob, values_from = q_val) |>
+      dplyr::rename(models = model)
 
   }
 
@@ -154,7 +156,7 @@ plot.modelFits <- function (
       loop_txt <- paste0(
         "ggplot2::geom_ribbon(
           data    = crB_data,
-          mapping = ggplot2::aes(x    = .data$doses,
+          mapping = ggplot2::aes(x    = .data$dose,
                                  ymin = .data$'", as.character(q_pair[1]),"',
                                  ymax = .data$'", as.character(q_pair[2]),"'),
           fill    = acc_color,
@@ -169,7 +171,7 @@ plot.modelFits <- function (
     plts <- plts +
       ggplot2::geom_line(
         data    = crB_data,
-        mapping = ggplot2::aes(.data$doses, .data$`0.5`),
+        mapping = ggplot2::aes(.data$dose, .data$`0.5`),
         color   = acc_color)
 
   }

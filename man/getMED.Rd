@@ -55,7 +55,7 @@ getMED(delta = 5, model_fits = model_fits)
                                
 # MED based on bootstrapped quantiles
 bs_quantiles <- getBootstrapQuantiles(model_fits = model_fits,
-                                      quantiles  = c(0.025, 0.2, 0.5),
+                                      quantiles  = c(0.025, 0.2, 0.5, 0.8),
                                       n_samples  = 100) # speeding up example run time
                                       
 getMED(delta          = 5,

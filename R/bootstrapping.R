@@ -31,7 +31,7 @@
 #'                                       doses      = c(0, 6, 8))
 #'                       
 #' bs_quantiles
-#' @return  A data frame with columns for model, dose, and bootstrapped samples
+#' @return  A tibble with columns for model, dose, and bootstrapped samples
 #'
 #' @export
 getBootstrapQuantiles <- function (
@@ -44,7 +44,7 @@ getBootstrapQuantiles <- function (
 ) {
   
   ## R CMD --as-cran appeasement
-  models <- q_probs <- NULL
+  model <- dose <- sample_q <- sample_diff_q <- q_prob <- NULL
 
   bs_samples <- getBootstrapSamples(
     model_fits = model_fits,
@@ -54,17 +54,26 @@ getBootstrapQuantiles <- function (
   quantile_probs <- sort(unique(quantiles))
     
   bs_quantiles <- bs_samples |>
-    dplyr::group_by(models, doses) |>
+    dplyr::group_by(model, dose) |>
     dplyr::summarize(
-      quantiles = list(stats::quantile(sample, probs = quantile_probs)),
-      .groups = 'drop') |>
-    tidyr::unnest_wider(quantiles, names_sep = "_") |>
-    dplyr::rename_with(~ paste0(quantile_probs, "%"), dplyr::starts_with("quantiles_")) |>
-    tidyr::pivot_longer(cols      = tidyr::ends_with("%"),
-                        names_to  = "q_probs",
-                        values_to = "q_values") |>
-    dplyr::mutate(q_probs = as.numeric(gsub("%", "", q_probs)))
-
+      sample_q      = list(stats::quantile(abs, probs = quantile_probs)),
+      sample_diff_q = list(stats::quantile(diff, probs = quantile_probs)),
+      .groups = "drop") |>
+    tidyr::unnest_wider(sample_q, names_sep = "_") |>
+    tidyr::unnest_wider(sample_diff_q, names_sep = "_") |>
+    dplyr::rename_with(~ paste0("sample_", quantile_probs, "%"), dplyr::starts_with("sample_q_")) |>
+    dplyr::rename_with(~ paste0("sample_diff_", quantile_probs, "%"), dplyr::starts_with("sample_diff_q_")) |>
+    tidyr::pivot_longer(
+      cols          = dplyr::matches("^(sample|sample_diff)_\\d+(\\.\\d+)?%$"),
+      names_to      = c("sample_type", "q_prob"),
+      names_pattern = "^(sample(?:_diff)?)_(.+)%$",
+      values_to     = "q_val"
+    ) |>
+    dplyr::mutate(q_prob      = as.numeric(gsub("%", "", q_prob)),
+                  sample_type = dplyr::case_when(
+                    sample_type == "sample" ~ "abs",
+                    sample_type == "sample_diff" ~ "diff"))
+  
   return (bs_quantiles)
 
 }
@@ -99,7 +108,7 @@ getBootstrapQuantiles <- function (
 #'                                   doses      = c(0, 6, 8))
 #'                       
 #' bs_samples
-#' @return  A data frame with entries model, dose, and sample
+#' @return  A tibble with columns for sample_id, model, dose, sample, and sample_diff
 #' 
 #' @export
 getBootstrapSamples <- function (
@@ -111,7 +120,14 @@ getBootstrapSamples <- function (
 ) {
   
   ## R CMD --as-cran appeasement
-  name <- NULL
+  name <- dose <- sample_type <- sample_id <- NULL
+  
+  ## Make parallel processing optional
+  if (requireNamespace("future.apply", quietly = TRUE)) {
+    optPar_apply <- future.apply::future_apply
+  } else {
+    optPar_apply <- apply
+  }
   
   mu_hat_samples <- sapply(attr(model_fits, "posterior"),
                            RBesT::rmix, n = n_samples)
@@ -135,7 +151,7 @@ getBootstrapSamples <- function (
   }
   
   # predictions[samples, (dose1 model1, dose1 model2, ..., dose2 model1, ...)]
-  preds <- t(future.apply::future_apply(mu_hat_samples, 1, function (mu_hat) {
+  preds <- t(optPar_apply(mu_hat_samples, 1, function (mu_hat) {
     
     preds_mu_hat <- sapply(model_names, function (model) {
       
@@ -159,31 +175,46 @@ getBootstrapSamples <- function (
     if (avg_fit) {
       
       avg_fit_indx <- which.min(sapply(preds_mu_hat, attr, "gAIC"))
-      preds_mu_mat <- rbind(preds_mu_mat, avgFit = preds_mu_mat[avg_fit_indx, ])
+      preds_mu_mat <- rbind(avgFit = preds_mu_mat[avg_fit_indx, ], preds_mu_mat)
       
     }
     
-    # predictions[models, doses]
-    return (preds_mu_mat)
+    preds_mu_mat_adj <- preds_mu_mat - preds_mu_mat[, 1]
+    
+    # predictions[models, c(doses, adj_doses)]
+    return (c(preds_mu_mat, preds_mu_mat_adj))
     
   }))
   
   if (avg_fit) {
     
-    model_names <- c(model_names, "avgFit")
+    model_names <- c("avgFit", model_names)
     
   }
   
   bs_samples           <- as.data.frame(preds)
-  colnames(bs_samples) <- paste0(model_names, "_", rep(doses, each = length(model_names)))
+  colnames(bs_samples) <- c(paste0(model_names, "_",
+                                   rep(doses, each = length(model_names))),
+                            paste0(model_names, "_diff_",
+                                   rep(doses, each = length(model_names))))
+  
+  bs_samples <- cbind(sample_id = seq_len(nrow(bs_samples)), bs_samples)
   
   bs_samples_long <- bs_samples |>
-    tidyr::pivot_longer(cols      = tidyr::everything(),
-                        values_to = "sample") |>
-    tidyr::separate(col  = name,
-                    into = c("models", "doses"),
-                    sep  = "_") |>
-    dplyr::mutate(doses = as.numeric(doses))
+    tidyr::pivot_longer(
+      cols          = -sample_id,
+      names_to      = c("model", "diff", "dose"),
+      names_pattern = "^(avgFit|linear|exponential|logistic|emax|sigEmax|quadratic|betaMod)(_diff)?_([0-9]+(?:\\.[0-9]+)?)$",
+      values_to     = "sample") |>
+    dplyr::mutate(
+      diff = dplyr::case_when(
+        diff == "" ~ "abs",
+        diff == "_diff" ~ "diff"),
+      dose = as.numeric(dose)) |>
+    dplyr::rename(sample_type = diff) |>
+    tidyr::pivot_wider(
+      names_from  = sample_type,
+      values_from = sample)
   
   return (bs_samples_long)
   

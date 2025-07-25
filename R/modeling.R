@@ -19,6 +19,8 @@
 #' where \eqn{Q} denotes the number of models included in the averaging procedure.
 #' @references Schorning K, Bornkamp B, Bretz F, Dette H. 2016. Model selection versus model averaging in dose finding studies. Stat Med; 35; 4021-4040.
 #' @param models List (or vector) of model names for which a fit will be performed.
+#' Implemented model shapes are `"linear"`, `"exponential"`, `"logistic"`,
+#' `"emax"`, `"sigEmax"`, `"quadratic"`, and `"betaMod"`.
 #' @param dose_levels A vector containing the different dosage levels.
 #' @param posterior A getPosterior object, containing the (multivariate) posterior distribution per dosage level.
 #' @param avg_fit Boolean variable, defining whether an average fit (based on generalized AIC weights) should be performed in addition to the individual models. Default TRUE.
@@ -68,7 +70,7 @@ getModelFits <- function (
   checkmate::check_logical(avg_fit)
   checkmate::check_logical(simple)
 
-  model_names <- unique(gsub("\\d", "", names(models)))
+  model_names <- sort(unique(gsub("\\d", "", names(models))))
 
   getModelFit <- ifelse(simple, getModelFitSimple, getModelFitOpt)
 
@@ -107,7 +109,7 @@ addAvgFit <- function (
                    gAIC         = NA,
                    model_weight = NA)
   
-  model_fits <- c(model_fits, avgFit = list(avg_fit))
+  model_fits <- c(avgFit = list(avg_fit), model_fits)
   
   return (model_fits)
   
@@ -434,7 +436,7 @@ addModelWeights <- function (
 #'                                
 #' # MED based on bootstrapped quantiles
 #' bs_quantiles <- getBootstrapQuantiles(model_fits = model_fits,
-#'                                       quantiles  = c(0.025, 0.2, 0.5),
+#'                                       quantiles  = c(0.025, 0.2, 0.5, 0.8),
 #'                                       n_samples  = 100) # speeding up example run time
 #'                                       
 #' getMED(delta          = 5,
@@ -451,6 +453,9 @@ getMED <- function (
   bs_quantiles   = NULL
   
 ) {
+  
+  ## R CMD --as-cran appeasement
+  model <- sample_type <- NULL
   
   stopifnot("Either model_fits or bs_quantiles must be not NULL, but not both" =
               is.null(model_fits) & !is.null(bs_quantiles) |
@@ -472,42 +477,42 @@ getMED <- function (
     
     preds <- do.call(rbind, predict.modelFits(model_fits, doses = dose_levels))
     
+    abs_diffs <- abs(preds - preds[, 1])
+    colnames(abs_diffs) <- dose_levels
+    
   } else {
     
     if (is.null(dose_levels)) {
       
-      dose_levels <- unique(bs_quantiles$doses)
+      dose_levels <- unique(bs_quantiles$dose)
       
     }
     
     # R CMD Check Appeasement
-    q_probs <- doses <- q_values <- models <- NULL
+    q_prob <- dose <- q_val <- models <- NULL
+    
+    # Floating-point precision handling to pick up correct rows of bs_quantiles
+    tolerance <- 1e-9
     
     stopifnot("corresponding quantile (i.e. 1 - evidence_level) not in bootstrapped quantiles matrix" = 
-                evidence_level %in% (1 - bs_quantiles$q_probs))
+                any(abs((1 - bs_quantiles$q_prob) - evidence_level) < tolerance))
     
-    stopifnot("dose_levels not in bootstrapped quantiles matrix" = 
-                all(dose_levels %in% bs_quantiles$doses))
+    stopifnot("dose_levels not (all) in bootstrapped quantiles matrix" = 
+                all(dose_levels %in% bs_quantiles$dose))
     
-    preds <- bs_quantiles |>
-      dplyr::filter((1 - q_probs) %in% evidence_level) |>
-      dplyr::filter(doses %in% dose_levels) |>
-      tidyr::pivot_wider(names_from = doses, values_from = q_values)
-    
-    model_names <- preds$models
-    
-    preds <- preds |>
-      dplyr::select(-models, -q_probs) |>
+    abs_diffs <- bs_quantiles |>
+      dplyr::filter(abs((1 - q_prob) - evidence_level) < tolerance,
+                    dose %in% dose_levels,
+                    sample_type == "diff") |>
+      tidyr::pivot_wider(names_from = dose, values_from = q_val) |>
+      dplyr::select(-model, -sample_type, -q_prob) |>
       as.matrix()
-    
-    rownames(preds) <- model_names
+
+    rownames(abs_diffs) <- unique(bs_quantiles$model)
     
   }
   
-  med_info <- apply(preds, 1, function (model_preds) {
-    
-    # assumes 1st DG to be control DG
-    med_indx_m <- abs(model_preds[2:length(model_preds)] - model_preds[1]) > delta
+  med_info <- apply(abs_diffs > delta, 1, function (med_indx_m) {
     
     if (!any(med_indx_m)) {
       
@@ -517,7 +522,7 @@ getMED <- function (
     } else {
       
       med_reached <- 1
-      med_indx    <- min(which(med_indx_m)) + 1
+      med_indx    <- min(which(med_indx_m))
       med         <- dose_levels[med_indx]
       
     }

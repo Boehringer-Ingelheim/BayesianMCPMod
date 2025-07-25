@@ -203,6 +203,8 @@ assessDesign <- function (
     
   })
   
+  names(eval_design) <- model_names
+  
   avg_success_rate <- mean(sapply(eval_design, function (x) {
     
     ifelse(identical(modeling, FALSE),
@@ -211,9 +213,24 @@ assessDesign <- function (
     
   }))
   
-  names(eval_design) <- model_names
+  if (modeling) {
+    
+    avg_med_id_rate <- mean(sapply(eval_design, function (x) {
+      
+      mean(attr(x, "MED")[, "med_reached"])
+      
+    }))
+    
+  }
   
   attr(eval_design, "avgSuccessRate") <- avg_success_rate
+  
+  if (modeling) {
+    
+    attr(eval_design, "avgMEDIdentificationRate") <- avg_med_id_rate
+    
+  }
+  
   attr(eval_design, "placEff")        <- ifelse(test = is.null(dr_means),
                                                 yes  = attr(mods, "placEff"),
                                                 no   = dr_means[1])
@@ -742,7 +759,14 @@ performBayesianMod <- function (
   
 ) {
   
-  fits_list <- future.apply::future_lapply(seq_along(posterior_list), function (i) {
+  ## Make parallel processing optional
+  if (requireNamespace("future.apply", quietly = TRUE)) {
+    optPar_lapply <- future.apply::future_lapply
+  } else {
+    optPar_lapply <- lapply
+  }
+  
+  fits_list <- optPar_lapply(seq_along(posterior_list), function (i) {
     
     if (b_mcp[i, 1]) {
       
