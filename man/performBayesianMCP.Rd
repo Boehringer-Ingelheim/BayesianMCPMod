@@ -29,9 +29,9 @@ mods <- DoseFinding::Mods(linear      = NULL,
 dose_levels  <- c(0, 0.5, 2, 4, 8)
 sd_posterior <- c(2.8,3,2.5,3.5,4)
 contr_mat <- getContr(
-  mods         = mods,
-  dose_levels  = dose_levels,
-  sd_posterior = sd_posterior)
+  mods          = mods,
+  dose_levels   = dose_levels,
+  cov_posterior = diag(sd_posterior)^2)
 critVal <- getCritProb(
   mods           = mods,
   dose_weights   = c(50, 50, 50, 50, 50), #reflecting the planned sample size
@@ -43,7 +43,7 @@ prior_list <- list(Ctrl = RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 5), sigma =
                    DG_3 = RBesT::mixnorm(comp1 = c(w = 1, m = 1.3, s = 11), sigma = 2) ,
                    DG_4 = RBesT::mixnorm(comp1 = c(w = 1, m = 2, s = 13), sigma = 2))
 mu <- c(0, 1, 1.5, 2, 2.5)
-S_hat <- c(5, 4, 6, 7, 8)
+S_hat <- diag(c(5, 4, 6, 7, 8))
 posterior_list <- getPosterior(
   prior_list = prior_list,
   mu_hat     = mu,

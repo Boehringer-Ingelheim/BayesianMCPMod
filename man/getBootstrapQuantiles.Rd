@@ -16,7 +16,7 @@ getBootstrapQuantiles(model_fits, quantiles, n_samples = 1000, doses = NULL)
 \item{doses}{A vector of doses for which a prediction should be performed. If NULL, the dose levels of the model_fits will be used. Default NULL.}
 }
 \value{
-A data frame with columns for model, dose, and bootstrapped samples
+A tibble with columns for model, dose, and bootstrapped samples
 }
 \description{
 A function for the calculation of bootstrapped model predictions.

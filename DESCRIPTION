@@ -1,7 +1,6 @@
 Package: BayesianMCPMod
-Title: Simulate, Evaluate, and Analyze Dose Finding Trials with Bayesian
-    MCPMod
-Version: 1.1.0.2
+Title: Simulate, Evaluate, and Analyze Dose Finding Trials with Bayesian MCPMod
+Version: 1.1.0.3
 Authors@R: c(
     person("Boehringer Ingelheim Pharma GmbH & Co. KG", role = c("cph", "fnd")),
     person("Stephan", "Wojciekowski", , "stephan.wojciekowski@boehringer-ingelheim.com", role = c("aut", "cre")),
@@ -21,7 +20,7 @@ Description: Bayesian MCPMod (Fleischer et al. (2022)
     approach (Schmidli et al. (2014) <doi:10.1111/biom.12242>), can be
     specified for each dose group.  Resulting mixture posterior
     distributions are used in the Bayesian Multiple Comparison Procedure
-    and modeling steps.  The modeling step also includes a weighted model
+    and modeling steps. The modeling step also includes a weighted model
     averaging approach (Pinheiro et al. (2014) <doi:10.1002/sim.6052>).
     Estimated dose-response relationships can be bootstrapped and
     visualized.
@@ -34,18 +33,16 @@ Depends:
 Imports:
     checkmate,
     DoseFinding (>= 1.1-1),
+    dplyr,
     ggplot2,
     methods,
     nloptr,
     RBesT,
-    stats
+    stats,
+    tidyr
 Suggests:
     clinDR,
-    data.table,
     doFuture,
-    doRNG,
-    dplyr,
-    future,
     future.apply,
     kableExtra,
     knitr,
@@ -54,8 +51,7 @@ Suggests:
     rmarkdown,
     spelling,
     testthat (>= 3.0.0),
-    tibble,
-    tidyr
+    tibble
 VignetteBuilder: 
     knitr
 Config/testthat/edition: 3

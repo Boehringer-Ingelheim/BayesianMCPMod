@@ -66,14 +66,17 @@ getPriorList <- function (
 
 # read in testdata --------------------------------------------------------
 
+# testdata <- readRDS(file.path(getwd(), "tests/testthat/data/testdata.RDS"))
 testdata <- readRDS("data/testdata.RDS")
-
-
 
 # further setup -----------------------------------------------------------
 
 
-
+## TODO: to be adapted/deleted?
+## This is part of the 'Test for getPostProb' in test-BMCPMod
+## However, this only test the function provided here,
+## and not the function that is part of the R package.
+## => Modification needed?
 getPostProb <- function (
 
   contr_j,     # j: dose level
@@ -187,7 +190,7 @@ names(prior_list_matrix) <- c("Ctr","DG_1","DG_2","DG_3","DG_4")
 
 mu_hat <- c(10, 20, 30, 40, 50)
 se_hat_vector <- c(1.0, 3.0, 5.0, 9.0, 6.0)
-se_hat_vector_sqrt <- c(sqrt(1), sqrt(3), sqrt(5), sqrt(9), sqrt(6))
+se_hat_vector_sqrt <- sqrt(se_hat_vector)
 
 se_hat_matrix <- matrix(c(1.00, 0.00, 0.00, 0.00, 0.00,
                           0.00, 3.00, 0.00, 0.00, 0.00,

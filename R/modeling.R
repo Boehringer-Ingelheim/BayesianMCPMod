@@ -274,7 +274,7 @@ getModelFitOpt <- function (
   }
 
   param_list <- getOptParams(model, dose_levels, posterior)
-  post_combs <- getPostCombsI(posterior)
+  post_combs <- getPostCompsI(posterior)
 
   fit <- nloptr::nloptr(
     eval_f      = optFun,

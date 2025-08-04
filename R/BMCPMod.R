@@ -173,9 +173,9 @@ assessDesign <- function (
       post_sds <- sapply(posterior_list, function (post) summary(post)[, 2])
 
       contr <- apply(post_sds, 2, function (post_sd) getContr(
-        mods           = mods,
-        dose_levels    = dose_levels,
-        sd_posterior   = post_sd))
+        mods          = mods,
+        dose_levels   = dose_levels,
+        cov_posterior = diag(post_sd^2)))
 
     }
 
@@ -212,21 +212,17 @@ assessDesign <- function (
            attr(x$BayesianMCP, "successRate"))
 
   }))
+  
+  attr(eval_design, "avgSuccessRate") <- avg_success_rate
 
-  if (modeling) {
+  if (modeling & !is.null(delta)) {
 
     avg_med_id_rate <- mean(sapply(eval_design, function (x) {
 
       mean(attr(x, "MED")[, "med_reached"])
 
     }))
-
-  }
-
-  attr(eval_design, "avgSuccessRate") <- avg_success_rate
-
-  if (modeling) {
-
+    
     attr(eval_design, "avgMEDIdentificationRate") <- avg_med_id_rate
 
   }
@@ -251,13 +247,55 @@ BayesMCPi <- function (
   crit_prob_adj
 
 ) {
+  
+  post_comps_i <- attr(posterior_i, "posteriorInfo")
+  
+  ## Pinheiro, José, et al.
+  ## "Model‐based dose finding under model uncertainty using general parametric models." 
+  ## Statistics in medicine 33.10 (2014): 1646-1661. doi:10.1002/sim.6052
+  ## Section 2.2
+  
+  mu_mat    <- do.call(cbind, post_comps_i$means) # [N candidate models, N posterior components]
+  S_list    <- post_comps_i$covMats               # list[[N posterior components]] of cov matrices
+                                                  # with [N candidate models, N candidate models]
+  
+  # Optimal contrast matrix
+  contr_mat <- contr$contMat                      # [N dose levels, N candidate models]
+  
+  ## Contrast estimates for each component
+  contr_est_mu  <- t(contr_mat) %*% mu_mat        # [N candidate models, N posterior components]
+  contr_est_cov <-
+    lapply(S_list, function(S)                    # list[[N posterior components]] of cov matrices
+      t(contr_mat) %*% S %*% contr_mat)           # with [N candidate models, N candidate models]
+  
+  ## Test statistic for each component            # [N candidate models, N posterior components]
+  z_m <- contr_est_mu / do.call(cbind, lapply(contr_est_cov, diag))^0.5
+  
+  ## Fleischer, Frank, et al.
+  ## "Bayesian MCPMod."
+  ## Pharmaceutical Statistics 21.3 (2022): 654-670. doi:10.1002/pst.2193
+  ## Section 2.3
+  
+  ## Posterior probabilities                      # [N candidate models]
+  post_probs <- (pnorm(z_m) %*% unlist(post_comps_i$weights))[, 1]
 
+  res <- c(sign          = ifelse(max(post_probs) > crit_prob_adj, 1, 0),
+           crit_prob_adj = crit_prob_adj,
+           max_post_prob = max(post_probs),
+           post_probs    = post_probs)
+
+  return (res)
+  
   # getPostProb <- function (
   #   
   #   contr_j,     # j: dose level
   #   post_combs_i # i: simulation outcome
   #   
   # ) {
+  # 
+  #   ## Fleischer, Frank, et al. "Bayesian MCPMod."
+  #   ## Pharmaceutical Statistics 21.3 (2022): 654-670. doi:10.1002/pst.2193
+  #   ## Sections 2.2 and 2.3
   #   
   #   ## Test statistic = sum over all components of
   #   ## posterior weight * normal probability distribution of
@@ -275,7 +313,7 @@ BayesMCPi <- function (
   #   
   # }
   # 
-  # post_combs_i <- getPostCombsI(posterior_i)
+  # post_combs_i <- getPostCompsI(posterior_i)
   # post_probs   <- apply(contr$contMat, 2, getPostProb, post_combs_i)
   # 
   # res <- c(sign          = ifelse(max(post_probs) > crit_prob_adj, 1, 0),
@@ -284,47 +322,7 @@ BayesMCPi <- function (
   #          post_probs    = post_probs)
   # 
   # return (res)
-
-  getPostProb <- function (
-
-    contr_j,     # j: dose level
-    post_combs_i # i: simulation outcome
-
-  ) {
-
-    
-    if (is.data.frame(post_combs_i$vars)) {
-      
-      post_combs_i$vars <- apply(post_combs_i$vars, 1, diag, simplify = FALSE)
-      
-    }
-    
-    ## Test statistic = sum over all components of
-    ## posterior weight * normal probability distribution of
-    ## critical values for doses * estimated mean / sqrt(product of critical values for doses)
-
-    ## Calculation for each component of the posterior
-    contr_theta   <- apply(post_combs_i$means, 1, `%*%`, contr_j)
-    contr_var     <- apply(post_combs_i$vars, 1, `%*%`, contr_j^2)
-    contr_weights <- post_combs_i$weights
-
-    ## P(c_m * theta > 0 | Y = y) for a shape m (and dose j)
-    post_probs <- sum(contr_weights * stats::pnorm(contr_theta / sqrt(contr_var)))
-
-    return (post_probs)
-
-  }
-
-  post_combs_i <- getPostCombsI(posterior_i)
-  post_probs   <- apply(contr$contMat, 2, getPostProb, post_combs_i)
-
-  res <- c(sign          = ifelse(max(post_probs) > crit_prob_adj, 1, 0),
-           crit_prob_adj = crit_prob_adj,
-           max_post_prob = max(post_probs),
-           post_probs    = post_probs)
-
-  return (res)
-
+  
 }
 
 #' @title getContr
@@ -348,7 +346,6 @@ BayesMCPi <- function (
 #' @param prior_list A list of objects of class 'normMix' as created with 'RBesT::mixnorm()'. Only required as input for Option 1. Default NULL
 #' @param cov_posterior A covariance matrix with information about the variability of the posterior distribution, only required for Option 3. Default NULL
 #' @param cov_new_trial A covariance matrix with information about the observed variability, only required for Option 4. Default NULL
-
 #'
 #' @examples
 #' dose_levels  <- c(0, 0.5, 2, 4, 8)
@@ -368,14 +365,17 @@ BayesMCPi <- function (
 #' @return An object of class 'optContr' as provided by the function 'DoseFinding::optContr()'.
 #'
 #' @export
-getContr <- function(
+getContr <- function (
+    
     mods,
     dose_levels,
-    dose_weights = NULL,
-    prior_list   = NULL,
+    dose_weights  = NULL,
+    prior_list    = NULL,
     cov_posterior = NULL,
     cov_new_trial = NULL
+    
 ) {
+  
   checkmate::assert_class(mods, "Mods")
   checkmate::assert_numeric(dose_levels, lower = 0, any.missing = FALSE, len = length(attr(mods, "doses")))
 
@@ -485,17 +485,17 @@ getCritProb <- function (
 
   # Get contrast using updated getContr
   contr <- getContr(
-    mods = mods,
-    dose_levels = dose_levels,
-    dose_weights = dose_weights,
+    mods          = mods,
+    dose_levels   = dose_levels,
+    dose_weights  = dose_weights,
     cov_new_trial = cov_new_trial
   )
 
   # Calculate critical probability
   crit_prob <- stats::pnorm(DoseFinding::critVal(
-    corMat = contr$corMat,
-    alpha = alpha_crit_val,
-    df = 0,
+    corMat      = contr$corMat,
+    alpha       = alpha_crit_val,
+    df          = 0,
     alternative = "one.sided"
   ))
 
@@ -522,7 +522,7 @@ getModelSuccesses <- function (b_mcp) {
 #'
 #' @description Performs Bayesian MCP Test step and modeling in a combined fashion. See performBayesianMCP() function for MCP Test step and getModelFits() for the modeling step
 #'
-#' @param posterior_list An object of class 'postList' as created by getPosterior() containing information about the (mixture) posterior distribution per dose group
+#' @param posterior_list An object of class 'postList' or a list of 'postList' objects as created by getPosterior() containing information about the (mixture) posterior distribution per dose group
 #' @param contr An object of class 'optContr' as created by the getContr() function. It contains the contrast matrix to be used for the testing step.
 #' @param crit_prob_adj A getCritProb object, specifying the critical value to be used for the testing (on the probability scale).
 #' @param simple Boolean variable, defining whether simplified fit will be applied. Passed to the getModelFits() function. Default FALSE.
@@ -539,9 +539,9 @@ getModelSuccesses <- function (b_mcp) {
 #' dose_levels  <- c(0, 0.5, 2, 4, 8)
 #' sd_posterior <- c(2.8, 3, 2.5, 3.5, 4)
 #' contr_mat <- getContr(
-#'   mods         = mods,
-#'   dose_levels  = dose_levels,
-#'   sd_posterior = sd_posterior)
+#'   mods          = mods,
+#'   dose_levels   = dose_levels,
+#'   cov_posterior = diag(sd_posterior)^2)
 #' critVal <- getCritProb(
 #'   mods           = mods,
 #'   dose_weights   = c(50, 50, 50, 50, 50), #reflecting the planned sample size
@@ -553,7 +553,7 @@ getModelSuccesses <- function (b_mcp) {
 #'                    DG_3 = RBesT::mixnorm(comp1 = c(w = 1, m = 1.3, s = 11), sigma = 2) ,
 #'                    DG_4 = RBesT::mixnorm(comp1 = c(w = 1, m = 2, s = 13), sigma = 2))
 #' mu <- c(0, 1, 1.5, 2, 2.5)
-#' S_hat <- c(5, 4, 6, 7, 8)
+#' S_hat <- diag(c(5, 4, 6, 7, 8))
 #' posterior_list <- getPosterior(
 #'   prior_list = prior_list,
 #'   mu_hat     = mu,
@@ -584,30 +584,26 @@ performBayesianMCPMod <- function (
 
 ) {
 
-  checkmate::check_class(posterior_list, "postList")
-  checkmate::check_class(contr, "optContr")
-  checkmate::check_class(crit_prob_adj, "numeric")
-  checkmate::check_logical(simple)
-  checkmate::check_logical(avg_fit)
+  if (inherits(posterior_list,  "postList")) {
+    posterior_list <- list(posterior_list)
+  }
+  checkmate::assert_list(posterior_list, types = "postList")
+  
+  checkmate::assert_class(contr, "optContr")
+  checkmate::assert_class(crit_prob_adj, "numeric")
+  checkmate::assert_logical(simple)
+  checkmate::assert_logical(avg_fit)
 
-  checkmate::check_double(delta)
-  checkmate::check_double(evidence_level, lower = 0, upper = 1)
-  checkmate::check_character(med_selection)
-  checkmate::check_double(n_samples, lower = 1)
+  checkmate::assert_double(delta, null.ok = TRUE)
+  checkmate::assert_double(evidence_level, lower = 0, upper = 1, null.ok = TRUE)
+  checkmate::assert_character(med_selection)
+  checkmate::assert_double(n_samples, lower = 1)
 
   med_selection <- match.arg(med_selection, choices = c("avgFit", "bestFit"))
   get_med       <- ifelse(is.null(delta), FALSE, TRUE)
 
   if (!is.null(evidence_level)) {
-
     stopifnot("delta must not be NULL if evidence_level is not NULL" = !is.null(delta))
-
-  }
-
-  if (inherits(posterior_list,  "postList")) {
-
-    posterior_list <- list(posterior_list)
-
   }
 
   if (inherits(contr, "optContr")) {
@@ -716,9 +712,9 @@ performBayesianMCPMod <- function (
 #' dose_levels  <- c(0, 0.5, 2, 4, 8)
 #' sd_posterior <- c(2.8,3,2.5,3.5,4)
 #' contr_mat <- getContr(
-#'   mods         = mods,
-#'   dose_levels  = dose_levels,
-#'   sd_posterior = sd_posterior)
+#'   mods          = mods,
+#'   dose_levels   = dose_levels,
+#'   cov_posterior = diag(sd_posterior)^2)
 #' critVal <- getCritProb(
 #'   mods           = mods,
 #'   dose_weights   = c(50, 50, 50, 50, 50), #reflecting the planned sample size
@@ -730,7 +726,7 @@ performBayesianMCPMod <- function (
 #'                    DG_3 = RBesT::mixnorm(comp1 = c(w = 1, m = 1.3, s = 11), sigma = 2) ,
 #'                    DG_4 = RBesT::mixnorm(comp1 = c(w = 1, m = 2, s = 13), sigma = 2))
 #' mu <- c(0, 1, 1.5, 2, 2.5)
-#' S_hat <- c(5, 4, 6, 7, 8)
+#' S_hat <- diag(c(5, 4, 6, 7, 8))
 #' posterior_list <- getPosterior(
 #'   prior_list = prior_list,
 #'   mu_hat     = mu,
@@ -751,18 +747,26 @@ performBayesianMCP <- function(
   crit_prob_adj
 
 ) {
-
-  checkmate::check_class(posterior_list, "postList")
-  checkmate::check_class(contr, "optContr")
-  checkmate::check_class(crit_prob_adj, "numeric")
-  checkmate::check_numeric(crit_prob_adj, lower = 0, upper = Inf)
-
+  
   if (inherits(posterior_list,  "postList")) {
-
+    
     posterior_list <- list(posterior_list)
-
+    
   }
+  checkmate::assert_list(posterior_list, types = "postList")
+  
+  checkmate::assert(
+    checkmate::check_class(contr, "optContr"),
+    checkmate::check_list(contr, types = "optContr"),
+    combine = "or")
+  
+  checkmate::assert_class(crit_prob_adj, "numeric")
+  checkmate::assert_numeric(crit_prob_adj, lower = 0, upper = Inf)
 
+  ## TODO: What case is covered by the IF clause?
+  ## Optionally providing custom contrast?
+  ## This was written before the checkmate assertions were included
+  ## -> if contrasts are re-evaluated, contr becomes a list of contrasts
   if (inherits(contr, "optContr")) {
 
     b_mcp <- t(sapply(posterior_list, BayesMCPi, contr, crit_prob_adj))
@@ -779,11 +783,8 @@ performBayesianMCP <- function(
   attr(b_mcp, "essAvg")      <- ifelse(
     test = is.na(attr(posterior_list[[1]], "ess")),
     yes  = numeric(0),
-    no   = rowMeans(sapply(posterior_list, function (posteriors) {
-
-      attr(posteriors, "ess")
-
-    })))
+    no   = rowMeans(sapply(posterior_list,
+                           function (posteriors) attr(posteriors, "ess"))))
 
   return (b_mcp)
 

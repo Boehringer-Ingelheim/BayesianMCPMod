@@ -392,11 +392,36 @@ print.postList <- function (
   names(x) <- rownames(summary_tab)
   class(x) <- NULL
   
+  ## removes the covariance matrices from the print out
+  attr(x, "posteriorInfo") <- NULL
+  
   list_out <- list(summary_tab, getMaxDiff(summary_tab[, 4]), x)
+  
   names(list_out) <- c("Summary of Posterior Distributions",
                        "Maximum Difference to Control and Dose Group",
                        "Posterior Distributions")
   
+  
+  # for (i in seq_along(list_out)) {
+  # 
+  #   cat(sprintf("$%s:\n", names(list_out)[i]))
+  # 
+  #   if (i == 3) {
+  #     cat("Note: For a more detailed posterior output including\n",
+  #         "     covariance matricies across mixture components,\n",
+  #         "     please use attr(x, 'posteriorInfo').\n\n")
+  #   }
+  # 
+  #   print(list_out[[i]], ...)
+  # 
+  #   if (i != length(list_out)) cat("\n")
+  # 
+  # }
+  # rm(i)
+  
   print(list_out, ...)
+  cat("Note: For a more detailed posterior output including\n",
+      "     covariance matricies across mixture components,\n",
+      "     please use attr(x, 'posteriorInfo').")
   
 }

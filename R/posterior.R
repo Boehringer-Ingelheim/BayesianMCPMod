@@ -21,14 +21,8 @@
 #'                    DG_3 = RBesT::mixnorm(comp1 = c(w = 1, m = 1.3, s = 11), sigma = 2) ,
 #'                    DG_4 = RBesT::mixnorm(comp1 = c(w = 1, m = 2, s = 13), sigma = 2))
 #'                    
-#' prior_list <- list(Ctrl = RBesT::mixnorm(comp1 = c(w = 0.4, m = 0, s = 5), comp2 = c(w = 0.6, m = 2, s = 3), sigma = 2),
-#'                    DG_1 = RBesT::mixnorm(comp1 = c(w = 1, m = 1, s = 12), sigma = 2),
-#'                    DG_2 = RBesT::mixnorm(comp1 = c(w = 0.3, m = 1.2, s = 11), comp2 = c(w = 0.7, m = 1, s = 4), sigma = 2) ,
-#'                    DG_3 = RBesT::mixnorm(comp1 = c(w = 0.2, m = 1.3, s = 11), comp2 = c(w = 0.5, m = 1, s = 4), comp3 = c(w = 0.3, m = 7, s = 1), sigma = 2) ,
-#'                    DG_4 = RBesT::mixnorm(comp1 = c(w = 1, m = 2, s = 13), sigma = 2))
-#'                    
 #' mu_hat <- c(0, 1, 1.5, 2, 2.5)
-#' S_hat  <- diag(c(5, 4, 6, 7, 8))
+#' S_hat  <- diag(c(5, 4, 6, 7, 8)^2)
 #'
 #' posterior_list <- getPosterior(
 #'    prior_list = prior_list,
@@ -85,9 +79,10 @@ getPosterior <- function(
       
     } else {
       
-      ## To we need posterior derivation based on RBesT, or should we just use DoseFinding::mvpostmix?
+      ## TODO: Do we need posterior derivation based on RBesT,
+      ## or should we just use DoseFinding::mvpostmix?
       ## Also interesting in terms of dependency on RBesT for validation?
-      ## all.equal(posterior_list2, posterior_list)
+      # all.equal(posterior_list2, posterior_list)
       posterior_list <- getPosteriorI(
         prior_list = prior_list,
         mu_hat     = mu_hat,
@@ -194,7 +189,7 @@ getESS <- function (
 
 }
 
-getPostCombsI <- function (
+getPostCompsI <- function (
 
   posterior_i
 
@@ -205,10 +200,10 @@ getPostCombsI <- function (
     means   = lapply(posterior_i, function (x) x[2, ]),
     vars    = lapply(posterior_i, function (x) x[3, ]^2))
 
-  post_combs         <- lapply(post_params, expand.grid)
-  post_combs$weights <- apply(post_combs$weights, 1, prod)
+  post_comps         <- lapply(post_params, expand.grid)
+  post_comps$weights <- apply(post_comps$weights, 1, prod)
 
-  return (post_combs)
+  return (post_comps)
 
 }
 
