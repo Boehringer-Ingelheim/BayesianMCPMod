@@ -326,6 +326,7 @@ The critical value is calculated using (re-estimated) contrasts for frequentist 
 A pseudo-optimal contrast matrix is generated based on the variability of the posterior distribution (see [@fleischer_2022] for more details).
 
 ```{r}
+#This step needs to be updated using the new syntax.
 crit_pval <- getCritProb(
   mods           = mods,
   dose_levels    = dose_levels,
