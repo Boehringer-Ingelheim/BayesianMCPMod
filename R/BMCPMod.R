@@ -473,7 +473,7 @@ getCritProb <- function (
   mods,
   dose_levels,
   dose_weights   = NULL,
-  cov_new_trial   = NULL,
+  cov_new_trial  = NULL,
   alpha_crit_val = 0.025
 
 ) {

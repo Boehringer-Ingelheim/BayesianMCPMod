@@ -310,7 +310,7 @@ the prior information with the estimated results of the trial [@fleischer_2022].
 posterior <- getPosterior(
   prior_list = prior_list,
   mu_hat     = trial_data$rslt,
-  S_hat      = trial_data$se,
+  S_hat      = diag(trial_data$se^2),
   calc_ess   = TRUE
 )
 
@@ -330,14 +330,14 @@ A pseudo-optimal contrast matrix is generated based on the variability of the po
 crit_pval <- getCritProb(
   mods           = mods,
   dose_levels    = dose_levels,
-  se_new_trial   = trial_data$se,
+  cov_new_trial  = diag(trial_data$se^2),
   alpha_crit_val = 0.05
 )
 
 contr_mat <- getContr(
-  mods         = mods,
-  dose_levels  = dose_levels,
-  sd_posterior = summary(posterior)[, 2]
+  mods          = mods,
+  dose_levels   = dose_levels,
+  cov_posterior = diag(summary(posterior)[, 2]^2)
 )
 ```
 
@@ -357,7 +357,7 @@ contr_mat_prior <- getContr(
 contr_mat_prior <- getContr(
   mods           = mods,
   dose_levels    = dose_levels,
-  se_new_trial   = trial_data$se)
+  cov_new_trial  = diag(trial_data$se^2))
 # iii)  Bayesian approach using number of patients for new trial and prior distribution
 contr_mat_prior <- getContr(
   mods           = mods,
