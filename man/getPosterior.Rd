@@ -20,7 +20,7 @@ Also a simulateData object can be provided.}
 
 \item{mu_hat}{vector of estimated mean values (per dose group).}
 
-\item{S_hat}{Either a vector or a covariance matrix specifying the (estimated) variability can be specified. The length of the vector (resp. the dimension of the matrix) needs to match the number of dose groups. Please note that for a vector input the numbers should reflect the standard error per dose group (i.e. square root of variance), while for a matrix input the variance-covariance matrix should be provided.}
+\item{S_hat}{A covariance matrix specifying the (estimated) variability.  The variance-covariance matrix should be provided and the dimension of the matrix needs to match the number of dose groups.}
 
 \item{calc_ess}{boolean variable, indicating whether effective sample size should be calculated. Default FALSE}
 }

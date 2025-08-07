@@ -33,8 +33,8 @@ Hereby optimal contrasts of the frequentist MCPMod are applied and two options c
 \enumerate{
 \item Frequentist approach: If only dose_weights are provided optimal contrast vectors are calculated from the
 regular MCPMod for these specific weights and the corresponding critical value for this set of contrasts is calculated via the critVal() function of the DoseFinding package.
-\item Frequentist approach + re-estimation: If only a se_new_trial (i.e. the estimated variability per dose group of a new trial) is provided, optimal contrast vectors are calculated from the
-regular MCPMod for this specific vector of standard errors. Here as well the critical value for this set of contrasts is calculated via the critVal() function of the DoseFinding package.
+\item Frequentist approach + re-estimation: If only a cov_new_trial (i.e. the covariance matrix of a new trial) is provided, optimal contrast vectors are calculated from the
+regular MCPMod for this specific matrix. Here as well the critical value for this set of contrasts is calculated via the critVal() function of the DoseFinding package.
 }
 }
 \examples{
