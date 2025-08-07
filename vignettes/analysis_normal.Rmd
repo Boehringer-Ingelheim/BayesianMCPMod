@@ -326,7 +326,6 @@ The critical value is calculated using (re-estimated) contrasts for frequentist 
 A pseudo-optimal contrast matrix is generated based on the variability of the posterior distribution (see [@fleischer_2022] for more details).
 
 ```{r}
-#This step needs to be updated using the new syntax.
 crit_pval <- getCritProb(
   mods           = mods,
   dose_levels    = dose_levels,
@@ -445,19 +444,19 @@ bootstrap_quantiles <- getBootstrapQuantiles(
   doses      = c(0, 2.5, 4, 5, 7, 10),
   n_samples  = 10)
 ```
+The boostrap quantiles include information about the absolute quantiles (sample_type=abs) and also about the placebo-adjusted (resp. control-adjusted) quantiles (sample_type=diff). 
 
 ```{r, collapse = TRUE}
 #| code-fold: true
 reactable::reactable(
   data = bootstrap_quantiles |>
-    tidyr::pivot_wider(names_from = q_prob, values_from = q_val) |>
-    dplyr::select(-sample_type),
+    tidyr::pivot_wider(names_from = q_prob, values_from = q_val),
   groupBy = "model",
   columns = list(
-    dose    = colDef(aggregate = "count", format = list(aggregated = colFormat(suffix = " dose"))),
-    "0.025" = colDef(aggregate = "mean", format = list(aggregated = colFormat(prefix = "mean = ", digits = 2), cell = colFormat(digits = 4))),
-    "0.5"   = colDef(aggregate = "mean", format = list(aggregated = colFormat(prefix = "mean = ", digits = 2), cell = colFormat(digits = 4))),
-    "0.975" = colDef(aggregate = "mean", format = list(aggregated = colFormat(prefix = "mean = ", digits = 2), cell = colFormat(digits = 4)))
+    dose    = colDef(format = list(aggregated = colFormat(suffix = " dose"))),
+    "0.025" = colDef(format = list(cell = colFormat(digits = 4))),
+    "0.5"   = colDef(format = list(cell = colFormat(digits = 4))),
+    "0.975" = colDef(format = list(cell = colFormat(digits = 4)))
   )
 )
 ```
