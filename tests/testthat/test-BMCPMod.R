@@ -372,20 +372,21 @@ test_that("performBayesianMCPMod returns the right type of object under normal c
 # Tests for addSignificance -----------------------------------------------
 
 
-
-test_that("addSignificance works as intended", {
-  model_fits  <- list(linear = 1)
-
-  model_fits_with_sign = addSignificance(model_fits, list(TRUE))
-  expect_true(
-    model_fits_with_sign[[1]][["significant"]]
-  )
-
-  model_fits_with_sign = addSignificance(model_fits, list(FALSE))
-  expect_false(
-    model_fits_with_sign[[1]]$significant
-  )
-})
+## TODO: This test did not capture that the addSignificance function
+##       did not function as intended and must be re-worked.
+# test_that("addSignificance works as intended", {
+#   model_fits  <- list(linear = 1)
+# 
+#   model_fits_with_sign = addSignificance(model_fits, list(TRUE))
+#   expect_true(
+#     model_fits_with_sign[[1]][["significant"]]
+#   )
+# 
+#   model_fits_with_sign = addSignificance(model_fits, list(FALSE))
+#   expect_false(
+#     model_fits_with_sign[[1]]$significant
+#   )
+# })
 
 
 
