@@ -171,7 +171,8 @@ print.BayesianMCP <- function(x, ...) {
           replacement = "",
           x           = names(model_probs)))))
     
-    printMatrixWithPrefix(model_mat)
+    printMatrixWithPrefix(
+      rbind(model_mat, Significant = x[, -c(1, 2, 3)] > attr(x, "critProbAdj")))
     
     if (any(!is.na(attr(x, "essAvg")))) {
       
