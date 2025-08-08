@@ -274,10 +274,44 @@ print.modelFits <- function (
   
 ) {
   
+  ## Model Coefficients
+  
+  model_names <- shortenModelNames(names(x), pad_string = TRUE)
+  
+  cat("Model Coefficients\n")
+  
+  for (i in seq_along(x)) {
+    
+    if (x[[i]]$model != "avgFit") {
+      
+      coeff_values <- x[[i]]$coeff
+      coeff_names  <- names(coeff_values)
+      
+      cat(" ", model_names[i],
+          paste(coeff_names, round(coeff_values, n_digits),
+                sep      = " = ",
+                collapse = ", "), "\n",
+          sep = " ")
+      
+    }
+    
+  }
+  
+  ## Dose Levels
+  
   dose_levels <- x[[1]]$dose_levels
   dose_names  <- names(attr(x, "posterior"))
   
-  predictions <- t(sapply(x, function (y) y$pred_values))
+  cat("Dose Levels\n", "", # "" is required for proper indentation
+      paste(dose_names, round(dose_levels, n_digits),
+            sep      = " = ",
+            collapse = ", "), "\n")
+  
+  ## Predictions, Maximum Effect, gAIC & avgFit Model Weights
+  
+  cat("Predictions, Maximum Effect, gAIC")
+  
+  predictions           <- t(sapply(x, function (y) y$pred_values))
   colnames(predictions) <- dose_names
   
   out_table <- data.frame(predictions,
@@ -296,32 +330,6 @@ print.modelFits <- function (
     
   }
   
-  out_table   <- apply(as.matrix(out_table), 2, round, digits = n_digits)
-  model_names <- setdiff(shortenModelNames(names(x), pad_string = TRUE), "avgFit")
-  
-  cat("Model Coefficients\n")
-  for (i in seq_along(model_names)) {
-    
-    if (model_names[i] != "avgFit     ") {
-      
-      coeff_values <- x[[i]]$coeff
-      coeff_names  <- names(coeff_values)
-      
-      cat(" ", model_names[i],
-          paste(coeff_names, round(coeff_values, n_digits),
-                sep      = " = ",
-                collapse = ", "), "\n",
-          sep = " ")
-      
-    }
-    
-  }
-  cat("Dose Levels\n", "", # "" is required for proper indentation
-      paste(dose_names, round(dose_levels, n_digits),
-            sep      = " = ",
-            collapse = ", "), "\n")
-  cat("Predictions, Maximum Effect, gAIC")
-  
   if (model_sig) {
     
     cat(", avgFit Model Weights & Significance\n")
@@ -332,6 +340,10 @@ print.modelFits <- function (
     
   }
   
+  
+  
+  
+  out_table <- apply(as.matrix(out_table), 2, round, digits = n_digits)
   rownames(out_table) <- shortenModelNames(rownames(out_table))
   
   printMatrixWithPrefix(out_table)

@@ -5,11 +5,26 @@ addSignificance <- function (
 
 ) {
 
-  names(sign_models) <- NULL
+  sign_models_fits <- sapply(names(model_fits), function (model_name) {
+    
+    if (model_name != "avgFit") {
+      
+      indx <- grepl(model_name, names(sign_models))
+      
+      sum(sign_models[indx]) > 0
+      
+    } else {
+      
+      NA
+      
+    }
+    
+  })
+
 
   model_fits_out <- lapply(seq_along(model_fits), function (i) {
 
-    c(model_fits[[i]], significant = sign_models[i])
+    c(model_fits[[i]], significant = sign_models_fits[i])
 
   })
 
