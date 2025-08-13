@@ -8,9 +8,9 @@ pseudo-optimal contrasts via regular MCPMod are calculated from the
 regular MCPMod for these specific weights
 Frequentist approach: If only dose_weights are provided optimal contrast vectors are calculated from the
 regular MCPMod for these specific weights
-Bayesian approach + re-estimation: If only a sd_posterior (i.e. variability of the posterior distribution) is provided, pseudo-optimal contrasts based on these posterior weights will be calculated
-Frequentist approach+re-estimation: If only a se_new_trial (i.e. the estimated variability per dose group of a new trial) is provided, optimal contrast vectors are calculated from the
-regular MCPMod for this specific vector of standard errors. For the actual evaluation this vector of standard errors is translated into a (diagonal) matrix of variances
+Bayesian approach + re-estimation: If only a cov_posterior (i.e. variability of the posterior distribution) is provided, pseudo-optimal contrasts based on these posterior weights will be calculated
+Frequentist approach+re-estimation: If only a cov_new_trial (i.e. the estimated variability of a new trial) is provided, optimal contrast vectors are calculated from the
+regular MCPMod for this specific covariance matrix.
 
 "><meta property="og:description" content="This function calculates contrast vectors that are optimal for detecting certain alternatives via applying the function optContr() of the DoseFinding package.
 Hereby, 4 different options can be distinguished that are automatically executed based on the input that is provided
@@ -21,9 +21,9 @@ pseudo-optimal contrasts via regular MCPMod are calculated from the
 regular MCPMod for these specific weights
 Frequentist approach: If only dose_weights are provided optimal contrast vectors are calculated from the
 regular MCPMod for these specific weights
-Bayesian approach + re-estimation: If only a sd_posterior (i.e. variability of the posterior distribution) is provided, pseudo-optimal contrasts based on these posterior weights will be calculated
-Frequentist approach+re-estimation: If only a se_new_trial (i.e. the estimated variability per dose group of a new trial) is provided, optimal contrast vectors are calculated from the
-regular MCPMod for this specific vector of standard errors. For the actual evaluation this vector of standard errors is translated into a (diagonal) matrix of variances
+Bayesian approach + re-estimation: If only a cov_posterior (i.e. variability of the posterior distribution) is provided, pseudo-optimal contrasts based on these posterior weights will be calculated
+Frequentist approach+re-estimation: If only a cov_new_trial (i.e. the estimated variability of a new trial) is provided, optimal contrast vectors are calculated from the
+regular MCPMod for this specific covariance matrix.
 
 "></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -33,7 +33,7 @@ regular MCPMod for this specific vector of standard errors. For the actual evalu
 
     <a class="navbar-brand me-2" href="../index.html">BayesianMCPMod</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -74,9 +74,9 @@ pseudo-optimal contrasts via regular MCPMod are calculated from the
 regular MCPMod for these specific weights</p></li>
 <li><p>Frequentist approach: If only dose_weights are provided optimal contrast vectors are calculated from the
 regular MCPMod for these specific weights</p></li>
-<li><p>Bayesian approach + re-estimation: If only a sd_posterior (i.e. variability of the posterior distribution) is provided, pseudo-optimal contrasts based on these posterior weights will be calculated</p></li>
-<li><p>Frequentist approach+re-estimation: If only a se_new_trial (i.e. the estimated variability per dose group of a new trial) is provided, optimal contrast vectors are calculated from the
-regular MCPMod for this specific vector of standard errors. For the actual evaluation this vector of standard errors is translated into a (diagonal) matrix of variances</p></li>
+<li><p>Bayesian approach + re-estimation: If only a cov_posterior (i.e. variability of the posterior distribution) is provided, pseudo-optimal contrasts based on these posterior weights will be calculated</p></li>
+<li><p>Frequentist approach+re-estimation: If only a cov_new_trial (i.e. the estimated variability of a new trial) is provided, optimal contrast vectors are calculated from the
+regular MCPMod for this specific covariance matrix.</p></li>
 </ol></div>
 
     <div class="section level2">
@@ -86,8 +86,8 @@ regular MCPMod for this specific vector of standard errors. For the actual evalu
 <span>  <span class="va">dose_levels</span>,</span>
 <span>  dose_weights <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  prior_list <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  sd_posterior <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  se_new_trial <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  cov_posterior <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  cov_new_trial <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -111,12 +111,12 @@ regular MCPMod for this specific vector of standard errors. For the actual evalu
 <dd><p>A list of objects of class 'normMix' as created with 'RBesT::mixnorm()'. Only required as input for Option 1. Default NULL</p></dd>
 
 
-<dt id="arg-sd-posterior">sd_posterior<a class="anchor" aria-label="anchor" href="#arg-sd-posterior"></a></dt>
-<dd><p>A vector of positive values with information about the variability of the posterior distribution, only required for Option 3. Default NULL</p></dd>
+<dt id="arg-cov-posterior">cov_posterior<a class="anchor" aria-label="anchor" href="#arg-cov-posterior"></a></dt>
+<dd><p>A covariance matrix with information about the variability of the posterior distribution, only required for Option 3. Default NULL</p></dd>
 
 
-<dt id="arg-se-new-trial">se_new_trial<a class="anchor" aria-label="anchor" href="#arg-se-new-trial"></a></dt>
-<dd><p>A vector of positive values with information about the observed variability, only required for Option 4. Default NULL</p></dd>
+<dt id="arg-cov-new-trial">cov_new_trial<a class="anchor" aria-label="anchor" href="#arg-cov-new-trial"></a></dt>
+<dd><p>A covariance matrix with information about the observed variability, only required for Option 4. Default NULL</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -133,12 +133,12 @@ regular MCPMod for this specific vector of standard errors. For the actual evalu
 <span class="r-in"><span>  exponential <span class="op">=</span> <span class="fl">2</span>,</span></span>
 <span class="r-in"><span>  doses       <span class="op">=</span> <span class="va">dose_levels</span>,</span></span>
 <span class="r-in"><span>  maxEff      <span class="op">=</span> <span class="fl">6</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">sd_posterior</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2.8</span>, <span class="fl">3</span>, <span class="fl">2.5</span>, <span class="fl">3.5</span>, <span class="fl">4</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">cov_posterior</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/diag.html" class="external-link">diag</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2.8</span>, <span class="fl">3</span>, <span class="fl">2.5</span>, <span class="fl">3.5</span>, <span class="fl">4</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">contr_mat</span> <span class="op">&lt;-</span> <span class="fu">getContr</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  mods         <span class="op">=</span> <span class="va">mods</span>,</span></span>
 <span class="r-in"><span>  dose_levels  <span class="op">=</span> <span class="va">dose_levels</span>,</span></span>
-<span class="r-in"><span>  sd_posterior <span class="op">=</span> <span class="va">sd_posterior</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  cov_posterior <span class="op">=</span> <span class="va">cov_posterior</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

@@ -4,16 +4,16 @@ when using non-informative priors the actual error level for falsely declaring a
 Hereby optimal contrasts of the frequentist MCPMod are applied and two options can be distinguished
 Frequentist approach: If only dose_weights are provided optimal contrast vectors are calculated from the
 regular MCPMod for these specific weights and the corresponding critical value for this set of contrasts is calculated via the critVal() function of the DoseFinding package.
-Frequentist approach + re-estimation: If only a se_new_trial (i.e. the estimated variability per dose group of a new trial) is provided, optimal contrast vectors are calculated from the
-regular MCPMod for this specific vector of standard errors. Here as well the critical value for this set of contrasts is calculated via the critVal() function of the DoseFinding package.
+Frequentist approach + re-estimation: If only a cov_new_trial (i.e. the covariance matrix of a new trial) is provided, optimal contrast vectors are calculated from the
+regular MCPMod for this specific matrix. Here as well the critical value for this set of contrasts is calculated via the critVal() function of the DoseFinding package.
 
 "><meta property="og:description" content="This function calculates multiplicity adjusted critical values. The critical values are calculated in such a way that
 when using non-informative priors the actual error level for falsely declaring a significant trial in the Bayesian MCPMod is controlled (by the specified alpha level).
 Hereby optimal contrasts of the frequentist MCPMod are applied and two options can be distinguished
 Frequentist approach: If only dose_weights are provided optimal contrast vectors are calculated from the
 regular MCPMod for these specific weights and the corresponding critical value for this set of contrasts is calculated via the critVal() function of the DoseFinding package.
-Frequentist approach + re-estimation: If only a se_new_trial (i.e. the estimated variability per dose group of a new trial) is provided, optimal contrast vectors are calculated from the
-regular MCPMod for this specific vector of standard errors. Here as well the critical value for this set of contrasts is calculated via the critVal() function of the DoseFinding package.
+Frequentist approach + re-estimation: If only a cov_new_trial (i.e. the covariance matrix of a new trial) is provided, optimal contrast vectors are calculated from the
+regular MCPMod for this specific matrix. Here as well the critical value for this set of contrasts is calculated via the critVal() function of the DoseFinding package.
 
 "></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -23,7 +23,7 @@ regular MCPMod for this specific vector of standard errors. Here as well the cri
 
     <a class="navbar-brand me-2" href="../index.html">BayesianMCPMod</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -60,8 +60,8 @@ regular MCPMod for this specific vector of standard errors. Here as well the cri
 when using non-informative priors the actual error level for falsely declaring a significant trial in the Bayesian MCPMod is controlled (by the specified alpha level).
 Hereby optimal contrasts of the frequentist MCPMod are applied and two options can be distinguished</p><ol><li><p>Frequentist approach: If only dose_weights are provided optimal contrast vectors are calculated from the
 regular MCPMod for these specific weights and the corresponding critical value for this set of contrasts is calculated via the critVal() function of the DoseFinding package.</p></li>
-<li><p>Frequentist approach + re-estimation: If only a se_new_trial (i.e. the estimated variability per dose group of a new trial) is provided, optimal contrast vectors are calculated from the
-regular MCPMod for this specific vector of standard errors. Here as well the critical value for this set of contrasts is calculated via the critVal() function of the DoseFinding package.</p></li>
+<li><p>Frequentist approach + re-estimation: If only a cov_new_trial (i.e. the covariance matrix of a new trial) is provided, optimal contrast vectors are calculated from the
+regular MCPMod for this specific matrix. Here as well the critical value for this set of contrasts is calculated via the critVal() function of the DoseFinding package.</p></li>
 </ol></div>
 
     <div class="section level2">
@@ -70,7 +70,7 @@ regular MCPMod for this specific vector of standard errors. Here as well the cri
 <span>  <span class="va">mods</span>,</span>
 <span>  <span class="va">dose_levels</span>,</span>
 <span>  dose_weights <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  se_new_trial <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  cov_new_trial <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  alpha_crit_val <span class="op">=</span> <span class="fl">0.025</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -91,8 +91,8 @@ regular MCPMod for this specific vector of standard errors. Here as well the cri
 <dd><p>Vector specifying weights for the different doses, only required for Option i). Default NULL</p></dd>
 
 
-<dt id="arg-se-new-trial">se_new_trial<a class="anchor" aria-label="anchor" href="#arg-se-new-trial"></a></dt>
-<dd><p>A vector of positive values, only required for Option ii). Default NULL</p></dd>
+<dt id="arg-cov-new-trial">cov_new_trial<a class="anchor" aria-label="anchor" href="#arg-cov-new-trial"></a></dt>
+<dd><p>A covariance matrix, only required for Option ii). Default NULL</p></dd>
 
 
 <dt id="arg-alpha-crit-val">alpha_crit_val<a class="anchor" aria-label="anchor" href="#arg-alpha-crit-val"></a></dt>
