@@ -62,6 +62,8 @@ getModelFits <- function (
   
   if (inherits(models, "character")) {
     models <- stats::setNames(as.list(models), models)
+  } else if (inherits(models, "Mods")) {
+    models <- stats::setNames(as.list(names(models)), names(models))
   }
   
   checkmate::assert_list(models, any.missing = FALSE, types = "character")
