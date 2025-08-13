@@ -138,12 +138,12 @@ assessDesign <- function (
 
   checkmate::assert_vector(n_patients, len = length(attr(mods, "doses")), any.missing = FALSE)
   checkmate::assert_double(n_patients, lower = 2, upper = Inf)
-  checkmate::check_class(mods, classes = "Mods")
-  checkmate::check_list(prior_list, names = "named", len = length(attr(mods, "doses")), any.missing = FALSE)
+  checkmate::assert_class(mods, classes = "Mods")
+  checkmate::assert_list(prior_list, names = "named", len = length(attr(mods, "doses")), any.missing = FALSE)
   # sensitive to how DoseFinding labels their attributes for "Mods" class
-  checkmate::check_double(n_sim, lower = 1, upper = Inf)
-  checkmate::check_double(alpha_crit_val, lower = 0, upper = 1)
-  checkmate::check_logical(modeling)
+  checkmate::assert_integerish(n_sim, lower = 1, upper = Inf)
+  checkmate::assert_double(alpha_crit_val, lower = 0, upper = 1)
+  checkmate::assert_logical(modeling)
 
   # TODO: check that prior_list has 'sd_tot' attribute, and that it's numeric # this is not applicable at the moment
 
@@ -493,10 +493,10 @@ getCritProb <- function (
 
 ) {
 
-  checkmate::check_class(mods, classes = "Mods")
-  checkmate::check_double(dose_levels, lower = 0, any.missing = FALSE, len = length(dose_weights))
-  checkmate::check_double(dose_weights, any.missing = FALSE, len = length(dose_levels))
-  checkmate::check_double(alpha_crit_val, lower = 0, upper = 1)
+  checkmate::assert_class(mods, classes = "Mods")
+  checkmate::assert_double(dose_levels, lower = 0, any.missing = FALSE)
+  checkmate::assert_double(dose_weights, any.missing = FALSE, len = length(dose_levels), null.ok = TRUE)
+  checkmate::assert_double(alpha_crit_val, lower = 0, upper = 1)
 
   # Get contrast using updated getContr
   contr <- getContr(
@@ -568,7 +568,7 @@ getModelSuccesses <- function (b_mcp) {
 #'                    DG_3 = RBesT::mixnorm(comp1 = c(w = 1, m = 1.3, s = 11), sigma = 2) ,
 #'                    DG_4 = RBesT::mixnorm(comp1 = c(w = 1, m = 2, s = 13), sigma = 2))
 #' mu <- c(0, 1, 1.5, 2, 2.5)
-#' S_hat <- diag(c(5, 4, 6, 7, 8))
+#' S_hat <- diag(c(5, 4, 6, 7, 8)^2)
 #' posterior_list <- getPosterior(
 #'   prior_list = prior_list,
 #'   mu_hat     = mu,
@@ -741,7 +741,7 @@ performBayesianMCPMod <- function (
 #'                    DG_3 = RBesT::mixnorm(comp1 = c(w = 1, m = 1.3, s = 11), sigma = 2) ,
 #'                    DG_4 = RBesT::mixnorm(comp1 = c(w = 1, m = 2, s = 13), sigma = 2))
 #' mu <- c(0, 1, 1.5, 2, 2.5)
-#' S_hat <- diag(c(5, 4, 6, 7, 8))
+#' S_hat <- diag(c(5, 4, 6, 7, 8)^2)
 #' posterior_list <- getPosterior(
 #'   prior_list = prior_list,
 #'   mu_hat     = mu,

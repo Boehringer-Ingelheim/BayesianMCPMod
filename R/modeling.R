@@ -64,11 +64,14 @@ getModelFits <- function (
     models <- stats::setNames(as.list(models), models)
   }
   
-  checkmate::check_list(models, any.missing = FALSE)
-  checkmate::check_double(dose_levels, lower = 0, any.missing = FALSE, len = length(models))
-  checkmate::check_class(posterior, "postList")
-  checkmate::check_logical(avg_fit)
-  checkmate::check_logical(simple)
+  checkmate::assert_list(models, any.missing = FALSE, types = "character")
+  checkmate::assert_double(dose_levels, lower = 0, any.missing = FALSE)
+  checkmate::assert(
+    checkmate::check_class(posterior, "postList"),
+    checkmate::check_list(posterior) && all(sapply(posterior, inherits, c("normMix", "mix")))
+  )
+  checkmate::assert_logical(avg_fit)
+  checkmate::assert_logical(simple)
 
   model_names <- sort(unique(gsub("\\d", "", names(models))))
 
@@ -460,13 +463,13 @@ getMED <- function (
               is.null(model_fits) & !is.null(bs_quantiles) |
               !is.null(model_fits) & is.null(bs_quantiles))
   
-  checkmate::check_double(delta)
-  checkmate::check_double(evidence_level, lower = 0, upper = 1)
-  checkmate::check_double(dose_levels, lower = 0, any.missing = FALSE)
+  checkmate::assert_double(delta)
+  checkmate::assert_double(evidence_level, lower = 0, upper = 1)
+  checkmate::assert_double(dose_levels, lower = 0, any.missing = FALSE, null.ok = TRUE)
   
   if (!is.null(model_fits)) {
     
-    checkmate::check_class(model_fits, "modelFits")
+    checkmate::assert_class(model_fits, "modelFits")
     
     if (is.null(dose_levels)) {
       

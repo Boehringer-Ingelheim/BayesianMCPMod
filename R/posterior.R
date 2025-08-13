@@ -42,12 +42,11 @@ getPosterior <- function(
 
 ) {
 
-  checkmate::check_data_frame(data, null.ok = TRUE)
-  checkmate::check_list(prior_list, names = "named", any.missing = FALSE)
-  checkmate::check_vector(mu_hat, any.missing = FALSE, null.ok = TRUE)
-  checkmate::check_double(mu_hat, null.ok = TRUE, lower = -Inf, upper = Inf)
-  checkmate::assert_matrix(S_hat, any.missing = FALSE, null.ok = TRUE)
-  checkmate::check_double(S_hat, null.ok = TRUE, lower = 0, upper = Inf)
+  checkmate::assert_data_frame(data, null.ok = TRUE)
+  checkmate::assert_list(prior_list, names = "named", any.missing = FALSE)
+  checkmate::assert_vector(mu_hat, any.missing = FALSE, null.ok = TRUE)
+  checkmate::assert_double(mu_hat, null.ok = TRUE, lower = -Inf, upper = Inf)
+  checkmate::assert_matrix(S_hat, mode = "numeric", any.missing = FALSE, null.ok = TRUE)
 
   stopifnot("prior_list must be an object of RBesT package" =
               all(sapply(prior_list, function(x)
@@ -183,7 +182,10 @@ getESS <- function (
   post_list
 
 ) {
-
+  
+  checkmate::assert_list(post_list)
+  stopifnot(all(sapply(post_list, inherits, c("normMix", "mix"))))
+  
   # make s3 method for postList object
   suppressMessages(round(sapply(post_list, RBesT::ess), 1))
 

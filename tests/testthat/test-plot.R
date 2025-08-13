@@ -43,6 +43,7 @@ test_that("Test plot.modelFits with different model_fits input", {
   dose_levels <- c(0, 50, 100, 200)
   ## combine priors in list
   prior_list <- c(list(prior_ctr), rep(list(prior_trt), times = length(dose_levels[-1])))
+  names(prior_list) <- c("Ctrl", paste0("DG_", seq_along(dose_levels[-1])))
 
   # Pre-Specification (B)MCPMod
 

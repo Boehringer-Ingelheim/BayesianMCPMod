@@ -57,14 +57,14 @@ plot.modelFits <- function (
   ## R CMD --as-cran appeasement
   .data <- q_prob <- q_val <- model <- sample_type <- NULL
 
-  checkmate::check_logical(gAIC)
-  checkmate::check_logical(cr_intv)
-  checkmate::check_double(alpha_CrI, lower = 0, upper = 1)
-  checkmate::check_logical(cr_bands)
-  checkmate::check_double(alpha_CrB, lower = 0, upper = 1, len = 2)
-  checkmate::check_integer(n_bs_smpl, lower = 1, upper = Inf)
-  checkmate::check_string(acc_color, na.ok = TRUE)
-  checkmate::check_integer(plot_res, lower = 1, upper = Inf)
+  checkmate::assert_logical(gAIC)
+  checkmate::assert_logical(cr_intv)
+  checkmate::assert_double(alpha_CrI, lower = 0, upper = 1)
+  checkmate::assert_logical(cr_bands)
+  checkmate::assert_double(alpha_CrB, lower = 0, upper = 1, len = 2)
+  checkmate::assert_integerish(n_bs_smpl, lower = 1, upper = Inf)
+  checkmate::assert_string(acc_color, na.ok = TRUE)
+  checkmate::assert_integerish(plot_res, lower = 1, upper = Inf)
 
   model_fits <- x
 
@@ -94,14 +94,14 @@ plot.modelFits <- function (
 
     if (avg_fit) {
       
-      mod_weights <- sapply(model_fits, function (y) y$model_weight)[-length(model_names)]
+      mod_weights <- sapply(model_fits, function (y) y$model_weight)[-1]
 
       mod_weights <- sort(mod_weights, decreasing = TRUE)
       paste_names <- shortenModelNames(names(mod_weights))
 
       label_avg  <- paste0(paste_names, "=", round(mod_weights, 1),
                            collapse = ", ")
-      label_gAUC <- paste0(" ", c(label_avg, label_gAUC[-length(label_gAUC)]))
+      label_gAUC <- paste0(" ", c(label_avg, label_gAUC[-1]))
 
     }
 
