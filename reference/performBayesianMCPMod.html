@@ -126,7 +126,7 @@
 <span class="r-in"><span>                   DG_3 <span class="op">=</span> <span class="fu">RBesT</span><span class="fu">::</span><span class="fu"><a href="https://opensource.nibr.com/RBesT/reference/mixnorm.html" class="external-link">mixnorm</a></span><span class="op">(</span>comp1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>w <span class="op">=</span> <span class="fl">1</span>, m <span class="op">=</span> <span class="fl">1.3</span>, s <span class="op">=</span> <span class="fl">11</span><span class="op">)</span>, sigma <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> ,</span></span>
 <span class="r-in"><span>                   DG_4 <span class="op">=</span> <span class="fu">RBesT</span><span class="fu">::</span><span class="fu"><a href="https://opensource.nibr.com/RBesT/reference/mixnorm.html" class="external-link">mixnorm</a></span><span class="op">(</span>comp1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>w <span class="op">=</span> <span class="fl">1</span>, m <span class="op">=</span> <span class="fl">2</span>, s <span class="op">=</span> <span class="fl">13</span><span class="op">)</span>, sigma <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">mu</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">1.5</span>, <span class="fl">2</span>, <span class="fl">2.5</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">S_hat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/diag.html" class="external-link">diag</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">4</span>, <span class="fl">6</span>, <span class="fl">7</span>, <span class="fl">8</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">S_hat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/diag.html" class="external-link">diag</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">4</span>, <span class="fl">6</span>, <span class="fl">7</span>, <span class="fl">8</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">posterior_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="getPosterior.html">getPosterior</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  prior_list <span class="op">=</span> <span class="va">prior_list</span>,</span></span>
 <span class="r-in"><span>  mu_hat     <span class="op">=</span> <span class="va">mu</span>,</span></span>
@@ -141,10 +141,10 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> Bayesian Multiple Comparison Procedure</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   Significant:                   1 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   Critical Probability:          0.5706743 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   Maximum Posterior Probability: 0.7841028 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Maximum Posterior Probability: 0.6412959 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Posterior Probabilities for Model Shapes</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                        lin     emax1     emax2       exp</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   Posterior Prob 0.7699648 0.7762841 0.7841028 0.7046657 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Posterior Prob 0.6191201 0.6412959 0.6410572 0.5839261 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   Significant            1         1         1         1 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> MED Assessment</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   Selection Method:    avgFit </span>
@@ -154,17 +154,17 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span>   MED not reached Freq:        0 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   No success in MCP step Freq: 0 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Model Coefficients</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   emax   e0 = 0.1, eMax = 2.5, ed50 = 1.1 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   exp    e0 = 0.6, e1 = 3.3, delta = 16 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   lin    e0 = 0.6, delta = 0.3 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   emax   e0 = 0, eMax = 2.2, ed50 = 0.8 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   exp    e0 = 0.5, e1 = 3.4, delta = 16 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   lin    e0 = 0.5, delta = 0.3 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Dose Levels</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   Ctrl = 0, DG_1 = 0.5, DG_2 = 2, DG_3 = 4, DG_4 = 8 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Predictions, Maximum Effect, gAIC, avgFit Model Weights &amp; Significance</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>          Ctrl DG_1 DG_2 DG_3 DG_4 mEff gAIC    w Sign</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   avgFit  0.5  0.8  1.2  1.7  2.7  2.2   NA   NA   NA </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   emax    0.1  0.9  1.7  2.0  2.3  2.2  6.0  0.2  1.0 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   exp     0.6  0.7  1.1  1.6  2.8  2.2  6.2  0.2  1.0 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   lin     0.6  0.7  1.1  1.7  2.8  2.2  4.1  0.6  1.0 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   avgFit  0.4  0.7  1.2  1.6  2.6  2.2   NA   NA   NA </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   emax    0.0  0.9  1.6  1.9  2.1  2.0  6.0  0.2  1.0 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   exp     0.5  0.6  1.0  1.5  2.7  2.2  6.0  0.2  1.0 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   lin     0.5  0.6  1.0  1.6  2.7  2.3  4.0  0.6  1.0 </span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
