@@ -27,7 +27,7 @@ test_that("predictModelFit works correctly", {
   posterior <- getPosterior(
     prior_list = prior_list,
     mu_hat     = trial_data$rslt,
-    S_hat      = trial_data$se,
+    S_hat      = diag(trial_data$se),
     calc_ess = TRUE
   )
 

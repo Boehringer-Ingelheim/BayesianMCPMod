@@ -9,8 +9,8 @@ getContr(
   dose_levels,
   dose_weights = NULL,
   prior_list = NULL,
-  sd_posterior = NULL,
-  se_new_trial = NULL
+  cov_posterior = NULL,
+  cov_new_trial = NULL
 )
 }
 \arguments{
@@ -22,9 +22,9 @@ getContr(
 
 \item{prior_list}{A list of objects of class 'normMix' as created with 'RBesT::mixnorm()'. Only required as input for Option 1. Default NULL}
 
-\item{sd_posterior}{A vector of positive values with information about the variability of the posterior distribution, only required for Option 3. Default NULL}
+\item{cov_posterior}{A covariance matrix with information about the variability of the posterior distribution, only required for Option 3. Default NULL}
 
-\item{se_new_trial}{A vector of positive values with information about the observed variability, only required for Option 4. Default NULL}
+\item{cov_new_trial}{A covariance matrix with information about the observed variability, only required for Option 4. Default NULL}
 }
 \value{
 An object of class 'optContr' as provided by the function 'DoseFinding::optContr()'.
@@ -40,9 +40,9 @@ pseudo-optimal contrasts via regular MCPMod are calculated from the
 regular MCPMod for these specific weights
 \item Frequentist approach: If only dose_weights are provided optimal contrast vectors are calculated from the
 regular MCPMod for these specific weights
-\item Bayesian approach + re-estimation: If only a sd_posterior (i.e. variability of the posterior distribution) is provided, pseudo-optimal contrasts based on these posterior weights will be calculated
-\item Frequentist approach+re-estimation: If only a se_new_trial (i.e. the estimated variability per dose group of a new trial) is provided, optimal contrast vectors are calculated from the
-regular MCPMod for this specific vector of standard errors. For the actual evaluation this vector of standard errors is translated into a (diagonal) matrix of variances
+\item Bayesian approach + re-estimation: If only a cov_posterior (i.e. variability of the posterior distribution) is provided, pseudo-optimal contrasts based on these posterior weights will be calculated
+\item Frequentist approach+re-estimation: If only a cov_new_trial (i.e. the estimated variability of a new trial) is provided, optimal contrast vectors are calculated from the
+regular MCPMod for this specific covariance matrix.
 }
 }
 \examples{
@@ -53,11 +53,11 @@ mods <- DoseFinding::Mods(
   exponential = 2,
   doses       = dose_levels,
   maxEff      = 6)
-sd_posterior <- c(2.8, 3, 2.5, 3.5, 4)
+cov_posterior <- diag(c(2.8, 3, 2.5, 3.5, 4)^2)
 
 contr_mat <- getContr(
   mods         = mods,
   dose_levels  = dose_levels,
-  sd_posterior = sd_posterior)
+  cov_posterior = cov_posterior)
 
 }

@@ -14,7 +14,7 @@ getBootstrapSamples(model_fits, n_samples = 1000, doses = NULL)
 \item{doses}{A vector of doses for which a prediction should be performed}
 }
 \value{
-A data frame with entries model, dose, and sample
+A tibble with columns for sample_id, model, dose, sample, and sample_diff
 }
 \description{
 A function to return bootstrap samples from the fitted dose-response models.

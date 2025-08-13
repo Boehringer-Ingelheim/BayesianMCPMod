@@ -95,9 +95,9 @@ success_probabilities <- assessDesign(
   modeling       = TRUE,
   n_sim          = 10, # speed up example run time
   delta          = 7)
-  
+
   success_probabilities
-  
+
 # with MED estimation with bootstrapping
 
 success_probabilities <- assessDesign(
@@ -109,7 +109,7 @@ success_probabilities <- assessDesign(
   n_sim          = 10, # speed up example run time
   delta          = 7,
   evidence_level = 0.8)
-  
+
   success_probabilities
 
 }

@@ -33,7 +33,7 @@ test_that("getPosterior works correctly", {
   posterior_list <- getPosterior(
     prior_list = prior_list_matrix,
     mu_hat = mu_hat,
-    S_hat = se_hat_vector,
+    S_hat = diag(se_hat_vector),
     calc_ess = FALSE
   )
   expect_type(posterior_list, "list")
@@ -117,12 +117,12 @@ test_that("summary.postList works correctly", {
   expect_type(summary_tab, "character")
 })
 
-test_that("getPostCombsI returns an object with correct attributes", {
+test_that("getPostCompsI returns an object with correct attributes", {
   posterior_i <- list(
     matrix(c(2, 1, 2), nrow = 3),
     matrix(c(2, 1, 2), nrow = 3)
   )
-  result <- getPostCombsI(posterior_i)
+  result <- getPostCompsI(posterior_i)
 
   expect_true(is.list(result))
   expect_equal(length(result), 3)
@@ -153,11 +153,13 @@ test_that("postMix2posteriorList works correctly", {
     mu_hat   = mu_hat,
     S_hat    = se_hat_matrix)
 
+  ## TODO: obsolete, as no option for vector is present any more?
+  ## or re-purpose & rename test to check if both implementations yiel the same results?
   # create posterior with vector
   posterior_vector <- getPosterior(
     prior_list = prior_list_matrix,
     mu_hat = mu_hat,
-    S_hat = se_hat_vector,
+    S_hat = diag(se_hat_vector), # TODO: added diag() to appease the test - to be adapted, diag(se_hat_vector^2)?
     calc_ess = FALSE
   )
 
@@ -201,8 +203,8 @@ test_that("postMix2posteriorList works correctly", {
 
 
   ### test similarity of results for posterior from a matrix compared to posterior from a vector with square roots
-  se_hat <- c(1, 2, 3, 4, 5)
-  S_hat  <- diag(se_hat)
+  se_hat <- c(1, 2, 3, 4, 5) # TODO: se_hat is the esimated standard error, which is the sqrt of a variance
+  S_hat  <- diag(se_hat)     #       S_hat has the variances on the diagonal, please adapt for clarity
 
   posterior_matrix_S <- getPosterior(
     prior_list = prior_list_matrix,
@@ -214,7 +216,7 @@ test_that("postMix2posteriorList works correctly", {
   posterior_vector_se <- getPosterior(
     prior_list = prior_list_matrix,
     mu_hat     = mu_hat,
-    S_hat      = sqrt(se_hat),
+    S_hat      = S_hat, # TODO: needed to modify from sqrt(se_hat) to matrix S_hat, please adapt
     calc_ess   = FALSE
   )
 

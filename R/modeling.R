@@ -274,18 +274,17 @@ getModelFitOpt <- function (
   }
 
   param_list <- getOptParams(model, dose_levels, posterior)
-  post_combs <- getPostCombsI(posterior)
+  post_combs <- getPostCompsI(posterior)
 
   fit <- nloptr::nloptr(
-    eval_f = optFun,
-    x0     = param_list$params$x0,
-    lb     = param_list$params$lb,
-    ub     = param_list$params$ub,
-    opts   = param_list$opts,
+    eval_f      = optFun,
+    x0          = param_list$params$x0,
+    lb          = param_list$params$lb,
+    ub          = param_list$params$ub,
+    opts        = param_list$opts,
     dose_levels = dose_levels,
     post_combs  = post_combs,
-    expr_i      = param_list$expr_i
-  )
+    expr_i      = param_list$expr_i)
 
   names(fit$solution) <- param_list$c_names
 

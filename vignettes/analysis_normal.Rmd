@@ -310,7 +310,7 @@ the prior information with the estimated results of the trial [@fleischer_2022].
 posterior <- getPosterior(
   prior_list = prior_list,
   mu_hat     = trial_data$rslt,
-  S_hat      = trial_data$se,
+  S_hat      = diag(trial_data$se^2),
   calc_ess   = TRUE
 )
 
@@ -329,14 +329,14 @@ A pseudo-optimal contrast matrix is generated based on the variability of the po
 crit_pval <- getCritProb(
   mods           = mods,
   dose_levels    = dose_levels,
-  se_new_trial   = trial_data$se,
+  cov_new_trial  = diag(trial_data$se^2),
   alpha_crit_val = 0.05
 )
 
 contr_mat <- getContr(
-  mods         = mods,
-  dose_levels  = dose_levels,
-  sd_posterior = summary(posterior)[, 2]
+  mods          = mods,
+  dose_levels   = dose_levels,
+  cov_posterior = diag(summary(posterior)[, 2]^2)
 )
 ```
 
@@ -356,7 +356,7 @@ contr_mat_prior <- getContr(
 contr_mat_prior <- getContr(
   mods           = mods,
   dose_levels    = dose_levels,
-  se_new_trial   = trial_data$se)
+  cov_new_trial  = diag(trial_data$se^2))
 # iii)  Bayesian approach using number of patients for new trial and prior distribution
 contr_mat_prior <- getContr(
   mods           = mods,
@@ -444,19 +444,19 @@ bootstrap_quantiles <- getBootstrapQuantiles(
   doses      = c(0, 2.5, 4, 5, 7, 10),
   n_samples  = 10)
 ```
+The boostrap quantiles include information about the absolute quantiles (sample_type=abs) and also about the placebo-adjusted (resp. control-adjusted) quantiles (sample_type=diff). 
 
 ```{r, collapse = TRUE}
 #| code-fold: true
 reactable::reactable(
   data = bootstrap_quantiles |>
-    tidyr::pivot_wider(names_from = q_prob, values_from = q_val) |>
-    dplyr::select(-sample_type),
+    tidyr::pivot_wider(names_from = q_prob, values_from = q_val),
   groupBy = "model",
   columns = list(
-    dose    = colDef(aggregate = "count", format = list(aggregated = colFormat(suffix = " dose"))),
-    "0.025" = colDef(aggregate = "mean", format = list(aggregated = colFormat(prefix = "mean = ", digits = 2), cell = colFormat(digits = 4))),
-    "0.5"   = colDef(aggregate = "mean", format = list(aggregated = colFormat(prefix = "mean = ", digits = 2), cell = colFormat(digits = 4))),
-    "0.975" = colDef(aggregate = "mean", format = list(aggregated = colFormat(prefix = "mean = ", digits = 2), cell = colFormat(digits = 4)))
+    dose    = colDef(format = list(aggregated = colFormat(suffix = " dose"))),
+    "0.025" = colDef(format = list(cell = colFormat(digits = 4))),
+    "0.5"   = colDef(format = list(cell = colFormat(digits = 4))),
+    "0.975" = colDef(format = list(cell = colFormat(digits = 4)))
   )
 )
 ```

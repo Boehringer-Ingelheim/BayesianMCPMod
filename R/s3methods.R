@@ -171,7 +171,8 @@ print.BayesianMCP <- function(x, ...) {
           replacement = "",
           x           = names(model_probs)))))
     
-    printMatrixWithPrefix(model_mat)
+    printMatrixWithPrefix(
+      rbind(model_mat, Significant = x[, -c(1, 2, 3)] > attr(x, "critProbAdj")))
     
     if (any(!is.na(attr(x, "essAvg")))) {
       
@@ -274,10 +275,44 @@ print.modelFits <- function (
   
 ) {
   
+  ## Model Coefficients
+  
+  model_names <- shortenModelNames(names(x), pad_string = TRUE)
+  
+  cat("Model Coefficients\n")
+  
+  for (i in seq_along(x)) {
+    
+    if (x[[i]]$model != "avgFit") {
+      
+      coeff_values <- x[[i]]$coeff
+      coeff_names  <- names(coeff_values)
+      
+      cat(" ", model_names[i],
+          paste(coeff_names, round(coeff_values, n_digits),
+                sep      = " = ",
+                collapse = ", "), "\n",
+          sep = " ")
+      
+    }
+    
+  }
+  
+  ## Dose Levels
+  
   dose_levels <- x[[1]]$dose_levels
   dose_names  <- names(attr(x, "posterior"))
   
-  predictions <- t(sapply(x, function (y) y$pred_values))
+  cat("Dose Levels\n", "", # "" is required for proper indentation
+      paste(dose_names, round(dose_levels, n_digits),
+            sep      = " = ",
+            collapse = ", "), "\n")
+  
+  ## Predictions, Maximum Effect, gAIC & avgFit Model Weights
+  
+  cat("Predictions, Maximum Effect, gAIC")
+  
+  predictions           <- t(sapply(x, function (y) y$pred_values))
   colnames(predictions) <- dose_names
   
   out_table <- data.frame(predictions,
@@ -296,32 +331,6 @@ print.modelFits <- function (
     
   }
   
-  out_table   <- apply(as.matrix(out_table), 2, round, digits = n_digits)
-  model_names <- setdiff(shortenModelNames(names(x), pad_string = TRUE), "avgFit")
-  
-  cat("Model Coefficients\n")
-  for (i in seq_along(model_names)) {
-    
-    if (model_names[i] != "avgFit     ") {
-      
-      coeff_values <- x[[i]]$coeff
-      coeff_names  <- names(coeff_values)
-      
-      cat(" ", model_names[i],
-          paste(coeff_names, round(coeff_values, n_digits),
-                sep      = " = ",
-                collapse = ", "), "\n",
-          sep = " ")
-      
-    }
-    
-  }
-  cat("Dose Levels\n", "", # "" is required for proper indentation
-      paste(dose_names, round(dose_levels, n_digits),
-            sep      = " = ",
-            collapse = ", "), "\n")
-  cat("Predictions, Maximum Effect, gAIC")
-  
   if (model_sig) {
     
     cat(", avgFit Model Weights & Significance\n")
@@ -332,6 +341,10 @@ print.modelFits <- function (
     
   }
   
+  
+  
+  
+  out_table <- apply(as.matrix(out_table), 2, round, digits = n_digits)
   rownames(out_table) <- shortenModelNames(rownames(out_table))
   
   printMatrixWithPrefix(out_table)
@@ -392,11 +405,36 @@ print.postList <- function (
   names(x) <- rownames(summary_tab)
   class(x) <- NULL
   
+  ## removes the covariance matrices from the print out
+  attr(x, "posteriorInfo") <- NULL
+  
   list_out <- list(summary_tab, getMaxDiff(summary_tab[, 4]), x)
+  
   names(list_out) <- c("Summary of Posterior Distributions",
                        "Maximum Difference to Control and Dose Group",
                        "Posterior Distributions")
   
+  
+  # for (i in seq_along(list_out)) {
+  # 
+  #   cat(sprintf("$%s:\n", names(list_out)[i]))
+  # 
+  #   if (i == 3) {
+  #     cat("Note: For a more detailed posterior output including\n",
+  #         "     covariance matricies across mixture components,\n",
+  #         "     please use attr(x, 'posteriorInfo').\n\n")
+  #   }
+  # 
+  #   print(list_out[[i]], ...)
+  # 
+  #   if (i != length(list_out)) cat("\n")
+  # 
+  # }
+  # rm(i)
+  
   print(list_out, ...)
+  cat("Note: For a more detailed posterior output including\n",
+      "     covariance matricies across mixture components,\n",
+      "     please use attr(x, 'posteriorInfo').")
   
 }
