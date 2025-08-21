@@ -128,7 +128,7 @@ getPosteriorI <- function(
   checkmate::check_vector(se_hat, any.missing = FALSE, null.ok = TRUE)
   checkmate::check_double(se_hat, null.ok = TRUE, lower = 0, upper = Inf)
 
-  if (is.null(mu_hat) && is.null(se_hat)) {
+  if (is.null(mu_hat) && is.null(se_hat) && !is.null(data_i)) {
 
     checkmate::check_data_frame(data_i, null.ok = FALSE)
     checkmate::assert_names(names(data_i), must.include = "response")
@@ -138,7 +138,7 @@ getPosteriorI <- function(
     mu_hat    <- summary(anova_res)$coefficients[, 1]
     se_hat    <- summary(anova_res)$coefficients[, 2]
 
-  } else if (!is.null(mu_hat) && !is.null(se_hat)) {
+  } else if (!is.null(mu_hat) && !is.null(se_hat) && is.null(data_i)) {
 
     stopifnot("m_hat length must match number of dose levels" =
                 length(prior_list) == length(mu_hat))
@@ -148,7 +148,7 @@ getPosteriorI <- function(
 
   } else {
 
-    stop ("Both mu_hat and se_hat must be provided.")
+    stop ("Both mu_hat and se_hat or data_i must be provided.")
 
   }
 
@@ -164,6 +164,8 @@ getPosteriorI <- function(
   names(post_list) <- names(prior_list)
   class(post_list) <- "postList"
 
+  attr(post_list, "ess") <- if (calc_ess) getESS(post_list) else numeric(0)
+  
   attr(post_list, "posteriorInfo") <- priorList2priorMix(post_list)
   
   return (post_list)
@@ -287,53 +289,30 @@ postMix2posteriorList <- function (
     SIMPLIFY = FALSE)
 
   # create posterior list
-  posterior_list <- lapply(seq_along(combined_vectors), function (x)
+  post_list <- lapply(seq_along(combined_vectors), function (x)
     do.call(RBesT::mixnorm,
             c(combined_vectors[[x]], sigma = stats::sigma(prior_list[[x]]))))
 
   ## fix component names
-  names(posterior_list) <- names(prior_list)
+  names(post_list) <- names(prior_list)
   comp_names <- lapply(prior_list, colnames)
   
-  for (i in seq_along(posterior_list)) {
+  for (i in seq_along(post_list)) {
 
-    colnames(posterior_list[[i]]) <- comp_names[[i]]
+    colnames(post_list[[i]]) <- comp_names[[i]]
 
   }
   rm(i)
 
   ## set attributes
-  class(posterior_list) <- "postList"
+  class(post_list) <- "postList"
   
-  if (calc_ess) {
-    
-    attr(posterior_list, "ess") <- calcEss(calc_ess, posterior_list)
-    
-  }
+  attr(post_list, "ess") <- if (calc_ess) getESS(post_list) else numeric(0)
 
   names(post_mix) <- c("weights", "means", "covMats")
-  attr(posterior_list, "posteriorInfo") <- post_mix
+  attr(post_list, "posteriorInfo") <- post_mix
 
-  return (posterior_list)
-
-}
-
-calcEss <- function(calc_ess, posterior_output) {
-
-  checkmate::assert_logical(calc_ess, null.ok = FALSE, len = 1)
-  checkmate::assert_list(posterior_output, names = "named", any.missing = FALSE, null.ok = FALSE)
-
-  if (calc_ess) {
-
-    post_ESS <- getESS(posterior_output)
-
-  } else {
-
-    post_ESS <- numeric(0)
-
-  }
-
-  return(post_ESS)
+  return (post_list)
 
 }
 
