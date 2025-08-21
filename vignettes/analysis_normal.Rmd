@@ -471,9 +471,10 @@ while the bootstrap median is the median fit of random sampling.
 
 The Minimally Efficacious Dose (MED) per model shape can be assessed with the function `getMED()`.
 ```{r}
-getMED(delta       = 4,
-       model_fits  = model_fits,
-       dose_levels = seq(min(dose_levels), max(dose_levels), by = 0.01))
+getMED(
+  delta       = 4,
+  model_fits  = model_fits,
+  dose_levels = seq(min(dose_levels), max(dose_levels), by = 0.01))
 ```
 For an optional Bayesian decision rule for the MED assessment and further details, please see `?getMED()`.
 

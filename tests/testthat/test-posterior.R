@@ -81,20 +81,21 @@ test_that("getPriorList input parameters do work as intented", {
 })
 
 test_that("getPosteriorI works correctly", {
-  # Prepare test data and parameters
-  data_i <- data.frame(
-    dose = c(0, 1, 2, 3, 4),
-    response = c(10, 20, 30, 40, 50)
-  )
 
   #prior_list <- list(1, 2, 3, 4)
   #mu_hat <- c(10, 20, 30, 40)
   #se_hat <- matrix(c(1, 2, 3, 4), nrow = 4, ncol = 1)
 
   # Test getPosteriorI function
-  post_list <- getPosteriorI(data_i = data_i, prior_list = prior_list_matrix, mu_hat = mu_hat, se_hat = se_hat_vector)
+  post_list <- getPosteriorI(data_i = NULL, prior_list = prior_list_matrix, mu_hat = mu_hat, se_hat = se_hat_vector)
   expect_type(post_list, "list")
   expect_s3_class(post_list, "postList")
+  
+  # Prepare test data and parameters
+  data_i <- data.frame(
+    dose = c(0, 1, 2, 3, 4),
+    response = c(10, 20, 30, 40, 50)
+  )
 
   # Test mu_hat and sd_hat both null branch
   post_list <- getPosteriorI(data_i, prior_list_matrix, NULL, NULL)

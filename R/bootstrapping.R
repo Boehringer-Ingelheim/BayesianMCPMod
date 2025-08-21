@@ -74,6 +74,8 @@ getBootstrapQuantiles <- function (
                     sample_type == "sample" ~ "abs",
                     sample_type == "sample_diff" ~ "diff"))
   
+  attr(bs_quantiles, "direction") <- attr(model_fits, "direction")
+  
   return (bs_quantiles)
 
 }
