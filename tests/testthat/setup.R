@@ -72,33 +72,6 @@ testdata <- readRDS("data/testdata.RDS")
 # further setup -----------------------------------------------------------
 
 
-## TODO: to be adapted/deleted?
-## This is part of the 'Test for getPostProb' in test-BMCPMod
-## However, this only test the function provided here,
-## and not the function that is part of the R package.
-## => Modification needed?
-getPostProb <- function (
-
-  contr_j,     # j: dose level
-  post_combs_i # i: simulation outcome
-
-) {
-
-  ## Test statistic = sum over all components of
-  ## posterior weight * normal probability distribution of
-  ## critical values for doses * estimated mean / sqrt(product of critical values for doses)
-
-  ## Calculation for each component of the posterior
-  contr_theta   <- apply(post_combs_i$means, 1, `%*%`, contr_j)
-  contr_var     <- apply(post_combs_i$vars, 1, `%*%`, contr_j^2)
-  contr_weights <- post_combs_i$weights
-
-  ## P(c_m * theta > 0 | Y = y) for a shape m (and dose j)
-  post_probs <- sum(contr_weights * stats::pnorm(contr_theta / sqrt(contr_var)))
-
-  return (post_probs)
-
-}
 
 # Create minimal test case
 n_hist_trials = 2
