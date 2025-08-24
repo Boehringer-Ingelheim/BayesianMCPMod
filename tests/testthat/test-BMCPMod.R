@@ -241,12 +241,12 @@ test_that("getContrMat works as expected", {
   )
 
   se_new_trial <- c(0.3, 0.7, 0.9, 2.1)
-  se_new_trial <- se_new_trial[1:2] # TODO: needed to adapt, to be checked
+  se_new_trial <- se_new_trial[1:2]
 
   contr_mat_se_new <- getContr(
     mods = mods,
     dose_levels = dose_levels,
-    cov_new_trial = diag(se_new_trial^2) # TODO: needed to change, to be checked
+    cov_new_trial = diag(se_new_trial^2)
   )
 
   # Length mismatch for se_new_trial should error
@@ -375,7 +375,7 @@ test_that("addSignificance attaches flags per model and validates input length",
 
   models <- c("emax", "linear")
   dose_levels <- c(0, 1, 2, 4, 8)
-  
+
   # Strongly convex pattern: tiny effects at low/mid doses, big jump at the top dose.
   posterior_list <- list(
     Ctrl = RBesT::mixnorm(comp1 = c(w = 1, m = 0.0, s = 0.7),  sigma = 1.2),
@@ -385,13 +385,13 @@ test_that("addSignificance attaches flags per model and validates input length",
     DG_4 = RBesT::mixnorm(comp1 = c(w = 1, m = 7.8, s = 0.7),  sigma = 1.2)
   )
 
-  
+
   fit <- getModelFits(
     models     = models,
     posterior  = posterior_list,
     dose_levels = dose_levels
   )
-  
+
 
   # Flags length matches -> flags should be attached per entry
   out <- addSignificance_fn(fit, c(TRUE, FALSE))
