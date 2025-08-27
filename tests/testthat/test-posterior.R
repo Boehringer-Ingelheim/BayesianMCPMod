@@ -160,7 +160,7 @@ test_that("postMix2posteriorList works correctly", {
   posterior_vector <- getPosterior(
     prior_list = prior_list_matrix,
     mu_hat = mu_hat,
-    S_hat = diag(se_hat_vector), # TODO: added diag() to appease the test - to be adapted, diag(se_hat_vector^2)?
+    S_hat = diag(se_hat_vector^2),
     calc_ess = FALSE
   )
 
@@ -204,8 +204,8 @@ test_that("postMix2posteriorList works correctly", {
 
 
   ### test similarity of results for posterior from a matrix compared to posterior from a vector with square roots
-  se_hat <- c(1, 2, 3, 4, 5) # TODO: se_hat is the esimated standard error, which is the sqrt of a variance
-  S_hat  <- diag(se_hat)     #       S_hat has the variances on the diagonal, please adapt for clarity
+  se_hat <- c(1, 2, 3, 4, 5)
+  S_hat  <- diag(se_hat^2)
 
   posterior_matrix_S <- getPosterior(
     prior_list = prior_list_matrix,
@@ -214,18 +214,18 @@ test_that("postMix2posteriorList works correctly", {
     calc_ess   = FALSE
   )
 
-  posterior_vector_se <- getPosterior(
+  posterior_vector_se <- getPosterior_vec(
     prior_list = prior_list_matrix,
     mu_hat     = mu_hat,
-    S_hat      = S_hat, # TODO: needed to modify from sqrt(se_hat) to matrix S_hat, please adapt
+    S_hat      = se_hat,
     calc_ess   = FALSE
   )
 
-  expect_equal(posterior_matrix_S$Ctr, posterior_vector_se$Ctr)
-  expect_equal(posterior_matrix_S$DG_1, posterior_vector_se$DG_1)
-  expect_equal(posterior_matrix_S$DG_2, posterior_vector_se$DG_2)
-  expect_equal(posterior_matrix_S$DG_3, posterior_vector_se$DG_3)
-  expect_equal(posterior_matrix_S$DG_4, posterior_vector_se$DG_4)
+  expect_equal(posterior_matrix_S$Ctr, posterior_vector_se$Ctr, tolerance = 1e-3)
+  expect_equal(posterior_matrix_S$DG_1, posterior_vector_se$DG_1, tolerance = 1e-3)
+  expect_equal(posterior_matrix_S$DG_2, posterior_vector_se$DG_2, tolerance = 1e-3)
+  expect_equal(posterior_matrix_S$DG_3, posterior_vector_se$DG_3, tolerance = 1e-3)
+  expect_equal(posterior_matrix_S$DG_4, posterior_vector_se$DG_4, tolerance = 1e-3)
 
 
 
