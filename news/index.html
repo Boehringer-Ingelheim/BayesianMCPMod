@@ -39,13 +39,21 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="1.2.0" id="bayesianmcpmod-120-todo-date">BayesianMCPMod 1.2.0 (TODO: DATE)<a class="anchor" aria-label="anchor" href="#bayesianmcpmod-120-todo-date"></a></h2>
-<ul><li>
-</li></ul></div>
+<h2 class="pkg-version" data-toc-text="1.2.0" id="bayesianmcpmod-120-28-aug-2025">BayesianMCPMod 1.2.0 (28-Aug-2025)<a class="anchor" aria-label="anchor" href="#bayesianmcpmod-120-28-aug-2025"></a></h2>
+<ul><li>Fixed a bug in performBayesianMCPMod() where the model significance status from the MCP step was sometimes not correctly assigned to the fitted model in the Mod step</li>
+<li>Fixed a bug in print.modelFit() where sometimes the coefficients for the fitted model shapes were not printed correctly</li>
+<li>Fixed a bug in getMED() where quantile and evidence level could sometimes not be matched due to floating-point precision issues when using bootstrapped quantiles</li>
+<li>Changed functions getPosterior(), getCritProb(), and getContr() to accept a covariance matrix instead of a standard deviation vector as argument</li>
+<li>Added support for none-zero off-diagonal covariance matrices in the MCP step</li>
+<li>Added bootstrapped differences to getBootstrapSamples()</li>
+<li>Added average MED identification rate as attribute to assessDesign() output</li>
+<li>Made the future.apply package optional</li>
+<li>Re-worked vignettes and improved the output of print functions</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.1.0" id="bayesianmcpmod-110-07-mar-2025">BayesianMCPMod 1.1.0 (07-Mar-2025)<a class="anchor" aria-label="anchor" href="#bayesianmcpmod-110-07-mar-2025"></a></h2><p class="text-muted">CRAN release: 2025-03-07</p>
 <ul><li>Fixed a bug in plot.modelFits() that would plot credible bands based on incorrectly selected bootstrapped quantiles</li>
-<li>Added getMED(), a function to assess the minimally efficacious dose (MED) and integrated getMED() into assessDesign() and performBayesianMCPMod</li>
+<li>Added getMED(), a function to assess the minimally efficacious dose (MED) and integrated getMED() into assessDesign() and performBayesianMCPMod()</li>
 <li>Added parallel processing using the future framework</li>
 <li>Modified the handling of the fit of an average model: Now, getModelFits() has an argument to fit an average model and this will be carried forward for all subsequent functions</li>
 <li>Re-introduced getBootstrapSamples(), a separate function for bootstrapping samples from the posterior distributions of the dose levels</li>
@@ -54,7 +62,7 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.0.2" id="bayesianmcpmod-102-06-feb-2025">BayesianMCPMod 1.0.2 (06-Feb-2025)<a class="anchor" aria-label="anchor" href="#bayesianmcpmod-102-06-feb-2025"></a></h2><p class="text-muted">CRAN release: 2025-02-06</p>
 <ul><li>Addition of new vignette comparing frequentist and Bayesian MCPMod using vague priors</li>
-<li>Extension of getPosterior to allow the input of a fully populated variance-covariance matrix</li>
+<li>Extension of getPosterior() to allow the input of a fully populated variance-covariance matrix</li>
 <li>Added the non-monotonic model shapes beta and quadratic</li>
 <li>New argument in assessDesign() to optionally skip the Mod part of Bayesian MCPMod</li>
 <li>Additional tests</li>

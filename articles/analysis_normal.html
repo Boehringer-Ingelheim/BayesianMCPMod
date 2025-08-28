@@ -596,7 +596,7 @@ implemented by the <a href="https://github.com/astamm/nloptr" class="external-li
 effects for the included dose levels, the generalized AIC, and the
 corresponding weights.</p>
 <p>For the considered case, the simplified and the full fit are very
-similar, so wepresent the full fit.</p>
+similar, so we present the full fit.</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># If simple = TRUE, uses approx posterior</span></span>
 <span><span class="co"># Here we use complete posterior distribution</span></span>
@@ -687,7 +687,7 @@ fit.</p>
 <span>  quantiles  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.025</span>, <span class="fl">0.5</span>, <span class="fl">0.975</span><span class="op">)</span>,</span>
 <span>  doses      <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">2.5</span>, <span class="fl">4</span>, <span class="fl">5</span>, <span class="fl">7</span>, <span class="fl">10</span><span class="op">)</span>,</span>
 <span>  n_samples  <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></code></pre></div>
-<p>The boostrap quantiles include information about the absolute
+<p>The bootstrap quantiles include information about the absolute
 quantiles (sample_type=abs) and also about the placebo-adjusted (resp.
 control-adjusted) quantiles (sample_type=diff).</p>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
