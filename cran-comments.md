@@ -16,7 +16,8 @@ Maintainer: <stephan.wojciekowski@boehringer-ingelheim.com>
 - GitHub Action Windows: R version 4.5.1 (2025-06-13 ucrt), x86_64-w64-mingw32
   - Status: 1 NOTE
     - checking for detritus in the temp directory ... NOTE
-    - This seems to be a github related note that I could not reproduce elsewhere.
+    - Found the following files/directories: 'Rscript146886f5c' 'Rscript1c2c86f6c'
+    - This seems to be a Windows github action related NOTE that I could not reproduce elsewhere.
 
 ### From NEWS.md: BayesianMCPMod 1.2.0 (28-Aug-2025)
 
