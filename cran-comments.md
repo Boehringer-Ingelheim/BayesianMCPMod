@@ -16,7 +16,7 @@
 
 ## R CMD check results
 
-### Local aarch64-apple-darwin20, Windows Server, R 4.4.2
+### Local aarch64-apple-darwin20, R 4.4.2
 0 errors √ | 0 warnings √ | 0 notes √
 
 ### Winbuilder x86_64-w64-mingw32, macOS Ventura 13.3.1, R under development (unstable) (2025-02-05 r87692 ucrt)
@@ -41,21 +41,19 @@ Status: OK
 
 ### Rhub Windows / windows
 
-* checking for detritus in the temp directory ... NOTE
-Found the following files/directories:
-  'Rscript420e8038' 'Rscripta4ce8028'
 * DONE
-Status: 1 NOTE
-
--> This note seems is related with the parallelization on the github server and does not occur on the Winbuilder server.
+Status: OK
    
 ## From NEWS.md
 
-## BayesianMCPMod 1.1.0 (07-Mar-2025)
+### BayesianMCPMod 1.2.0 (28-Aug-2025)
 
-- Fixed a bug in plot.modelFits() that would plot credible bands based on incorrectly selected bootstrapped quantiles
-- Added getMED(), a function to assess the minimally efficacious dose (MED) and integrated getMED() into assessDesign() and performBayesianMCPMod
-- Added parallel processing using the future framework
-- Modified the handling of the fit of an average model: Now, getModelFits() has an argument to fit an average model and this will be carried forward for all subsequent functions
-- Re-introduced getBootstrapSamples(), a separate function for bootstrapping samples from the posterior distributions of the dose levels
-- Adapted the vignettes to new features
+* Fixed a bug in performBayesianMCPMod() where the model significance status from the MCP step was sometimes not correctly assigned to the fitted model in the Mod step
+* Fixed a bug in print.modelFit() where sometimes the coefficients for the fitted model shapes were not printed correctly
+* Fixed a bug in getMED() where quantile and evidence level could sometimes not be matched due to floating-point precision issues when using bootstrapped quantiles
+* Changed functions getPosterior(), getCritProb(), and getContr() to accept a covariance matrix instead of a standard deviation vector as argument
+* Added support for none-zero off-diagonal covariance matrices in the MCP step
+* Added bootstrapped differences to getBootstrapSamples()
+* Added average MED identification rate as attribute to assessDesign() output
+* Made the future.apply package optional
+* Re-worked vignettes and improved the output of print functions

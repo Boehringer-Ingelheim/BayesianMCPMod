@@ -395,7 +395,7 @@ The actual fit (on this approximated posterior distribution) is then performed u
 
 The output of the fit includes information about the predicted effects for the included dose levels, the generalized AIC, and the corresponding weights.
 
-For the considered case, the simplified and the full fit are very similar, so wepresent the full fit.
+For the considered case, the simplified and the full fit are very similar, so we present the full fit.
 
 ```{r}
 # If simple = TRUE, uses approx posterior
@@ -444,7 +444,7 @@ bootstrap_quantiles <- getBootstrapQuantiles(
   doses      = c(0, 2.5, 4, 5, 7, 10),
   n_samples  = 10)
 ```
-The boostrap quantiles include information about the absolute quantiles (sample_type=abs) and also about the placebo-adjusted (resp. control-adjusted) quantiles (sample_type=diff). 
+The bootstrap quantiles include information about the absolute quantiles (sample_type=abs) and also about the placebo-adjusted (resp. control-adjusted) quantiles (sample_type=diff). 
 
 ```{r, collapse = TRUE}
 #| code-fold: true
