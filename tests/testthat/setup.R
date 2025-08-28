@@ -340,7 +340,7 @@ getPosteriorI_vec <- function(
   comp_indx    <- createMapping(prior_list)
   comp_mat_ind <- do.call("expand.grid", comp_indx)
 
-  attr(post_list, "ess") <- calcEss(calc_ess, post_list)
+  attr(post_list, "ess") <- if (calc_ess) getESS(post_list) else numeric(0)
 
   diagonals <- lapply(seq_along(comp_mat_ind[, 1]), function(x) {
 

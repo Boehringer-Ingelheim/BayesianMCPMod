@@ -1,3 +1,7 @@
+## BayesianMCPMod 1.2.0 (TODO: DATE)
+
+- 
+
 ## BayesianMCPMod 1.1.0 (07-Mar-2025)
 
 - Fixed a bug in plot.modelFits() that would plot credible bands based on incorrectly selected bootstrapped quantiles

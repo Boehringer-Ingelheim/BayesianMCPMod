@@ -18,7 +18,8 @@
 #' }
 #' where \eqn{Q} denotes the number of models included in the averaging procedure.
 #' @references Schorning K, Bornkamp B, Bretz F, Dette H. 2016. Model selection versus model averaging in dose finding studies. Stat Med; 35; 4021-4040.
-#' @param models List (or vector) of model names for which a fit will be performed.
+#' @param models A Mods object as created with `DoseFinding::Mods()` or a vector
+#' of model names for which a fit will be performed.
 #' Implemented model shapes are `"linear"`, `"exponential"`, `"logistic"`,
 #' `"emax"`, `"sigEmax"`, `"quadratic"`, and `"betaMod"`.
 #' @param dose_levels A vector containing the different dosage levels.
@@ -60,13 +61,10 @@ getModelFits <- function (
 
 ) {
   
-  if (inherits(models, "character")) {
-    models <- stats::setNames(as.list(models), models)
-  } else if (inherits(models, "Mods")) {
-    models <- stats::setNames(as.list(names(models)), names(models))
-  }
-  
-  checkmate::assert_list(models, any.missing = FALSE, types = "character")
+  checkmate::assert(
+    checkmate::check_class(models, "Mods"),
+    checkmate::check_character(models, any.missing = FALSE)
+  )
   checkmate::assert_double(dose_levels, lower = 0, any.missing = FALSE)
   checkmate::assert(
     checkmate::check_class(posterior, "postList"),
@@ -74,10 +72,20 @@ getModelFits <- function (
   )
   checkmate::assert_logical(avg_fit)
   checkmate::assert_logical(simple)
+  
+  if (inherits(models, "character")) {
+    
+    model_names <- models
+    
+  } else if (inherits(models, "Mods")) {
+    
+    model_names <- names(models)
+    
+  }
+  
+  model_names <- sort(unique(gsub("\\d", "", model_names)))
 
-  model_names <- sort(unique(gsub("\\d", "", names(models))))
-
-  getModelFit <- ifelse(simple, getModelFitSimple, getModelFitOpt)
+  getModelFit <- if (simple) getModelFitSimple else getModelFitOpt
 
   model_fits  <- lapply(model_names, getModelFit, dose_levels, posterior, list("scal" = attr(models, "scal")))
   model_fits  <- addModelWeights(model_fits)
@@ -90,11 +98,55 @@ getModelFits <- function (
     
   }
 
+  attr(model_fits, "direction") <- getDirection(models, model_fits)
   attr(model_fits, "posterior") <- posterior
   class(model_fits)             <- "modelFits"
 
   return (model_fits)
 
+}
+
+getDirection <- function (
+    
+  models,
+  model_fits
+  
+) {
+
+  if (inherits(models, "Mods")) {
+    
+    direction   <- attr(models, "direction")
+    
+  } else if (inherits(models, "character")) {
+    
+    ## Try guessing the direction from the fitted model
+    ## in case a character vector is provided
+    
+    preds <- model_fits[[1]]$pred_values
+    
+    if (min(preds[-1]) < preds[1]) {
+      ## min non-placebo effect less than placebo
+      
+      direction <- "decreasing"
+      
+    } else if (max(preds[-1]) > preds[1]) {
+      ## max non-placebo effect greater than placebo
+      
+      direction <- "increasing"
+      
+    } else {
+      
+      direction <- character(0)
+      
+      warning(paste0("The direction of the beneficial direction ",
+                     "with increasing dose levels could not be determined."))
+      
+    }
+    
+  }
+  
+  return (direction)
+  
 }
 
 addAvgFit <- function (
@@ -470,6 +522,8 @@ getMED <- function (
   checkmate::assert_double(dose_levels, lower = 0, any.missing = FALSE, null.ok = TRUE)
   
   if (!is.null(model_fits)) {
+    ## Direction not needed, because mean value
+    ## (approx. evidence_level = 0.5) is used.
     
     checkmate::assert_class(model_fits, "modelFits")
     
@@ -485,6 +539,13 @@ getMED <- function (
     colnames(abs_diffs) <- dose_levels
     
   } else {
+    
+    if (attr(bs_quantiles, "direction") == "decreasing") {
+      
+      bs_quantiles <- bs_quantiles |>
+        dplyr::mutate(q_prob = 1 - q_prob)
+      
+    }
     
     if (is.null(dose_levels)) {
       
@@ -510,7 +571,8 @@ getMED <- function (
                     sample_type == "diff") |>
       tidyr::pivot_wider(names_from = dose, values_from = q_val) |>
       dplyr::select(-model, -sample_type, -q_prob) |>
-      as.matrix()
+      as.matrix() |>
+      abs()
 
     rownames(abs_diffs) <- unique(bs_quantiles$model)
     

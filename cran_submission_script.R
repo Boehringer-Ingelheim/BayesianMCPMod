@@ -7,8 +7,8 @@ attachment::att_amend_desc()
 
 # Run tests and examples
 devtools::document()
-devtools::test()
 devtools::run_examples()
+devtools::test()
 # autotest::autotest_package(test = TRUE)
 
 # Check package as CRAN
