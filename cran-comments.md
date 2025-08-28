@@ -20,12 +20,12 @@ Maintainer: <stephan.wojciekowski@boehringer-ingelheim.com>
 
 ### From NEWS.md: BayesianMCPMod 1.2.0 (28-Aug-2025)
 
-* Fixed a bug in performBayesianMCPMod() where the model significance status from the MCP step was sometimes not correctly assigned to the fitted model in the Mod step
-* Fixed a bug in print.modelFit() where sometimes the coefficients for the fitted model shapes were not printed correctly
-* Fixed a bug in getMED() where quantile and evidence level could sometimes not be matched due to floating-point precision issues when using bootstrapped quantiles
-* Changed functions getPosterior(), getCritProb(), and getContr() to accept a covariance matrix instead of a standard deviation vector as argument
-* Added support for none-zero off-diagonal covariance matrices in the MCP step
-* Added bootstrapped differences to getBootstrapSamples()
-* Added average MED identification rate as attribute to assessDesign() output
-* Made the future.apply package optional
-* Re-worked vignettes and improved the output of print functions
+* Fixed a bug in `performBayesianMCPMod()` where the model significance status from the MCP step was sometimes not correctly assigned to the fitted model in the Mod step.
+* Fixed a bug in `print.modelFit()` where sometimes the coefficients for the fitted model shapes were not printed correctly.
+* Fixed a bug in `getMED()` where quantile and evidence level could sometimes not be matched due to floating-point precision issues when using bootstrapped quantiles.
+* Changed functions `getPosterior()`, `getCritProb()`, and `getContr()` to accept a covariance matrix instead of a standard deviation vector as argument.
+* Added support for none-zero off-diagonal covariance matrices in the MCP step.
+* Added bootstrapped differences to `getBootstrapSamples()`.
+* Added average MED identification rate as attribute to `assessDesign()` output.
+* Made the `future.apply` package optional.
+* Re-worked vignettes and improved the output of print functions.
