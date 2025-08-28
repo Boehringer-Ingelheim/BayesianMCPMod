@@ -5,7 +5,7 @@
 'Stephan Wojciekowski <stephan.wojciekowski@boehringer-ingelheim.com>'
 
 ## Test environments
-- Local aarch64-apple-darwin20, R 4.4.2
+- Local aarch64-apple-darwin20, R version 4.5.1 (2025-06-13)
 
 - Winbuilder x86_64-w64-mingw32, Windows Server, R under development (unstable) (2025-02-05 r87692 ucrt)
 - Macbuilder aarch64-apple-darwin20, macOS Ventura 13.3.1, R version 4.4.2 (2024-10-31)
