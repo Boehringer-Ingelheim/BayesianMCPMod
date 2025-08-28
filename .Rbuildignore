@@ -12,4 +12,4 @@ docs
 ^vignettes/*_files$
 ^revdep$
 ^Meta$
-^PSI_Poster_2024.pdf
+^PSI_Poster_2024.pdf$
