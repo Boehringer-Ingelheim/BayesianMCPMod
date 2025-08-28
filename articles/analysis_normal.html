@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">BayesianMCPMod</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -570,7 +570,10 @@ is not executed and the contrast specification above is used.</p>
 <span><span class="co">## Posterior Probabilities for Model Shapes</span></span>
 <span><span class="co">##                        lin       exp      emax      sigE       log     betaM      quad</span></span>
 <span><span class="co">##   Posterior Prob 0.9999581 0.9981522 0.9999998 0.9999985 0.9953674 0.9999930 0.9883779 </span></span>
-<span><span class="co">##   Significant            1         1         1         1         1         1         1</span></span></code></pre>
+<span><span class="co">##   Significant            1         1         1         1         1         1         1 </span></span>
+<span><span class="co">## Average Posterior ESS</span></span>
+<span><span class="co">##   Dose Level:     Ctr  DG_1  DG_2  DG_3 </span></span>
+<span><span class="co">##   Avg Post ESS: 189.9 186.6 188.2 180.0</span></span></code></pre>
 <p>The testing step is significant, indicating a non-flat dose-response
 shape. All models are significant, with the <code>emax</code> model
 indicating the greatest deviation from the null hypothesis.</p>
@@ -713,9 +716,10 @@ sampling.</p>
 <p>The Minimally Efficacious Dose (MED) per model shape can be assessed
 with the function <code><a href="../reference/getMED.html">getMED()</a></code>.</p>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/getMED.html">getMED</a></span><span class="op">(</span>delta       <span class="op">=</span> <span class="fl">4</span>,</span>
-<span>       model_fits  <span class="op">=</span> <span class="va">model_fits</span>,</span>
-<span>       dose_levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">dose_levels</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">dose_levels</span><span class="op">)</span>, by <span class="op">=</span> <span class="fl">0.01</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/getMED.html">getMED</a></span><span class="op">(</span></span>
+<span>  delta       <span class="op">=</span> <span class="fl">4</span>,</span>
+<span>  model_fits  <span class="op">=</span> <span class="va">model_fits</span>,</span>
+<span>  dose_levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">dose_levels</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">dose_levels</span><span class="op">)</span>, by <span class="op">=</span> <span class="fl">0.01</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##             avgFit betaMod emax exponential linear logistic quadratic sigEmax</span></span>
 <span><span class="co">## med_reached   1.00    1.00 1.00           0      0      1.0      1.00    1.00</span></span>
 <span><span class="co">## med           4.86    5.01 4.88          NA     NA      3.8      4.59    5.25</span></span></code></pre>
