@@ -25,6 +25,7 @@ all_files_remaining
 # Check spelling
 # usethis::use_spell_check()
 spelling::spell_check_package()
+# spelling::update_wordlist()
 
 # Check URL are correct
 # install.packages('urlchecker', repos = 'https://r-lib.r-universe.dev')

@@ -292,7 +292,7 @@ BayesMCPi <- function (
   ## Section 2.3
   
   ## Posterior probabilities                      # [N candidate models]
-  post_probs <- (pnorm(z_m) %*% unlist(post_comps_i$weights))[, 1]
+  post_probs <- (stats::pnorm(z_m) %*% unlist(post_comps_i$weights))[, 1]
 
   res <- c(sign          = ifelse(max(post_probs) > crit_prob_adj, 1, 0),
            crit_prob_adj = crit_prob_adj,
