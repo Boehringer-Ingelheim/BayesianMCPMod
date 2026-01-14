@@ -227,13 +227,13 @@ print.BayesianMCP <- function(x, ...) {
 #'                        DG_2 = RBesT::mixnorm(comp1 = c(w = 1, m = 4, s = 1.5), sigma = 2) ,
 #'                        DG_3 = RBesT::mixnorm(comp1 = c(w = 1, m = 6, s = 1.2), sigma = 2) ,
 #'                        DG_4 = RBesT::mixnorm(comp1 = c(w = 1, m = 6.5, s = 1.1), sigma = 2))
-#' models         <- c("emax", "exponential", "sigEmax", "linear")
+#' models         <- c("emax", "exponential", "sigEmax", "linear", "betaMod")
 #' dose_levels    <- c(0, 1, 2, 4, 8)
 #' fit            <- getModelFits(models      = models,
 #'                                posterior   = posterior_list,
 #'                                dose_levels = dose_levels)
 #'
-#' predict(fit, doses = c(0, 1, 3, 4, 6, 8))
+#' predict(fit, doses = c(0, 1, 3, 4, 6, 8, 16))
 #'
 #' @return a list with the model predictions for the specified models and doses
 #'
@@ -247,18 +247,34 @@ predict.modelFits <- function (
 ) {
   
   model_fits  <- object
-  
   model_names <- names(model_fits)
   
-  predictions <- lapply(model_fits[model_names != "avgFit"],
-                        predictModelFit, doses = doses)
+  warning_displayed <- FALSE
+  withCallingHandlers(
   
-  if ("avgFit" %in% model_names) {
+    expr = {
+      predictions <- lapply(model_fits[model_names != "avgFit"],
+                            predictModelFit, doses = doses)
+      
+      if ("avgFit" %in% model_names) {
+        
+        preds_avg_fit <- predictAvgFit(model_fits, doses = doses)
+        predictions   <- c(list(avgFit = preds_avg_fit), predictions)
+        
+      }
+    },
     
-    preds_avg_fit <- predictAvgFit(model_fits, doses = doses)
-    predictions   <- c(list(avgFit = preds_avg_fit), predictions)
-    
-  }
+    warning = function(w) {
+      if (grepl("The specified range exceeds the bounds of the original dose range.", conditionMessage(w))) {
+        if (warning_displayed) {
+          invokeRestart("muffleWarning")
+        } else {
+          warning_displayed <<- TRUE
+        }
+      }
+    }
+      
+  )
   
   attr(predictions, "doses") <- doses
   

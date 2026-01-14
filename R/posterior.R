@@ -8,8 +8,9 @@
 #' @param prior_list a prior list with information about the prior to be used for every dose group
 #' @param data dataframe containing the information of dose and response. Default NULL
 #' Also a simulateData object can be provided.
-#' @param mu_hat vector of estimated mean values (per dose group).
-#' @param S_hat A covariance matrix specifying the (estimated) variability.  The variance-covariance matrix should be provided and the dimension of the matrix needs to match the number of dose groups.
+#' @param mu_hat vector of estimated mean values (per dose group). Default NULL
+#' @param S_hat covariance matrix specifying the (estimated) variability.
+#' The variance-covariance matrix should be provided and the dimension of the matrix needs to match the number of dose groups. Default NULL
 #' @param calc_ess boolean variable, indicating whether effective sample size should be calculated. Default FALSE
 #' @references BERNARDO, Jl. M., and Smith, AFM (1994). Bayesian Theory. 81.
 #' @return posterior_list, a posterior list object is returned with information about (mixture) posterior distribution per dose group (more detailed information about the conjugate posterior in case of covariance input for S_hat is provided in the attributes)
