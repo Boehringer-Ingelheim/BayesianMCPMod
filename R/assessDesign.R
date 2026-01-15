@@ -6,19 +6,20 @@
 #' @param mods An object of class "Mods" as specified in the DoseFinding package.
 #' @param prior_list A prior_list object specifying the utilized prior for the different dose groups
 #' @param sd A positive value, specification of assumed sd
+#' @param data_sim A data frame for custom simulated data. Must follow the data structure as outputed by ´simulateData()´. Default NULL.
 #' @param n_sim Number of simulations to be performed
-#' @param alpha_crit_val (Un-adjusted) Critical value to be used for the MCP testing step. Passed to the getCritProb() function for the calculation of adjusted critical values (on the probability scale). Default is 0.05.
+#' @param alpha_crit_val (Un-adjusted) Critical value to be used for the MCP testing step. Passed to the getCritProb() function for the calculation of adjusted critical values (on the probability scale). Default 0.05.
 #' @param modeling Boolean variable defining whether the Mod part of Bayesian MCP-Mod will be performed in the assessment. More heavy on resources. Default FALSE.
 #' @param simple Boolean variable defining whether simplified fit will be applied. Passed to the getModelFits function. Default FALSE.
 #' @param avg_fit Boolean variable, defining whether an average fit (based on generalized AIC weights) should be performed in addition to the individual models. Default TRUE.
-#' @param reestimate Boolean variable defining whether critical value should be calculated with re-estimated contrasts (see getCritProb function for more details). Default FALSE
-#' @param contr An object of class 'optContr' as created by the getContr() function. Allows specification of a fixed contrasts matrix. Default NULL
-#' @param dr_means A vector, allows specification of  individual (not model based) assumed effects per dose group. Default NULL
+#' @param reestimate Boolean variable defining whether critical value should be calculated with re-estimated contrasts (see getCritProb function for more details). Default FALSE.
+#' @param contr An object of class 'optContr' as created by the getContr() function. Allows specification of a fixed contrasts matrix. Default NULL.
+#' @param dr_means A vector, allows specification of individual (not model based) assumed effects per dose group. Default NULL.
 #' @param delta A numeric value for the threshold Delta for the MED assessment. If NULL, no MED assessment is performed. Default NULL.
 #' @param evidence_level A numeric value between 0 and 1 for the evidence level gamma for the MED assessment. Only required for Bayesian MED assessment, see ?getMED for details. Default NULL.
 #' @param med_selection A string, either "avgFit" or "bestFit", for the method of MED selection. Default "avgFit".
 #'
-#' @return Returns success probabilities for the different assumed dose-response shapes, attributes also includes information around average success rate (across all assumed models) and prior Effective sample size
+#' @return Returns success probabilities for the different assumed dose-response shapes, attributes also includes information around average success rate (across all assumed models) and prior Effective sample size.
 #'
 #' @examples
 #' mods <- DoseFinding::Mods(linear      = NULL,
@@ -86,6 +87,8 @@ assessDesign <- function (
   
   sd,
   
+  data_sim       = NULL,
+  
   n_sim          = 1e3,
   alpha_crit_val = 0.05,
   modeling       = FALSE,
@@ -124,6 +127,17 @@ assessDesign <- function (
     mods        = mods,
     n_sim       = n_sim,
     dr_means    = dr_means)
+  
+  if (!is.null(data_sim)) {
+    
+    # lazily simulating data anyway and then checking if formats match
+    stopifnot(dim(data_sim)      == dim(data),
+              colnames(data_sim) == colnames(data),
+              data_sim[, 1:3]    == data[, 1:3])
+    
+    data <- data_sim
+    
+  }
   
   model_names <- colnames(data)[-c(1:3)]
   
