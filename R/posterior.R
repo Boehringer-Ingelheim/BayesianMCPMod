@@ -6,8 +6,7 @@
 #' In the latter case conjugate posterior mixture of multivariate normals are calculated (DeGroot 1970, Bernardo and Smith 1994)
 #'
 #' @param prior_list a prior list with information about the prior to be used for every dose group
-#' @param data dataframe containing the information of dose and response. Default NULL
-#' Also a simulateData object can be provided.
+#' @param data dataframe containing the information of dose and response. Also a simulateData object can be provided. Default NULL
 #' @param mu_hat vector of estimated mean values (per dose group). Default NULL
 #' @param S_hat covariance matrix specifying the (estimated) variability.
 #' The variance-covariance matrix should be provided and the dimension of the matrix needs to match the number of dose groups. Default NULL

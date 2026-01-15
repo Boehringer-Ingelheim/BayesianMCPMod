@@ -6,7 +6,8 @@
 #' @param mods An object of class "Mods" as specified in the DoseFinding package.
 #' @param prior_list A prior_list object specifying the utilized prior for the different dose groups
 #' @param sd A positive value, specification of assumed sd
-#' @param data_sim A data frame for custom simulated data. Must follow the data structure as outputed by ´simulateData()´. Default NULL.
+#' @param data_sim An optional data frame for custom simulated data. Must follow the data structure as provided by ´simulateData()´. Default NULL.
+#' @param estimates_sim An optional named list of list of vectors for the estimated means per dose group (estimates_sim$mu_hats) and a list of matrices for the covariance matrices specifying the (estimated) variabilities (estimates_sim$S_hats). Dimensions of entries must match the number of dose levels. Default NULL.
 #' @param n_sim Number of simulations to be performed
 #' @param alpha_crit_val (Un-adjusted) Critical value to be used for the MCP testing step. Passed to the getCritProb() function for the calculation of adjusted critical values (on the probability scale). Default 0.05.
 #' @param modeling Boolean variable defining whether the Mod part of Bayesian MCP-Mod will be performed in the assessment. More heavy on resources. Default FALSE.
@@ -88,6 +89,7 @@ assessDesign <- function (
   sd,
   
   data_sim       = NULL,
+  estimates_sim  = NULL,
   
   n_sim          = 1e3,
   alpha_crit_val = 0.05,
@@ -109,6 +111,7 @@ assessDesign <- function (
   checkmate::assert_double(n_patients, lower = 2, upper = Inf)
   checkmate::assert_class(mods, classes = "Mods")
   checkmate::assert_list(prior_list, names = "named", len = length(attr(mods, "doses")), any.missing = FALSE)
+  checkmate::assert_list(estimates_sim, null.ok = TRUE)
   # sensitive to how DoseFinding labels their attributes for "Mods" class
   checkmate::assert_integerish(n_sim, lower = 1, upper = Inf)
   checkmate::assert_double(alpha_crit_val, lower = 0, upper = 1)
@@ -116,30 +119,56 @@ assessDesign <- function (
   
   # TODO: check that prior_list has 'sd_tot' attribute, and that it's numeric # this is not applicable at the moment
   
+  stopifnot("Cannot specify both 'data_sim' and 'estimates_sim' simultaneously" = 
+              is.null(data_sim)  & is.null(estimates_sim) |
+              !is.null(data_sim) & is.null(estimates_sim) |
+              is.null(data_sim)  & !is.null(estimates_sim))
+  
   modeling <- ifelse(!is.null(delta), TRUE, modeling)
   
   dose_levels <- attr(mods, "doses")
+  model_names <- names(mods)
   
-  data <- simulateData(
-    n_patients  = n_patients,
-    dose_levels = dose_levels,
-    sd          = sd,
-    mods        = mods,
-    n_sim       = n_sim,
-    dr_means    = dr_means)
-  
-  if (!is.null(data_sim)) {
+  if (!is.null(estimates_sim)) {
     
-    # lazily simulating data anyway and then checking if formats match
-    stopifnot(dim(data_sim)      == dim(data),
-              colnames(data_sim) == colnames(data),
-              data_sim[, 1:3]    == data[, 1:3])
+    stopifnot("The length of 'estimates_sim$S_hats' must match 'estimates_sim$mu_hats' or 1." =
+                length(estimates_sim$S_hats) == length(estimates_sim$mu_hats) |
+                length(estimates_sim$S_hats) == 1L)
+    stopifnot("The length of each entry of 'estimates_sim$mu_hats' must match the number of dose levels." =
+                length(estimates_sim$mu_hats[[1]]) == length(dose_levels))
+    stopifnot("The dimensions of each entry of 'estimates_sim$S_hats' must match the number of dose levels." =
+                ncol(estimates_sim$S_hats[[1]]) == length(dose_levels))
+    
+  } else if (!is.null(data_sim)) {
+    
+    ## lazily simulate data anyway ...
+    data <- simulateData(
+      n_patients  = n_patients,
+      dose_levels = dose_levels,
+      sd          = sd,
+      mods        = mods,
+      n_sim       = n_sim,
+      dr_means    = dr_means)
+    
+    ## ... and then check if formats of data_sim and data match
+    stopifnot("'data_sim' must follow the data structure as provided by simulateData()" =
+                dim(data_sim)      == dim(data) &
+                colnames(data_sim) == colnames(data) &
+                data_sim[, 1:3]    == data[, 1:3])
     
     data <- data_sim
     
+  } else {
+    
+    data <- simulateData(
+      n_patients  = n_patients,
+      dose_levels = dose_levels,
+      sd          = sd,
+      mods        = mods,
+      n_sim       = n_sim,
+      dr_means    = dr_means)
+    
   }
-  
-  model_names <- colnames(data)[-c(1:3)]
   
   crit_prob_adj <- getCritProb(
     mods           = mods,
@@ -159,9 +188,23 @@ assessDesign <- function (
   
   eval_design <- lapply(model_names, function (model_name) {
     
-    posterior_list <- getPosterior(
-      data       = getModelData(data, model_name),
-      prior_list = prior_list)
+    if (is.null(estimates_sim)) {
+      
+      posterior_list <- getPosterior(
+        data       = getModelData(data, model_name),
+        prior_list = prior_list)
+      
+    } else {
+      
+      posterior_list <- mapply(getPosterior,
+             mu_hat   = estimates_sim$mu_hats,
+             S_hat    = estimates_sim$S_hats,
+             MoreArgs = list(prior_list = prior_list),
+             SIMPLIFY = FALSE)
+      
+      names(posterior_list) <- seq_along(estimates_sim$mu_hats)
+      
+    }
     
     if (reestimate & is.null(contr)) {
       
