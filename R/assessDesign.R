@@ -147,7 +147,7 @@ assessDesign <- function (
       dose_levels = dose_levels,
       sd          = sd,
       mods        = mods,
-      n_sim       = n_sim,
+      n_sim       = nrow(data_sim), # adjust the number of simulations to data_sim
       dr_means    = dr_means)
     
     ## ... and then check if formats of data_sim and data match
