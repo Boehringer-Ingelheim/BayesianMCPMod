@@ -228,10 +228,12 @@ getModelFitOpt <- function (
   }
 
   optFun <- function (
+    
     theta,
     dose_levels,
     post_combs,
     expr_i
+    
   ) {
 
     comps <- sapply(seq_along(post_combs$weights), function (i) eval(expr_i))

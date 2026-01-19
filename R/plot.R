@@ -42,14 +42,15 @@
 plot.modelFits <- function (
 
   x,
-  gAIC      = TRUE,
-  cr_intv   = TRUE,
-  alpha_CrI = 0.05,
-  cr_bands  = FALSE,
-  alpha_CrB = c(0.05, 0.2),
-  n_bs_smpl = 1e3,
-  acc_color = "orange",
-  plot_res  = 1e2,
+  inv_logit_scale = FALSE,
+  gAIC            = TRUE,
+  cr_intv         = TRUE,
+  alpha_CrI       = 0.05,
+  cr_bands        = FALSE,
+  alpha_CrB       = c(0.05, 0.2),
+  n_bs_smpl       = 1e3,
+  acc_color       = "orange",
+  plot_res        = 1e2,
   ...
 
 ) {
@@ -86,6 +87,15 @@ plot.modelFits <- function (
     fits   = as.vector(preds_models),
     models = rep(factor(model_names, levels = model_names),
                  each = plot_res))
+  
+  if (inv_logit_scale) {
+    
+    post_summary <- apply(post_summary, 2, RBesT::inv_logit)
+    
+    gg_data <- gg_data |>
+      dplyr::mutate(fits = RBesT::inv_logit(fits))
+    
+  }
 
   if (gAIC) {
 
@@ -122,6 +132,13 @@ plot.modelFits <- function (
       dplyr::filter(sample_type == "abs") |>
       tidyr::pivot_wider(names_from = q_prob, values_from = q_val) |>
       dplyr::rename(models = model)
+    
+    if (inv_logit_scale) {
+      
+      crB_data <- crB_data |>
+        dplyr::mutate(dplyr::across(!all_of(c("models", "dose", "sample_type")), RBesT::inv_logit))
+      
+    }
 
   }
 
