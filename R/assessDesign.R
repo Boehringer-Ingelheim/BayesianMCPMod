@@ -5,17 +5,17 @@
 #' @param n_patients Vector specifying the planned number of patients per dose group. A minimum of 2 patients are required in each group.
 #' @param mods An object of class "Mods" as specified in the DoseFinding package.
 #' @param prior_list A prior_list object specifying the utilized prior for the different dose groups
-#' @param sd A positive value, specification of assumed sd
+#' @param sd A positive value, specification of assumed sd. Not required if ´data_sim´ or ´estimates_sim´ is provided. Default NULL
+#' @param contr An object of class 'optContr' as created by the getContr() function. Allows specification of a fixed contrasts matrix. Default NULL.
+#' @param dr_means A vector, allows specification of individual (not model based) assumed effects per dose group. Default NULL.
 #' @param data_sim An optional data frame for custom simulated data. Must follow the data structure as provided by ´simulateData()´. Default NULL.
-#' @param estimates_sim An optional named list of list of vectors for the estimated means per dose group (estimates_sim$mu_hats) and a list of matrices for the covariance matrices specifying the (estimated) variabilities (estimates_sim$S_hats). Dimensions of entries must match the number of dose levels. Default NULL.
+#' @param estimates_sim An optional named list of 1) list of vectors for the estimated means per dose group (estimates_sim$mu_hats) and 2) of list of matrices for the covariance matrices specifying the (estimated) variabilities (estimates_sim$S_hats). Dimensions of entries must match the number of dose levels. Default NULL.
 #' @param n_sim Number of simulations to be performed
 #' @param alpha_crit_val (Un-adjusted) Critical value to be used for the MCP testing step. Passed to the getCritProb() function for the calculation of adjusted critical values (on the probability scale). Default 0.05.
 #' @param modeling Boolean variable defining whether the Mod part of Bayesian MCP-Mod will be performed in the assessment. More heavy on resources. Default FALSE.
 #' @param simple Boolean variable defining whether simplified fit will be applied. Passed to the getModelFits function. Default FALSE.
 #' @param avg_fit Boolean variable, defining whether an average fit (based on generalized AIC weights) should be performed in addition to the individual models. Default TRUE.
 #' @param reestimate Boolean variable defining whether critical value should be calculated with re-estimated contrasts (see getCritProb function for more details). Default FALSE.
-#' @param contr An object of class 'optContr' as created by the getContr() function. Allows specification of a fixed contrasts matrix. Default NULL.
-#' @param dr_means A vector, allows specification of individual (not model based) assumed effects per dose group. Default NULL.
 #' @param delta A numeric value for the threshold Delta for the MED assessment. If NULL, no MED assessment is performed. Default NULL.
 #' @param evidence_level A numeric value between 0 and 1 for the evidence level gamma for the MED assessment. Only required for Bayesian MED assessment, see ?getMED for details. Default NULL.
 #' @param med_selection A string, either "avgFit" or "bestFit", for the method of MED selection. Default "avgFit".
@@ -46,6 +46,19 @@
 #'   n_sim       = 1e2) # speed up example run time
 #'
 #' success_probabilities
+#' 
+#' # custom dose response relationship#' 
+#' custom_dr_means <- c(1, 2, 3, 4, 5)
+#' 
+#' success_probabilities_custom_dr <- assessDesign(
+#'   n_patients  = n_patients,
+#'   mods        = mods,
+#'   prior_list  = prior_list,
+#'   dr_means    = custom_dr_means,
+#'   sd          = sd,
+#'   n_sim       = 1e2) # speed up example run time
+#'
+#' success_probabilities_custom_dr
 #'
 #' if (interactive()) { # takes typically > 5 seconds
 #'
@@ -86,7 +99,10 @@ assessDesign <- function (
   mods,
   prior_list,
   
-  sd,
+  sd             = NULL,
+  
+  contr          = NULL,
+  dr_means       = NULL,
   
   data_sim       = NULL,
   estimates_sim  = NULL,
@@ -97,9 +113,6 @@ assessDesign <- function (
   simple         = TRUE,
   avg_fit        = TRUE,
   reestimate     = FALSE,
-  
-  contr          = NULL,
-  dr_means       = NULL,
   
   delta          = NULL,
   evidence_level = NULL,
@@ -127,7 +140,6 @@ assessDesign <- function (
   modeling <- ifelse(!is.null(delta), TRUE, modeling)
   
   dose_levels <- attr(mods, "doses")
-  model_names <- names(mods)
   
   if (!is.null(estimates_sim)) {
     
@@ -142,23 +154,24 @@ assessDesign <- function (
   } else if (!is.null(data_sim)) {
     
     ## lazily simulate data anyway ...
+    # TODO: this approach requires people to simulate data for each provided model in mods
     data <- simulateData(
       n_patients  = n_patients,
       dose_levels = dose_levels,
-      sd          = sd,
+      sd          = 1,
       mods        = mods,
       n_sim       = nrow(data_sim), # adjust the number of simulations to data_sim
       dr_means    = dr_means)
     
     ## ... and then check if formats of data_sim and data match
     stopifnot("'data_sim' must follow the data structure as provided by simulateData()" =
-                dim(data_sim)      == dim(data) &
-                colnames(data_sim) == colnames(data) &
-                data_sim[, 1:3]    == data[, 1:3])
+                data_sim[, 1:3] == data[, 1:3])
     
     data <- data_sim
     
   } else {
+    
+    if (is.null(sd)) stop ("Must provide 'sd' argument for símulation.")
     
     data <- simulateData(
       n_patients  = n_patients,
@@ -178,11 +191,29 @@ assessDesign <- function (
   
   if (!reestimate & is.null(contr)) {
     
+    if (!is.null(data_sim) | !is.null(estimates_sim)) {
+      
+      warning ("Consider to provide 'contr' for your custom simulated data or analysis results.")
+      
+    }
+    
     contr <- getContr(
       mods           = mods,
       dose_levels    = dose_levels,
       dose_weights   = n_patients,
       prior_list     = prior_list)
+    
+  }
+  
+  
+  # get model names of true underlying models
+  if (is.null(estimates_sim))  {
+    
+    model_names <- colnames(data)[-c(1, 2, 3)]
+    
+  } else {
+    
+    model_names <- "estimates_sim"
     
   }
   

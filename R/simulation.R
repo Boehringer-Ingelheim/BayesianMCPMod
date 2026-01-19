@@ -21,17 +21,25 @@
 #'                             exponential = 2, 
 #'                             doses       = c(0, 0.5, 2,4, 8),
 #'                             maxEff      = 6)
-#' dose_levels <- c(0, 0.5, 2,4, 8)
+#' dose_levels <- c(0, 0.5, 2, 4, 8)
 #' sd          <- 12
 #' n_patients  <- c(40, 60, 60, 60, 60)
 #' 
 #' sim_data <- simulateData(n_patients  = n_patients,
 #'                          dose_levels = dose_levels,
 #'                          sd          = sd,
-#'                          mods        = models,
-#'                          n_sim       = 100)
+#'                          mods        = models)
 #' 
 #' head(sim_data)
+#' 
+#' custom_dose_response <- c(1, 2, 3, 4, 5)
+#' sim_data_custom_dr   <- simulateData(n_patients  = n_patients,
+#'                                      dose_levels = dose_levels,
+#'                                      sd          = sd,
+#'                                      mods        = models,
+#'                                      dr_means    = custom_dose_response)
+#' 
+#' head(sim_data_custom_dr)
 #'
 #' @return A list object, containing patient level simulated data for all assumed true models.
 #' Also providing information about simulation iteration, patient number as well as dosage levels.
@@ -102,6 +110,8 @@ simulateData <- function(
     colnames(sim_data) <- c(colnames(sim_data)[-4], "dose_resp")
     
   }
+  
+  rownames(sim_data) <- NULL
   
   return (sim_data)
   
