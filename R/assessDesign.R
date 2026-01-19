@@ -47,10 +47,10 @@
 #'
 #' success_probabilities
 #' 
-#' # custom dose response relationship#' 
+#' # Analysis with custom dose response relationship
 #' custom_dr_means <- c(1, 2, 3, 4, 5)
 #' 
-#' success_probabilities_custom_dr <- assessDesign(
+#' success_probs_custom_dr <- assessDesign(
 #'   n_patients  = n_patients,
 #'   mods        = mods,
 #'   prior_list  = prior_list,
@@ -58,7 +58,20 @@
 #'   sd          = sd,
 #'   n_sim       = 1e2) # speed up example run time
 #'
-#' success_probabilities_custom_dr
+#' success_probs_custom_dr
+#' 
+#' # Analysis with custom estimates for means and variabilies
+#' # No simulated data, only simulated model estimates
+#' estimates_sim <- list(mu_hats = replicate(100, list(c(1, 2, 3, 4, 5) + rnorm(5, 0, 1))),
+#'                       S_hats  = list(diag(1, 5)))
+#' 
+#' success_probs_custom_est <- assessDesign(
+#'   n_patients    = n_patients,
+#'   mods          = mods,
+#'   prior_list    = prior_list,
+#'   estimates_sim = estimates_sim)
+#'
+#' success_probs_custom_est
 #'
 #' if (interactive()) { # takes typically > 5 seconds
 #'
@@ -143,6 +156,9 @@ assessDesign <- function (
   
   if (!is.null(estimates_sim)) {
     
+    stopifnot("'estimates_sim' must be a named list of lenght 2 with list items called 'mu_hats' and 'S_hats'" =
+                length(estimates_sim) ==  2L &
+                all(names(estimates_sim) %in% c("mu_hats", "S_hats")))
     stopifnot("The length of 'estimates_sim$S_hats' must match 'estimates_sim$mu_hats' or 1." =
                 length(estimates_sim$S_hats) == length(estimates_sim$mu_hats) |
                 length(estimates_sim$S_hats) == 1L)
@@ -193,7 +209,7 @@ assessDesign <- function (
     
     if (!is.null(data_sim) | !is.null(estimates_sim)) {
       
-      warning ("Consider to provide 'contr' for your custom simulated data or analysis results.")
+      message("Consider to provide 'contr' for your custom simulated data or analysis results.")
       
     }
     
