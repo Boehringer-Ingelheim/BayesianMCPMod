@@ -19,6 +19,7 @@
 #' @param delta A numeric value for the threshold Delta for the MED assessment. If NULL, no MED assessment is performed. Default NULL.
 #' @param evidence_level A numeric value between 0 and 1 for the evidence level gamma for the MED assessment. Only required for Bayesian MED assessment, see ?getMED for details. Default NULL.
 #' @param med_selection A string, either "avgFit" or "bestFit", for the method of MED selection. Default "avgFit".
+#' @param probability_scale A boolean to specify if the trial has a continuous or a binary outcome. Setting to TRUE will transform calculations from the logit scale to the probability scale, which can be desirable for a binary outcome. Default FALSE.
 #'
 #' @return Returns success probabilities for the different assumed dose-response shapes, attributes also includes information around average success rate (across all assumed models) and prior Effective sample size.
 #'
@@ -112,24 +113,26 @@ assessDesign <- function (
   mods,
   prior_list,
   
-  sd             = NULL,
+  sd                = NULL,
   
-  contr          = NULL,
-  dr_means       = NULL,
+  contr             = NULL,
+  dr_means          = NULL,
   
-  data_sim       = NULL,
-  estimates_sim  = NULL,
+  data_sim          = NULL,
+  estimates_sim     = NULL,
   
-  n_sim          = 1e3,
-  alpha_crit_val = 0.05,
-  modeling       = FALSE,
-  simple         = TRUE,
-  avg_fit        = TRUE,
-  reestimate     = FALSE,
+  n_sim             = 1e3,
+  alpha_crit_val    = 0.05,
+  modeling          = FALSE,
+  simple            = TRUE,
+  avg_fit           = TRUE,
+  reestimate        = FALSE,
   
-  delta          = NULL,
-  evidence_level = NULL,
-  med_selection  = c("avgFit", "bestFit")
+  delta             = NULL,
+  evidence_level    = NULL,
+  med_selection     = c("avgFit", "bestFit"),
+  
+  probability_scale = FALSE
   
 ) {
   
@@ -141,7 +144,8 @@ assessDesign <- function (
   # sensitive to how DoseFinding labels their attributes for "Mods" class
   checkmate::assert_integerish(n_sim, lower = 1, upper = Inf)
   checkmate::assert_double(alpha_crit_val, lower = 0, upper = 1)
-  checkmate::assert_logical(modeling)
+  checkmate::assert_flag(modeling)
+  checkmate::assert_flag(probability_scale)
   
   # TODO: check that prior_list has 'sd_tot' attribute, and that it's numeric # this is not applicable at the moment
   
@@ -170,14 +174,14 @@ assessDesign <- function (
   } else if (!is.null(data_sim)) {
     
     ## lazily simulate data anyway ...
-    # TODO: this approach requires people to simulate data for each provided model in mods
     data <- simulateData(
-      n_patients  = n_patients,
-      dose_levels = dose_levels,
-      sd          = 1,
-      mods        = mods,
-      n_sim       = nrow(data_sim), # adjust the number of simulations to data_sim
-      dr_means    = dr_means)
+      n_patients        = n_patients,
+      dose_levels       = dose_levels,
+      sd                = 1,
+      mods              = mods,
+      n_sim             = nrow(data_sim), # adjust the number of simulations to data_sim
+      dr_means          = dr_means,
+      probability_scale = probability_scale)
     
     ## ... and then check if formats of data_sim and data match
     stopifnot("'data_sim' must follow the data structure as provided by simulateData()" =
@@ -187,15 +191,16 @@ assessDesign <- function (
     
   } else {
     
-    if (is.null(sd)) stop ("Must provide 'sd' argument for símulation.")
+    stopifnot("Must provide 'sd' argument for símulation." = !is.null(sd))
     
     data <- simulateData(
-      n_patients  = n_patients,
-      dose_levels = dose_levels,
-      sd          = sd,
-      mods        = mods,
-      n_sim       = n_sim,
-      dr_means    = dr_means)
+      n_patients        = n_patients,
+      dose_levels       = dose_levels,
+      sd                = sd,
+      mods              = mods,
+      n_sim             = n_sim,
+      dr_means          = dr_means,
+      probability_scale = probability_scale)
     
   }
   
@@ -238,8 +243,9 @@ assessDesign <- function (
     if (is.null(estimates_sim)) {
       
       posterior_list <- getPosterior(
-        data       = getModelData(data, model_name),
-        prior_list = prior_list)
+        data              = getModelData(data, model_name),
+        prior_list        = prior_list,
+        probability_scale = probability_scale)
       
     } else {
       
@@ -267,15 +273,16 @@ assessDesign <- function (
     if (modeling) {
       
       b_mcp_mod <- performBayesianMCPMod(
-        posterior_list = posterior_list,
-        contr          = contr,
-        crit_prob_adj  = crit_prob_adj,
-        simple         = simple,
-        avg_fit        = avg_fit,
-        delta          = delta,
-        evidence_level = evidence_level,
-        med_selection  = med_selection,
-        n_samples      = n_sim)
+        posterior_list    = posterior_list,
+        contr             = contr,
+        crit_prob_adj     = crit_prob_adj,
+        simple            = simple,
+        avg_fit           = avg_fit,
+        delta             = delta,
+        evidence_level    = evidence_level,
+        med_selection     = med_selection,
+        n_samples         = n_sim,
+        probability_scale = probability_scale) # should this also be transferred via attribute?
       
     } else {
       

@@ -6,11 +6,13 @@
 #' In the latter case conjugate posterior mixture of multivariate normals are calculated (DeGroot 1970, Bernardo and Smith 1994)
 #'
 #' @param prior_list a prior list with information about the prior to be used for every dose group
-#' @param data dataframe containing the information of dose and response. Also a simulateData object can be provided. Default NULL
-#' @param mu_hat vector of estimated mean values (per dose group). Default NULL
+#' @param data dataframe containing the information of dose and response. Also a simulateData object can be provided. Default NULL.
+#' @param mu_hat vector of estimated mean values (per dose group). Default NULL.
 #' @param S_hat covariance matrix specifying the (estimated) variability.
-#' The variance-covariance matrix should be provided and the dimension of the matrix needs to match the number of dose groups. Default NULL
-#' @param calc_ess boolean variable, indicating whether effective sample size should be calculated. Default FALSE
+#' The variance-covariance matrix should be provided and the dimension of the matrix needs to match the number of dose groups. Default NULL.
+#' @param calc_ess boolean variable, indicating whether effective sample size should be calculated. Default FALSE.
+#' @param probability_scale A boolean to specify if the trial has a continuous or a binary outcome. Setting to TRUE will transform calculations from the logit scale to the probability scale, which can be desirable for a binary outcome. Default `attr(data, "probability_scale")`.
+#' 
 #' @references BERNARDO, Jl. M., and Smith, AFM (1994). Bayesian Theory. 81.
 #' @return posterior_list, a posterior list object is returned with information about (mixture) posterior distribution per dose group (more detailed information about the conjugate posterior in case of covariance input for S_hat is provided in the attributes)
 #' @details Kindly note that one can sample from the `posterior_list` with `lapply(posterior_list, RBesT::rmix, n = 10)`.
@@ -35,10 +37,11 @@
 getPosterior <- function(
 
   prior_list,
-  data     = NULL,
-  mu_hat   = NULL,
-  S_hat    = NULL,
-  calc_ess = FALSE
+  data              = NULL,
+  mu_hat            = NULL,
+  S_hat             = NULL,
+  calc_ess          = FALSE,
+  probability_scale = attr(data, "probability_scale")
 
 ) {
 
@@ -47,6 +50,9 @@ getPosterior <- function(
   checkmate::assert_vector(mu_hat, any.missing = FALSE, null.ok = TRUE)
   checkmate::assert_double(mu_hat, null.ok = TRUE, lower = -Inf, upper = Inf)
   checkmate::assert_matrix(S_hat, mode = "numeric", any.missing = FALSE, null.ok = TRUE)
+  checkmate::assert_flag(probability_scale, null.ok = TRUE)
+  
+  if (is.null(probability_scale)) probability_scale <- FALSE
 
   stopifnot("prior_list must be an object of RBesT package" =
               all(sapply(prior_list, function(x)
@@ -93,7 +99,9 @@ getPosterior <- function(
   } else if (is.null(mu_hat) && is.null(S_hat) && !is.null(data)) {
 
     posterior_list <- lapply(split(data, data$simulation), getPosteriorI,
-                             prior_list = prior_list, calc_ess = calc_ess)
+                             prior_list        = prior_list,
+                             calc_ess          = calc_ess,
+                             probability_scale = probability_scale)
 
   } else {
 
@@ -117,7 +125,8 @@ getPosteriorI <- function(
   prior_list,
   mu_hat   = NULL,
   se_hat   = NULL,
-  calc_ess = FALSE
+  calc_ess = FALSE,
+  probability_scale = attr(data_i, "probability_scale")
 
 ) {
 
@@ -127,24 +136,40 @@ getPosteriorI <- function(
   checkmate::check_double(mu_hat, null.ok = TRUE, lower = -Inf, upper = Inf)
   checkmate::check_vector(se_hat, any.missing = FALSE, null.ok = TRUE)
   checkmate::check_double(se_hat, null.ok = TRUE, lower = 0, upper = Inf)
+  checkmate::assert_flag(probability_scale, null.ok = TRUE)
+  
+  if (is.null(probability_scale)) probability_scale <- FALSE
 
   if (is.null(mu_hat) && is.null(se_hat) && !is.null(data_i)) {
 
     checkmate::check_data_frame(data_i, null.ok = FALSE)
     checkmate::assert_names(names(data_i), must.include = "response")
     checkmate::assert_names(names(data_i), must.include = "dose")
-
-    anova_res <- stats::lm(data_i$response ~ factor(data_i$dose) - 1)
-    mu_hat    <- summary(anova_res)$coefficients[, 1]
-    se_hat    <- summary(anova_res)$coefficients[, 2]
+    
+    ## TODO
+    # if (probability_scale) logfit <- glm(RespRate ~ dosesFact - 1, family = binomial, weights = N)
+    # extract mu_hat & se_hat
+    # muHat <- coef(logfit)
+    # S <- vcov(logfit), double check for only diagonal entries
+    
+    if (probability_scale) {
+      
+      logit_fit <- stats::glm(data_i$response ~ factor(data_i$dose) - 1, family = binomial)
+      mu_hat    <- stats::coef(logit_fit)
+      se_hat    <- diag(sqrt(stats::vcov(logit_fit)))
+      
+    } else {
+      
+      anova_res <- stats::lm(data_i$response ~ factor(data_i$dose) - 1)
+      mu_hat    <- summary(anova_res)$coefficients[, 1]
+      se_hat    <- summary(anova_res)$coefficients[, 2]
+      
+    }
 
   } else if (!is.null(mu_hat) && !is.null(se_hat) && is.null(data_i)) {
 
     stopifnot("m_hat length must match number of dose levels" =
                 length(prior_list) == length(mu_hat))
-    # ,
-    #           "se_hat length must match number of dose levels" =
-    #             length(prior_list) == length(se_hat))
 
   } else {
 

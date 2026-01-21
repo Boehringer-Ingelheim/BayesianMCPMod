@@ -7,6 +7,7 @@
 #' The calculation of these bands is performed via the getBootstrapQuantiles() function.
 #' The default setting is that these credible bands are not calculated.
 #' @param x An object of type modelFits
+#' @param probability_scale A boolean to specify if the trial has a continuous or a binary outcome. Setting to TRUE will transform the output from the logit scale to the probability scale, which can be desirable for a binary outcome. Default `attr(x, "probability_scale")`.
 #' @param gAIC Logical value indicating whether gAIC values are shown in the plot. Default TRUE
 #' @param cr_intv Logical value indicating whether credible intervals are included in the plot. Default TRUE
 #' @param alpha_CrI Numerical value of the width of the credible intervals. Default is set to 0.05 (i.e 95% CI are shown).
@@ -32,7 +33,6 @@
 #' plot(model_fits)
 #' 
 #' # plot with credible bands
-#' 
 #' plot(model_fits,
 #'      cr_bands  = TRUE,
 #'      n_bs_smpl = 1e2) 
@@ -42,15 +42,15 @@
 plot.modelFits <- function (
 
   x,
-  inv_logit_scale = FALSE,
-  gAIC            = TRUE,
-  cr_intv         = TRUE,
-  alpha_CrI       = 0.05,
-  cr_bands        = FALSE,
-  alpha_CrB       = c(0.05, 0.2),
-  n_bs_smpl       = 1e3,
-  acc_color       = "orange",
-  plot_res        = 1e2,
+  probability_scale = attr(x, "probability_scale"),
+  gAIC              = TRUE,
+  cr_intv           = TRUE,
+  alpha_CrI         = 0.05,
+  cr_bands          = FALSE,
+  alpha_CrB         = c(0.05, 0.2),
+  n_bs_smpl         = 1e3,
+  acc_color         = "orange",
+  plot_res          = 1e2,
   ...
 
 ) {
@@ -66,18 +66,23 @@ plot.modelFits <- function (
   checkmate::assert_integerish(n_bs_smpl, lower = 1, upper = Inf)
   checkmate::assert_string(acc_color, na.ok = TRUE)
   checkmate::assert_integerish(plot_res, lower = 1, upper = Inf)
+  checkmate::assert_flag(probability_scale, null.ok = TRUE)
+  
+  if (is.null(probability_scale)) probability_scale <- FALSE
 
   model_fits <- x
 
   dose_levels  <- model_fits[[1]]$dose_levels
   post_summary <- summary.postList(
-    object = attr(model_fits, "posterior"),
-    probs  = c(alpha_CrI / 2, 0.5, 1 - alpha_CrI / 2))
+    object            = attr(model_fits, "posterior"),
+    probs             = c(alpha_CrI / 2, 0.5, 1 - alpha_CrI / 2),
+    probability_scale = probability_scale)
   dose_seq <- seq(from       = min(dose_levels),
                   to         = max(dose_levels),
                   length.out = plot_res)
 
-  preds_models <- do.call(c, predict.modelFits(model_fits, doses = dose_seq))
+  preds_models <- do.call(c, predict.modelFits(model_fits, doses = dose_seq,
+                                               probability_scale = probability_scale))
   model_names  <- names(model_fits)
   
   avg_fit <- "avgFit" %in% model_names
@@ -87,15 +92,6 @@ plot.modelFits <- function (
     fits   = as.vector(preds_models),
     models = rep(factor(model_names, levels = model_names),
                  each = plot_res))
-  
-  if (inv_logit_scale) {
-    
-    post_summary <- apply(post_summary, 2, RBesT::inv_logit)
-    
-    gg_data <- gg_data |>
-      dplyr::mutate(fits = RBesT::inv_logit(fits))
-    
-  }
 
   if (gAIC) {
 
@@ -125,20 +121,14 @@ plot.modelFits <- function (
     quantile_pairs[, 2] <- quantile_pairs[, 2] - quantile_pairs[, 1]
 
     crB_data <- getBootstrapQuantiles(
-      model_fits = model_fits,
-      n_samples  = n_bs_smpl,
-      quantiles  = sort(unique(c(0.5, as.vector(quantile_pairs)))),
-      doses      = dose_seq) |>
+      model_fits        = model_fits,
+      n_samples         = n_bs_smpl,
+      quantiles         = sort(unique(c(0.5, as.vector(quantile_pairs)))),
+      doses             = dose_seq,
+      probability_scale = probability_scale) |>
       dplyr::filter(sample_type == "abs") |>
       tidyr::pivot_wider(names_from = q_prob, values_from = q_val) |>
       dplyr::rename(models = model)
-    
-    if (inv_logit_scale) {
-      
-      crB_data <- crB_data |>
-        dplyr::mutate(dplyr::across(!all_of(c("models", "dose", "sample_type")), RBesT::inv_logit))
-      
-    }
 
   }
 

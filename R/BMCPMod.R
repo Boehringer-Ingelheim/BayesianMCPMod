@@ -325,6 +325,7 @@ getModelSuccesses <- function (b_mcp) {
 #' @param evidence_level A numeric value between 0 and 1 for the evidence level gamma for the MED assessment. Only required for Bayesian MED assessment, see ?getMED for details. Default NULL.
 #' @param med_selection A string, either "avgFit" or "bestFit" based on the lowest gAIC, for the method of MED selection. Default "avgFit".
 #' @param n_samples A numerical for the number of bootstrapped samples in case the Bayesian MED assessment is performed. Default 1e3.
+#' @param probability_scale A boolean to specify if the trial has a continuous or a binary outcome. Setting to TRUE will transform calculations from the logit scale to the probability scale, which can be desirable for a binary outcome. Default FALSE.
 #' @examples
 #' mods <- DoseFinding::Mods(linear      = NULL,
 #'                           emax        = c(0.5, 1.2),
@@ -340,7 +341,7 @@ getModelSuccesses <- function (b_mcp) {
 #'   mods           = mods,
 #'   dose_weights   = c(50, 50, 50, 50, 50), #reflecting the planned sample size
 #'   dose_levels    = dose_levels,
-#'   alpha_crit_val = 0.6) # unreasonable alpha for this example, rather choose 0.05
+#'   alpha_crit_val = 0.6) # unreasonable alpha chosen for this example, rather choose 0.05
 #' prior_list <- list(Ctrl = RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 5), sigma = 2),
 #'                    DG_1 = RBesT::mixnorm(comp1 = c(w = 1, m = 1, s = 12), sigma = 2),
 #'                    DG_2 = RBesT::mixnorm(comp1 = c(w = 1, m = 1.2, s = 11), sigma = 2) ,
@@ -358,7 +359,8 @@ getModelSuccesses <- function (b_mcp) {
 #'                       contr          = contr_mat,
 #'                       crit_prob_adj  = critVal,
 #'                       simple         = FALSE,
-#'                       delta          = 1)
+#'                       delta          = 0.2,
+#'                       probability_scale = TRUE)
 #'
 #' @return Bayesian MCP test result as well as modeling result.
 #'
@@ -368,13 +370,14 @@ performBayesianMCPMod <- function (
   posterior_list,
   contr,
   crit_prob_adj,
-  simple = FALSE,
-  avg_fit = TRUE,
+  simple            = FALSE,
+  avg_fit           = TRUE,
 
-  delta          = NULL,
-  evidence_level = NULL,
-  med_selection  = c("avgFit", "bestFit"),
-  n_samples      = 1e3
+  delta             = NULL,
+  evidence_level    = NULL,
+  med_selection     = c("avgFit", "bestFit"),
+  n_samples         = 1e3,
+  probability_scale = FALSE
 
 ) {
 
@@ -395,6 +398,8 @@ performBayesianMCPMod <- function (
 
   med_selection <- match.arg(med_selection, choices = c("avgFit", "bestFit"))
   get_med       <- ifelse(is.null(delta), FALSE, TRUE)
+  
+  checkmate::assert_flag(probability_scale)
 
   if (!is.null(evidence_level)) {
     stopifnot("delta must not be NULL if evidence_level is not NULL" = !is.null(delta))
@@ -422,12 +427,13 @@ performBayesianMCPMod <- function (
     crit_prob_adj  = crit_prob_adj)
 
   b_mod <- performBayesianMod(
-    b_mcp          = b_mcp,
-    posterior_list = posterior_list,
-    model_names    = model_names,
-    dose_levels    = dose_levels,
-    simple         = simple,
-    avg_fit        = avg_fit)
+    b_mcp             = b_mcp,
+    posterior_list    = posterior_list,
+    model_names       = model_names,
+    dose_levels       = dose_levels,
+    simple            = simple,
+    avg_fit           = avg_fit,
+    probability_scale = probability_scale)
 
   b_mcp_mod <- list(BayesianMCP = b_mcp, Mod = b_mod)
 
@@ -440,20 +446,23 @@ performBayesianMCPMod <- function (
         if (!is.null(evidence_level)) {
 
           bs_quantiles <- getBootstrapQuantiles(
-            model_fits = model_fits,
-            quantiles  = 1 - evidence_level,
-            n_samples  = n_samples)
+            model_fits        = model_fits,
+            quantiles         = 1 - evidence_level,
+            n_samples         = n_samples,
+            probability_scale = probability_scale)
 
           med_info <- getMED(
-            delta          = delta,
-            evidence_level = evidence_level,
-            bs_quantiles   = bs_quantiles)
+            delta             = delta,
+            evidence_level    = evidence_level,
+            bs_quantiles      = bs_quantiles,
+            probability_scale = probability_scale)
 
         } else {
 
           med_info <- getMED(
-            delta      = delta,
-            model_fits = model_fits)
+            delta             = delta,
+            model_fits        = model_fits,
+            probability_scale = probability_scale)
 
         }
 
@@ -589,7 +598,8 @@ performBayesianMod <- function (
   model_names,
   dose_levels,
   simple,
-  avg_fit
+  avg_fit,
+  probability_scale = FALSE
 
 ) {
 
@@ -605,11 +615,12 @@ performBayesianMod <- function (
     if (b_mcp[i, 1]) {
 
       model_fits <- getModelFits(
-        models      = model_names,
-        dose_levels = dose_levels,
-        posterior   = posterior_list[[i]],
-        avg_fit     = avg_fit,
-        simple      = simple)
+        models            = model_names,
+        dose_levels       = dose_levels,
+        posterior         = posterior_list[[i]],
+        avg_fit           = avg_fit,
+        simple            = simple,
+        probability_scale = probability_scale)
 
       sign_models <- b_mcp[i, -c(1, 2)] > attr(b_mcp, "critProbAdj")
       model_fits  <- addSignificance(model_fits, sign_models)

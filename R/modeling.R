@@ -26,6 +26,7 @@
 #' @param posterior A getPosterior object, containing the (multivariate) posterior distribution per dosage level.
 #' @param avg_fit Boolean variable, defining whether an average fit (based on generalized AIC weights) should be performed in addition to the individual models. Default TRUE.
 #' @param simple Boolean variable, defining whether simplified fit will be applied. Default FALSE.
+#' @param probability_scale A boolean variable to specify if the trial has a continuous or a binary outcome. Setting to TRUE will transform predictions from the logit scale to the probability scale, which can be desirable for a binary outcome. Default FALSE.
 #' @examples
 #' posterior_list <- list(Ctrl = RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 1), sigma = 2),
 #'                        DG_1 = RBesT::mixnorm(comp1 = c(w = 1, m = 3, s = 1.2), sigma = 2),
@@ -56,8 +57,9 @@ getModelFits <- function (
   models,
   dose_levels,
   posterior,
-  avg_fit = TRUE,
-  simple  = FALSE
+  avg_fit           = TRUE,
+  simple            = FALSE,
+  probability_scale = FALSE
 
 ) {
   
@@ -70,8 +72,9 @@ getModelFits <- function (
     checkmate::check_class(posterior, "postList"),
     checkmate::check_list(posterior) && all(sapply(posterior, inherits, c("normMix", "mix")))
   )
-  checkmate::assert_logical(avg_fit)
-  checkmate::assert_logical(simple)
+  checkmate::assert_flag(avg_fit)
+  checkmate::assert_flag(simple)
+  checkmate::assert_flag(probability_scale)
   
   if (inherits(models, "character")) {
     
@@ -101,10 +104,22 @@ getModelFits <- function (
     model_fits <- addAvgFit(model_fits)
     
   }
+  
+  if (probability_scale) {
+    
+    for (i in seq_along(model_fits)) {
+      
+      model_fits[[i]]$pred_values <- RBesT::inv_logit(model_fits[[i]]$pred_values)
+      model_fits[[i]]$max_effect  <- max(model_fits[[i]]$pred_values) - min(model_fits[[i]]$pred_values)
+      
+    }
+    
+  }
 
-  attr(model_fits, "direction") <- getDirection(models, model_fits)
-  attr(model_fits, "posterior") <- posterior
-  class(model_fits)             <- "modelFits"
+  attr(model_fits, "direction")         <- getDirection(models, model_fits)
+  attr(model_fits, "posterior")         <- posterior
+  attr(model_fits, "probability_scale") <- probability_scale
+  class(model_fits)                     <- "modelFits"
 
   return (model_fits)
 
@@ -263,7 +278,8 @@ getModelFitOpt <- function (
     add_args    = add_args,
     dose_levels = dose_levels)
 
-  model_fit$pred_values <- predictModelFit(model_fit = model_fit, doses = model_fit$dose_levels)
+  model_fit$pred_values <- predictModelFit(model_fit = model_fit,
+                                           doses     = model_fit$dose_levels)
   model_fit$max_effect  <- max(model_fit$pred_values) - min(model_fit$pred_values)
   model_fit$gAIC        <- getGenAIC(model_fit, post_combs)
   
@@ -401,7 +417,8 @@ predictAvgFit <- function (
     
   } else {
     
-    mod_preds <- do.call(cbind, predict.modelFits(model_fits_sub, doses = doses))
+    mod_preds <- do.call(cbind, predict.modelFits(model_fits_sub, doses = doses,
+                                                  probability_scale = FALSE)) # transformation will be done outside this function if applicable
     
   }
   
@@ -489,6 +506,8 @@ addModelWeights <- function (
 #' @param dose_levels A vector of numerics containing the different dosage levels. Default NULL.
 #' @param model_fits An object of class modelFits as created with getModelFits(). Default NULL.
 #' @param bs_quantiles A dataframe created with getBootstrapQuantiles(). Default NULL.
+#' @param probability_scale A boolean variable to specify if the trial has a continuous or a binary outcome. Setting to TRUE will transform predictions from the logit scale to the probability scale, which can be desirable for a binary outcome. Default `attr(model_fits, "probability_scale")`.
+#' 
 #' @return  A matrix with rows for MED reached, MED, and MED index in the vector of dose levels and columns for the dose-response shapes.
 #' @examples
 #' posterior_list <- list(Ctrl = RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 1), sigma = 2),
@@ -514,15 +533,19 @@ addModelWeights <- function (
 #' getMED(delta          = 5,
 #'        evidence_level = 0.8,
 #'        bs_quantiles   = bs_quantiles)
-#'
+#'        
+#' # MED on the probability scale
+#' getMED(delta = 0.1, model_fits = model_fits, probability_scale = TRUE)
+#' 
 #' @export
 getMED <- function (
     
   delta,
-  evidence_level = 0.5,
-  dose_levels    = NULL,
-  model_fits     = NULL,
-  bs_quantiles   = NULL
+  evidence_level    = 0.5,
+  dose_levels       = NULL,
+  model_fits        = NULL,
+  bs_quantiles      = NULL,
+  probability_scale = attr(model_fits, "probability_scale")
   
 ) {
   
@@ -533,9 +556,18 @@ getMED <- function (
               is.null(model_fits) & !is.null(bs_quantiles) |
               !is.null(model_fits) & is.null(bs_quantiles))
   
-  checkmate::assert_double(delta)
-  checkmate::assert_double(evidence_level, lower = 0, upper = 1)
+  checkmate::assert_double(delta, len = 1L)
+  checkmate::assert_double(evidence_level, lower = 0, upper = 1, len = 1L)
   checkmate::assert_double(dose_levels, lower = 0, any.missing = FALSE, null.ok = TRUE)
+  
+  checkmate::assert_flag(probability_scale, null.ok = TRUE)
+  if (is.null(probability_scale)) probability_scale <- FALSE
+  
+  if (probability_scale) {
+    
+    checkmate::assert_double(delta, lower = 0, upper = 1)
+    
+  }
   
   if (!is.null(model_fits)) {
     ## Direction not needed, because mean value
@@ -543,13 +575,10 @@ getMED <- function (
     
     checkmate::assert_class(model_fits, "modelFits")
     
-    if (is.null(dose_levels)) {
-      
-      dose_levels <- model_fits[[1]]$dose_levels
-      
-    }
+    if (is.null(dose_levels)) dose_levels <- model_fits[[1]]$dose_levels
     
-    preds <- do.call(rbind, predict.modelFits(model_fits, doses = dose_levels))
+    preds <- do.call(rbind, predict.modelFits(model_fits, doses = dose_levels,
+                                              probability_scale = probability_scale))
     
     abs_diffs <- abs(preds - preds[, 1])
     colnames(abs_diffs) <- dose_levels
@@ -563,11 +592,7 @@ getMED <- function (
       
     }
     
-    if (is.null(dose_levels)) {
-      
-      dose_levels <- unique(bs_quantiles$dose)
-      
-    }
+    if (is.null(dose_levels)) dose_levels <- unique(bs_quantiles$dose)
     
     # R CMD Check Appeasement
     q_prob <- dose <- q_val <- models <- NULL
