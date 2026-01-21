@@ -4,7 +4,12 @@
 \alias{getBootstrapSamples}
 \title{getBootstrapSamples}
 \usage{
-getBootstrapSamples(model_fits, n_samples = 1000, doses = NULL)
+getBootstrapSamples(
+  model_fits,
+  n_samples = 1000,
+  doses = NULL,
+  probability_scale = attr(model_fits, "probability_scale")
+)
 }
 \arguments{
 \item{model_fits}{An object of class modelFits, i.e. information about fitted models & corresponding model coefficients as well as the posterior distribution that was the basis for the model fitting}
@@ -12,6 +17,8 @@ getBootstrapSamples(model_fits, n_samples = 1000, doses = NULL)
 \item{n_samples}{Number of samples that should be drawn}
 
 \item{doses}{A vector of doses for which a prediction should be performed}
+
+\item{probability_scale}{A boolean variable to specify if the trial has a continuous or a binary outcome. Setting to TRUE will transform predictions from the logit scale to the probability scale, which can be desirable for a binary outcome. Default \code{attr(model_fits, "probability_scale")}.}
 }
 \value{
 A tibble with columns for sample_id, model, dose, sample, and sample_diff

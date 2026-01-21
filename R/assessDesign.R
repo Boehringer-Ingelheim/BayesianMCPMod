@@ -226,7 +226,6 @@ assessDesign <- function (
     
   }
   
-  
   # get model names of true underlying models
   if (is.null(estimates_sim))  {
     
@@ -323,7 +322,7 @@ assessDesign <- function (
                                                 yes  = attr(mods, "placEff"),
                                                 no   = dr_means[1])
   attr(eval_design, "maxEff")         <- ifelse(test = is.null(dr_means),
-                                                yes  = attr(mods, "maxEff"),
+                                                yes  = attr(mods, "maxEff"), # this is on logit scale in case of binary endpoint
                                                 no   = diff(range(dr_means)))
   attr(eval_design, "sampleSize")     <- n_patients
   attr(eval_design, "priorESS")       <- round(getESS(prior_list), 1)

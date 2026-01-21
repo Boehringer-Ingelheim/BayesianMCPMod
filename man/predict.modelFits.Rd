@@ -4,7 +4,12 @@
 \alias{predict.modelFits}
 \title{predict.modelFits}
 \usage{
-\method{predict}{modelFits}(object, doses = NULL, ...)
+\method{predict}{modelFits}(
+  object,
+  doses = NULL,
+  probability_scale = attr(object, "probability_scale"),
+  ...
+)
 }
 \arguments{
 \item{object}{A modelFits object containing information about the fitted
@@ -28,7 +33,7 @@ posterior_list <- list(Ctrl = RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 1), sig
                        DG_2 = RBesT::mixnorm(comp1 = c(w = 1, m = 4, s = 1.5), sigma = 2) ,
                        DG_3 = RBesT::mixnorm(comp1 = c(w = 1, m = 6, s = 1.2), sigma = 2) ,
                        DG_4 = RBesT::mixnorm(comp1 = c(w = 1, m = 6.5, s = 1.1), sigma = 2))
-models         <- c("emax", "exponential", "sigEmax", "linear")
+models         <- c("emax", "exponential", "sigEmax", "linear", "betaMod")
 dose_levels    <- c(0, 1, 2, 4, 8)
 fit            <- getModelFits(models      = models,
                                posterior   = posterior_list,

@@ -4,7 +4,14 @@
 \alias{getModelFits}
 \title{getModelFits}
 \usage{
-getModelFits(models, dose_levels, posterior, avg_fit = TRUE, simple = FALSE)
+getModelFits(
+  models,
+  dose_levels,
+  posterior,
+  avg_fit = TRUE,
+  simple = FALSE,
+  probability_scale = FALSE
+)
 }
 \arguments{
 \item{models}{A Mods object as created with \code{DoseFinding::Mods()} or a vector
@@ -19,6 +26,8 @@ Implemented model shapes are \code{"linear"}, \code{"exponential"}, \code{"logis
 \item{avg_fit}{Boolean variable, defining whether an average fit (based on generalized AIC weights) should be performed in addition to the individual models. Default TRUE.}
 
 \item{simple}{Boolean variable, defining whether simplified fit will be applied. Default FALSE.}
+
+\item{probability_scale}{A boolean variable to specify if the trial has a continuous or a binary outcome. Setting to TRUE will transform predictions from the logit scale to the probability scale, which can be desirable for a binary outcome. Default FALSE.}
 }
 \value{
 An object of class modelFits. A list containing information about the fitted model coefficients, the prediction per dose group as well as maximum effect and generalized AIC (and corresponding weight) per model.

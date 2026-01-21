@@ -8,10 +8,11 @@ simulateData(
   n_patients,
   dose_levels,
   sd,
-  mods,
+  mods = NULL,
   n_sim = 1000,
   true_model = NULL,
-  dr_means = NULL
+  dr_means = NULL,
+  probability_scale = FALSE
 )
 }
 \arguments{
@@ -22,16 +23,17 @@ value per dose-group.}
 
 \item{sd}{Standard deviation on patient level.}
 
-\item{mods}{An object of class "Mods" as specified in the DoseFinding package.}
+\item{mods}{An object of class "Mods" as specified in the DoseFinding package. Can be NULL if ´dr_means´ is not NULL. Default NULL.}
 
 \item{n_sim}{Number of simulations to be performed,
 Default is 1000}
 
-\item{true_model}{Default value is NULL.
-Assumed true underlying model. Provided via a String. e.g. "emax".
-In case of NULL, all dose-response models, included in the mods input parameter will be used.}
+\item{true_model}{A character for model name, e.g. "emax". Assumed true underlying model.
+If NULL, all dose-response models included in the mods input parameter will be used. Default NULL.}
 
-\item{dr_means}{a vector, with information about assumed effects per dose group. Default NULL.}
+\item{dr_means}{an optional vector, with information about assumed effects per dose group. Default NULL.}
+
+\item{probability_scale}{A boolean to specify if the trial has a continuous or a binary outcome. Setting to TRUE will transform calculations from the logit scale to the probability scale, which can be desirable for a binary outcome. Default FALSE.}
 }
 \value{
 A list object, containing patient level simulated data for all assumed true models.
@@ -47,16 +49,24 @@ models <- DoseFinding::Mods(linear      = NULL,
                             exponential = 2, 
                             doses       = c(0, 0.5, 2,4, 8),
                             maxEff      = 6)
-dose_levels <- c(0, 0.5, 2,4, 8)
+dose_levels <- c(0, 0.5, 2, 4, 8)
 sd          <- 12
 n_patients  <- c(40, 60, 60, 60, 60)
 
 sim_data <- simulateData(n_patients  = n_patients,
                          dose_levels = dose_levels,
                          sd          = sd,
-                         mods        = models,
-                         n_sim       = 100)
+                         mods        = models)
 
 head(sim_data)
+
+# custom response "model" shape
+custom_dose_response <- c(1, 2, 3, 4, 5)
+sim_data_custom_dr   <- simulateData(n_patients  = n_patients,
+                                     dose_levels = dose_levels,
+                                     sd          = sd,
+                                     dr_means    = custom_dose_response)
+
+head(sim_data_custom_dr)
 
 }

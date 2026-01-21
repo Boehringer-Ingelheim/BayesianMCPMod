@@ -87,7 +87,7 @@ shortenModelNames <- function (model_names, pad_string = FALSE) {
 print.BayesianMCPMod <- function (
     
   x,
-  n_mods = 1L,
+  n_mods = 0L,
   ...
   
 ) {
@@ -100,7 +100,15 @@ print.BayesianMCPMod <- function (
     med_info  <- attr(x, "MED")
     
     cat("MED Assessment")
-    if (attr(x$Mod[[1]], "probability_scale")) cat("on Probability Scale")
+    
+    if (any(sign_indx)) {
+      
+      probability_scale <- attr(x$Mod[[which(sign_indx)[1]]], "probability_scale")
+      
+      if (probability_scale) cat(" on Probability Scale")
+      
+    }
+    
     cat("\n")
     
     cat("  Selection Method:   ", attr(x, "MEDSelection"), "\n")
@@ -108,7 +116,7 @@ print.BayesianMCPMod <- function (
     
     if (!any(sign_indx)) {
       
-      cat("    No model shapes are significant.")
+      cat("    No model shapes are significant\n")
       
     } else {
       
@@ -137,16 +145,18 @@ print.BayesianMCPMod <- function (
     
   } 
   
-  print (x$Mod[[1]], ...)
-  
-  if (length(x$Mod) > 1) {
+  if (length(x$Mod) == 1) {
 
-    for (m in seq_len(n_mods)[-1]) {
+    print (x$Mod[[1]], ...)
 
+  } else {
+    
+    for (m in seq_len(n_mods)) {
+      
       print (x$Mod[[m]], ...)
-
+      
     }
-
+    
   }
   
   invisible(x)

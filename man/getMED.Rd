@@ -9,7 +9,8 @@ getMED(
   evidence_level = 0.5,
   dose_levels = NULL,
   model_fits = NULL,
-  bs_quantiles = NULL
+  bs_quantiles = NULL,
+  probability_scale = attr(model_fits, "probability_scale")
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ getMED(
 \item{model_fits}{An object of class modelFits as created with getModelFits(). Default NULL.}
 
 \item{bs_quantiles}{A dataframe created with getBootstrapQuantiles(). Default NULL.}
+
+\item{probability_scale}{A boolean variable to specify if the trial has a continuous or a binary outcome. Setting to TRUE will transform predictions from the logit scale to the probability scale, which can be desirable for a binary outcome. Default \code{attr(model_fits, "probability_scale")}.}
 }
 \value{
 A matrix with rows for MED reached, MED, and MED index in the vector of dose levels and columns for the dose-response shapes.
@@ -61,5 +64,8 @@ bs_quantiles <- getBootstrapQuantiles(model_fits = model_fits,
 getMED(delta          = 5,
        evidence_level = 0.8,
        bs_quantiles   = bs_quantiles)
+       
+# MED on the probability scale
+getMED(delta = 0.1, model_fits = model_fits, probability_scale = TRUE)
 
 }

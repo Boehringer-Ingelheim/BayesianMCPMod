@@ -6,6 +6,7 @@
 \usage{
 \method{plot}{modelFits}(
   x,
+  probability_scale = attr(x, "probability_scale"),
   gAIC = TRUE,
   cr_intv = TRUE,
   alpha_CrI = 0.05,
@@ -19,6 +20,8 @@
 }
 \arguments{
 \item{x}{An object of type modelFits}
+
+\item{probability_scale}{A boolean to specify if the trial has a continuous or a binary outcome. Setting to TRUE will transform the output from the logit scale to the probability scale, which can be desirable for a binary outcome. Default \code{attr(x, "probability_scale")}.}
 
 \item{gAIC}{Logical value indicating whether gAIC values are shown in the plot. Default TRUE}
 
@@ -65,7 +68,6 @@ model_fits <- getModelFits(models      = models,
 plot(model_fits)
 
 # plot with credible bands
-
 plot(model_fits,
      cr_bands  = TRUE,
      n_bs_smpl = 1e2) 
