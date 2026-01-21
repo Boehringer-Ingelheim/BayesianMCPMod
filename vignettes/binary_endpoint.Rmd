@@ -102,7 +102,7 @@ plot(mcpmod$Mod[[1]], cr_bands = TRUE)
 
 ## Original Example Code
 
-```{r setup}
+```{r Original_Example}
 ###Executable code for binary endpoint setting 
 ## to be implemented in Bayesian MCPMod package
 ##Author: Sebastian Bossert (based on code chunks from Jana Gierse)
@@ -113,7 +113,7 @@ plot(mcpmod$Mod[[1]], cr_bands = TRUE)
 
 library(RBesT)
 library(DoseFinding)
-devtools::load_all(".") # library(BayesianMCPMod)
+library(BayesianMCPMod)
 
 study <- c("study 1", "study 2", "study 3", "study 4", "study 5")
 n <- c(70, 365, 328, 115, 147) #sample size per study
@@ -229,12 +229,12 @@ model_fits <- getModelFits(
   models      = models,
   dose_levels = doses,
   posterior   = PostLogit,
-  simple      = FALSE)
+  simple      = TRUE)
 
 
 ##This model fit is on the logit scale
 plot(model_fits, cr_bands = TRUE)
-plot(model_fits, inv_logit_scale = TRUE, cr_bands = TRUE)
+plot(model_fits, cr_bands = TRUE, probability_scale = TRUE)
 
 #We would need the figures on the probability scale as well i.e.
 
