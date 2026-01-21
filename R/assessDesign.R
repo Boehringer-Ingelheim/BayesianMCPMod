@@ -271,6 +271,8 @@ assessDesign <- function (
     
     if (modeling) {
       
+      attr(contr, "direction") <- attr(mods,"direction")
+      
       b_mcp_mod <- performBayesianMCPMod(
         posterior_list    = posterior_list,
         contr             = contr,

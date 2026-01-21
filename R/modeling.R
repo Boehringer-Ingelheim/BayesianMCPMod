@@ -302,27 +302,35 @@ getDirection <- function (
     
   } else if (inherits(models, "character")) {
     
-    ## Try guessing the direction from the fitted model
-    ## in case a character vector is provided
-    
-    preds <- model_fits[[1]]$pred_values
-    
-    if (min(preds[-1]) < preds[1]) {
-      ## min non-placebo effect less than placebo
+    if (!is.null(attr(models, "direction"))) {
       
-      direction <- "decreasing"
-      
-    } else if (max(preds[-1]) > preds[1]) {
-      ## max non-placebo effect greater than placebo
-      
-      direction <- "increasing"
+      direction <- attr(models, "direction")
       
     } else {
       
-      direction <- character(0)
+      ## Try guessing the direction from the fitted model
+      ## in case a character vector is provided
       
-      warning(paste0("The direction of the beneficial direction ",
-                     "with increasing dose levels could not be determined."))
+      preds <- model_fits[[1]]$pred_values
+      
+      if (min(preds[-1]) < preds[1]) {
+        ## min non-placebo effect less than placebo
+        
+        direction <- "decreasing"
+        
+      } else if (max(preds[-1]) > preds[1]) {
+        ## max non-placebo effect greater than placebo
+        
+        direction <- "increasing"
+        
+      } else {
+        
+        direction <- character(0)
+        
+        warning(paste0("The direction of the benefit ",
+                       "with increasing dose levels could not be determined."))
+        
+      }
       
     }
     
@@ -563,11 +571,7 @@ getMED <- function (
   checkmate::assert_flag(probability_scale, null.ok = TRUE)
   if (is.null(probability_scale)) probability_scale <- FALSE
   
-  if (probability_scale) {
-    
-    checkmate::assert_double(delta, lower = 0, upper = 1)
-    
-  }
+  if (probability_scale) checkmate::assert_double(delta, lower = 0, upper = 1)
   
   if (!is.null(model_fits)) {
     ## Direction not needed, because mean value

@@ -66,9 +66,9 @@ simulateData <- function(
   checkmate::check_string(true_model, null.ok = TRUE)
   checkmate::assert_flag(probability_scale)
   
-  stopifnot("Either 'dr_means' or 'mods' must be NULL." =
-              is.null(dr_means) & !is.null(mods) |
-              !is.null(dr_means) & is.null(mods))
+  # stopifnot("Either 'dr_means' or 'mods' must be NULL." =
+  #             is.null(dr_means) & !is.null(mods) |
+  #             !is.null(dr_means) & is.null(mods))
   
   if (!is.null(true_model)) stopifnot(!is.null(mods))
   

@@ -419,6 +419,8 @@ performBayesianMCPMod <- function (
     stop ("Argument 'contr' must be of type 'optContr'")
 
   }
+  
+  attr(model_names, "direction") <- attr(contr, "direction")
 
   b_mcp <- performBayesianMCP(
     posterior_list = posterior_list,
@@ -440,7 +442,7 @@ performBayesianMCPMod <- function (
 
     med_info <- t(sapply(b_mcp_mod$Mod, function (model_fits) {
 
-      if (!is.null(model_fits)) {
+      if (!is.null(model_fits)) { # model shape is significant
 
         if (!is.null(evidence_level)) {
 

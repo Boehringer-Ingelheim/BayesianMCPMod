@@ -77,7 +77,6 @@ performBayesianMCPMod(posterior_list = posterior_list,
                       contr          = contr_mat,
                       crit_prob_adj  = critVal,
                       simple         = FALSE,
-                      delta          = 0.2,
-                      probability_scale = TRUE)
+                      delta          = 1.1)
 
 }
