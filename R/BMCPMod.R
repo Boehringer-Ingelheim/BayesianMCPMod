@@ -359,8 +359,7 @@ getModelSuccesses <- function (b_mcp) {
 #'                       contr          = contr_mat,
 #'                       crit_prob_adj  = critVal,
 #'                       simple         = FALSE,
-#'                       delta          = 0.2,
-#'                       probability_scale = TRUE)
+#'                       delta          = 1.1)
 #'
 #' @return Bayesian MCP test result as well as modeling result.
 #'
