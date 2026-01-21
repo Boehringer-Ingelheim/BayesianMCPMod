@@ -1,0 +1,250 @@
+---
+title: "binary_endpoint"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{binary_endpoint}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(BayesianMCPMod)
+```
+
+# TODO
+
+## Trial Planning
+
+```{r assessDesign_Example}
+mods <- DoseFinding::Mods(linear      = NULL,
+                          emax        = c(0.5, 1.2),
+                          exponential = 2,
+                          betaMod     = c(1, 1),
+                          doses       = c(0, 0.5, 2,4, 8),
+                          maxEff      = 6)
+
+sd <- 12
+prior_list <- list(Ctrl = RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 12), sigma = 2),
+                   DG_1 = RBesT::mixnorm(comp1 = c(w = 1, m = 1, s = 12), sigma = 2),
+                   DG_2 = RBesT::mixnorm(comp1 = c(w = 1, m = 1.2, s = 11), sigma = 2) ,
+                   DG_3 = RBesT::mixnorm(comp1 = c(w = 1, m = 1.3, s = 11), sigma = 2) ,
+                   DG_4 = RBesT::mixnorm(comp1 = c(w = 1, m = 2, s = 13), sigma = 2))
+n_patients <- c(40, 60, 60, 60, 60)
+
+success_probabilities <- assessDesign(
+  n_patients        = n_patients,
+  mods              = mods,
+  prior_list        = prior_list,
+  sd                = sd,
+  delta             = 0.3,
+  n_sim             = 1e2,
+  probability_scale = TRUE)
+
+success_probabilities
+```
+
+## Trial Evaluation
+
+```{r Trial_Analysis_Example}
+mods <- DoseFinding::Mods(linear      = NULL,
+                          emax        = c(0.5, 1.2),
+                          exponential = 2,
+                          doses       = c(0, 0.5, 2,4, 8))
+
+dose_levels  <- c(0, 0.5, 2, 4, 8)
+
+sd_posterior <- c(2.8, 3, 2.5, 3.5, 4)
+
+contr_mat <- getContr(
+  mods          = mods,
+  dose_levels   = dose_levels,
+  cov_posterior = diag(sd_posterior)^2)
+
+critVal <- getCritProb(
+  mods           = mods,
+  dose_weights   = c(50, 50, 50, 50, 50), #reflecting the planned sample size
+  dose_levels    = dose_levels,
+  alpha_crit_val = 0.6) # unreasonable alpha chosen for this example, rather choose 0.05
+
+prior_list <- list(Ctrl = RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 5), sigma = 2),
+                   DG_1 = RBesT::mixnorm(comp1 = c(w = 1, m = 1, s = 12), sigma = 2),
+                   DG_2 = RBesT::mixnorm(comp1 = c(w = 1, m = 1.2, s = 11), sigma = 2) ,
+                   DG_3 = RBesT::mixnorm(comp1 = c(w = 1, m = 1.3, s = 11), sigma = 2) ,
+                   DG_4 = RBesT::mixnorm(comp1 = c(w = 1, m = 2, s = 13), sigma = 2))
+
+mu <- c(0, 1, 1.5, 2, 2.5)
+S_hat <- diag(c(5, 4, 6, 7, 8)^2)
+
+posterior_list <- getPosterior(
+  prior_list = prior_list,
+  mu_hat     = mu,
+  S_hat      = S_hat,
+  calc_ess   = TRUE)
+
+mcpmod <- performBayesianMCPMod(posterior_list    = posterior_list,
+                                contr             = contr_mat,
+                                crit_prob_adj     = critVal,
+                                simple            = FALSE,
+                                delta             = 0.2,
+                                probability_scale = TRUE)
+
+mcpmod
+
+plot(mcpmod$Mod[[1]], cr_bands = TRUE)
+```
+
+## Original Example Code
+
+```{r setup}
+###Executable code for binary endpoint setting 
+## to be implemented in Bayesian MCPMod package
+##Author: Sebastian Bossert (based on code chunks from Jana Gierse)
+##Date: May 2025
+
+
+###Prior specification via RBesT
+
+library(RBesT)
+library(DoseFinding)
+devtools::load_all(".") # library(BayesianMCPMod)
+
+study <- c("study 1", "study 2", "study 3", "study 4", "study 5")
+n <- c(70, 365, 328, 115, 147) #sample size per study
+r <- c(6, 39, 29, 16, 16) # responder per study
+doses <- c(0, 2.5, 5, 10, 20, 50, 100, 200)
+set.seed(1867435)
+
+#function to calculate prior
+map <- gMAP(cbind(r, n - r) ~ 1|study, family = binomial, tau.dist = "HalfNormal",
+            tau.prior = 0.5, beta.prior = (1/sqrt(0.1*0.9)), warmup = 1000, iter = 10000, chains = 2, thin = 1)
+map
+
+plot(map)$densityThetaStar
+
+
+prior <- automixfit(map) #fits mixture distribution from MCMC samples from above
+priorrob<-robustify(prior,weight=0.5,mean=0.5)
+ess(priorrob)
+
+prior_trt <- RBesT::mixbeta(
+  comp1 = c(1, 1,1))
+
+prior_list <- c(list(priorrob),
+                rep(x     = list(prior_trt),
+                    times = length(doses[-1])))
+
+
+dose_names <- c("Ctr", paste0("DG_", seq_along(doses[-1])))
+names(prior_list) <- dose_names
+
+##Option A: We directly translate the prior from beta scale to logit-scale
+##	"Transformation function (beta scale to logit scale prior)"
+
+
+approx.prior <- list()
+#Nc = c(5, rep(1,7)) ## SW Comment: I would not fix the number of components, because 1 component on a beta scale requires more than 1 component on a logit scale, since beta is not necessarily symmetric 
+for(i in 1:length(doses)){
+  r <- rmix(prior_list[[i]], n=1000)
+  log.r <- logit(r)
+  # approx.prior[[i]] <- mixfit(log.r, type = "norm", Nc = Nc[i])
+  approx.prior[[i]] <- automixfit(log.r, type = "norm")
+  
+}
+names(approx.prior) <- dose_names
+
+##Comments/Discussion points:
+# - the robustification component doesn't seem to work that good (i.e. we don't have 50% weight on the robustification afterwards, tend to add this rather afterwards)
+
+
+
+
+##Execution on trial level (exemplarily for the migraine data integrated in the dosefinding package)
+data("migraine") #example data "migraine" from doseFinding package
+
+# > str(migraine)
+# 'data.frame':	8 obs. of  3 variables:
+#   $ dose    : num  0 2.5 5 10 20 50 100 200 --> 8 Dosisgruppen
+# $ painfree: int  13 4 5 16 12 14 14 21  --> Schmerzfrei nach 2 Stunden --> = responder
+# $ ntrt    : int  133 32 44 63 63 65 59 58 --> Anzahl Probanden pro Dosisgruppe
+
+doses <- c(0, 2.5, 5, 10, 20, 50, 100, 200) # =migraine$dose
+
+
+
+models <- Mods(linear = NULL, sigEmax = c(50,3), quadratic = -1/250, 
+               logistic = c(110,15), exponential = 80, emax = 10, doses = doses)
+
+plot(models)
+
+
+dosesFact <- as.factor(doses)
+N <- migraine$ntrt
+RespRate <- migraine$painfree/N
+
+##Execution of logistic regression and readout of parameters 
+## (please note that estimates are automatically on logit scale)
+logfit <- glm(RespRate ~ dosesFact - 1, family = binomial, weights = N)
+muHat <- coef(logfit)
+S <- vcov(logfit)
+##Comments/Discussion points:
+# - this step is typically very trial specific 
+# - we only need this step for the trial planning (i.e. the assessDesign function)
+# - to be generic we should have the option of firth penalized regression in case of zero events in one arm (see description in DF reference document)
+# this would be the	"Glm function to execute logistic regression" 
+
+
+PostLogit<-getPosterior(approx.prior,mu_hat=muHat,S_hat=S)
+##Comments/Discussion points:
+#- in case we would like to allow prior-posterior step also for the beta distribution we would need to add this to the getPosterior function
+
+##Perform BayesianMCP test evaluation (as we are on the logit scale that is exactly the same as for the continuous endpoint)
+contr_mat_prior <- getContr(
+  mods           = models,
+  dose_levels    = doses,
+  dose_weights   = N,
+  prior_list     = prior_list)
+
+crit_pval <- getCritProb(
+  mods           = models,
+  dose_levels    = doses,
+  cov_new_trial  = diag(1,8),
+  alpha_crit_val = 0.05
+)
+
+BMCP_result <- performBayesianMCP(
+  posterior_list = PostLogit,
+  contr          = contr_mat_prior, 
+  crit_prob_adj  = crit_pval)
+
+
+##Perform modelling
+model_fits <- getModelFits(
+  models      = models,
+  dose_levels = doses,
+  posterior   = PostLogit,
+  simple      = FALSE)
+
+
+##This model fit is on the logit scale
+plot(model_fits, cr_bands = TRUE)
+plot(model_fits, inv_logit_scale = TRUE, cr_bands = TRUE)
+
+#We would need the figures on the probability scale as well i.e.
+
+logit_predictions<-predict(model_fits,doses=seq(0,200,by=10))
+
+probest_linear <- inv_logit(logit_predictions$linear)
+
+plot(seq(0,200,by=10),probest_linear,type="l")
+##Comments/Discussion points:
+#- this transformation should happen automatically in the plot function when defining that results are on the logit scale (e.g. via type=binary)
+# - this would be the	"Transformation function for communication (logit to probability scale)"
+
+```
