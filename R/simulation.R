@@ -5,7 +5,7 @@
 #' @param n_patients Vector containing number of patients as a numerical
 #' value per dose-group.
 #' @param dose_levels Vector containing the different dosage levels.
-#' @param sd Standard deviation on patient level.
+#' @param sd Standard deviation on patient level. Can be NULL if `probability_scale` is TRUE. Default NULL.
 #' @param mods An object of class "Mods" as specified in the DoseFinding package. Can be NULL if ´dr_means´ is not NULL. Default NULL.
 #' @param n_sim Number of simulations to be performed,
 #' Default is 1000
@@ -49,7 +49,7 @@ simulateData <- function(
     
   n_patients,
   dose_levels,
-  sd,
+  sd                = NULL,
   mods              = NULL,
   n_sim             = 1e3,
   true_model        = NULL,
@@ -60,15 +60,17 @@ simulateData <- function(
   
   checkmate::check_vector(n_patients, any.missing = FALSE, len = length(dose_levels))
   checkmate::check_double(dose_levels, lower = 0, any.missing = FALSE, len = length(n_patients))
-  checkmate::check_double(sd, len = 1, null.ok = FALSE, lower = 0, upper = Inf)
+  checkmate::check_double(sd, len = 1, null.ok = TRUE, lower = 0, upper = Inf)
   checkmate::check_class(mods, classes = "Mods", null.ok = TRUE)
   checkmate::check_numeric(n_sim, lower = 0, upper = Inf, len = 1)
   checkmate::check_string(true_model, null.ok = TRUE)
   checkmate::assert_flag(probability_scale)
-  
+
   # stopifnot("Either 'dr_means' or 'mods' must be NULL." =
   #             is.null(dr_means) & !is.null(mods) |
   #             !is.null(dr_means) & is.null(mods))
+  
+  if (!probability_scale) stopifnot(!is.null(sd))
   
   if (!is.null(true_model)) stopifnot(!is.null(mods))
   

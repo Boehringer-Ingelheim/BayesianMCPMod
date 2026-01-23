@@ -43,12 +43,13 @@
 #'   n_patients  = n_patients,
 #'   mods        = mods,
 #'   prior_list  = prior_list,
+#'   data_sim = data_sim,
 #'   sd          = sd,
 #'   n_sim       = 1e2) # speed up example run time
 #'
 #' success_probabilities
 #' 
-#' # Analysis with custom dose response relationship
+#' ## Analysis with custom dose response relationship
 #' custom_dr_means <- c(1, 2, 3, 4, 5)
 #' 
 #' success_probs_custom_dr <- assessDesign(
@@ -61,8 +62,24 @@
 #'
 #' success_probs_custom_dr
 #' 
-#' # Analysis with custom estimates for means and variabilies
-#' # No simulated data, only simulated model estimates
+#' ## Analysis with custom data
+#' data_sim <- simulateData(
+#'   n_patients        = n_patients,
+#'   dose_levels       = dose_levels,
+#'   sd                = sd,
+#'   mods              = mods,
+#'   n_sim             = 10)
+#'   
+#' success_probs_custom_data <- assessDesign(
+#'   n_patients    = n_patients,
+#'   mods          = mods,
+#'   prior_list    = prior_list,
+#'   data_sim      = data_sim)
+#'   
+#'   success_probs_custom_data
+#' 
+#' ## Analysis with custom estimates for means and variabilies
+#' ## No simulated data, only simulated model estimates
 #' estimates_sim <- list(mu_hats = replicate(100, list(c(1, 2, 3, 4, 5) + rnorm(5, 0, 1))),
 #'                       S_hats  = list(diag(1, 5)))
 #' 
@@ -179,19 +196,21 @@ assessDesign <- function (
       dose_levels       = dose_levels,
       sd                = 1,
       mods              = mods,
-      n_sim             = nrow(data_sim), # adjust the number of simulations to data_sim
+      n_sim             = floor(nrow(data_sim) / sum(n_patients)), # adjust the number of simulations to data_sim
       dr_means          = dr_means,
       probability_scale = probability_scale)
     
     ## ... and then check if formats of data_sim and data match
     stopifnot("'data_sim' must follow the data structure as provided by simulateData()" =
-                data_sim[, 1:3] == data[, 1:3])
+                isTRUE(all.equal(data_sim[, 1:3], data[, 1:3])))
+    stopifnot("data_sim must have named columns" = !is.null(colnames(data_sim)))
+    checkmate::assert_data_frame(data_sim, types = "numeric", any.missing = FALSE)
     
     data <- data_sim
     
   } else {
     
-    stopifnot("Must provide 'sd' argument for símulation." = !is.null(sd))
+    stopifnot("Must provide 'sd' argument for simulation." = !is.null(sd))
     
     data <- simulateData(
       n_patients        = n_patients,

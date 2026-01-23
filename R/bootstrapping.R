@@ -193,11 +193,7 @@ getBootstrapSamples <- function (
       
     }
     
-    if (probability_scale) {
-
-      preds_mu_mat <- RBesT::inv_logit(preds_mu_mat)
-
-    }
+    if (probability_scale) preds_mu_mat <- RBesT::inv_logit(preds_mu_mat)
     
     preds_mu_mat_adj <- preds_mu_mat - preds_mu_mat[, 1]
     

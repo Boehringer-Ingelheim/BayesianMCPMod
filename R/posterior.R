@@ -146,12 +146,6 @@ getPosteriorI <- function(
     checkmate::assert_names(names(data_i), must.include = "response")
     checkmate::assert_names(names(data_i), must.include = "dose")
     
-    ## TODO
-    # if (probability_scale) logfit <- glm(RespRate ~ dosesFact - 1, family = binomial, weights = N)
-    # extract mu_hat & se_hat
-    # muHat <- coef(logfit)
-    # S <- vcov(logfit), double check for only diagonal entries
-    
     if (probability_scale) {
       
       logit_fit <- stats::glm(data_i$response ~ factor(data_i$dose) - 1, family = binomial)
@@ -199,22 +193,28 @@ getPosteriorI <- function(
 
 #' @title getESS
 #'
-#' @description This function calculates the effective sample size for every dose group via the RBesT function ess().
+#' @description This function calculates the effective sample size for every dose group via `RBesT::ess()`.
 #' @param post_list A posterior list object, for which the effective sample size for each dose group should be calculated
+#' @param method A string specifying the method of ESS calculation, see `?RBesT::ess()`.
+#' @param n_digits An integer for the number of digits the result should be rounded to.
+#' @param ... Optional arguments applicable to specific methods, see `?RBesT::ess()`.
 #' @return A vector of the effective sample sizes for each dose group
 #'
 #' @export
 getESS <- function (
 
-  post_list
+  post_list,
+  method   = c("elir", "moment", "morita"),
+  n_digits = 1,
+  ...
 
 ) {
   
   checkmate::assert_list(post_list)
+  checkmate::assert_integerish(n_digits, lower = 0, len = 1L)
   stopifnot(all(sapply(post_list, inherits, c("normMix", "mix"))))
   
-  # make s3 method for postList object
-  suppressMessages(round(sapply(post_list, RBesT::ess), 1))
+  suppressMessages(round(sapply(post_list, RBesT::ess, method = method, ... = ...), 1))
 
 }
 

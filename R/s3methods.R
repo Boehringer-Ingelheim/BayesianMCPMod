@@ -336,6 +336,8 @@ print.modelFits <- function (
   checkmate::assert_integerish(n_digits, lower = 0)
   checkmate::assert_flag(probability_scale)
   
+  if (probability_scale & n_digits < 2) n_digits <- 2
+  
   ## Model Coefficients
   
   model_names <- shortenModelNames(names(x), pad_string = TRUE)
