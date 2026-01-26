@@ -133,8 +133,8 @@ assessDesign <- function (
   sd                = NULL,
   
   contr             = NULL,
-  dr_means          = NULL,
   
+  dr_means          = NULL,
   data_sim          = NULL,
   estimates_sim     = NULL,
   
