@@ -65,6 +65,8 @@ simulateData <- function(
   checkmate::check_numeric(n_sim, lower = 0, upper = Inf, len = 1)
   checkmate::check_string(true_model, null.ok = TRUE)
   checkmate::assert_flag(probability_scale)
+  
+  if (!probability_scale) stopifnot("Must provide 'sd' argument for simulation." = !is.null(sd))
 
   # stopifnot("Either 'dr_means' or 'mods' must be NULL." =
   #             is.null(dr_means) & !is.null(mods) |

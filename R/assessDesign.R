@@ -210,8 +210,6 @@ assessDesign <- function (
     
   } else {
     
-    stopifnot("Must provide 'sd' argument for simulation." = !is.null(sd))
-    
     data <- simulateData(
       n_patients        = n_patients,
       dose_levels       = dose_levels,
