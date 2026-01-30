@@ -228,8 +228,11 @@ getContr <- function (
       w      = w
     )
   }
+  
+  attr(contr, "direction") <- attr(mods, "direction")
 
   return(contr)
+  
 }
 
 #' @title getCritProb
@@ -421,7 +424,16 @@ performBayesianMCPMod <- function (
 
   }
   
-  attr(model_names, "direction") <- attr(contr, "direction")
+  if (is.null(attr(contr, "direction"))) {
+    
+    attr(model_names, "direction") <- "increasing"
+    message("'contr' does not have attribute 'direction' and is assumed to be 'increasing'")
+    
+  } else {
+    
+    attr(model_names, "direction") <- attr(contr, "direction")
+    
+  }
 
   b_mcp <- performBayesianMCP(
     posterior_list = posterior_list,
