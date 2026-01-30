@@ -80,7 +80,7 @@ getBootstrapQuantiles <- function (
                     sample_type == "sample" ~ "abs",
                     sample_type == "sample_diff" ~ "diff"))
   
-  attr(bs_quantiles, "direction") <- attr(model_fits, "direction")
+  attr(bs_quantiles, "direction")         <- attr(model_fits, "direction")
   attr(bs_quantiles, "probability_scale") <- probability_scale
   
   return (bs_quantiles)

@@ -589,29 +589,33 @@ getMED <- function (
     
   } else {
     
-    if (attr(bs_quantiles, "direction") == "decreasing") {
-      
-      bs_quantiles <- bs_quantiles |>
-        dplyr::mutate(q_prob = 1 - q_prob)
-      
-    }
-    
-    if (is.null(dose_levels)) dose_levels <- unique(bs_quantiles$dose)
-    
     # R CMD Check Appeasement
     q_prob <- dose <- q_val <- models <- NULL
     
     # Floating-point precision handling to pick up correct rows of bs_quantiles
     tolerance <- 1e-9
     
-    stopifnot("corresponding quantile (i.e. 1 - evidence_level) not in bootstrapped quantiles matrix" = 
-                any(abs((1 - bs_quantiles$q_prob) - evidence_level) < tolerance))
+    direction_increasing <- attr(bs_quantiles, "direction") == "increasing"
+    
+    if (!direction_increasing) {
+
+      stopifnot("corresponding quantile (i.e. evidence_level) not in bootstrapped quantiles matrix" = 
+                  any(abs(bs_quantiles$q_prob - evidence_level) < tolerance))
+
+    } else if (direction_increasing) {
+      
+      stopifnot("corresponding quantile (i.e. 1 - evidence_level) not in bootstrapped quantiles matrix" = 
+                  any(abs((1 - bs_quantiles$q_prob) - evidence_level) < tolerance))
+      
+    }
+    
+    if (is.null(dose_levels)) dose_levels <- unique(bs_quantiles$dose)
     
     stopifnot("dose_levels not (all) in bootstrapped quantiles matrix" = 
                 all(dose_levels %in% bs_quantiles$dose))
     
     abs_diffs <- bs_quantiles |>
-      dplyr::filter(abs((1 - q_prob) - evidence_level) < tolerance,
+      dplyr::filter(abs((if (direction_increasing) 1 - q_prob else q_prob) - evidence_level) < tolerance,
                     dose %in% dose_levels,
                     sample_type == "diff") |>
       tidyr::pivot_wider(names_from = dose, values_from = q_val) |>

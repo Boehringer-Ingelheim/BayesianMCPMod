@@ -294,6 +294,7 @@ getCritProb <- function (
   ))
 
   return(crit_prob)
+  
 }
 
 getModelSuccesses <- function (b_mcp) {
@@ -445,10 +446,14 @@ performBayesianMCPMod <- function (
       if (!is.null(model_fits)) { # model shape is significant
 
         if (!is.null(evidence_level)) {
+          
+          bs_quantile <- ifelse(test = attr(model_fits, "direction") == "increasing",
+                                yes  = 1 - evidence_level,
+                                no   = evidence_level)
 
           bs_quantiles <- getBootstrapQuantiles(
             model_fits        = model_fits,
-            quantiles         = 1 - evidence_level,
+            quantiles         = bs_quantile,
             n_samples         = n_samples,
             probability_scale = probability_scale)
 
