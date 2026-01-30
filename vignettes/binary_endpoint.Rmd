@@ -85,6 +85,7 @@ dose_levels <- c(0, 2.5, 5, 10, 20, 50, 100, 200)
 
 
 #i) Establish MAP prior (beta mixture distribution) 
+set.seed(7015) # re-sets seed only for this example; remove in your analysis script
 map <- gMAP(cbind(r, n - r) ~ 1|study, family = binomial, tau.dist = "HalfNormal",
             tau.prior = 0.5, beta.prior = (1/sqrt(0.1*0.9)), warmup = 1000, iter = 10000, chains = 2, thin = 1)
 map
@@ -186,7 +187,7 @@ contr_mat_prior <- getContr(
   dose_levels    = dose_levels,
   dose_weights   = N)
 
-
+set.seed(7015) # re-sets seed only for this example; remove in your analysis script
 crit_pval <- getCritProb(
   mods           = models,
   dose_levels    = dose_levels,
@@ -263,12 +264,12 @@ For this example, only 10 samples are bootstrapped for each model fit.
 
 ```{r}
 ##Bootstrap quantiles
+set.seed(7015) # re-sets seed only for this example; remove in your analysis script
 bootstrap_quantiles <- getBootstrapQuantiles(
   model_fits = model_fits,
   quantiles  = c(0.025, 0.5, 0.975),
   doses      = dose_levels,
   n_samples  = 10)
-
 ```
 
 # Assessment of the Minimally Efficacious Dose
@@ -291,6 +292,7 @@ Testing, modeling, and MED assessment can also be combined via `performBayesianM
 
 
 ```{r}
+
 BMCPMod_result<-performBayesianMCPMod(posterior_list = PostLogit,
                       contr          = contr_mat_prior,
                       crit_prob_adj  = crit_pval,
@@ -327,6 +329,7 @@ prior_list <- list(Ctrl = RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 12), sigma 
                    DG_4 = RBesT::mixnorm(comp1 = c(w = 1, m = 2, s = 13), sigma = 2))
 n_patients <- c(40, 60, 60, 60, 60)
 
+set.seed(7015) # re-sets seed only for this example; remove in your analysis script
 success_probabilities <- assessDesign(
   n_patients        = n_patients,
   mods              = mods,
@@ -374,6 +377,7 @@ contr_mat <- getContr(
   cov_posterior = diag(summary(posterior_list)[, "sd"]^2))
 
 ## calculate critical value
+set.seed(7015) # re-sets seed only for this example; remove in your analysis script
 critVal <- getCritProb(
   mods           = mods,
   dose_weights   = c(50, 50, 50, 50, 50), #reflecting the planned sample size
