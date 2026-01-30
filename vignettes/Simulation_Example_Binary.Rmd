@@ -51,7 +51,6 @@ library(tibble)
 library(reactable)
 
 set.seed(7015)
-
 ```
 
 ```{r}
@@ -59,8 +58,6 @@ data("metaData")
 testdata    <- as.data.frame(metaData)
 dataset     <- filter(testdata, bname == "XELJANZ")
 histcontrol <- filter(dataset, dose == 0, primtime == 12, indication == "RHEUMATOID ARTHRITIS")
-
-
 
 hist_data <- data.frame(
   trial = histcontrol$nctno,
@@ -72,19 +69,18 @@ hist_data <- data.frame(
 
 ```
 
-
 ```{r}
 dose_levels <- c(0, 2.5, 5, 10,20)
 
-
-#i) Establish MAP prior (beta mixture distribution) 
+# 1) Establish MAP prior (beta mixture distribution) 
+set.seed(7015) # re-sets seed only for this example; remove in your analysis script
 map <- gMAP(cbind(hist_data$r, hist_data$n - hist_data$r) ~ 1|histcontrol$nctno, family = binomial, tau.dist = "HalfNormal",
             tau.prior = 0.5, beta.prior = (1/sqrt(0.1*0.9)), warmup = 1000, iter = 10000, chains = 2, thin = 1)
 map
 prior <- automixfit(map) #fits mixture distribution from MCMC samples from above
 ess(prior)
 
-#ii) Translate prior to logit scale (to approximate via normal mixture model)
+# 2) Translate prior to logit scale (to approximate via normal mixture model)
 r <- rmix(prior, n=5000)
 log.r <- logit(r)
 approx.prior<- automixfit(log.r, type = "norm")
@@ -93,7 +89,7 @@ p<-summary(prior)[1]
 sigma(approx.prior)<-sqrt(1/(p*(1-p)))
 ess(approx.prior)
 
-#iii) Robustify prior 
+# 3) Robustify prior 
 prior.ctr<-RBesT::robustify(
       priormix = approx.prior,
       weight   = 0.2,
@@ -113,8 +109,6 @@ prior_trt <- RBesT::mixnorm(
 dose_names <- c("Ctr", paste0("DG_", seq_along(dose_levels[-1])))
 names(prior_list) <- dose_names
   
-
-
 ```
 
 
@@ -134,14 +128,19 @@ Furthermore, we assume a maximum response rate of 45% (resp. 30% on top of contr
 Please note that the response rates need to be provided on the logit scale.
 
 ```{r}
-
 n_patients <- c(30, 40, 40, 40, 40)
 
-models <- Mods(linear = NULL, sigEmax = c(10,5), quadratic = -1/25, 
-               logistic = c(11,15), exponential = 10, emax = 2, doses = doses,placEff = RBesT::logit(0.15),maxEff =(RBesT::logit(0.45)-RBesT::logit(0.15)))
-
-
-
+models <- Mods(
+  linear = NULL,
+  sigEmax = c(10, 5),
+  quadratic = -1 / 25,
+  logistic = c(11, 15),
+  exponential = 10,
+  emax = 2,
+  doses = doses,
+  placEff = RBesT::logit(0.15),
+  maxEff = (RBesT::logit(0.45) - RBesT::logit(0.15))
+)
 ```
 
 
@@ -154,6 +153,7 @@ This effect delta is provided on the probability scale. In our case we would lik
 For illustration purposes, the number of simulated trial results is reduced to 100 in this example.
 
 ```{r}
+set.seed(7015) # re-sets seed only for this example; remove in your analysis script
 success_probabilities <- assessDesign(
   n_patients  = n_patients,
   mods        = models,
@@ -165,6 +165,7 @@ success_probabilities <- assessDesign(
 
 As an alternative, we will evaluate a design with the same overall sample size but allocating more patients on the highest dose group and control.
 ```{r}
+set.seed(7015) # re-sets seed only for this example; remove in your analysis script
 success_probabilities_uneq <- assessDesign(
   n_patients  = c(80, 60, 60, 60, 120),
   mods        = mods,

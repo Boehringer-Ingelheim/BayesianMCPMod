@@ -36,17 +36,12 @@ set.seed(7015)
 
 ```
 
-
-
-
-
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
 ```
-
 
 # Introduction
 
@@ -83,26 +78,34 @@ Please note that there would be various other options to establish a reasonable 
 ```{r}
 dose_levels <- c(0, 2.5, 5, 10, 20, 50, 100, 200)
 
-
 #i) Establish MAP prior (beta mixture distribution) 
 set.seed(7015) # re-sets seed only for this example; remove in your analysis script
-map <- gMAP(cbind(r, n - r) ~ 1|study, family = binomial, tau.dist = "HalfNormal",
-            tau.prior = 0.5, beta.prior = (1/sqrt(0.1*0.9)), warmup = 1000, iter = 10000, chains = 2, thin = 1)
+map <- gMAP(
+  cbind(r, n - r) ~ 1 | study,
+  family = binomial,
+  tau.dist = "HalfNormal",
+  tau.prior = 0.5,
+  beta.prior = (1 / sqrt(0.1 * 0.9)),
+  warmup = 1000,
+  iter = 10000,
+  chains = 2,
+  thin = 1
+)
 map
 prior <- automixfit(map) #fits mixture distribution from MCMC samples from above
 ess(prior)
 
 #ii) Translate prior to logit scale (to approximate via normal mixture model)
-r <- rmix(prior, n=5000)
+r <- rmix(prior, n = 5000)
 log.r <- logit(r)
-approx.prior<- automixfit(log.r, type = "norm")
+approx.prior <- automixfit(log.r, type = "norm")
 #Specification of reference scale (this follows the idea of Beat Neuenschwander, Simon Wandel, Satrajit Roychoudhury, and Stuart Bailey. Robust exchangeability designs for early phase clinical trials with multiple strata. Pharmaceutical statistics, 15(2):123{134, 2016.)
-p<-summary(prior)[1]
-sigma(approx.prior)<-sqrt(1/(p*(1-p)))
+p <- summary(prior)[1]
+sigma(approx.prior) <- sqrt(1 / (p * (1 - p)))
 ess(approx.prior)
 
 #iii) Robustify prior 
-prior.ctr<-RBesT::robustify(
+prior.ctr <- RBesT::robustify(
       priormix = approx.prior,
       weight   = 0.5,
       sigma    = sqrt(1/(p*(1-p))))
@@ -120,9 +123,6 @@ prior_trt <- RBesT::mixnorm(
 
 dose_names <- c("Ctr", paste0("DG_", seq_along(dose_levels[-1])))
 names(prior_list) <- dose_names
-  
-
-
 ```
 
 # Dose-Response Model Shapes
@@ -134,8 +134,17 @@ Candidate models are specified on the parameter scale using the {DoseFinding} pa
 Please note that these models are specified on the logit scale.
 
 ```{r}
-models <- Mods(linear = NULL, sigEmax = c(50,3), quadratic = -1/250, 
-               logistic = c(110,15), exponential = 80, emax = 10, doses = dose_levels,placEff = RBesT::logit(0.1),maxEff = RBesT::logit(0.3)-RBesT::logit(0.1))
+models <- Mods(
+  linear = NULL,
+  sigEmax = c(50, 3),
+  quadratic = -1 / 250,
+  logistic = c(110, 15),
+  exponential = 80,
+  emax = 10,
+  doses = dose_levels,
+  placEff = RBesT::logit(0.1),
+  maxEff = RBesT::logit(0.3) - RBesT::logit(0.1)
+)
 
 plot(models)
 ```
@@ -455,11 +464,6 @@ for(i in 1:length(doses)){
   
 }
 names(approx.prior) <- dose_names
-
-##Comments/Discussion points:
-# - the robustification component doesn't seem to work that good (i.e. we don't have 50% weight on the robustification afterwards, tend to add this rather afterwards)
-
-
 
 
 ##Execution on trial level (exemplarily for the migraine data integrated in the dosefinding package)
