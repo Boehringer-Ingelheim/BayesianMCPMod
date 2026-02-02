@@ -134,7 +134,7 @@ r <- c(6, 39,  16, 16) # responder per study
 Our approach to establish a MAP prior is conducted in 3 steps. 
 First the information from the historical trials is used to establish a beta mixture MAP prior (family=binomial).   
 Since the BayesianMCPMod procedure for binary endpoints requires a prior on the logit scale we translate this prior to this scale via sampling from the distribution, transitioning the individual results to the logit scale and approximating via fitting of normal mixtures of conjugate distributions. (TBD: whether we can provide any explanation that these distributions are fitting together)
-In a last step we are robustifying this prior on the logit scale.
+In a last step we are robustifying this prior on the logit scale. This step should come before, see other code.
 Please note that there would be various other options to establish a reasonable informative prior in this setting. 
 
 
