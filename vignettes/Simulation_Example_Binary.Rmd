@@ -49,6 +49,8 @@ library(clinDR)
 library(dplyr)
 library(tibble)
 library(reactable)
+library(DoseFinding)
+library(BayesianMCPMod)
 
 set.seed(7015)
 ```
@@ -67,6 +69,7 @@ hist_data <- data.frame(
   r     = round(histcontrol$sampsize*histcontrol$rslt),
   n     = histcontrol$sampsize)
 
+sd_tot <- with(hist_data, sum(sd * n) / sum(n))
 ```
 
 ```{r}
@@ -137,7 +140,7 @@ models <- Mods(
   logistic = c(11, 15),
   exponential = 10,
   emax = 2,
-  doses = doses,
+  doses = dose_levels,
   placEff = RBesT::logit(0.15),
   maxEff = (RBesT::logit(0.45) - RBesT::logit(0.15))
 )
@@ -168,7 +171,7 @@ As an alternative, we will evaluate a design with the same overall sample size b
 set.seed(7015) # re-sets seed only for this example; remove in your analysis script
 success_probabilities_uneq <- assessDesign(
   n_patients  = c(80, 60, 60, 60, 120),
-  mods        = mods,
+  mods        = models,
   prior_list  = prior_list,
   sd          = sd_tot,
   n_sim       = 100) # speed up example run-time
