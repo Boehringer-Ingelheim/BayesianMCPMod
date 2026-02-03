@@ -1,5 +1,3 @@
-
-
 ---
 title: "Simulation Example of Bayesian MCPMod for binary Data"
 format: 
@@ -24,10 +22,10 @@ vignette: >
 
 In this vignette, we will show the use of the `BayesianMCPMod` R package for trial planning for binary data. 
 
-For this setting the main specifications need to happen on the logit scale (see also add link to binary_endpoint example)
+For this setting the main specifications need to happen on the logit scale (see also add ([binary analysis example vignette](binary_endpoint.html)))
 
-As in the [add link), we focus on the indication MDD and make use of historical data that is included in the clinDR package. 
-More specifically, trial results for BRINTELLIX will be utilized to establish an informative prior for the control group.
+As in the ([analysis example vignette](analysis_normal.html)), we make use of historical data that is included in the clinDR package. 
+More specifically, trial results for XELJANZ will be utilized to establish an informative prior for the control group.
 
 
 
@@ -42,8 +40,10 @@ future::plan(future::multisession)
 #| code-fold: true
 #| message: false
 #| warning: false
-
-#library(BayesianMCPMod)
+devtools::load_all()     # to be removed
+devtools::install()      # to be removed
+library(DoseFinding)     # to be removed
+#library(BayesianMCPMod) # to be included
 library(RBesT)
 library(clinDR)
 library(dplyr)
@@ -72,6 +72,11 @@ hist_data <- data.frame(
 sd_tot <- with(hist_data, sum(sd * n) / sum(n))
 ```
 
+
+# Calculation of a MAP Prior
+In a first step, a meta analytic prior will be calculated. The approach to establish the prior is the same as outlined in the ([binary analysis example vignette](binary_endpoint.html))). 
+Please note that only information from the control group will be integrated leading to an informative mixture prior for the control group, while for the active groups a non-informative prior will be specified.
+
 ```{r}
 dose_levels <- c(0, 2.5, 5, 10,20)
 
@@ -83,25 +88,29 @@ map
 prior <- automixfit(map) #fits mixture distribution from MCMC samples from above
 ess(prior)
 
-# 2) Translate prior to logit scale (to approximate via normal mixture model)
-r <- rmix(prior, n=5000)
-log.r <- logit(r)
-approx.prior<- automixfit(log.r, type = "norm")
-#Specification of reference scale 
+#ess(prior)
 p<-summary(prior)[1]
-sigma(approx.prior)<-sqrt(1/(p*(1-p)))
-ess(approx.prior)
 
-# 3) Robustify prior 
-prior.ctr<-RBesT::robustify(
-      priormix = approx.prior,
-      weight   = 0.2,
-      sigma    = sqrt(1/(p*(1-p))))
+#ii) Robustify prior
+prior.rob<-RBesT::robustify(
+      priormix = prior,
+      mean     = 0.5,
+      weight   = 0.2)
 
-ess(prior.ctr)
+#ess(prior.rob)
 
+#iii) Translate prior to logit scale (to approximate via normal mixture model)
+r <- rmix(prior.rob, n=1e4)
+log.r <- logit(r)
+prior.ctr<- automixfit(log.r, type = "norm")
+sigma(prior.ctr)<-sqrt(1/(p*(1-p)))
+#ess(prior.ctr, sigma = sqrt(1/(p*(1-p))))
+#Specification of reference scale (this follows the idea of [@Neuenschwander2016]). 
+
+
+#Specify a prior list
 prior_trt <- RBesT::mixnorm(
-    comp1 = c(w = 1, m = summary(prior.ctr)[1], n = 1),
+    comp1 = c(w = 1, m = logit(summary(prior)[1]), n = 1),
     sigma = sqrt(1/(p*(1-p))),
     param = "mn")
   
@@ -111,23 +120,22 @@ prior_trt <- RBesT::mixnorm(
 
 dose_names <- c("Ctr", paste0("DG_", seq_along(dose_levels[-1])))
 names(prior_list) <- dose_names
-  
 ```
 
 
 
 Kindly note that a vague prior could be implemented via
 ```{r Setting Vague Prior Without Execution, eval = FALSE}
-#prior_list_vague <- rep(list(RBesT::mixnorm(comp1 = c(w = 1, m = 0, n = 1),
-              #                              sigma = sd_sim, param = "mn")),
-                #        times = length(dose_levels))
-#names(prior_list_vague) <- c("Ctrl", "DG_1", "DG_2", "DG_3", "DG_4")
+prior_list_vague <- rep(list(RBesT::mixnorm(comp1 = c(w = 1, m = logit(p), n=1),
+                                            sigma = sqrt(1/(p*(1-p))), param = "mn")),
+                        times = length(dose_levels))
+names(prior_list_vague) <- c("Ctrl", "DG_1", "DG_2", "DG_3", "DG_4")
 ```
 
 # Specification of the New Trial Design 
 
-For the hypothetical new trial, we plan with 4 active dose levels \eqn{2.5, 5, 10, 20} and we specify a broad set of potential dose-response relationships, including a linear, an exponential, an emax and 2 sigEMAX models.  
-Furthermore, we assume a maximum response rate of 45% (resp. 30% on top of control) and plan a trial with 40 patients for all active groups and 30 patients for control.
+For the hypothetical new trial, we plan with 4 active dose levels \eqn{2.5, 5, 10, 20} and we specify a broad set of potential dose-response relationships, including a linear, an exponential, an emax, a logistic and a sigEMAX models.  
+Furthermore, we assume a maximum response rate of 48% (resp. 30% on top of control) and plan a trial with 40 patients for all active groups and 30 patients for control.
 Please note that the response rates need to be provided on the logit scale.
 
 ```{r}
@@ -136,13 +144,12 @@ n_patients <- c(30, 40, 40, 40, 40)
 models <- Mods(
   linear = NULL,
   sigEmax = c(10, 5),
-  quadratic = -1 / 25,
   logistic = c(11, 15),
   exponential = 10,
   emax = 2,
   doses = dose_levels,
-  placEff = RBesT::logit(0.15),
-  maxEff = (RBesT::logit(0.45) - RBesT::logit(0.15))
+  placEff = RBesT::logit(0.18),
+  maxEff = (RBesT::logit(0.48) - RBesT::logit(0.18))
 )
 ```
 
@@ -163,6 +170,7 @@ success_probabilities <- assessDesign(
   prior_list  = prior_list,
   n_sim       = 100, probability_scale=TRUE,delta          = 0.2
   ) 
+success_probabilities
 ```
 
 
@@ -170,12 +178,23 @@ As an alternative, we will evaluate a design with the same overall sample size b
 ```{r}
 set.seed(7015) # re-sets seed only for this example; remove in your analysis script
 success_probabilities_uneq <- assessDesign(
-  n_patients  = c(80, 60, 60, 60, 120),
+  n_patients  = c(40, 30, 30, 30, 50),
   mods        = models,
   prior_list  = prior_list,
-  sd          = sd_tot,
-  n_sim       = 100) # speed up example run-time
+  n_sim       = 100,probability_scale=TRUE,delta          = 0.2) # speed up example run-time
 success_probabilities_uneq
+```
+As a second alternative we will use the vague prior:
+
+```{r}
+set.seed(7015) # re-sets seed only for this example; remove in your analysis script
+success_probabilities_vague <- assessDesign(
+  n_patients  = n_patients,
+  mods        = models,
+  prior_list  = prior_list_vague,
+  n_sim       = 100, probability_scale=TRUE,delta          = 0.2
+  ) 
+success_probabilities_vague
 ```
 
 

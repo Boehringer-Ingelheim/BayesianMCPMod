@@ -5,7 +5,7 @@
 #' @param n_patients Vector specifying the planned number of patients per dose group. A minimum of 2 patients are required in each group.
 #' @param mods An object of class "Mods" as specified in the DoseFinding package.
 #' @param prior_list A prior_list object specifying the utilized prior for the different dose groups
-#' @param sd A positive value, specification of assumed sd. Not required if ´data_sim´ or ´estimates_sim´ is provided. Default NULL
+#' @param sd A positive value, specification of assumed sd. Not required if ´data_sim´ or ´estimates_sim´ is provided. Also not required in case of binary endpoint. Default NULL
 #' @param contr An object of class 'optContr' as created by the getContr() function. Allows specification of a fixed contrasts matrix. Default NULL.
 #' @param dr_means A vector, allows specification of individual (not model based) assumed effects per dose group. Default NULL.
 #' @param data_sim An optional data frame for custom simulated data. Must follow the data structure as provided by ´simulateData()´. Default NULL.
