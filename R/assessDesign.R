@@ -13,7 +13,7 @@
 #' @param n_sim Number of simulations to be performed
 #' @param alpha_crit_val (Un-adjusted) Critical value to be used for the MCP testing step. Passed to the getCritProb() function for the calculation of adjusted critical values (on the probability scale). Default 0.05.
 #' @param modeling Boolean variable defining whether the Mod part of Bayesian MCP-Mod will be performed in the assessment. More heavy on resources. Default FALSE.
-#' @param simple Boolean variable defining whether simplified fit will be applied. Passed to the getModelFits function. Default FALSE.
+#' @param simple Boolean variable defining whether simplified fit will be applied. Passed to the getModelFits function. Default TRUE.
 #' @param avg_fit Boolean variable, defining whether an average fit (based on generalized AIC weights) should be performed in addition to the individual models. Default TRUE.
 #' @param reestimate Boolean variable defining whether critical value should be calculated with re-estimated contrasts (see getCritProb function for more details). Default FALSE.
 #' @param delta A numeric value for the threshold Delta for the MED assessment. If NULL, no MED assessment is performed. Default NULL.
