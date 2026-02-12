@@ -15,6 +15,7 @@
   n_bs_smpl = 1000,
   acc_color = "orange",
   plot_res = 100,
+  plot_diffs = FALSE,
   ...
 )
 }
@@ -38,6 +39,8 @@
 \item{acc_color}{Color of the credible bands. Default "orange".}
 
 \item{plot_res}{Number of plotted doses within the range of the dose levels, i.e., the resolution of the plot. Default 100.}
+
+\item{plot_diffs}{Logical flag. Plot differences to the control group. Default FALSE.}
 
 \item{...}{optional parameter to be passed to plot().}
 }
@@ -69,7 +72,9 @@ plot(model_fits)
 
 # plot with credible bands
 plot(model_fits,
-     cr_bands  = TRUE,
-     n_bs_smpl = 1e2) 
+     cr_bands          = TRUE,
+     plot_diffs        = FALSE,
+     probability_scale = FALSE,
+     n_bs_smpl         = 1e2) # speeding up example run-time
 
 }

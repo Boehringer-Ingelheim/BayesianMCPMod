@@ -6,11 +6,11 @@ format:
     self-contained: true
     toc: true
     number-sections: true
-    bibliography: references.bib
     code-summary: setup
     #code-fold: true
     message: false
     warning: false
+bibliography: references.bib
 vignette: >
   %\VignetteIndexEntry{Analysis Example of Bayesian MCPMod for binary Data}
   %\VignetteEngine{knitr::rmarkdown}
@@ -25,10 +25,10 @@ vignette: >
 #| message: false
 #| warning: false
 
-devtools::load_all()     # to be removed
-devtools::install()
-library(DoseFinding)     # to be removed
-#library(BayesianMCPMod) # to be included
+# devtools::load_all()     # to be removed
+# devtools::install()
+# library(DoseFinding)     # to be removed
+library(BayesianMCPMod) # to be included
 library(RBesT)
 library(clinDR)
 library(dplyr)

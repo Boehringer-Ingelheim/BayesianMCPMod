@@ -30,6 +30,7 @@ Schmidli
 Schorning
 Thomann
 Un
+XELJANZ
 Yao
 al
 arg
@@ -47,7 +48,6 @@ doi
 dr
 emax
 eqn
-ess
 et
 gAIC
 getBootstrapQuantiles
@@ -60,7 +60,6 @@ getModelFits
 getPosterior
 ggplot
 mixnorm
-modelFit
 modelFits
 mvpostmix
 nloptr
@@ -72,9 +71,11 @@ postList
 postmix
 pst
 rmix
+robustified
 sd
 sigEMAX
 simulateData
 summand
 tibble
+variabilities
 widehat

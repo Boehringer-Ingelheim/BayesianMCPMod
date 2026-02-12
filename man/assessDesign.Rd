@@ -32,7 +32,7 @@ assessDesign(
 
 \item{prior_list}{A prior_list object specifying the utilized prior for the different dose groups}
 
-\item{sd}{A positive value, specification of assumed sd. Not required if ´data_sim´ or ´estimates_sim´ is provided. Default NULL}
+\item{sd}{A positive value, specification of assumed sd. Not required if ´data_sim´ or ´estimates_sim´ is provided. Also not required in case of binary endpoint. Default NULL}
 
 \item{contr}{An object of class 'optContr' as created by the getContr() function. Allows specification of a fixed contrasts matrix. Default NULL.}
 
@@ -48,7 +48,7 @@ assessDesign(
 
 \item{modeling}{Boolean variable defining whether the Mod part of Bayesian MCP-Mod will be performed in the assessment. More heavy on resources. Default FALSE.}
 
-\item{simple}{Boolean variable defining whether simplified fit will be applied. Passed to the getModelFits function. Default FALSE.}
+\item{simple}{Boolean variable defining whether simplified fit will be applied. Passed to the getModelFits function. Default TRUE.}
 
 \item{avg_fit}{Boolean variable, defining whether an average fit (based on generalized AIC weights) should be performed in addition to the individual models. Default TRUE.}
 
@@ -83,17 +83,26 @@ prior_list <- list(Ctrl = RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 12), sigma 
                    DG_3 = RBesT::mixnorm(comp1 = c(w = 1, m = 1.3, s = 11), sigma = 2) ,
                    DG_4 = RBesT::mixnorm(comp1 = c(w = 1, m = 2, s = 13), sigma = 2))
 n_patients <- c(40, 60, 60, 60, 60)
+dose_levels  <- c(0, 0.5, 2, 4, 8)
+## Analysis with custom data
+data_sim <- simulateData(
+  n_patients        = n_patients,
+  dose_levels       = dose_levels,
+  sd                = sd,
+  mods              = mods,
+  n_sim             = 10)
 
 success_probabilities <- assessDesign(
   n_patients  = n_patients,
   mods        = mods,
   prior_list  = prior_list,
+  data_sim = data_sim,
   sd          = sd,
   n_sim       = 1e2) # speed up example run time
 
 success_probabilities
 
-# Analysis with custom dose response relationship
+## Analysis with custom dose response relationship
 custom_dr_means <- c(1, 2, 3, 4, 5)
 
 success_probs_custom_dr <- assessDesign(
@@ -106,8 +115,17 @@ success_probs_custom_dr <- assessDesign(
 
 success_probs_custom_dr
 
-# Analysis with custom estimates for means and variabilies
-# No simulated data, only simulated model estimates
+  
+success_probs_custom_data <- assessDesign(
+  n_patients    = n_patients,
+  mods          = mods,
+  prior_list    = prior_list,
+  data_sim      = data_sim)
+  
+  success_probs_custom_data
+
+## Analysis with custom estimates for means and variabilies
+## No simulated data, only simulated model estimates
 estimates_sim <- list(mu_hats = replicate(100, list(c(1, 2, 3, 4, 5) + rnorm(5, 0, 1))),
                       S_hats  = list(diag(1, 5)))
 

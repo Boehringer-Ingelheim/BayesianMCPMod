@@ -240,7 +240,9 @@ print.BayesianMCP <- function(x, ...) {
 #' model coefficients
 #' @param doses A vector specifying the doses for which a prediction should be
 #' done
+#' @param probability_scale A boolean variable to specify if the trial has a continuous or a binary outcome. Setting to TRUE will transform predictions from the logit scale to the probability scale, which can be desirable for a binary outcome. Default FALSE.
 #' @param ... Currently without function
+#'
 #' @examples
 #' posterior_list <- list(Ctrl = RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 1), sigma = 2),
 #'                        DG_1 = RBesT::mixnorm(comp1 = c(w = 1, m = 3, s = 1.2), sigma = 2),

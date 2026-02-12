@@ -38,6 +38,14 @@
 #'                    DG_3 = RBesT::mixnorm(comp1 = c(w = 1, m = 1.3, s = 11), sigma = 2) ,
 #'                    DG_4 = RBesT::mixnorm(comp1 = c(w = 1, m = 2, s = 13), sigma = 2))
 #' n_patients <- c(40, 60, 60, 60, 60)
+#' dose_levels  <- c(0, 0.5, 2, 4, 8)
+#' ## Analysis with custom data
+#' data_sim <- simulateData(
+#'   n_patients        = n_patients,
+#'   dose_levels       = dose_levels,
+#'   sd                = sd,
+#'   mods              = mods,
+#'   n_sim             = 10)
 #'
 #' success_probabilities <- assessDesign(
 #'   n_patients  = n_patients,
@@ -62,13 +70,6 @@
 #'
 #' success_probs_custom_dr
 #' 
-#' ## Analysis with custom data
-#' data_sim <- simulateData(
-#'   n_patients        = n_patients,
-#'   dose_levels       = dose_levels,
-#'   sd                = sd,
-#'   mods              = mods,
-#'   n_sim             = 10)
 #'   
 #' success_probs_custom_data <- assessDesign(
 #'   n_patients    = n_patients,

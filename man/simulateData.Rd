@@ -7,7 +7,7 @@
 simulateData(
   n_patients,
   dose_levels,
-  sd,
+  sd = NULL,
   mods = NULL,
   n_sim = 1000,
   true_model = NULL,
@@ -21,7 +21,7 @@ value per dose-group.}
 
 \item{dose_levels}{Vector containing the different dosage levels.}
 
-\item{sd}{Standard deviation on patient level.}
+\item{sd}{Standard deviation on patient level. Can be NULL if \code{probability_scale} is TRUE. Default NULL.}
 
 \item{mods}{An object of class "Mods" as specified in the DoseFinding package. Can be NULL if ´dr_means´ is not NULL. Default NULL.}
 

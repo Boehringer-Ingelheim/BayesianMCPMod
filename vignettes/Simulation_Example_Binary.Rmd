@@ -6,11 +6,11 @@ format:
     self-contained: true
     toc: true
     number-sections: true
-    bibliography: references.bib
     code-summary: setup
     #code-fold: true
     message: false
     warning: false
+bibliography: references.bib
 vignette: >
   %\VignetteIndexEntry{Simulation Example of Bayesian MCPMod for binary Data}
   %\VignetteEngine{knitr::rmarkdown}
@@ -40,10 +40,10 @@ future::plan(future::multisession)
 #| code-fold: true
 #| message: false
 #| warning: false
-devtools::load_all()     # to be removed
-devtools::install()      # to be removed
-library(DoseFinding)     # to be removed
-#library(BayesianMCPMod) # to be included
+# devtools::load_all()     # to be removed
+# devtools::install()      # to be removed
+# library(DoseFinding)     # to be removed
+library(BayesianMCPMod) # to be included
 library(RBesT)
 library(clinDR)
 library(dplyr)
@@ -125,7 +125,7 @@ names(prior_list) <- dose_names
 
 
 Kindly note that a vague prior could be implemented via
-```{r Setting Vague Prior Without Execution, eval = FALSE}
+```{r Setting Vague Prior Without Execution, eval = TRUE}
 prior_list_vague <- rep(list(RBesT::mixnorm(comp1 = c(w = 1, m = logit(p), n=1),
                                             sigma = sqrt(1/(p*(1-p))), param = "mn")),
                         times = length(dose_levels))

@@ -4,14 +4,20 @@
 \alias{getESS}
 \title{getESS}
 \usage{
-getESS(post_list)
+getESS(post_list, method = c("elir", "moment", "morita"), n_digits = 1, ...)
 }
 \arguments{
 \item{post_list}{A posterior list object, for which the effective sample size for each dose group should be calculated}
+
+\item{method}{A string specifying the method of ESS calculation, see \code{?RBesT::ess()}.}
+
+\item{n_digits}{An integer for the number of digits the result should be rounded to.}
+
+\item{...}{Optional arguments applicable to specific methods, see \code{?RBesT::ess()}.}
 }
 \value{
 A vector of the effective sample sizes for each dose group
 }
 \description{
-This function calculates the effective sample size for every dose group via the RBesT function ess().
+This function calculates the effective sample size for every dose group via \code{RBesT::ess()}.
 }

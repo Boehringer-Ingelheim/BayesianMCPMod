@@ -18,6 +18,8 @@ model coefficients}
 \item{doses}{A vector specifying the doses for which a prediction should be
 done}
 
+\item{probability_scale}{A boolean variable to specify if the trial has a continuous or a binary outcome. Setting to TRUE will transform predictions from the logit scale to the probability scale, which can be desirable for a binary outcome. Default FALSE.}
+
 \item{...}{Currently without function}
 }
 \value{

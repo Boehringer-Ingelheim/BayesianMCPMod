@@ -186,3 +186,265 @@ test_that("assessDesign validates prior_list parameter input and give appropriat
     "doses" %in% names(attributes(mods))
   )
 })
+
+test_that("assessDesign: input validation branches are triggered", {
+  skip_if_not_installed("DoseFinding")
+  skip_if_not_installed("RBesT")
+  
+  dose_levels <- c(0, 1, 2)
+  mods <- DoseFinding::Mods(
+    linear = NULL,
+    doses  = dose_levels,
+    maxEff = 1
+  )
+  
+  prior_list <- setNames(
+    lapply(seq_along(dose_levels), function(i) {
+      RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 2), sigma = 2)
+    }),
+    c("Ctr", "DG_1", "DG_2")
+  )
+  
+  # n_patients < 2
+  expect_error(
+    assessDesign(
+      n_patients = c(1, 2, 2),
+      mods = mods,
+      prior_list = prior_list,
+      n_sim = 1
+    )
+  )
+  
+  # length mismatch
+  expect_error(
+    assessDesign(
+      n_patients = c(10, 10),
+      mods = mods,
+      prior_list = prior_list,
+      n_sim = 1
+    )
+  )
+  
+  # conflicting inputs
+  expect_error(
+    assessDesign(
+      n_patients = c(10, 10, 10),
+      mods = mods,
+      prior_list = prior_list,
+      sd = 1,
+      data_sim = data.frame(),
+      n_sim = 1
+    )
+  )
+  
+  expect_error(
+    assessDesign(
+      n_patients = c(10, 10, 10),
+      mods = mods,
+      prior_list = prior_list,
+      sd = 1,
+      estimates_sim = list(),
+      n_sim = 1
+    )
+  )
+})
+
+
+test_that("assessDesign: binary endpoint runs and returns per-true-model results with avgSuccessRate attribute", {
+  skip_if_not_installed("DoseFinding")
+  skip_if_not_installed("RBesT")
+  
+  set.seed(401)
+  
+  dose_levels <- c(0, 1, 2)
+  n_patients  <- c(20, 20, 20)
+  
+  mods <- DoseFinding::Mods(
+    linear = NULL,
+    doses  = dose_levels,
+    maxEff = 1
+  )
+  
+  # Logit-scale priors
+  p_true <- c(0.10, 0.20, 0.40)
+  prior_list <- setNames(
+    lapply(seq_along(p_true), function(i) {
+      RBesT::mixnorm(comp1 = c(w = 1, m = qlogis(p_true[i]), s = 2), sigma = 2)
+    }),
+    c("Ctr", "DG_1", "DG_2")
+  )
+  
+  res <- assessDesign(
+    n_patients = n_patients,
+    mods = mods,
+    prior_list = prior_list,
+    n_sim = 2,
+    probability_scale = TRUE,
+    modeling = FALSE
+  )
+  
+  # Returned object is a list with names == true underlying model names
+  expect_true(is.list(res))
+  expect_true(length(res) >= 1)
+  expect_true(!is.null(names(res)))
+  
+  # avgSuccessRate is stored as attribute on the returned list
+  expect_true(!is.null(attr(res, "avgSuccessRate")))
+  expect_true(is.numeric(attr(res, "avgSuccessRate")))
+  expect_true(attr(res, "avgSuccessRate") >= 0 && attr(res, "avgSuccessRate") <= 1)
+  
+  # Each element (when modeling=FALSE) is the BayesianMCP result and should have successRate attribute
+  for (nm in names(res)) {
+    expect_true(!is.null(attr(res[[nm]], "successRate")))
+    sr <- attr(res[[nm]], "successRate")
+    expect_true(is.numeric(sr))
+    expect_true(sr >= 0 && sr <= 1)
+  }
+})
+
+
+test_that("assessDesign: custom data_sim path requires model columns and returns results; contr warning is expected", {
+  skip_if_not_installed("DoseFinding")
+  skip_if_not_installed("RBesT")
+  
+  set.seed(402)
+  
+  dose_levels <- c(0, 1)
+  n_patients  <- c(30, 30)
+  
+  mods <- DoseFinding::Mods(
+    linear = NULL,
+    doses  = dose_levels,
+    maxEff = 1
+  )
+  
+  prior_list <- setNames(
+    lapply(seq_along(dose_levels), function(i) {
+      RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 2), sigma = 2)
+    }),
+    c("Ctr", "DG_1")
+  )
+  
+  # IMPORTANT: data_sim must match simulateData() structure:
+  # first 3 columns: simulation, ptno, dose
+  # then ONE OR MORE model columns (true model responses), e.g. "lin"
+  data_sim <- data.frame(
+    simulation = 1L,
+    ptno = seq_len(sum(n_patients)),
+    dose = rep(dose_levels, times = n_patients),
+    lin  = rnorm(sum(n_patients))
+  )
+  
+  # assessDesign will message about providing contr; we allow that message
+  expect_message(
+    res <- assessDesign(
+      n_patients = n_patients,
+      mods = mods,
+      prior_list = prior_list,
+      data_sim = data_sim,
+      n_sim = 1
+    ),
+    regexp = "Consider to provide 'contr'"
+  )
+  
+  expect_true(is.list(res))
+  expect_true("lin" %in% names(res))
+  expect_true(!is.null(attr(res, "avgSuccessRate")))
+})
+
+
+test_that("assessDesign: modeling + delta attaches MED in a robust form and sets avgMEDIdentificationRate", {
+  skip_if_not_installed("DoseFinding")
+  skip_if_not_installed("RBesT")
+  
+  set.seed(403)
+  
+  dose_levels <- c(0, 1, 2)
+  n_patients  <- c(25, 25, 25)
+  
+  mods <- DoseFinding::Mods(
+    linear = NULL,
+    doses  = dose_levels,
+    maxEff = 1
+  )
+  
+  p_flat <- c(0.25, 0.25, 0.25)
+  
+  prior_list <- setNames(
+    lapply(seq_along(p_flat), function(i) {
+      RBesT::mixnorm(comp1 = c(w = 1, m = qlogis(p_flat[i]), s = 1.5), sigma = 2)
+    }),
+    c("Ctr", "DG_1", "DG_2")
+  )
+  
+  res_avg <- assessDesign(
+    n_patients = n_patients,
+    mods = mods,
+    prior_list = prior_list,
+    n_sim = 3,
+    probability_scale = TRUE,
+    modeling = TRUE,
+    delta = 0.2,
+    med_selection = "avgFit"
+  )
+  
+  expect_true(is.list(res_avg))
+  expect_true(length(res_avg) >= 1)
+  
+  # Top-level identification rate attribute
+  ir <- attr(res_avg, "avgMEDIdentificationRate")
+  expect_true(!is.null(ir))
+  expect_true(is.numeric(ir))
+  expect_true(ir >= 0 && ir <= 1)
+  
+  # MED is stored as attribute on each element, but its structure may vary.
+  # We just need it to contain a med_reached indicator (0/1) in some form.
+  extract_med_reached <- function(med) {
+    if (is.null(med)) return(NULL)
+    
+    # case 1: named atomic vector/list
+    if (!is.null(names(med)) && "med_reached" %in% names(med)) {
+      return(as.numeric(med[["med_reached"]]))
+    }
+    
+    # case 2: matrix/data.frame with rowname
+    if ((is.matrix(med) || is.data.frame(med)) && !is.null(rownames(med)) &&
+        "med_reached" %in% rownames(med)) {
+      return(as.numeric(med["med_reached", ]))
+    }
+    
+    # case 3: matrix/data.frame with column name
+    if ((is.matrix(med) || is.data.frame(med)) && "med_reached" %in% colnames(med)) {
+      return(as.numeric(med[, "med_reached"]))
+    }
+    
+    # case 4: 2-row matrix without rownames where first row is med_reached
+    if (is.matrix(med) && nrow(med) >= 1) {
+      # Heuristic: first row should be 0/1-like if it's med_reached
+      cand <- as.numeric(med[1, ])
+      if (all(cand %in% c(0, 1, NA))) return(cand)
+    }
+    
+    NULL
+  }
+  
+  any_has_med <- FALSE
+  any_has_reached <- FALSE
+  
+  for (nm in names(res_avg)) {
+    med <- attr(res_avg[[nm]], "MED")
+    if (!is.null(med)) any_has_med <- TRUE
+    
+    mr <- extract_med_reached(med)
+    if (!is.null(mr)) {
+      any_has_reached <- TRUE
+      mr <- mr[!is.na(mr)]
+      expect_true(all(mr %in% c(0, 1)))
+    }
+  }
+  
+  # Invariant expectations: at least one element should carry MED,
+  # and at least one should expose a med_reached indicator in some form.
+  expect_true(any_has_med)
+  expect_true(any_has_reached)
+})
