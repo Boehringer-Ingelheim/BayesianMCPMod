@@ -46,7 +46,7 @@ test_that("MCP step sanity: low type-I error under null and decent power under m
       }
     }
     
-    # 2) Parse printed output (your S3 print shows "Significant: <0/1>")
+    # 2) Parse printed output (S3 print shows "Significant: <0/1>")
     out <- paste(capture.output(print(bmcp_obj)), collapse = "\n")
     m <- regexec("Significant:\\s*([01])", out)
     reg <- regmatches(out, m)[[1]]

@@ -72,13 +72,11 @@ test_that("Binary internal calibration: posterior mean ranks with empirical logi
   approx_sd <- function(n, p) 1 / sqrt(n * p * (1 - p))
   
   # Compare ratio of SDs between small and big n: should be ~sqrt(big/small) up to slack
-  # We use empirical p_hat for stability.
   ratio_obs <- out_small$sd / out_big$sd
   ratio_exp <- sqrt(big_n / small_n) * approx_sd(small_n, out_small$p_hat) / approx_sd(big_n, out_big$p_hat)
   # ratio_exp simplifies close to sqrt(big/small) if p's match; keep robust by computing anyway.
   
   # Require positive association between observed and expected scaling across doses
-  # (hard to fake if variance is wrong scale)
   expect_true(stats::cor(ratio_obs, ratio_exp) > 0.3)
   
   # Also require median ratio in a plausible band around sqrt(big/small) (~2.236)

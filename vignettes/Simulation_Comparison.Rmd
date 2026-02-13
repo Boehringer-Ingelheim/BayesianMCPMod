@@ -1,20 +1,17 @@
 ---
 title: "Comparison of Bayesian MCPMod and MCPMod"
-format: 
-  html:
-    fig-height: 3.5
-    self-contained: true
+date: "`r Sys.Date()`"
+output:
+  rmarkdown::html_vignette:
     toc: true
-    number-sections: true
-    code-summary: setup
-    code-fold: true
-    message: false
-    warning: false
+    toc_depth: 2
+    number_sections: true
 vignette: >
   %\VignetteIndexEntry{Comparison of Bayesian MCPMod and MCPMod}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
+
 
 ```{r, collapse=TRUE}
 #| code-summary: Setup

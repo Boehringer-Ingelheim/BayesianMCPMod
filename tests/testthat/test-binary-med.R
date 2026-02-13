@@ -48,7 +48,7 @@ test_that("getMED: probability scale enforces delta bounds and returns expected 
   
   med <- getMED(delta = 0.10, model_fits = fits, probability_scale = TRUE)
   expect_true(is.matrix(med))
-  expect_equal(rownames(med), c("med_reached", "med"))  # <- your implementation returns only these
+  expect_equal(rownames(med), c("med_reached", "med"))
   expect_true(all(colnames(med) %in% names(fits)))
   
   # Bootstrap path

@@ -35,15 +35,12 @@ future::plan(future::multisession)
 ```
 
 
-```{r setup, collapse=TRUE}
-#| code-summary: setup
-#| code-fold: true
+```{r setup}
 #| message: false
 #| warning: false
-# devtools::load_all()     # to be removed
-# devtools::install()      # to be removed
-# library(DoseFinding)     # to be removed
-library(BayesianMCPMod) # to be included
+
+suppressPackageStartupMessages({
+library(BayesianMCPMod) 
 library(RBesT)
 library(clinDR)
 library(dplyr)
@@ -51,6 +48,8 @@ library(tibble)
 library(reactable)
 library(DoseFinding)
 library(BayesianMCPMod)
+})
+
 
 set.seed(7015)
 ```
@@ -136,7 +135,7 @@ names(prior_list_vague) <- c("Ctrl", "DG_1", "DG_2", "DG_3", "DG_4")
 
 For the hypothetical new trial, we plan with 4 active dose levels \eqn{2.5, 5, 10, 20} and we specify a broad set of potential dose-response relationships, including a linear, an exponential, an emax, a logistic and a sigEMAX models.  
 Furthermore, we assume a maximum response rate of 48% (resp. 30% on top of control) and plan a trial with 40 patients for all active groups and 30 patients for control.
-Please note that the response rates need to be provided on the logit scale.
+Please note that the response rates need to be provided on the **logit scale**.
 
 ```{r}
 n_patients <- c(30, 40, 40, 40, 40)
