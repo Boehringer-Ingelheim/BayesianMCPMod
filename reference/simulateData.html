@@ -18,7 +18,9 @@
       <ul class="navbar-nav me-auto"><li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/analysis_normal.html">Analysis Example of Bayesian MCPMod for Continuous Data</a></li>
+    <li><a class="dropdown-item" href="../articles/binary_endpoint.html">Binary Endpoints in Bayesian MCP-Mod</a></li>
     <li><a class="dropdown-item" href="../articles/Simulation_Example.html">Simulation Example of Bayesian MCPMod for Continuous Data</a></li>
+    <li><a class="dropdown-item" href="../articles/Simulation_Example_Binary.html">Simulation Example of Bayesian MCPMod for binary Data</a></li>
     <li><a class="dropdown-item" href="../articles/Simulation_Comparison.html">Comparison of Bayesian MCPMod and MCPMod</a></li>
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
@@ -35,7 +37,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>simulateData</h1>
-      <small class="dont-index">Source: <a href="https://github.com/Boehringer-Ingelheim/BayesianMCPMod/blob/v1.2.0/R/simulation.R" class="external-link"><code>R/simulation.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/Boehringer-Ingelheim/BayesianMCPMod/blob/main/R/simulation.R" class="external-link"><code>R/simulation.R</code></a></small>
       <div class="d-none name"><code>simulateData.Rd</code></div>
     </div>
 
@@ -48,11 +50,12 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">simulateData</span><span class="op">(</span></span>
 <span>  <span class="va">n_patients</span>,</span>
 <span>  <span class="va">dose_levels</span>,</span>
-<span>  <span class="va">sd</span>,</span>
-<span>  <span class="va">mods</span>,</span>
+<span>  sd <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  mods <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  n_sim <span class="op">=</span> <span class="fl">1000</span>,</span>
 <span>  true_model <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  dr_means <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  dr_means <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  probability_scale <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -70,11 +73,11 @@ value per dose-group.</p></dd>
 
 
 <dt id="arg-sd">sd<a class="anchor" aria-label="anchor" href="#arg-sd"></a></dt>
-<dd><p>Standard deviation on patient level.</p></dd>
+<dd><p>Standard deviation on patient level. Can be NULL if <code>probability_scale</code> is TRUE. Default NULL.</p></dd>
 
 
 <dt id="arg-mods">mods<a class="anchor" aria-label="anchor" href="#arg-mods"></a></dt>
-<dd><p>An object of class "Mods" as specified in the DoseFinding package.</p></dd>
+<dd><p>An object of class "Mods" as specified in the DoseFinding package. Can be NULL if ´dr_means´ is not NULL. Default NULL.</p></dd>
 
 
 <dt id="arg-n-sim">n_sim<a class="anchor" aria-label="anchor" href="#arg-n-sim"></a></dt>
@@ -83,13 +86,16 @@ Default is 1000</p></dd>
 
 
 <dt id="arg-true-model">true_model<a class="anchor" aria-label="anchor" href="#arg-true-model"></a></dt>
-<dd><p>Default value is NULL.
-Assumed true underlying model. Provided via a String. e.g. "emax".
-In case of NULL, all dose-response models, included in the mods input parameter will be used.</p></dd>
+<dd><p>A character for model name, e.g. "emax". Assumed true underlying model.
+If NULL, all dose-response models included in the mods input parameter will be used. Default NULL.</p></dd>
 
 
 <dt id="arg-dr-means">dr_means<a class="anchor" aria-label="anchor" href="#arg-dr-means"></a></dt>
-<dd><p>a vector, with information about assumed effects per dose group. Default NULL.</p></dd>
+<dd><p>an optional vector, with information about assumed effects per dose group. Default NULL.</p></dd>
+
+
+<dt id="arg-probability-scale">probability_scale<a class="anchor" aria-label="anchor" href="#arg-probability-scale"></a></dt>
+<dd><p>A boolean to specify if the trial has a continuous or a binary outcome. Setting to TRUE will transform calculations from the logit scale to the probability scale, which can be desirable for a binary outcome. Default FALSE.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -106,24 +112,39 @@ Also providing information about simulation iteration, patient number as well as
 <span class="r-in"><span>                            exponential <span class="op">=</span> <span class="fl">2</span>, </span></span>
 <span class="r-in"><span>                            doses       <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.5</span>, <span class="fl">2</span>,<span class="fl">4</span>, <span class="fl">8</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                            maxEff      <span class="op">=</span> <span class="fl">6</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">dose_levels</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.5</span>, <span class="fl">2</span>,<span class="fl">4</span>, <span class="fl">8</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">dose_levels</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.5</span>, <span class="fl">2</span>, <span class="fl">4</span>, <span class="fl">8</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">sd</span>          <span class="op">&lt;-</span> <span class="fl">12</span></span></span>
 <span class="r-in"><span><span class="va">n_patients</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">40</span>, <span class="fl">60</span>, <span class="fl">60</span>, <span class="fl">60</span>, <span class="fl">60</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">sim_data</span> <span class="op">&lt;-</span> <span class="fu">simulateData</span><span class="op">(</span>n_patients  <span class="op">=</span> <span class="va">n_patients</span>,</span></span>
 <span class="r-in"><span>                         dose_levels <span class="op">=</span> <span class="va">dose_levels</span>,</span></span>
 <span class="r-in"><span>                         sd          <span class="op">=</span> <span class="va">sd</span>,</span></span>
-<span class="r-in"><span>                         mods        <span class="op">=</span> <span class="va">models</span>,</span></span>
-<span class="r-in"><span>                         n_sim       <span class="op">=</span> <span class="fl">100</span><span class="op">)</span></span></span>
+<span class="r-in"><span>                         mods        <span class="op">=</span> <span class="va">models</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">sim_data</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      simulation ptno dose    linear    linlog     emax1     emax2 exponential</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> X0            1    1    0  1.401210  1.401210  1.401210  1.401210    1.401210</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> X0.1          1    2    0 16.680388 16.680388 16.680388 16.680388   16.680388</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> X0.2          1    3    0 -7.569798 -7.569798 -7.569798 -7.569798   -7.569798</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> X0.3          1    4    0 13.271286 13.271286 13.271286 13.271286   13.271286</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> X0.4          1    5    0 -2.742171 -2.742171 -2.742171 -2.742171   -2.742171</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> X0.6          1    6    0 -1.295981 -1.295981 -1.295981 -1.295981   -1.295981</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   simulation ptno dose    linear    linlog     emax1     emax2 exponential</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1          1    1    0  2.854117  2.854117  2.854117  2.854117    2.854117</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2          1    2    0 -8.623281 -8.623281 -8.623281 -8.623281   -8.623281</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3          1    3    0 -4.485584 -4.485584 -4.485584 -4.485584   -4.485584</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4          1    4    0 21.818521 21.818521 21.818521 21.818521   21.818521</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5          1    5    0 -3.423433 -3.423433 -3.423433 -3.423433   -3.423433</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6          1    6    0 23.821947 23.821947 23.821947 23.821947   23.821947</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># custom response "model" shape</span></span></span>
+<span class="r-in"><span><span class="va">custom_dose_response</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">3</span>, <span class="fl">4</span>, <span class="fl">5</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">sim_data_custom_dr</span>   <span class="op">&lt;-</span> <span class="fu">simulateData</span><span class="op">(</span>n_patients  <span class="op">=</span> <span class="va">n_patients</span>,</span></span>
+<span class="r-in"><span>                                     dose_levels <span class="op">=</span> <span class="va">dose_levels</span>,</span></span>
+<span class="r-in"><span>                                     sd          <span class="op">=</span> <span class="va">sd</span>,</span></span>
+<span class="r-in"><span>                                     dr_means    <span class="op">=</span> <span class="va">custom_dose_response</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">sim_data_custom_dr</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   simulation ptno dose dr_response</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1          1    1    0  -12.757780</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2          1    2    0   -5.658451</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3          1    3    0   27.405663</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4          1    4    0   18.975731</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5          1    5    0    7.981988</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6          1    6    0   24.030331</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
@@ -136,7 +157,7 @@ Also providing information about simulation iteration, patient number as well as
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer></div>

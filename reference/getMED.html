@@ -20,7 +20,9 @@ The MED evaluation can either be based on the fitted model shapes (model_fits) o
       <ul class="navbar-nav me-auto"><li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/analysis_normal.html">Analysis Example of Bayesian MCPMod for Continuous Data</a></li>
+    <li><a class="dropdown-item" href="../articles/binary_endpoint.html">Binary Endpoints in Bayesian MCP-Mod</a></li>
     <li><a class="dropdown-item" href="../articles/Simulation_Example.html">Simulation Example of Bayesian MCPMod for Continuous Data</a></li>
+    <li><a class="dropdown-item" href="../articles/Simulation_Example_Binary.html">Simulation Example of Bayesian MCPMod for binary Data</a></li>
     <li><a class="dropdown-item" href="../articles/Simulation_Comparison.html">Comparison of Bayesian MCPMod and MCPMod</a></li>
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
@@ -37,7 +39,7 @@ The MED evaluation can either be based on the fitted model shapes (model_fits) o
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>getMED</h1>
-      <small class="dont-index">Source: <a href="https://github.com/Boehringer-Ingelheim/BayesianMCPMod/blob/v1.2.0/R/modeling.R" class="external-link"><code>R/modeling.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/Boehringer-Ingelheim/BayesianMCPMod/blob/main/R/modeling.R" class="external-link"><code>R/modeling.R</code></a></small>
       <div class="d-none name"><code>getMED.Rd</code></div>
     </div>
 
@@ -53,7 +55,8 @@ The MED evaluation can either be based on the fitted model shapes (model_fits) o
 <span>  evidence_level <span class="op">=</span> <span class="fl">0.5</span>,</span>
 <span>  dose_levels <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  model_fits <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  bs_quantiles <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  bs_quantiles <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  probability_scale <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">model_fits</span>, <span class="st">"probability_scale"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -79,6 +82,10 @@ The MED evaluation can either be based on the fitted model shapes (model_fits) o
 
 <dt id="arg-bs-quantiles">bs_quantiles<a class="anchor" aria-label="anchor" href="#arg-bs-quantiles"></a></dt>
 <dd><p>A dataframe created with getBootstrapQuantiles(). Default NULL.</p></dd>
+
+
+<dt id="arg-probability-scale">probability_scale<a class="anchor" aria-label="anchor" href="#arg-probability-scale"></a></dt>
+<dd><p>A boolean variable to specify if the trial has a continuous or a binary outcome. Setting to TRUE will transform predictions from the logit scale to the probability scale, which can be desirable for a binary outcome. Default <code>attr(model_fits, "probability_scale")</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -124,6 +131,12 @@ The model-shape approach takes the point estimate of the model into account.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>             avgFit exponential linear</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> med_reached      0           0      0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> med             NA          NA     NA</span>
+<span class="r-in"><span>       </span></span>
+<span class="r-in"><span><span class="co"># MED on the probability scale</span></span></span>
+<span class="r-in"><span><span class="fu">getMED</span><span class="op">(</span>delta <span class="op">=</span> <span class="fl">0.1</span>, model_fits <span class="op">=</span> <span class="va">model_fits</span>, probability_scale <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>             avgFit exponential linear</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> med_reached      1           1      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> med              2           2      2</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
@@ -136,7 +149,7 @@ The model-shape approach takes the point estimate of the model into account.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer></div>

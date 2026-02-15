@@ -33,7 +33,9 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/analysis_normal.html">Analysis Example of Bayesian MCPMod for Continuous Data</a></li>
+    <li><a class="dropdown-item" href="../articles/binary_endpoint.html">Binary Endpoints in Bayesian MCP-Mod</a></li>
     <li><a class="dropdown-item" href="../articles/Simulation_Example.html">Simulation Example of Bayesian MCPMod for Continuous Data</a></li>
+    <li><a class="dropdown-item" href="../articles/Simulation_Example_Binary.html">Simulation Example of Bayesian MCPMod for binary Data</a></li>
     <li><a class="dropdown-item" href="../articles/Simulation_Comparison.html">Comparison of Bayesian MCPMod and MCPMod</a></li>
   </ul>
 </li>
@@ -54,15 +56,16 @@
 
 
 
-<script src="analysis_normal_files/core-js-2.5.3/shim.min.js"></script><script src="analysis_normal_files/react-18.2.0/react.min.js"></script><script src="analysis_normal_files/react-18.2.0/react-dom.min.js"></script><script src="analysis_normal_files/reactwidget-2.0.0/react-tools.js"></script><link href="analysis_normal_files/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet">
-<script src="analysis_normal_files/htmlwidgets-1.6.4/htmlwidgets.js"></script><link href="analysis_normal_files/reactable-0.4.4/reactable.css" rel="stylesheet">
-<script src="analysis_normal_files/reactable-binding-0.4.4/reactable.js"></script><div class="row">
+<script src="analysis_normal_files/core-js-2.5.3/shim.min.js"></script><script src="analysis_normal_files/react-18.2.0/react.min.js"></script><script src="analysis_normal_files/react-18.2.0/react-dom.min.js"></script><script src="analysis_normal_files/reactwidget-2.0.0/react-tools.js"></script><link href="analysis_normal_files/htmltools-fill-0.5.9/fill.css" rel="stylesheet">
+<script src="analysis_normal_files/htmlwidgets-1.6.4/htmlwidgets.js"></script><link href="analysis_normal_files/reactable-0.4.5/reactable.css" rel="stylesheet">
+<script src="analysis_normal_files/reactable-binding-0.4.5/reactable.js"></script><div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Analysis Example of Bayesian MCPMod for Continuous Data</h1>
             
+            <h4 data-toc-skip class="date">2026-02-15</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/Boehringer-Ingelheim/BayesianMCPMod/blob/v1.2.0/vignettes/analysis_normal.Rmd" class="external-link"><code>vignettes/analysis_normal.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/Boehringer-Ingelheim/BayesianMCPMod/blob/main/vignettes/analysis_normal.Rmd" class="external-link"><code>vignettes/analysis_normal.Rmd</code></a></small>
       <div class="d-none name"><code>analysis_normal.Rmd</code></div>
     </div>
 
@@ -78,66 +81,18 @@
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">7015</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co">#' Display Parameters Table</span></span>
-<span><span class="co">#'</span></span>
-<span><span class="co">#' This function generates a markdown table displaying the names and values of parameters</span></span>
-<span><span class="co">#' from a named list.</span></span>
-<span><span class="co">#'</span></span>
-<span><span class="co">#' @param named_list A named list where each name represents a parameter name and the list</span></span>
-<span><span class="co">#'   element represents the parameter value. Date values in the list are automatically</span></span>
-<span><span class="co">#'   converted to character strings for display purposes.</span></span>
-<span><span class="co">#'</span></span>
-<span><span class="co">#' @return Prints a markdown table with two columns: "Parameter Name" and "Parameter Values".</span></span>
-<span><span class="co">#'   The function does not return a value but displays the table directly to the output.</span></span>
-<span><span class="co">#'</span></span>
-<span><span class="co">#' @importFrom knitr kable</span></span>
-<span><span class="co">#' @examples</span></span>
-<span><span class="co">#' params &lt;- list("Start Date" = as.Date("2020-01-01"),</span></span>
-<span><span class="co">#'                "End Date" = as.Date("2020-12-31"),</span></span>
-<span><span class="co">#'                "Threshold" = 10)</span></span>
-<span><span class="co">#' display_params_table(params)</span></span>
-<span><span class="co">#'</span></span>
-<span><span class="co">#' @export</span></span>
 <span><span class="va">display_params_table</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">named_list</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">display_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="op">)</span></span>
-<span>  <span class="va">value_names</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="op">)</span></span>
-<span>  <span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">named_list</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="co"># dates will display as numeric by default, so convert to char first</span></span>
-<span>    <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">named_list</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">)</span> <span class="op">==</span> <span class="st">"Date"</span><span class="op">)</span> <span class="op">{</span></span>
-<span>      <span class="va">named_list</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">named_list</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
-<span>    <span class="op">}</span></span>
-<span>    <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">named_list</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>      <span class="va">value_names</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">value_names</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">named_list</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>, collapse <span class="op">=</span> <span class="st">', '</span><span class="op">)</span><span class="op">)</span></span>
-<span>    <span class="op">}</span></span>
-<span>    <span class="va">values</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/AsIs.html" class="external-link">I</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">named_list</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span>    <span class="va">display_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">display_table</span>, <span class="va">values</span><span class="op">)</span></span>
-<span>  <span class="op">}</span></span>
-<span>  </span>
-<span>  <span class="va">round_numeric</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">digits</span> <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">is.numeric</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>      <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">digits</span><span class="op">)</span><span class="op">)</span></span>
-<span>    <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
-<span>      <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
-<span>    <span class="op">}</span></span>
-<span>  <span class="op">}</span></span>
-<span>  </span>
-<span>  <span class="va">display_table</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">display_table</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="kw">function</span><span class="op">(</span><span class="va">sublist</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">sublist</span>, <span class="va">round_numeric</span><span class="op">)</span></span>
-<span>  <span class="op">}</span><span class="op">)</span></span>
-<span>  </span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">display_table</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="st">"list"</span></span>
-<span>  </span>
-<span>  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">value_names</span><span class="op">)</span> <span class="op">==</span> <span class="fl">0</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span></span>
-<span>      <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">named_list</span><span class="op">)</span>, <span class="va">display_table</span><span class="op">)</span>,</span>
-<span>      col.names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Name"</span>, <span class="st">"Value"</span><span class="op">)</span></span>
-<span>    <span class="op">)</span></span>
-<span>  <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
-<span>    <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span></span>
-<span>      <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">named_list</span><span class="op">)</span>, <span class="va">value_names</span>, <span class="va">display_table</span><span class="op">)</span>,</span>
-<span>      col.names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Name"</span>, <span class="st">"Value Labels"</span>, <span class="st">"Value"</span><span class="op">)</span></span>
-<span>    <span class="op">)</span></span>
-<span>  <span class="op">}</span></span>
+<span>  <span class="va">round_numeric</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">digits</span> <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">is.numeric</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">digits</span><span class="op">)</span> <span class="kw">else</span> <span class="va">x</span></span>
+<span>  <span class="va">tbl</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>    Name  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">named_list</span><span class="op">)</span>,</span>
+<span>    Value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/AsIs.html" class="external-link">I</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">named_list</span>, <span class="kw">function</span><span class="op">(</span><span class="va">v</span><span class="op">)</span> <span class="op">{</span></span>
+<span>      <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">inherits</a></span><span class="op">(</span><span class="va">v</span>, <span class="st">"Date"</span><span class="op">)</span><span class="op">)</span> <span class="va">v</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">v</span><span class="op">)</span></span>
+<span>      <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">v</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"{"</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">v</span><span class="op">)</span>, <span class="va">v</span>, sep<span class="op">=</span><span class="st">"="</span>, collapse<span class="op">=</span><span class="st">", "</span><span class="op">)</span>, <span class="st">"}"</span><span class="op">)</span></span>
+<span>      <span class="kw">else</span> <span class="va">v</span></span>
+<span>    <span class="op">}</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span>  <span class="va">tbl</span><span class="op">$</span><span class="va">Value</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">tbl</span><span class="op">$</span><span class="va">Value</span>, <span class="va">round_numeric</span><span class="op">)</span></span>
+<span>  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">tbl</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
 <div class="section level2">
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
@@ -238,6 +193,7 @@ be constructed.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dose_levels</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">2.5</span>, <span class="fl">5</span>, <span class="fl">10</span><span class="op">)</span></span>
 <span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">7015</span><span class="op">)</span> <span class="co"># re-sets seed only for this example; remove in your analysis script</span></span>
 <span><span class="va">prior_list</span>  <span class="op">&lt;-</span> <span class="fu">getPriorList</span><span class="op">(</span></span>
 <span>  hist_data     <span class="op">=</span> <span class="va">hist_data</span>,</span>
 <span>  dose_levels   <span class="op">=</span> <span class="va">dose_levels</span>,</span>
@@ -314,53 +270,62 @@ will be used in the remainder of the vignette.</p>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">mods</span><span class="op">)</span></span></code></pre></div>
-<p><img src="analysis_normal_files/figure-html/unnamed-chunk-4-1.png" width="700"></p>
+<p><img src="analysis_normal_files/figure-html/unnamed-chunk-4-1.png" class="r-plt" alt="" width="700"></p>
 <p>The <code>mods</code> object we just created above contains the full
 model parameters, which can be helpful for understanding how the
 guesstimates are translated onto the parameter scale.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">display_params_table</span><span class="op">(</span><span class="va">mods</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
+<colgroup>
+<col width="10%">
+<col width="10%">
+<col width="79%">
+</colgroup>
 <thead><tr class="header">
+<th align="left"></th>
 <th align="left">Name</th>
-<th align="left">Value Labels</th>
 <th align="left">Value</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
 <td align="left">linear</td>
-<td align="left">e0, delta</td>
-<td align="left">-12.8, -0.1</td>
+<td align="left">linear</td>
+<td align="left">{e0=-12.8, delta=-0.1}</td>
 </tr>
 <tr class="even">
 <td align="left">exponential</td>
-<td align="left">e0, e1, delta</td>
-<td align="left">-12.800, -0.067, 3.607</td>
+<td align="left">exponential</td>
+<td align="left">{e0=-12.8, e1=-0.0666665802154335,
+delta=3.60673602074522}</td>
 </tr>
 <tr class="odd">
 <td align="left">emax</td>
-<td align="left">e0, eMax, ed50</td>
-<td align="left">-12.800, -1.028, 0.278</td>
+<td align="left">emax</td>
+<td align="left">{e0=-12.8, eMax=-1.02777777777778,
+ed50=0.277777777777778}</td>
 </tr>
 <tr class="even">
 <td align="left">sigEmax</td>
-<td align="left">e0, eMax, ed50, h</td>
-<td align="left">-12.800, -1.003, 2.500, 4.248</td>
+<td align="left">sigEmax</td>
+<td align="left">{e0=-12.8, eMax=-1.00277008310249, ed50=2.5,
+h=4.24792751344358}</td>
 </tr>
 <tr class="odd">
 <td align="left">logistic</td>
-<td align="left">e0, eMax, ed50, delta</td>
-<td align="left">-12.797, -1.179, 7.794, 1.272</td>
+<td align="left">logistic</td>
+<td align="left">{e0=-12.7974358974359, eMax=-1.17948717948718,
+ed50=7.79415312704722, delta=1.27167389072021}</td>
 </tr>
 <tr class="even">
 <td align="left">betaMod</td>
-<td align="left">e0, eMax, delta1, delta2</td>
-<td align="left">-12.8, -1.0, 1.0, 1.0</td>
+<td align="left">betaMod</td>
+<td align="left">{e0=-12.8, eMax=-1, delta1=1, delta2=1}</td>
 </tr>
 <tr class="odd">
 <td align="left">quadratic</td>
-<td align="left">e0, b1, b2</td>
-<td align="left">-12.80, -0.40, 0.04</td>
+<td align="left">quadratic</td>
+<td align="left">{e0=-12.8, b1=-0.4, b2=0.04}</td>
 </tr>
 </tbody>
 </table>
@@ -436,7 +401,7 @@ groups below:</p>
 <h3 id="trial-data">Trial Data<a class="anchor" aria-label="anchor" href="#trial-data"></a>
 </h3>
 <p>We will use the trial with ct.gov number NCT00735709 as our phase 2
-trial data, available in the <code>{clinDR}</code> package <span class="citation">[@nct00735709_2024a]</span>.</p>
+trial data, available in the <code>{clinDR}</code> package <span class="citation">(ClinicalTrials.gov 2024)</span>.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"metaData"</span><span class="op">)</span></span>
 <span></span>
@@ -455,7 +420,7 @@ trial data, available in the <code>{clinDR}</code> package <span class="citation
 </h2>
 <p>In the first step of Bayesian MCPMod, the posterior is calculated by
 combining the prior information with the estimated results of the trial
-<span class="citation">[@fleischer_2022]</span>.</p>
+<span class="citation">(Fleischer F 2022)</span>.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">posterior</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getPosterior.html">getPosterior</a></span><span class="op">(</span></span>
 <span>  prior_list <span class="op">=</span> <span class="va">prior_list</span>,</span>
@@ -519,9 +484,10 @@ value on the probability scale and a pseudo-optimal contrast matrix.</p>
 frequentist MCPMod to ensure error control when using weakly-informative
 priors.</p>
 <p>A pseudo-optimal contrast matrix is generated based on the
-variability of the posterior distribution (see <span class="citation">[@fleischer_2022]</span> for more details).</p>
+variability of the posterior distribution (see <span class="citation">(Fleischer F 2022)</span> for more details).</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">crit_pval</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getCritProb.html">getCritProb</a></span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">7015</span><span class="op">)</span> <span class="co"># re-sets seed only for this example; remove in your analysis script</span></span>
+<span><span class="va">crit_pval</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getCritProb.html">getCritProb</a></span><span class="op">(</span></span>
 <span>  mods           <span class="op">=</span> <span class="va">mods</span>,</span>
 <span>  dose_levels    <span class="op">=</span> <span class="va">dose_levels</span>,</span>
 <span>  cov_new_trial  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/diag.html" class="external-link">diag</a></span><span class="op">(</span><span class="va">trial_data</span><span class="op">$</span><span class="va">se</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span>,</span>
@@ -565,7 +531,7 @@ is not executed and the contrast specification above is used.</p>
 <code class="sourceCode R"><span><span class="va">BMCP_result</span></span></code></pre></div>
 <pre><code><span><span class="co">## Bayesian Multiple Comparison Procedure</span></span>
 <span><span class="co">##   Significant:                   1 </span></span>
-<span><span class="co">##   Critical Probability:          0.9842778 </span></span>
+<span><span class="co">##   Critical Probability:          0.9845439 </span></span>
 <span><span class="co">##   Maximum Posterior Probability: 0.9999998 </span></span>
 <span><span class="co">## Posterior Probabilities for Model Shapes</span></span>
 <span><span class="co">##                        lin       exp      emax      sigE       log     betaM      quad</span></span>
@@ -590,7 +556,7 @@ distribution.</p>
 <p>The actual fit (on this approximated posterior distribution) is then
 performed using generalized least squares criterion. In contrast, for
 the full fit, the non-linear optimization problem is addressed via the
-Nelder-Mead algorithm <span class="citation">[@neldermead_2024a]</span>
+Nelder-Mead algorithm <span class="citation">(Wikipedia 2024)</span>
 implemented by the <a href="https://github.com/astamm/nloptr" class="external-link">nloptr</a> package.</p>
 <p>The output of the fit includes information about the predicted
 effects for the included dose levels, the generalized AIC, and the
@@ -609,47 +575,61 @@ similar, so we present the full fit.</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">display_params_table</span><span class="op">(</span><span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">model_fits</span>, doses <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">2.5</span>, <span class="fl">4</span>, <span class="fl">5</span>, <span class="fl">7</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
+<colgroup>
+<col width="15%">
+<col width="15%">
+<col width="68%">
+</colgroup>
 <thead><tr class="header">
+<th align="left"></th>
 <th align="left">Name</th>
 <th align="left">Value</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
 <td align="left">avgFit</td>
+<td align="left">avgFit</td>
 <td align="left">-11.292, -14.684, -15.134, -15.315, -15.518,
 -15.530</td>
 </tr>
 <tr class="even">
+<td align="left">betaMod</td>
 <td align="left">betaMod</td>
 <td align="left">-11.246, -14.787, -15.099, -15.246, -15.450,
 -15.556</td>
 </tr>
 <tr class="odd">
 <td align="left">emax</td>
+<td align="left">emax</td>
 <td align="left">-11.244, -14.805, -15.133, -15.257, -15.407,
 -15.528</td>
 </tr>
 <tr class="even">
+<td align="left">exponential</td>
 <td align="left">exponential</td>
 <td align="left">-12.586, -13.358, -13.870, -14.233, -15.016,
 -16.348</td>
 </tr>
 <tr class="odd">
 <td align="left">linear</td>
+<td align="left">linear</td>
 <td align="left">-12.403, -13.397, -13.994, -14.391, -15.187,
 -16.380</td>
 </tr>
 <tr class="even">
+<td align="left">logistic</td>
 <td align="left">logistic</td>
 <td align="left">-11.245, -14.837, -15.273, -15.352, -15.390,
 -15.395</td>
 </tr>
 <tr class="odd">
 <td align="left">quadratic</td>
+<td align="left">quadratic</td>
 <td align="left">-11.474, -14.104, -15.165, -15.658, -16.126,
 -15.535</td>
 </tr>
 <tr class="even">
+<td align="left">sigEmax</td>
 <td align="left">sigEmax</td>
 <td align="left">-11.243, -14.810, -15.092, -15.217, -15.394,
 -15.565</td>
@@ -660,7 +640,7 @@ similar, so we present the full fit.</p>
 model:</p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">model_fits</span><span class="op">)</span></span></code></pre></div>
-<p><img src="analysis_normal_files/figure-html/unnamed-chunk-15-1.png" width="700"></p>
+<p><img src="analysis_normal_files/figure-html/unnamed-chunk-15-1.png" class="r-plt" alt="" width="700"></p>
 <p>To assess the uncertainty, one can additionally visualize credible
 bands (orange shaded areas, default levels are 50% and 95%).</p>
 <p>These credible bands are calculated with a bootstrap method as
@@ -674,7 +654,7 @@ specified quantiles.</p></li>
 </ul>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">model_fits</span>, cr_bands <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="analysis_normal_files/figure-html/unnamed-chunk-16-1.png" width="700"></p>
+<p><img src="analysis_normal_files/figure-html/unnamed-chunk-16-1.png" class="r-plt" alt="" width="700"></p>
 <p>The bootstrap-based quantiles can also be directly calculated via the
 <code><a href="../reference/getBootstrapQuantiles.html">getBootstrapQuantiles()</a></code> function and a sample from the
 model fits can bootstrapped using
@@ -682,7 +662,8 @@ model fits can bootstrapped using
 <p>For this example, only 10 samples are bootstrapped for each model
 fit.</p>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">bootstrap_quantiles</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getBootstrapQuantiles.html">getBootstrapQuantiles</a></span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">7015</span><span class="op">)</span> <span class="co"># re-sets seed only for this example; remove in your analysis script</span></span>
+<span><span class="va">bootstrap_quantiles</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getBootstrapQuantiles.html">getBootstrapQuantiles</a></span><span class="op">(</span></span>
 <span>  model_fits <span class="op">=</span> <span class="va">model_fits</span>,</span>
 <span>  quantiles  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.025</span>, <span class="fl">0.5</span>, <span class="fl">0.975</span><span class="op">)</span>,</span>
 <span>  doses      <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">2.5</span>, <span class="fl">4</span>, <span class="fl">5</span>, <span class="fl">7</span>, <span class="fl">10</span><span class="op">)</span>,</span>
@@ -703,7 +684,7 @@ control-adjusted) quantiles (sample_type=diff).</p>
 <span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <div class="reactable html-widget html-fill-item" id="htmlwidget-ac96cb3ee4656e2e9ec3" style="width:auto;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-ac96cb3ee4656e2e9ec3">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"model":["avgFit","avgFit","avgFit","avgFit","avgFit","avgFit","avgFit","avgFit","avgFit","avgFit","avgFit","avgFit","betaMod","betaMod","betaMod","betaMod","betaMod","betaMod","betaMod","betaMod","betaMod","betaMod","betaMod","betaMod","emax","emax","emax","emax","emax","emax","emax","emax","emax","emax","emax","emax","exponential","exponential","exponential","exponential","exponential","exponential","exponential","exponential","exponential","exponential","exponential","exponential","linear","linear","linear","linear","linear","linear","linear","linear","linear","linear","linear","linear","logistic","logistic","logistic","logistic","logistic","logistic","logistic","logistic","logistic","logistic","logistic","logistic","quadratic","quadratic","quadratic","quadratic","quadratic","quadratic","quadratic","quadratic","quadratic","quadratic","quadratic","quadratic","sigEmax","sigEmax","sigEmax","sigEmax","sigEmax","sigEmax","sigEmax","sigEmax","sigEmax","sigEmax","sigEmax","sigEmax"],"dose":[0,0,2.5,2.5,4,4,5,5,7,7,10,10,0,0,2.5,2.5,4,4,5,5,7,7,10,10,0,0,2.5,2.5,4,4,5,5,7,7,10,10,0,0,2.5,2.5,4,4,5,5,7,7,10,10,0,0,2.5,2.5,4,4,5,5,7,7,10,10,0,0,2.5,2.5,4,4,5,5,7,7,10,10,0,0,2.5,2.5,4,4,5,5,7,7,10,10,0,0,2.5,2.5,4,4,5,5,7,7,10,10],"sample_type":["abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff"],"0.025":[-11.6302901658796,0,-15.6858061261757,-5.35965477118937,-16.3066870094852,-5.58300553792819,-16.8745956382321,-6.06923974565312,-17.2990180654728,-6.58406016627932,-16.5532814902111,-5.89490566413134,-11.6523753385539,0,-15.7449308950415,-5.32576635919179,-16.2250552435916,-5.61365277388709,-16.5342650419179,-5.96689731995177,-17.1004800399551,-6.54373792542942,-16.4300093954382,-5.87354048226854,-11.6406701113545,0,-15.6858061261757,-5.36539437147651,-15.8331430516352,-5.54125184687744,-16.0628100312915,-5.63192563952557,-16.3979617850699,-5.85480142488858,-16.6976749894879,-6.15207610589646,-13.26138634169,0,-13.8524520681154,-1.02080508549024,-14.3187359641631,-1.69742161105945,-14.7631619128007,-2.17752879293387,-15.7629193159779,-3.21285209350009,-17.5222554328992,-4.97353112766611,-13.0236689026523,0,-13.8627377376779,-1.33063186301661,-14.4492089961939,-2.12901098082658,-14.9564058765798,-2.66126372603323,-15.990241643647,-3.72576921644652,-17.586999879267,-5.32252745206645,-11.6694195868588,0,-15.7017302740853,-5.37563661324634,-16.4778429074477,-5.92110025937092,-16.4778596037075,-5.92111695563074,-16.4778596101737,-5.92111696209689,-16.4778596101737,-5.92111696209689,-11.7280984485472,0,-14.9260271871075,-3.94225342630296,-16.3248278035262,-5.413485693966,-16.88546488815,-6.10967989861575,-17.3850080504312,-6.71345564530516,-16.3891686122107,-5.71624098835269,-11.6517406142631,0,-15.6871708627604,-5.36108259878675,-16.4582997085414,-5.90156394681151,-16.4767312601921,-5.91999549846218,-16.4788793066013,-5.92214354487132,-16.4789540829117,-5.92221832118178],"0.5":[-10.853542430396,0,-14.7685446998513,-3.91198089730121,-15.6316760607189,-4.6933243810177,-15.9510112171476,-4.93430473616893,-16.0442342632704,-5.00824179972062,-15.6587429759489,-4.69903645875388,-10.7865959179375,0,-14.9246530832337,-4.32614334173884,-15.7069185721711,-4.79127477619661,-16.030673878634,-4.9864896721143,-16.1759005953647,-5.15839940996587,-15.4970279025871,-4.50091735202862,-10.7852701023978,0,-15.1422488224923,-4.55302272169697,-15.4674080202169,-4.6920054750938,-15.566219289191,-4.69434679732844,-15.6240771449872,-4.69702545700606,-15.7662658651708,-4.77482676111414,-12.6833141444265,0,-13.5195534024413,-0.712130997083914,-14.1570625646601,-1.18415019824772,-14.5016794606138,-1.51908113755743,-15.1250737394192,-2.24134028851214,-16.39196964373,-3.46961994147178,-12.4345851875941,0,-13.5392603297307,-0.935334372793553,-14.258904574245,-1.49653499646969,-14.6459794802295,-1.87066874558711,-15.2984549596098,-2.61893624382195,-16.425854521947,-3.74133749117421,-10.786595725371,0,-14.9246519297681,-4.32614185463709,-15.6383964166777,-4.69363723379662,-15.6383966040737,-4.69363723379662,-15.6383966041157,-4.69363723379662,-15.7499367653362,-4.7874279956826,-10.9974598953367,0,-14.502957596046,-3.32050893346196,-15.7811141527042,-4.53757735404831,-16.2713349802568,-5.02594090965137,-16.5982861019125,-5.28058595261475,-15.4874149707007,-4.05650959903729,-10.7865958025144,0,-14.9247331594856,-4.32622878894448,-15.6376999242179,-4.69363723382608,-15.638147268008,-4.69363723383816,-15.6381992295378,-4.69363723384158,-15.776054231315,-4.7872326443296],"0.975":[-10.2578731001912,0,-13.6217672156534,-2.54291382037675,-14.3409640112479,-3.36951498338405,-14.5571974786829,-3.72350565316987,-14.8404731479261,-4.03929499202195,-14.46589080596,-3.48662502944915,-10.2491284504874,0,-13.6447975083993,-2.57112872752297,-14.3294518099114,-3.3570629873131,-14.6951120473589,-3.72272322476061,-15.086701258252,-4.27494110185085,-14.4673789672073,-3.48324346860995,-10.2439878149974,0,-13.6217672156534,-2.59694301951841,-14.3409640112479,-3.34840205874869,-14.5571974786829,-3.71085954300723,-14.7832027121018,-3.96120619206921,-14.9270195136408,-4.12534836709028,-12.0136592961869,0,-12.8455397278342,-0.555152997515015,-13.3337347460469,-0.923123041627349,-13.6801435692752,-1.18422376000599,-14.3568058501741,-1.74727232028079,-15.4801257062753,-2.70479717725159,-11.8197463984501,0,-12.8696456263286,-0.763645561963529,-13.4410042764336,-1.22183289914165,-13.8219100431703,-1.52729112392706,-14.5122931666522,-2.13820757349788,-15.5417255629236,-3.05458224785412,-10.2468430308116,0,-13.4787460471657,-2.34637121417965,-14.438265978616,-3.40717156133023,-14.7494153321937,-3.81487196855923,-14.8638870928926,-4.01677487514476,-14.8651667662587,-4.01805454851086,-10.615444021713,0,-13.3554228701519,-2.2646893895983,-14.3594789542182,-3.2687454736647,-14.8810340312239,-3.79030055067039,-15.4407735705939,-4.47865315498918,-14.46589080596,-3.48662502944915,-10.2468358669656,0,-13.6463331177416,-2.57480336068814,-14.3884232855655,-3.41802113600177,-14.7002309517427,-3.72982880217896,-14.8616339485292,-4.0147334486706,-14.865166889868,-4.01827304205104]},"columns":[{"id":"model","name":"model","type":"character"},{"id":"dose","name":"dose","type":"numeric","format":{"aggregated":{"suffix":" dose"}}},{"id":"sample_type","name":"sample_type","type":"character"},{"id":"0.025","name":"0.025","type":"numeric","format":{"cell":{"digits":4}}},{"id":"0.5","name":"0.5","type":"numeric","format":{"cell":{"digits":4}}},{"id":"0.975","name":"0.975","type":"numeric","format":{"cell":{"digits":4}}}],"groupBy":["model"],"dataKey":"62222a813888ee426adecf9f82762ac2"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script><p><strong>Technical note:</strong> The median quantile of the bootstrap
+<script type="application/json" data-for="htmlwidget-ac96cb3ee4656e2e9ec3">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"model":["avgFit","avgFit","avgFit","avgFit","avgFit","avgFit","avgFit","avgFit","avgFit","avgFit","avgFit","avgFit","betaMod","betaMod","betaMod","betaMod","betaMod","betaMod","betaMod","betaMod","betaMod","betaMod","betaMod","betaMod","emax","emax","emax","emax","emax","emax","emax","emax","emax","emax","emax","emax","exponential","exponential","exponential","exponential","exponential","exponential","exponential","exponential","exponential","exponential","exponential","exponential","linear","linear","linear","linear","linear","linear","linear","linear","linear","linear","linear","linear","logistic","logistic","logistic","logistic","logistic","logistic","logistic","logistic","logistic","logistic","logistic","logistic","quadratic","quadratic","quadratic","quadratic","quadratic","quadratic","quadratic","quadratic","quadratic","quadratic","quadratic","quadratic","sigEmax","sigEmax","sigEmax","sigEmax","sigEmax","sigEmax","sigEmax","sigEmax","sigEmax","sigEmax","sigEmax","sigEmax"],"dose":[0,0,2.5,2.5,4,4,5,5,7,7,10,10,0,0,2.5,2.5,4,4,5,5,7,7,10,10,0,0,2.5,2.5,4,4,5,5,7,7,10,10,0,0,2.5,2.5,4,4,5,5,7,7,10,10,0,0,2.5,2.5,4,4,5,5,7,7,10,10,0,0,2.5,2.5,4,4,5,5,7,7,10,10,0,0,2.5,2.5,4,4,5,5,7,7,10,10,0,0,2.5,2.5,4,4,5,5,7,7,10,10],"sample_type":["abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff"],"0.025":[-11.4921200819023,0,-15.0701414807694,-4.16628896340237,-16.0647296405785,-4.93807064114316,-16.612694569065,-5.47732729798316,-16.9390377381655,-5.74736146430768,-16.8481575672607,-5.87197860295483,-11.5212970809626,0,-15.2163716089795,-4.16893497393592,-15.98963962744,-4.95200793876496,-16.3447918370482,-5.42522800389621,-16.6298696223115,-5.6760223136475,-16.8624101764806,-5.88570263930757,-11.4897484530431,0,-15.3823553202084,-4.32075994131106,-15.6676752578724,-4.67447943442445,-15.7828765394528,-4.8476384167904,-16.2337020670488,-5.24033968601105,-16.8481575672607,-5.87197860295483,-13.1303837750303,0,-13.8378682493648,-1.09264479460378,-14.3109450629196,-1.81687857352451,-14.6805778051596,-2.3307735575753,-15.6693803004571,-3.43895829448069,-17.5303715485936,-5.32354606642112,-12.9114757778687,0,-13.8404974240155,-1.3853197022307,-14.4114296892851,-2.21651152356911,-14.8432732990012,-2.77063940446139,-15.8712810075233,-3.87889516624595,-17.5109711321681,-5.54127880892278,-11.489789524218,0,-15.22368491888,-4.22064000108073,-15.9567905274236,-4.90327598519291,-15.9722278113426,-4.99804621675061,-16.4029567467069,-5.36007975127234,-16.7619095250038,-5.72906642476949,-12.1330781904287,0,-14.7617905679283,-3.60773990329882,-16.0647296405785,-4.93807064114316,-16.612694569065,-5.47732729798316,-16.9629861462208,-5.74736146430768,-16.8752931992677,-5.75021892743915,-11.489775292706,0,-15.2229060858139,-4.19329257088385,-15.9477257626352,-4.85752394960979,-15.9651225902353,-4.88797188371857,-16.2658722985538,-5.24217636572428,-16.8567426459956,-5.88570497834052],"0.5":[-11.0001954299054,0,-14.6667961670285,-3.54502881966086,-15.2503637375221,-4.38218484426612,-15.6366426878,-4.69756377874493,-16.0266643906125,-5.1308906941594,-15.743259532871,-4.41861682174639,-11.0057074746345,0,-14.6522352849275,-3.61352543266296,-15.2474234836602,-4.32843018315515,-15.6296917799534,-4.69938295418719,-16.0553340346197,-5.17228913297055,-15.7747887108704,-4.53984295558073,-11.0001954299054,0,-14.835785199067,-3.80212579928395,-15.118190315843,-4.22893507733222,-15.4036547626722,-4.49673301279219,-15.7390637790158,-4.67525665774652,-15.9951630669197,-4.82703095592331,-12.596457638889,0,-13.4118015211553,-0.779906375339706,-14.0107359562664,-1.29684888420093,-14.3671957445054,-1.66365608110123,-15.2316910649048,-2.45465453332931,-16.6868131845406,-3.79983278840587,-12.3723468432492,0,-13.4496672914684,-1.02204093326237,-14.1141137318232,-1.63526549321979,-14.5317751443137,-2.04408186652474,-15.4148922088649,-2.86171461313463,-16.7395678056918,-4.08816373304947,-11.0228933175045,0,-14.6345503975093,-3.63843253031648,-15.3321172749032,-4.34979597568046,-15.6966656033556,-4.71275095412798,-15.8356183958272,-4.81475947329164,-15.8566036877997,-4.81475947329164,-11.2119435067019,0,-14.0898262742262,-2.91917670389612,-15.3142558629886,-4.17112225388362,-15.8778062890825,-4.7976024237294,-16.4409466770933,-5.37165978606087,-15.7341025034293,-4.41861682174639,-11.0013211876137,0,-14.6527528345796,-3.65773400947358,-15.2434575167639,-4.29986919713635,-15.5734480234912,-4.58723809241907,-15.782778340732,-4.81490110439554,-15.8960934609031,-4.81493734090322],"0.975":[-10.5079688412091,0,-14.0926881910381,-2.83611858988757,-15.0396354251976,-3.64758422998583,-15.1059208124558,-3.71419258719152,-15.1165205288087,-3.72479230354443,-14.5225871912034,-3.61298742497033,-10.4938979344948,0,-14.1330576654737,-2.85992772939834,-14.9627662386759,-3.63405243670663,-15.1462746192707,-3.72223637074438,-15.1662143551302,-3.74217610660386,-14.513238211438,-3.53630421763313,-10.4925664553108,0,-14.1763369941205,-3.07058137205456,-14.8309442364997,-3.60970392927808,-14.9132627610613,-3.67607523252593,-14.9915521598621,-3.71634468591877,-15.052625328023,-3.73285758385872,-12.1095461354325,0,-13.0822648986982,-0.596737051179541,-13.5662556395935,-0.992270102480523,-13.8802705397087,-1.27292871991313,-14.5432887140257,-1.87815275550916,-15.6296275184904,-2.90740156104121,-11.8825428032827,0,-13.0877852172401,-0.769073473462944,-13.6638948109815,-1.23051755754071,-14.0153813305951,-1.53814694692589,-14.7102815044014,-2.15340572569624,-15.7201211018377,-3.07629389385177,-10.5012948813295,0,-14.0108711194708,-2.81576277040257,-15.1003712860588,-3.70282532643969,-15.1003712860603,-3.70988808979154,-15.1003712860603,-3.70988808979154,-15.1003712860603,-3.70988808979154,-10.5593569101508,0,-13.6847902951539,-1.82509075772662,-14.6890230762231,-2.62887576503806,-15.1035174780455,-3.02998081086644,-15.5952340274815,-3.47359951106539,-14.5241763929717,-3.26585113974385,-10.4881838803106,0,-14.1340026390279,-2.85992817666648,-14.9759473452671,-3.69620220436994,-15.1034885010092,-3.71293186099351,-15.1113816653081,-3.72644123317534,-15.1113913057791,-3.73881727936527]},"columns":[{"id":"model","name":"model","type":"character"},{"id":"dose","name":"dose","type":"numeric","format":{"aggregated":{"suffix":" dose"}}},{"id":"sample_type","name":"sample_type","type":"character"},{"id":"0.025","name":"0.025","type":"numeric","format":{"cell":{"digits":4}}},{"id":"0.5","name":"0.5","type":"numeric","format":{"cell":{"digits":4}}},{"id":"0.975","name":"0.975","type":"numeric","format":{"cell":{"digits":4}}}],"groupBy":["model"],"dataKey":"165df67de72f93edc59a33b6373ab686"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script><p><strong>Technical note:</strong> The median quantile of the bootstrap
 based procedure is not necessary similar to the main model fit, as they
 are derived via different procedures.</p>
 <p>The main fit (black line) minimizes residuals for the posterior
@@ -738,6 +719,18 @@ further details, please see <code>?getMED()</code>.</p>
 <span>  crit_prob_adj    <span class="op">=</span> <span class="va">crit_pval</span>,</span>
 <span>  delta            <span class="op">=</span> <span class="fl">4</span>,</span>
 <span>  simple           <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="ref-nct00735709_2024a" class="csl-entry">
+ClinicalTrials.gov. 2024. <span>“NCT00735709.”</span> <a href="https://clinicaltrials.gov/study/NCT00735709?term=NCT00735709&amp;rank=1" class="external-link">https://clinicaltrials.gov/study/NCT00735709?term=NCT00735709&amp;rank=1</a>.
+</div>
+<div id="ref-fleischer_2022" class="csl-entry">
+Fleischer F, Deng Q, Bossert S. 2022. <span>“Bayesian MCPMod.”</span>
+<em>Pharmaceutical Statistics</em> 21 (3): 654–70.
+</div>
+<div id="ref-neldermead_2024a" class="csl-entry">
+Wikipedia. 2024. <span>“Nelder-Mead Method.”</span> <a href="https://en.wikipedia.org/wiki/Nelder-Mead_method" class="external-link">https://en.wikipedia.org/wiki/Nelder-Mead_method</a>.
+</div>
+</div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
@@ -750,7 +743,7 @@ further details, please see <code>?getMED()</code>.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>

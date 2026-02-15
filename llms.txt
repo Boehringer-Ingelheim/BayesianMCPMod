@@ -1,0 +1,71 @@
+# The `{BayesianMCPmod}` package
+
+Simulate, analyze, and evaluate Bayesian MCPMod trials with normally and
+binary distributed endpoints.
+
+## Installation
+
+Install the package from CRAN using
+
+`{r} install.packages("BayesianMCPMod")`
+
+The development version can be installed from this repository.
+
+`{r} # install.packages("remotes") remotes::install_github("https://github.com/Boehringer-Ingelheim/BayesianMCPmod")`
+
+## Documentation
+
+The package documentation is hosted
+[here](https://boehringer-ingelheim.github.io/BayesianMCPMod/).
+
+## Contributing
+
+…
+
+# Package index
+
+## All functions
+
+- [`assessDesign()`](https://boehringer-ingelheim.github.io/BayesianMCPMod/reference/assessDesign.md)
+  : assessDesign
+- [`getBootstrapQuantiles()`](https://boehringer-ingelheim.github.io/BayesianMCPMod/reference/getBootstrapQuantiles.md)
+  : getBootstrapQuantiles
+- [`getBootstrapSamples()`](https://boehringer-ingelheim.github.io/BayesianMCPMod/reference/getBootstrapSamples.md)
+  : getBootstrapSamples
+- [`getContr()`](https://boehringer-ingelheim.github.io/BayesianMCPMod/reference/getContr.md)
+  : getContr
+- [`getCritProb()`](https://boehringer-ingelheim.github.io/BayesianMCPMod/reference/getCritProb.md)
+  : getCritProb
+- [`getESS()`](https://boehringer-ingelheim.github.io/BayesianMCPMod/reference/getESS.md)
+  : getESS
+- [`getMED()`](https://boehringer-ingelheim.github.io/BayesianMCPMod/reference/getMED.md)
+  : getMED
+- [`getModelFits()`](https://boehringer-ingelheim.github.io/BayesianMCPMod/reference/getModelFits.md)
+  : getModelFits
+- [`getPosterior()`](https://boehringer-ingelheim.github.io/BayesianMCPMod/reference/getPosterior.md)
+  : getPosterior
+- [`performBayesianMCP()`](https://boehringer-ingelheim.github.io/BayesianMCPMod/reference/performBayesianMCP.md)
+  : performBayesianMCP
+- [`performBayesianMCPMod()`](https://boehringer-ingelheim.github.io/BayesianMCPMod/reference/performBayesianMCPMod.md)
+  : performBayesianMCPMod
+- [`plot(`*`<modelFits>`*`)`](https://boehringer-ingelheim.github.io/BayesianMCPMod/reference/plot.modelFits.md)
+  : plot.modelFits
+- [`predict(`*`<modelFits>`*`)`](https://boehringer-ingelheim.github.io/BayesianMCPMod/reference/predict.modelFits.md)
+  : predict.modelFits
+- [`simulateData()`](https://boehringer-ingelheim.github.io/BayesianMCPMod/reference/simulateData.md)
+  : simulateData
+
+# Articles
+
+### Get started
+
+- [Analysis Example of Bayesian MCPMod for Continuous
+  Data](https://boehringer-ingelheim.github.io/BayesianMCPMod/articles/analysis_normal.md):
+- [Binary Endpoints in Bayesian
+  MCP-Mod](https://boehringer-ingelheim.github.io/BayesianMCPMod/articles/binary_endpoint.md):
+- [Simulation Example of Bayesian MCPMod for Continuous
+  Data](https://boehringer-ingelheim.github.io/BayesianMCPMod/articles/Simulation_Example.md):
+- [Simulation Example of Bayesian MCPMod for binary
+  Data](https://boehringer-ingelheim.github.io/BayesianMCPMod/articles/Simulation_Example_Binary.md):
+- [Comparison of Bayesian MCPMod and
+  MCPMod](https://boehringer-ingelheim.github.io/BayesianMCPMod/articles/Simulation_Comparison.md):
