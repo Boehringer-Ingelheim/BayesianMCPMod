@@ -13,7 +13,8 @@ performBayesianMCPMod(
   delta = NULL,
   evidence_level = NULL,
   med_selection = c("avgFit", "bestFit"),
-  n_samples = 1000
+  n_samples = 1000,
+  probability_scale = FALSE
 )
 }
 \arguments{
@@ -34,6 +35,8 @@ performBayesianMCPMod(
 \item{med_selection}{A string, either "avgFit" or "bestFit" based on the lowest gAIC, for the method of MED selection. Default "avgFit".}
 
 \item{n_samples}{A numerical for the number of bootstrapped samples in case the Bayesian MED assessment is performed. Default 1e3.}
+
+\item{probability_scale}{A boolean to specify if the trial has a continuous or a binary outcome. Setting to TRUE will transform calculations from the logit scale to the probability scale, which can be desirable for a binary outcome. Default FALSE.}
 }
 \value{
 Bayesian MCP test result as well as modeling result.
@@ -56,7 +59,7 @@ critVal <- getCritProb(
   mods           = mods,
   dose_weights   = c(50, 50, 50, 50, 50), #reflecting the planned sample size
   dose_levels    = dose_levels,
-  alpha_crit_val = 0.6) # unreasonable alpha for this example, rather choose 0.05
+  alpha_crit_val = 0.6) # unreasonable alpha chosen for this example, rather choose 0.05
 prior_list <- list(Ctrl = RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 5), sigma = 2),
                    DG_1 = RBesT::mixnorm(comp1 = c(w = 1, m = 1, s = 12), sigma = 2),
                    DG_2 = RBesT::mixnorm(comp1 = c(w = 1, m = 1.2, s = 11), sigma = 2) ,
@@ -74,6 +77,6 @@ performBayesianMCPMod(posterior_list = posterior_list,
                       contr          = contr_mat,
                       crit_prob_adj  = critVal,
                       simple         = FALSE,
-                      delta          = 1)
+                      delta          = 1.1)
 
 }

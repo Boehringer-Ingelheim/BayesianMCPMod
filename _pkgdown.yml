@@ -12,5 +12,8 @@ articles:
   navbar: ~
   contents:
   - analysis_normal
+  - binary_endpoint
   - Simulation_Example
+  - Simulation_Example_Binary
   - Simulation_Comparison
+  

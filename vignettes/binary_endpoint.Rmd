@@ -1,0 +1,384 @@
+---
+title: "Binary Endpoints in Bayesian MCP-Mod"
+date: "`r Sys.Date()`"
+output:
+  rmarkdown::html_vignette:
+    toc: true
+    toc_depth: 2
+vignette: >
+  %\VignetteIndexEntry{Binary Endpoints in Bayesian MCP-Mod}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+bibliography: references.bib
+---
+
+
+<details>
+<summary><strong>Show code</strong></summary>
+
+```{r setup}
+#| message: false
+#| warning: false
+
+suppressPackageStartupMessages({
+  library(BayesianMCPMod)
+  library(RBesT)
+  library(DoseFinding)
+  library(dplyr)
+})
+
+set.seed(7015)
+
+display_params_table <- function(named_list) {
+  round_numeric <- function(x, digits = 3) if (is.numeric(x)) round(x, digits) else x
+  tbl <- data.frame(
+    Name  = names(named_list),
+    Value = I(lapply(named_list, function(v) {
+      if (inherits(v, "Date")) v <- as.character(v)
+      if (!is.null(names(v))) paste0("{", paste(names(v), v, sep="=", collapse=", "), "}")
+      else v
+    }))
+  )
+  tbl$Value <- lapply(tbl$Value, round_numeric)
+  knitr::kable(tbl)
+}
+```
+</details>
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Introduction
+
+This vignette demonstrates the application of the `BayesianMCPMod` package for 
+a binary endpoint. A more detailed introduction is provided for the setting of a continuous endpoint ([analysis example vignette](analysis_normal.html)).
+
+Binary endpoints require modeling on the logit scale.
+We will use the migraine dataset from the `DoseFinding` package as our working example, which contains response rates after migraine treatment. The prior (for the control group) will be based on historical trial data.
+
+This package makes use of the [future](https://cran.r-project.org/package=future) framework for parallel processing, which can be set up as follows:
+```{r, eval = FALSE}
+future::plan(future::multisession)
+```
+
+## Scale conventions used in this vignette
+
+<div class="alert alert-info">
+
+**Scale conventions**
+
+- Internally, **BayesianMCPMod** fits binary endpoints on the **logit scale**.
+- `probability_scale = TRUE` controls whether outputs (summaries, predictions, plots)
+  are transformed back to **probabilities**.
+- `delta` for MED is interpreted on the **probability scale** when
+  `probability_scale = TRUE`.
+
+</div>
+
+
+# Calculation of a MAP Prior
+In a first step, a meta analytic prior will be calculated. This prior is based on trials results for [@Diener2011], [@Ho2008] and [@Hewitt2011]. Here we assume the following historical results for the control group.
+Please note that only information from the control group will be integrated leading to an informative mixture prior for the control group, while for the active groups a non-informative prior will be specified.
+
+<details>
+<summary><strong>Show code</strong></summary>
+
+```{r}
+study <- c("study 1", "study 2", "study 3")
+n <- c(70,  115, 147) #sample size per study
+r <- c(6,   16, 16) # responder per study
+```
+</details>
+
+Our approach to establish a MAP prior is conducted in 3 steps. 
+First the information from the historical trials is used to establish a beta mixture MAP prior (family=binomial).  
+In a next step this prior is robustified.
+Finally, since the BayesianMCPMod procedure for binary endpoints requires a prior on the logit scale, we translate this prior to this scale via sampling from the distribution, transitioning the individual results to the logit scale and approximating via fitting of normal mixtures of conjugate distributions. 
+Please note that there would be various other options to establish a reasonable informative prior in this setting. 
+
+<details>
+<summary><strong>Show code</strong></summary>
+
+```{r}
+dose_levels <- c(0, 2.5, 5, 10, 20, 50, 100, 200)
+
+
+#i) Establish MAP prior (beta mixture distribution)
+set.seed(7015) # re-set seed only for this example; remove in your analysis script
+map <- gMAP(
+  cbind(r, n - r) ~ 1 |
+    study,
+  family = binomial,
+  tau.dist = "HalfNormal",
+  tau.prior = 0.5,
+  beta.prior = (1 / sqrt(0.1 * 0.9)),
+  warmup = 1000,
+  iter = 10000,
+  chains = 2,
+  thin = 1
+)
+map
+prior <- automixfit(map) #fits mixture distribution from MCMC samples from above
+#ess(prior)
+p <- summary(prior)[1]
+#ii) Robustify prior
+prior.rob <- RBesT::robustify(priormix = prior,
+                              mean     = 0.5,
+                              weight   = 0.4)
+
+#ess(prior.rob)
+
+#iii) Translate prior to logit scale (to approximate via normal mixture model)
+r <- rmix(prior.rob, n = 1e4)
+log.r <- RBesT::logit(r)
+prior.ctr <- automixfit(log.r, type = "norm")
+sigma(prior.ctr) <- sqrt(1 / (p * (1 - p)))
+#ess(prior.ctr, sigma = sqrt(1/(p*(1-p))))
+#Specification of reference scale (this follows the idea of [@Neuenschwander2016]).
+
+
+#Specify a prior list
+prior_trt <- RBesT::mixnorm(
+  comp1 = c(
+    w = 1,
+    m = logit(summary(prior)[1]),
+    n = 1
+  ),
+  sigma = sqrt(1 / (p * (1 - p))),
+  param = "mn"
+)
+
+prior_list <- c(list(prior.ctr), rep(x     = list(prior_trt), times = length(dose_levels[-1])))
+
+dose_names <- c("Ctr", paste0("DG_", seq_along(dose_levels[-1])))
+names(prior_list) <- dose_names
+```
+</details>
+
+# Dose-Response Model Shapes
+
+Candidate models are specified on the parameter scale using the {DoseFinding} package. We will create a `Mods` object, which will be used in the remainder
+of the vignette. Please note that the models are specified on the **logit scale**.
+
+<details>
+<summary><strong>Show code</strong></summary>
+```{r}
+models <- Mods(
+  linear = NULL,
+  sigEmax = c(50, 3),
+  quadratic = -1 / 250,
+  logistic = c(110, 15),
+  exponential = 80,
+  emax = 10,
+  doses = dose_levels,
+  placEff = RBesT::logit(0.118),
+  maxEff = RBesT::logit(0.3) - RBesT::logit(0.118)
+)
+```
+</details>
+
+```{r}
+plot(models)
+```
+
+
+## Trial Data
+
+We will use the trial data from the migraine data set available in the `{DoseFinding}` package as our phase 2 trial data. We will apply a logistic regression (without any additional covariates) to get estimates on the logit scale.
+
+<details>
+<summary><strong>Show code</strong></summary>
+```{r}
+
+data("migraine") #example data "migraine" from DoseFinding package
+
+dosesFact <- as.factor(dose_levels)
+N <- migraine$ntrt
+RespRate <- migraine$painfree/N
+
+##Execution of logistic regression and readout of parameters 
+## (please note that estimates are automatically on logit scale)
+logfit <- glm(RespRate ~ dosesFact - 1, family = binomial, weights = N)
+muHat <- coef(logfit)
+S <- vcov(logfit)
+
+```
+</details>
+
+# Posterior Calculation
+
+In the first step of Bayesian MCPMod, the posterior is calculated by combining 
+the prior information with the estimated results of the trial [@fleischer_2022]. 
+
+The summary of the posterior can be provided on the probability scale.
+
+<details>
+<summary><strong>Show code</strong></summary>
+```{r}
+PostLogit<-getPosterior(prior_list,mu_hat=muHat,S_hat=S)
+```
+</details>
+
+```{r}
+summary(PostLogit,probability_scale=TRUE)
+```
+
+
+# Bayesian MCPMod Test Step
+
+The testing step of Bayesian MCPMod is executed using a critical value on the probability scale and a pseudo-optimal contrast matrix. 
+
+A contrast matrix is generated based on the number of patients per dose group (see [@fleischer_2022] for more details). Please note that here also other options would be possible (e.g. using weight based on the observed variability).
+
+The critical value is calculated using (re-estimated) contrasts for frequentist MCPMod to ensure error control when using weakly-informative priors.
+
+<details>
+<summary><strong>Show code</strong></summary>
+```{r}
+
+contr_mat_prior <- getContr(
+  mods           = models,
+  dose_levels    = dose_levels,
+  dose_weights   = N)
+
+set.seed(7015) # re-sets seed only for this example; remove in your analysis script
+crit_pval <- getCritProb(
+  mods           = models,
+  dose_levels    = dose_levels,
+  cov_new_trial   = S,
+  alpha_crit_val = 0.05
+)
+```
+</details>
+
+The Bayesian MCP testing step is then executed:  
+
+<details>
+<summary><strong>Show code</strong></summary>
+```{r}
+
+BMCP_result <- performBayesianMCP(
+  posterior_list = PostLogit,
+  contr          = contr_mat_prior, 
+  crit_prob_adj  = crit_pval)
+```
+</details>
+
+Here as well it should be noted that this evaluation happens on the logit scale.
+
+Summary information:
+
+```{r}
+BMCP_result
+```
+
+
+The testing step is significant, indicating a non-flat dose-response shape.
+All models are significant.
+
+# Model Fitting and Visualization
+
+In the model fitting step the posterior distribution is used as basis.
+
+Both simplified and full fitting can be performed. Here we are focusing on the simplified fit. Furthermore we specify that the fit should be provided on the probability scale for easier interpretation of results.
+
+
+The output of the fit includes information about the predicted effects for the included dose levels, the generalized AIC, and the corresponding weights.
+
+<details>
+<summary><strong>Show code</strong></summary>
+```{r}
+##Perform modelling
+model_fits <- getModelFits(
+  models      = models,
+  dose_levels = dose_levels,
+  posterior   = PostLogit,
+  simple      = TRUE,
+  probability_scale = TRUE)
+```
+</details>
+
+Plots of fitted dose-response models and an AIC-based average model including credible bands (orange shaded areas, default levels are 50% and 95%).:
+
+```{r}
+#Default is on probability scale
+plot(model_fits,cr_bands = TRUE)
+```
+
+
+In case models should be shown on the logit scale this can be done in the following way:
+
+
+```{r}
+plot(model_fits,probability_scale=FALSE)
+```
+
+
+Estimates (also for dose levels not included in the trial) can be shown via:
+
+
+```{r}
+display_params_table(stats::predict(model_fits, doses = c(0, 2.5, 10,150, 200)))
+```
+
+
+The bootstrap-based quantiles can also be directly calculated via the 
+`getBootstrapQuantiles()` function and a sample from the model fits can be bootstrapped using `getBootstrapSamples()`.
+
+For this example, only 10 samples are bootstrapped for each model fit.
+
+<details>
+<summary><strong>Show code</strong></summary>
+```{r}
+##Bootstrap quantiles
+set.seed(7015) # re-sets seed only for this example; remove in your analysis script
+bootstrap_quantiles <- getBootstrapQuantiles(
+  model_fits = model_fits,
+  quantiles  = c(0.025, 0.5, 0.975),
+  doses      = dose_levels,
+  n_samples  = 10)
+```
+</details>
+
+# Assessment of the Minimally Efficacious Dose
+
+The Minimally Efficacious Dose (MED) per model shape can be assessed with the function `getMED()`. The effect needs to be specified on the probability scale.
+
+
+```{r}
+##get MED
+
+getMED(
+  delta       = 0.16,
+  model_fits  = model_fits,
+  dose_levels = seq(min(dose_levels), max(dose_levels), by = 1))
+
+```
+
+
+# Additional Note
+
+Testing, modeling, and MED assessment can also be combined via `performBayesianMCPMod()`:
+
+<details>
+<summary><strong>Show code</strong></summary>
+```{r}
+
+BMCPMod_result <- performBayesianMCPMod(
+  posterior_list = PostLogit,
+  contr          = contr_mat_prior,
+  crit_prob_adj  = crit_pval,
+  simple         = TRUE,
+  delta          = 0.16,
+  probability_scale = TRUE
+)
+```
+</details>
+
+
+
+
+

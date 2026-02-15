@@ -11,6 +11,7 @@
 #' @param quantiles A vector of quantiles that should be evaluated
 #' @param n_samples Number of samples that should be drawn as basis for the bootstrapped quantiles
 #' @param doses A vector of doses for which a prediction should be performed. If NULL, the dose levels of the model_fits will be used. Default NULL.
+#' @param probability_scale A boolean variable to specify if the trial has a continuous or a binary outcome. Setting to TRUE will transform predictions from the logit scale to the probability scale, which can be desirable for a binary outcome. Default `attr(model_fits, "probability_scale")`.
 #'
 #' @examples
 #' posterior_list <- list(Ctrl = RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 1), sigma = 2),
@@ -38,18 +39,23 @@ getBootstrapQuantiles <- function (
 
   model_fits,
   quantiles,
-  n_samples = 1e3,
-  doses     = NULL
+  n_samples         = 1e3,
+  doses             = NULL,
+  probability_scale = attr(model_fits, "probability_scale")
 
 ) {
+  
+  checkmate::assert_flag(probability_scale, null.ok = TRUE)
+  if (is.null(probability_scale)) probability_scale <- FALSE
   
   ## R CMD --as-cran appeasement
   model <- dose <- sample_q <- sample_diff_q <- q_prob <- NULL
 
   bs_samples <- getBootstrapSamples(
-    model_fits = model_fits,
-    n_samples  = n_samples,
-    doses      = doses)
+    model_fits        = model_fits,
+    n_samples         = n_samples,
+    doses             = doses,
+    probability_scale = probability_scale)
 
   quantile_probs <- sort(unique(quantiles))
     
@@ -74,7 +80,8 @@ getBootstrapQuantiles <- function (
                     sample_type == "sample" ~ "abs",
                     sample_type == "sample_diff" ~ "diff"))
   
-  attr(bs_quantiles, "direction") <- attr(model_fits, "direction")
+  attr(bs_quantiles, "direction")         <- attr(model_fits, "direction")
+  attr(bs_quantiles, "probability_scale") <- probability_scale
   
   return (bs_quantiles)
 
@@ -91,6 +98,7 @@ getBootstrapQuantiles <- function (
 #' @param model_fits An object of class modelFits, i.e. information about fitted models & corresponding model coefficients as well as the posterior distribution that was the basis for the model fitting 
 #' @param n_samples Number of samples that should be drawn
 #' @param doses A vector of doses for which a prediction should be performed
+#' @param probability_scale A boolean variable to specify if the trial has a continuous or a binary outcome. Setting to TRUE will transform predictions from the logit scale to the probability scale, which can be desirable for a binary outcome. Default `attr(model_fits, "probability_scale")`.
 #'
 #' @examples
 #' posterior_list <- list(Ctrl = RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 1), sigma = 2),
@@ -116,10 +124,14 @@ getBootstrapQuantiles <- function (
 getBootstrapSamples <- function (
     
   model_fits,
-  n_samples = 1e3,
-  doses     = NULL
+  n_samples         = 1e3,
+  doses             = NULL,
+  probability_scale = attr(model_fits, "probability_scale")
   
 ) {
+  
+  checkmate::assert_flag(probability_scale, null.ok = TRUE)
+  if (is.null(probability_scale)) probability_scale <- FALSE
   
   ## R CMD --as-cran appeasement
   name <- dose <- sample_type <- sample_id <- NULL
@@ -181,6 +193,8 @@ getBootstrapSamples <- function (
       
     }
     
+    if (probability_scale) preds_mu_mat <- RBesT::inv_logit(preds_mu_mat)
+    
     preds_mu_mat_adj <- preds_mu_mat - preds_mu_mat[, 1]
     
     # predictions[models, c(doses, adj_doses)]
@@ -217,6 +231,8 @@ getBootstrapSamples <- function (
     tidyr::pivot_wider(
       names_from  = sample_type,
       values_from = sample)
+  
+  attr(bs_samples_long, "probability_scale") <- probability_scale
   
   return (bs_samples_long)
   

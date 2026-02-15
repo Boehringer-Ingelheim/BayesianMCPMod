@@ -87,6 +87,7 @@ shortenModelNames <- function (model_names, pad_string = FALSE) {
 print.BayesianMCPMod <- function (
     
   x,
+  n_mods = 0L,
   ...
   
 ) {
@@ -98,13 +99,24 @@ print.BayesianMCPMod <- function (
     sign_indx <- as.logical(x$BayesianMCP[, "sign"])
     med_info  <- attr(x, "MED")
     
-    cat("MED Assessment\n")
+    cat("MED Assessment")
+    
+    if (any(sign_indx)) {
+      
+      probability_scale <- attr(x$Mod[[which(sign_indx)[1]]], "probability_scale")
+      
+      if (probability_scale) cat(" on Probability Scale")
+      
+    }
+    
+    cat("\n")
+    
     cat("  Selection Method:   ", attr(x, "MEDSelection"), "\n")
     cat("  Identification Rate:", mean(med_info[, "med_reached"]), "\n")
     
     if (!any(sign_indx)) {
       
-      cat("    No model shapes are significant.")
+      cat("    No model shapes are significant\n")
       
     } else {
       
@@ -131,11 +143,19 @@ print.BayesianMCPMod <- function (
       
     }
     
-  }
+  } 
   
   if (length(x$Mod) == 1) {
-    
+
     print (x$Mod[[1]], ...)
+
+  } else {
+    
+    for (m in seq_len(n_mods)) {
+      
+      print (x$Mod[[m]], ...)
+      
+    }
     
   }
   
@@ -220,14 +240,16 @@ print.BayesianMCP <- function(x, ...) {
 #' model coefficients
 #' @param doses A vector specifying the doses for which a prediction should be
 #' done
+#' @param probability_scale A boolean variable to specify if the trial has a continuous or a binary outcome. Setting to TRUE will transform predictions from the logit scale to the probability scale, which can be desirable for a binary outcome. Default FALSE.
 #' @param ... Currently without function
+#'
 #' @examples
 #' posterior_list <- list(Ctrl = RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 1), sigma = 2),
 #'                        DG_1 = RBesT::mixnorm(comp1 = c(w = 1, m = 3, s = 1.2), sigma = 2),
 #'                        DG_2 = RBesT::mixnorm(comp1 = c(w = 1, m = 4, s = 1.5), sigma = 2) ,
 #'                        DG_3 = RBesT::mixnorm(comp1 = c(w = 1, m = 6, s = 1.2), sigma = 2) ,
 #'                        DG_4 = RBesT::mixnorm(comp1 = c(w = 1, m = 6.5, s = 1.1), sigma = 2))
-#' models         <- c("emax", "exponential", "sigEmax", "linear")
+#' models         <- c("emax", "exponential", "sigEmax", "linear", "betaMod")
 #' dose_levels    <- c(0, 1, 2, 4, 8)
 #' fit            <- getModelFits(models      = models,
 #'                                posterior   = posterior_list,
@@ -241,22 +263,59 @@ print.BayesianMCP <- function(x, ...) {
 predict.modelFits <- function (
     
   object,
-  doses = NULL,
+  doses             = NULL,
+  probability_scale = attr(object, "probability_scale"),
   ...
   
 ) {
   
-  model_fits  <- object
+  checkmate::assert_double(doses, lower = 0, any.missing = FALSE, unique = TRUE,
+                           sorted = TRUE, finite = TRUE, null.ok = TRUE)
+  checkmate::assert_flag(probability_scale)
   
+  model_fits  <- object
   model_names <- names(model_fits)
   
-  predictions <- lapply(model_fits[model_names != "avgFit"],
-                        predictModelFit, doses = doses)
+  warning_displayed <- FALSE
+  withCallingHandlers(
   
-  if ("avgFit" %in% model_names) {
+    expr = {
+      
+      predictions <- lapply(model_fits[model_names != "avgFit"],
+                            predictModelFit, doses = doses)
+      
+      if ("avgFit" %in% model_names) {
+        
+        preds_avg_fit <- predictAvgFit(model_fits, doses = doses) # predictAvgFit calls predict.modelFits !!
+        predictions   <- c(list(avgFit = preds_avg_fit), predictions)
+        
+      }
+      
+    },
     
-    preds_avg_fit <- predictAvgFit(model_fits, doses = doses)
-    predictions   <- c(list(avgFit = preds_avg_fit), predictions)
+    warning = function(w) {
+      
+      if (grepl("The specified range exceeds the bounds of the original dose range.", conditionMessage(w))) {
+        
+        if (warning_displayed) {
+          
+          invokeRestart("muffleWarning")
+          
+        } else {
+          
+          warning_displayed <<- TRUE
+          
+        }
+        
+      }
+      
+    }
+      
+  )
+  
+  if (probability_scale) {
+    
+    predictions <- lapply(predictions, RBesT::inv_logit)
     
   }
   
@@ -270,10 +329,16 @@ predict.modelFits <- function (
 print.modelFits <- function (
     
   x,
-  n_digits = 1,
+  n_digits          = 1,
+  probability_scale = attr(x, "probability_scale"),
   ...
   
 ) {
+  
+  checkmate::assert_integerish(n_digits, lower = 0)
+  checkmate::assert_flag(probability_scale)
+  
+  if (probability_scale & n_digits < 2) n_digits <- 2
   
   ## Model Coefficients
   
@@ -310,7 +375,15 @@ print.modelFits <- function (
   
   ## Predictions, Maximum Effect, gAIC & avgFit Model Weights
   
-  cat("Predictions, Maximum Effect, gAIC")
+  cat("Predictions")
+  
+  if (probability_scale) {
+    
+    cat(" on Prob. Scale")
+    
+  }
+  
+  cat(", Maximum Effect, gAIC")
   
   predictions           <- t(sapply(x, function (y) y$pred_values))
   colnames(predictions) <- dose_names
@@ -341,9 +414,6 @@ print.modelFits <- function (
     
   }
   
-  
-  
-  
   out_table <- apply(as.matrix(out_table), 2, round, digits = n_digits)
   rownames(out_table) <- shortenModelNames(rownames(out_table))
   
@@ -362,13 +432,61 @@ print.modelFits <- function (
 summary.postList <- function (
     
   object,
+  probability_scale = FALSE,
   ...
   
 ) {
   
+  checkmate::assert_flag(probability_scale)
+  
   summary_list        <- lapply(object, summary, ...)
   names(summary_list) <- names(object)
   summary_tab         <- do.call(rbind, summary_list)
+  
+  ## Transformations for probability scale, X ~ N(mu, sigma^2), p ~ expit(X) = inv_logit(X)
+  if (probability_scale) {
+    
+    ## quantiles - simply use expit(), i.e., inv_logit()
+    q_indices                <- setdiff(colnames(summary_tab), c("mean", "sd"))
+    summary_tab[, q_indices] <- apply(summary_tab[, q_indices], 2, RBesT::inv_logit)
+    
+    ## means and standard deviations - numerical integration
+    getNormal2LogisticNormalMoments <- function (mu, sigma) {
+      
+      # integrand for the mean E[p]
+      integrand_mean <- function (x) {
+        
+        p <- RBesT::inv_logit(x)
+        
+        return (p * dnorm(x, mean = mu, sd = sigma))
+        
+      }
+      
+      # integrand for second moment E[p^2]
+      integrand_second <- function (x) {
+        
+        p <- RBesT::inv_logit(x)
+        
+        return (p^2 * dnorm(x, mean = mu, sd = sigma))
+        
+      }
+      
+      # numerical integration
+      m1 <- integrate(integrand_mean,   -Inf, Inf, rel.tol = 1e-9)$value
+      m2 <- integrate(integrand_second, -Inf, Inf, rel.tol = 1e-9)$value
+      
+      # standard deviation
+      sd_p <- sqrt(m2 - m1^2)
+      
+      return (c(mean = m1, sd = sd_p))
+      
+    }
+    
+    summary_tab[, c("mean", "sd")] <- t(mapply(getNormal2LogisticNormalMoments,
+                                               mu    = summary_tab[, "mean"],
+                                               sigma = summary_tab[, "sd"]))
+    
+  }
   
   return (summary_tab)
   
@@ -413,24 +531,6 @@ print.postList <- function (
   names(list_out) <- c("Summary of Posterior Distributions",
                        "Maximum Difference to Control and Dose Group",
                        "Posterior Distributions")
-  
-  
-  # for (i in seq_along(list_out)) {
-  # 
-  #   cat(sprintf("$%s:\n", names(list_out)[i]))
-  # 
-  #   if (i == 3) {
-  #     cat("Note: For a more detailed posterior output including\n",
-  #         "     covariance matricies across mixture components,\n",
-  #         "     please use attr(x, 'posteriorInfo').\n\n")
-  #   }
-  # 
-  #   print(list_out[[i]], ...)
-  # 
-  #   if (i != length(list_out)) cat("\n")
-  # 
-  # }
-  # rm(i)
   
   print(list_out, ...)
   cat("Note: For a more detailed posterior output including\n",

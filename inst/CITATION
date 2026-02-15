@@ -13,7 +13,7 @@ bibentry(
   ),
   year        = year,
   note        = note,
-  url         = "https://CRAN.R-project.org/package=bhmbasket",
+  url         = "https://CRAN.R-project.org/package=BayesianMCPMod",
   textVersion = paste0(
     "Wojciekowski, S, Andersen, L, Bossert, S (", year, "). BayesianMCPMod: Simulate, Evaluate, and Analyze Dose Finding Trials with Bayesian MCPMod. ", note, "."
   )

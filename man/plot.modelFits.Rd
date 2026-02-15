@@ -6,6 +6,7 @@
 \usage{
 \method{plot}{modelFits}(
   x,
+  probability_scale = attr(x, "probability_scale"),
   gAIC = TRUE,
   cr_intv = TRUE,
   alpha_CrI = 0.05,
@@ -14,11 +15,14 @@
   n_bs_smpl = 1000,
   acc_color = "orange",
   plot_res = 100,
+  plot_diffs = FALSE,
   ...
 )
 }
 \arguments{
 \item{x}{An object of type modelFits}
+
+\item{probability_scale}{A boolean to specify if the trial has a continuous or a binary outcome. Setting to TRUE will transform the output from the logit scale to the probability scale, which can be desirable for a binary outcome. Default \code{attr(x, "probability_scale")}.}
 
 \item{gAIC}{Logical value indicating whether gAIC values are shown in the plot. Default TRUE}
 
@@ -35,6 +39,8 @@
 \item{acc_color}{Color of the credible bands. Default "orange".}
 
 \item{plot_res}{Number of plotted doses within the range of the dose levels, i.e., the resolution of the plot. Default 100.}
+
+\item{plot_diffs}{Logical flag. Plot differences to the control group. Default FALSE.}
 
 \item{...}{optional parameter to be passed to plot().}
 }
@@ -65,9 +71,10 @@ model_fits <- getModelFits(models      = models,
 plot(model_fits)
 
 # plot with credible bands
-
 plot(model_fits,
-     cr_bands  = TRUE,
-     n_bs_smpl = 1e2) 
+     cr_bands          = TRUE,
+     plot_diffs        = FALSE,
+     probability_scale = FALSE,
+     n_bs_smpl         = 1e2) # speeding up example run-time
 
 }

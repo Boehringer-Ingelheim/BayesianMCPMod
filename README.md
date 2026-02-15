@@ -7,7 +7,7 @@
 
 # The `{BayesianMCPmod}` package
 
-...
+Simulate, analyze, and evaluate Bayesian MCPMod trials with normally and binary distributed endpoints.
 
 
 ## Installation

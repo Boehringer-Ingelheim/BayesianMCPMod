@@ -9,20 +9,23 @@ getPosterior(
   data = NULL,
   mu_hat = NULL,
   S_hat = NULL,
-  calc_ess = FALSE
+  calc_ess = FALSE,
+  probability_scale = attr(data, "probability_scale")
 )
 }
 \arguments{
 \item{prior_list}{a prior list with information about the prior to be used for every dose group}
 
-\item{data}{dataframe containing the information of dose and response. Default NULL
-Also a simulateData object can be provided.}
+\item{data}{dataframe containing the information of dose and response. Also a simulateData object can be provided. Default NULL.}
 
-\item{mu_hat}{vector of estimated mean values (per dose group).}
+\item{mu_hat}{vector of estimated mean values (per dose group). Default NULL.}
 
-\item{S_hat}{A covariance matrix specifying the (estimated) variability.  The variance-covariance matrix should be provided and the dimension of the matrix needs to match the number of dose groups.}
+\item{S_hat}{covariance matrix specifying the (estimated) variability.
+The variance-covariance matrix should be provided and the dimension of the matrix needs to match the number of dose groups. Default NULL.}
 
-\item{calc_ess}{boolean variable, indicating whether effective sample size should be calculated. Default FALSE}
+\item{calc_ess}{boolean variable, indicating whether effective sample size should be calculated. Default FALSE.}
+
+\item{probability_scale}{A boolean to specify if the trial has a continuous or a binary outcome. Setting to TRUE will transform calculations from the logit scale to the probability scale, which can be desirable for a binary outcome. Default \code{attr(data, "probability_scale")}.}
 }
 \value{
 posterior_list, a posterior list object is returned with information about (mixture) posterior distribution per dose group (more detailed information about the conjugate posterior in case of covariance input for S_hat is provided in the attributes)
