@@ -136,13 +136,6 @@ getBootstrapSamples <- function (
   ## R CMD --as-cran appeasement
   name <- dose <- sample_type <- sample_id <- NULL
   
-  ## Make parallel processing optional
-  if (requireNamespace("future.apply", quietly = TRUE)) {
-    optPar_apply <- future.apply::future_apply
-  } else {
-    optPar_apply <- apply
-  }
-  
   mu_hat_samples <- sapply(attr(model_fits, "posterior"),
                            RBesT::rmix, n = n_samples)
   sd_hat         <- summary.postList(attr(model_fits, "posterior"))[, 2]
@@ -164,6 +157,10 @@ getBootstrapSamples <- function (
     
   }
   
+  ## pre-compute constant variables across iterations
+  S         <- diag(sd_hat^2)
+  bnds_list <- DoseFinding::defBnds(mD = max(dose_levels))[model_names]
+  
   # predictions[samples, (dose1 model1, dose1 model2, ..., dose2 model1, ...)]
   preds <- t(optPar_apply(mu_hat_samples, 1, function (mu_hat) {
     
@@ -172,10 +169,10 @@ getBootstrapSamples <- function (
       fit <- DoseFinding::fitMod(
         dose  = dose_levels,
         resp  = mu_hat,
-        S     = diag(sd_hat^2),
+        S     = S,
         model = model,
         type  = "general",
-        bnds  = DoseFinding::defBnds(mD = max(dose_levels))[[model]])
+        bnds  = bnds_list[[model]])
       
       preds <- stats::predict(fit, doseSeq = doses, predType = "ls-means")
       attr(preds, "gAIC") <- DoseFinding::gAIC(fit)
@@ -200,7 +197,10 @@ getBootstrapSamples <- function (
     # predictions[models, c(doses, adj_doses)]
     return (c(preds_mu_mat, preds_mu_mat_adj))
     
-  }))
+  },
+  future.seed       = FALSE, 
+  future.scheduling = 1,
+  future.packages   = c("DoseFinding", "RBesT")))
   
   if (avg_fit) {
     

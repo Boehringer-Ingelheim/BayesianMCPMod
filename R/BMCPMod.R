@@ -621,13 +621,6 @@ performBayesianMod <- function (
 
 ) {
 
-  ## Make parallel processing optional
-  if (requireNamespace("future.apply", quietly = TRUE)) {
-    optPar_lapply <- future.apply::future_lapply
-  } else {
-    optPar_lapply <- lapply
-  }
-
   fits_list <- optPar_lapply(seq_along(posterior_list), function (i) {
 
     if (b_mcp[i, 1]) {
@@ -649,6 +642,40 @@ performBayesianMod <- function (
 
     }
 
-  })
+  },
+  future.seed       = FALSE,
+  future.scheduling = 1,
+  future.packages   = c("DoseFinding", "RBesT", "nloptr"))
+  
+  # requireNamespace("DoseFinding", quietly = TRUE)
+  # requireNamespace("RBesT",       quietly = TRUE)
+  # requireNamespace("nloptr",      quietly = TRUE)
+  # 
+  # 
+  # fits_list <- parallel::mclapply(seq_along(posterior_list), function (i) {
+  #   
+  #   if (b_mcp[i, 1]) {
+  #     
+  #     model_fits <- getModelFits(
+  #       models            = model_names,
+  #       dose_levels       = dose_levels,
+  #       posterior         = posterior_list[[i]],
+  #       avg_fit           = avg_fit,
+  #       simple            = simple,
+  #       probability_scale = probability_scale)
+  #     
+  #     sign_models <- b_mcp[i, -c(1, 2)] > attr(b_mcp, "critProbAdj")
+  #     model_fits  <- addSignificance(model_fits, sign_models)
+  #     
+  #   } else {
+  #     
+  #     NULL
+  #     
+  #   }
+  #   
+  # },
+  # mc.cores       = 32L,
+  # mc.preschedule = TRUE,
+  # mc.set.seed    = FALSE)
 
 }
