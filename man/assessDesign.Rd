@@ -28,37 +28,37 @@ assessDesign(
 \arguments{
 \item{n_patients}{Vector specifying the planned number of patients per dose group. A minimum of 2 patients are required in each group.}
 
-\item{mods}{An object of class "Mods" as specified in the DoseFinding package.}
+\item{mods}{An object of class \code{Mods} as specified in the \code{DoseFinding} package.}
 
 \item{prior_list}{A prior_list object specifying the utilized prior for the different dose groups}
 
-\item{sd}{A positive value, specification of assumed sd. Not required if ´data_sim´ or ´estimates_sim´ is provided. Also not required in case of binary endpoint. Default NULL}
+\item{sd}{A positive value, specification of assumed sd. Not required if either \code{data_sim} or \code{estimates_sim} is provided. Also not required in case of binary endpoint. Default NULL}
 
-\item{contr}{An object of class 'optContr' as created by the getContr() function. Allows specification of a fixed contrasts matrix. Default NULL.}
+\item{contr}{An object of class \code{optContr} as created by the \code{DoseFinding::getContr} function. Allows specification of a fixed contrasts matrix. Default NULL.}
 
 \item{dr_means}{A vector, allows specification of individual (not model based) assumed effects per dose group. Default NULL.}
 
-\item{data_sim}{An optional data frame for custom simulated data. Must follow the data structure as provided by ´simulateData()´. Default NULL.}
+\item{data_sim}{An optional data frame for custom simulated data. Must follow the data structure as provided by \code{simulateData()}. Default NULL.}
 
-\item{estimates_sim}{An optional named list of 1) list of vectors for the estimated means per dose group (estimates_sim$mu_hats) and 2) of list of matrices for the covariance matrices specifying the (estimated) variabilities (estimates_sim$S_hats). Dimensions of entries must match the number of dose levels. Default NULL.}
+\item{estimates_sim}{An optional named list of 1) list of vectors for the estimated means per dose group (\code{estimates_sim$mu_hats}) and 2) of list of matrices for the covariance matrices specifying the (estimated) variabilities (\code{estimates_sim$S_hats}). Dimensions of entries must match the number of dose levels. Default NULL.}
 
 \item{n_sim}{Number of simulations to be performed}
 
-\item{alpha_crit_val}{(Un-adjusted) Critical value to be used for the MCP testing step. Passed to the getCritProb() function for the calculation of adjusted critical values (on the probability scale). Default 0.05.}
+\item{alpha_crit_val}{(Un-adjusted) Critical value to be used for the MCP testing step. Passed to the \code{getCritProb} function for the calculation of adjusted critical values (on the probability scale). Default 0.05.}
 
 \item{modeling}{Boolean variable defining whether the Mod part of Bayesian MCP-Mod will be performed in the assessment. More heavy on resources. Default FALSE.}
 
-\item{simple}{Boolean variable defining whether simplified fit will be applied. Passed to the getModelFits function. Default TRUE.}
+\item{simple}{Boolean variable defining whether simplified fit will be applied, see \code{?getModelFits}. Set automatically to TRUE if argument \code{delta} is provided. Passed to \code{getModelFits} Default TRUE.}
 
 \item{avg_fit}{Boolean variable, defining whether an average fit (based on generalized AIC weights) should be performed in addition to the individual models. Default TRUE.}
 
-\item{reestimate}{Boolean variable defining whether critical value should be calculated with re-estimated contrasts (see getCritProb function for more details). Default FALSE.}
+\item{reestimate}{Boolean variable defining whether critical value should be calculated with re-estimated contrasts (see \code{getCritProb} function for more details). Default FALSE.}
 
 \item{delta}{A numeric value for the threshold Delta for the MED assessment. If NULL, no MED assessment is performed. Default NULL.}
 
-\item{evidence_level}{A numeric value between 0 and 1 for the evidence level gamma for the MED assessment. Only required for Bayesian MED assessment, see ?getMED for details. Default NULL.}
+\item{evidence_level}{A numeric value between 0 and 1 for the evidence level gamma for the MED assessment. Only required for Bayesian MED assessment, see \code{?getMED} for details. Default NULL.}
 
-\item{med_selection}{A string, either "avgFit" or "bestFit", for the method of MED selection. Default "avgFit".}
+\item{med_selection}{A string, either \code{"avgFit"} or \code{"bestFit"}, for the method of MED selection. Default \code{"avgFit"}.}
 
 \item{probability_scale}{A boolean to specify if the trial has a continuous or a binary outcome. Setting to TRUE will transform calculations from the logit scale to the probability scale, which can be desirable for a binary outcome. Default FALSE.}
 }
@@ -84,6 +84,16 @@ prior_list <- list(Ctrl = RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 12), sigma 
                    DG_4 = RBesT::mixnorm(comp1 = c(w = 1, m = 2, s = 13), sigma = 2))
 n_patients <- c(40, 60, 60, 60, 60)
 dose_levels  <- c(0, 0.5, 2, 4, 8)
+
+success_probabilities <- assessDesign(
+  n_patients  = n_patients,
+  mods        = mods,
+  prior_list  = prior_list,
+  sd          = sd,
+  n_sim       = 1e2) # speed up example run time
+
+success_probabilities
+
 ## Analysis with custom data
 data_sim <- simulateData(
   n_patients        = n_patients,
@@ -92,15 +102,15 @@ data_sim <- simulateData(
   mods              = mods,
   n_sim             = 10)
 
-success_probabilities <- assessDesign(
+success_probabilities_cd <- assessDesign(
   n_patients  = n_patients,
   mods        = mods,
   prior_list  = prior_list,
-  data_sim = data_sim,
+  data_sim    = data_sim,
   sd          = sd,
   n_sim       = 1e2) # speed up example run time
 
-success_probabilities
+success_probabilities_cd
 
 ## Analysis with custom dose response relationship
 custom_dr_means <- c(1, 2, 3, 4, 5)
@@ -114,15 +124,6 @@ success_probs_custom_dr <- assessDesign(
   n_sim       = 1e2) # speed up example run time
 
 success_probs_custom_dr
-
-  
-success_probs_custom_data <- assessDesign(
-  n_patients    = n_patients,
-  mods          = mods,
-  prior_list    = prior_list,
-  data_sim      = data_sim)
-  
-  success_probs_custom_data
 
 ## Analysis with custom estimates for means and variabilies
 ## No simulated data, only simulated model estimates
