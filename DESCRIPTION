@@ -13,7 +13,7 @@ Description: Bayesian MCPMod (Fleischer et al. (2022)
     traditional MCPMod by systematically incorporating historical data,
     such as previous placebo group data. This R package offers functions
     for simulating, analyzing, and evaluating Bayesian MCPMod trials with
-    normally distributed endpoints. It enables the assessment of trial
+    normally and binary distributed endpoints. It enables the assessment of trial
     designs incorporating historical data across various true
     dose-response relationships and sample sizes. Robust mixture prior
     distributions, such as those derived with the Meta-Analytic-Predictive
