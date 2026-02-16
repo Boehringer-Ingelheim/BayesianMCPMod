@@ -1,3 +1,12 @@
+## BayesianMCPMod 1.3.0 (XX-Feb-2026)
+
+* Fixed a bug that would occur when predicting from the beta model shape outside of the original dose range.
+* Fixed a bug in which the MED assessment could not be performed when specifying a negative direction of beneficial effect and an evidence level other than 0.5.
+* Added functions and vignettes for the binary endpoint case.
+* Added functionality to `assessDesign()` to provide custom simulated data and custom model estimates enabling complex data simulation and analysis methods.
+* Added functionality to `plot.modelFits()` to plot effect sizes.
+* Added calls to `set.seed()` in vignette's code blocks to facilitate individual code block reproducibility.
+
 ## BayesianMCPMod 1.2.0 (28-Aug-2025)
 
 * Fixed a bug in `performBayesianMCPMod()` where the model significance status from the MCP step was sometimes not correctly assigned to the fitted model in the Mod step.
