@@ -120,7 +120,7 @@ performBayesianMCPMod(posterior_list = posterior_list,
                       delta          = 1.1)
 #> Bayesian Multiple Comparison Procedure
 #>   Significant:                   1 
-#>   Critical Probability:          0.5704198 
+#>   Critical Probability:          0.5701141 
 #>   Maximum Posterior Probability: 0.6412959 
 #> Posterior Probabilities for Model Shapes
 #>                        lin     emax1     emax2       exp

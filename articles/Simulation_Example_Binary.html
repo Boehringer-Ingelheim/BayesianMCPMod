@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">BayesianMCPMod</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -88,16 +88,14 @@ for parallel processing, which can be set up as follows:</p>
 <code class="sourceCode R"><span><span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="fu">future</span><span class="fu">::</span><span class="va"><a href="https://future.futureverse.org/reference/multisession.html" class="external-link">multisession</a></span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">suppressPackageStartupMessages</a></span><span class="op">(</span><span class="op">{</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://boehringer-ingelheim.github.io/BayesianMCPMod/">BayesianMCPMod</a></span><span class="op">)</span> </span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://opensource.nibr.com/RBesT/" class="external-link">RBesT</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">clinDR</span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tibble.tidyverse.org/" class="external-link">tibble</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://glin.github.io/reactable/" class="external-link">reactable</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/openpharma/DoseFinding" class="external-link">DoseFinding</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://boehringer-ingelheim.github.io/BayesianMCPMod/">BayesianMCPMod</a></span><span class="op">)</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://boehringer-ingelheim.github.io/BayesianMCPMod/">BayesianMCPMod</a></span><span class="op">)</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://opensource.nibr.com/RBesT/" class="external-link">RBesT</a></span><span class="op">)</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/openpharma/DoseFinding" class="external-link">DoseFinding</a></span><span class="op">)</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">clinDR</span><span class="op">)</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tibble.tidyverse.org/" class="external-link">tibble</a></span><span class="op">)</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://glin.github.io/reactable/" class="external-link">reactable</a></span><span class="op">)</span></span>
 <span><span class="op">}</span><span class="op">)</span></span>
-<span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">7015</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
@@ -130,11 +128,20 @@ specified.</p>
 <span></span>
 <span><span class="co"># 1) Establish MAP prior (beta mixture distribution) </span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">7015</span><span class="op">)</span> <span class="co"># re-sets seed only for this example; remove in your analysis script</span></span>
-<span><span class="va">map</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://opensource.nibr.com/RBesT/reference/gMAP.html" class="external-link">gMAP</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="va">hist_data</span><span class="op">$</span><span class="va">r</span>, <span class="va">hist_data</span><span class="op">$</span><span class="va">n</span> <span class="op">-</span> <span class="va">hist_data</span><span class="op">$</span><span class="va">r</span><span class="op">)</span> <span class="op">~</span> <span class="fl">1</span><span class="op">|</span><span class="va">histcontrol</span><span class="op">$</span><span class="va">nctno</span>, family <span class="op">=</span> <span class="va">binomial</span>, tau.dist <span class="op">=</span> <span class="st">"HalfNormal"</span>,</span>
-<span>            tau.prior <span class="op">=</span> <span class="fl">0.5</span>, beta.prior <span class="op">=</span> <span class="op">(</span><span class="fl">1</span><span class="op">/</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fl">0.1</span><span class="op">*</span><span class="fl">0.9</span><span class="op">)</span><span class="op">)</span>, warmup <span class="op">=</span> <span class="fl">1000</span>, iter <span class="op">=</span> <span class="fl">10000</span>, chains <span class="op">=</span> <span class="fl">2</span>, thin <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">map</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://opensource.nibr.com/RBesT/reference/gMAP.html" class="external-link">gMAP</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="va">hist_data</span><span class="op">$</span><span class="va">r</span>, <span class="va">hist_data</span><span class="op">$</span><span class="va">n</span> <span class="op">-</span> <span class="va">hist_data</span><span class="op">$</span><span class="va">r</span><span class="op">)</span> <span class="op">~</span> <span class="fl">1</span> <span class="op">|</span> <span class="va">histcontrol</span><span class="op">$</span><span class="va">nctno</span>,</span>
+<span>  family     <span class="op">=</span> <span class="va">binomial</span>,</span>
+<span>  tau.dist   <span class="op">=</span> <span class="st">"HalfNormal"</span>,</span>
+<span>  tau.prior  <span class="op">=</span> <span class="fl">0.5</span>,</span>
+<span>  beta.prior <span class="op">=</span> <span class="op">(</span><span class="fl">1</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fl">0.1</span> <span class="op">*</span> <span class="fl">0.9</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  warmup     <span class="op">=</span> <span class="fl">1000</span>,</span>
+<span>  iter       <span class="op">=</span> <span class="fl">10000</span>,</span>
+<span>  chains     <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  thin       <span class="op">=</span> <span class="fl">1</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## Assuming default prior location   for beta: 0</span></span></code></pre>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">map</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">map</span> </span></code></pre></div>
 <pre><code><span><span class="co">## Generalized Meta Analytic Predictive Prior Analysis</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## Call:  gMAP(formula = cbind(hist_data$r, hist_data$n - hist_data$r) ~ </span></span>
@@ -161,24 +168,21 @@ specified.</p>
 <code class="sourceCode R"><span><span class="co">#ess(prior)</span></span>
 <span><span class="va">p</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">prior</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span>
 <span></span>
-<span><span class="co">#ii) Robustify prior</span></span>
+<span><span class="co"># 2) Robustify prior</span></span>
 <span><span class="va">prior.rob</span><span class="op">&lt;-</span><span class="fu">RBesT</span><span class="fu">::</span><span class="fu"><a href="https://opensource.nibr.com/RBesT/reference/robustify.html" class="external-link">robustify</a></span><span class="op">(</span></span>
 <span>      priormix <span class="op">=</span> <span class="va">prior</span>,</span>
 <span>      mean     <span class="op">=</span> <span class="fl">0.5</span>,</span>
 <span>      weight   <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co">#ess(prior.rob)</span></span>
-<span></span>
-<span><span class="co">#iii) Translate prior to logit scale (to approximate via normal mixture model)</span></span>
-<span><span class="va">r</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://opensource.nibr.com/RBesT/reference/mix.html" class="external-link">rmix</a></span><span class="op">(</span><span class="va">prior.rob</span>, n<span class="op">=</span><span class="fl">1e4</span><span class="op">)</span></span>
+<span><span class="co"># 3) Translate prior to logit scale (to approximate via normal mixture model)</span></span>
+<span><span class="va">r</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://opensource.nibr.com/RBesT/reference/mix.html" class="external-link">rmix</a></span><span class="op">(</span><span class="va">prior.rob</span>, n <span class="op">=</span> <span class="fl">1e4</span><span class="op">)</span></span>
 <span><span class="va">log.r</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://opensource.nibr.com/RBesT/reference/lodds.html" class="external-link">logit</a></span><span class="op">(</span><span class="va">r</span><span class="op">)</span></span>
-<span><span class="va">prior.ctr</span><span class="op">&lt;-</span> <span class="fu"><a href="https://opensource.nibr.com/RBesT/reference/automixfit.html" class="external-link">automixfit</a></span><span class="op">(</span><span class="va">log.r</span>, type <span class="op">=</span> <span class="st">"norm"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/stats/sigma.html" class="external-link">sigma</a></span><span class="op">(</span><span class="va">prior.ctr</span><span class="op">)</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fl">1</span><span class="op">/</span><span class="op">(</span><span class="va">p</span><span class="op">*</span><span class="op">(</span><span class="fl">1</span><span class="op">-</span><span class="va">p</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#ess(prior.ctr, sigma = sqrt(1/(p*(1-p))))</span></span>
-<span><span class="co">#Specification of reference scale (this follows the idea of [@Neuenschwander2016]). </span></span>
+<span><span class="va">prior.ctr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://opensource.nibr.com/RBesT/reference/automixfit.html" class="external-link">automixfit</a></span><span class="op">(</span><span class="va">log.r</span>, type <span class="op">=</span> <span class="st">"norm"</span><span class="op">)</span></span>
 <span></span>
+<span><span class="co"># Specification of reference scale (this follows the idea of [@Neuenschwander2016]). </span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/sigma.html" class="external-link">sigma</a></span><span class="op">(</span><span class="va">prior.ctr</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fl">1</span> <span class="op">/</span> <span class="op">(</span><span class="va">p</span> <span class="op">*</span> <span class="op">(</span><span class="fl">1</span> <span class="op">-</span> <span class="va">p</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co">#Specify a prior list</span></span>
+<span><span class="co"># Specify a prior list</span></span>
 <span><span class="va">prior_trt</span> <span class="op">&lt;-</span> <span class="fu">RBesT</span><span class="fu">::</span><span class="fu"><a href="https://opensource.nibr.com/RBesT/reference/mixnorm.html" class="external-link">mixnorm</a></span><span class="op">(</span></span>
 <span>    comp1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>w <span class="op">=</span> <span class="fl">1</span>, m <span class="op">=</span> <span class="fu"><a href="https://opensource.nibr.com/RBesT/reference/lodds.html" class="external-link">logit</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">prior</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span>, n <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>,</span>
 <span>    sigma <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fl">1</span><span class="op">/</span><span class="op">(</span><span class="va">p</span><span class="op">*</span><span class="op">(</span><span class="fl">1</span><span class="op">-</span><span class="va">p</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,</span>
@@ -188,13 +192,15 @@ specified.</p>
 <span>                  <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span>x     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">prior_trt</span><span class="op">)</span>,</span>
 <span>                      times <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">dose_levels</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">dose_names</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Ctr"</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"DG_"</span>, <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">dose_levels</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">dose_names</span>        <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Ctr"</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"DG_"</span>, <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">dose_levels</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">prior_list</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">dose_names</span></span></code></pre></div>
 <p>Kindly note that a vague prior could be implemented via</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">prior_list_vague</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu">RBesT</span><span class="fu">::</span><span class="fu"><a href="https://opensource.nibr.com/RBesT/reference/mixnorm.html" class="external-link">mixnorm</a></span><span class="op">(</span>comp1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>w <span class="op">=</span> <span class="fl">1</span>, m <span class="op">=</span> <span class="fu"><a href="https://opensource.nibr.com/RBesT/reference/lodds.html" class="external-link">logit</a></span><span class="op">(</span><span class="va">p</span><span class="op">)</span>, n<span class="op">=</span><span class="fl">1</span><span class="op">)</span>,</span>
-<span>                                            sigma <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fl">1</span><span class="op">/</span><span class="op">(</span><span class="va">p</span><span class="op">*</span><span class="op">(</span><span class="fl">1</span><span class="op">-</span><span class="va">p</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>, param <span class="op">=</span> <span class="st">"mn"</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>                        times <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">dose_levels</span><span class="op">)</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">prior_list_vague</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu">RBesT</span><span class="fu">::</span><span class="fu"><a href="https://opensource.nibr.com/RBesT/reference/mixnorm.html" class="external-link">mixnorm</a></span><span class="op">(</span></span>
+<span>  comp1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>w <span class="op">=</span> <span class="fl">1</span>, m <span class="op">=</span> <span class="fu"><a href="https://opensource.nibr.com/RBesT/reference/lodds.html" class="external-link">logit</a></span><span class="op">(</span><span class="va">p</span><span class="op">)</span>, n <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>,</span>
+<span>  sigma <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fl">1</span> <span class="op">/</span> <span class="op">(</span><span class="va">p</span> <span class="op">*</span> <span class="op">(</span><span class="fl">1</span> <span class="op">-</span> <span class="va">p</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  param <span class="op">=</span> <span class="st">"mn"</span></span>
+<span><span class="op">)</span><span class="op">)</span>, times <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">dose_levels</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">prior_list_vague</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Ctrl"</span>, <span class="st">"DG_1"</span>, <span class="st">"DG_2"</span>, <span class="st">"DG_3"</span>, <span class="st">"DG_4"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
@@ -212,14 +218,14 @@ provided on the <strong>logit scale</strong>.</p>
 <code class="sourceCode R"><span><span class="va">n_patients</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">30</span>, <span class="fl">40</span>, <span class="fl">40</span>, <span class="fl">40</span>, <span class="fl">40</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">models</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://openpharma.github.io/DoseFinding/reference/Mods.html" class="external-link">Mods</a></span><span class="op">(</span></span>
-<span>  linear <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  sigEmax <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">5</span><span class="op">)</span>,</span>
-<span>  logistic <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">11</span>, <span class="fl">15</span><span class="op">)</span>,</span>
+<span>  linear      <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  sigEmax     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">5</span><span class="op">)</span>,</span>
+<span>  logistic    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">11</span>, <span class="fl">15</span><span class="op">)</span>,</span>
 <span>  exponential <span class="op">=</span> <span class="fl">10</span>,</span>
-<span>  emax <span class="op">=</span> <span class="fl">2</span>,</span>
-<span>  doses <span class="op">=</span> <span class="va">dose_levels</span>,</span>
-<span>  placEff <span class="op">=</span> <span class="fu">RBesT</span><span class="fu">::</span><span class="fu"><a href="https://opensource.nibr.com/RBesT/reference/lodds.html" class="external-link">logit</a></span><span class="op">(</span><span class="fl">0.18</span><span class="op">)</span>,</span>
-<span>  maxEff <span class="op">=</span> <span class="op">(</span><span class="fu">RBesT</span><span class="fu">::</span><span class="fu"><a href="https://opensource.nibr.com/RBesT/reference/lodds.html" class="external-link">logit</a></span><span class="op">(</span><span class="fl">0.48</span><span class="op">)</span> <span class="op">-</span> <span class="fu">RBesT</span><span class="fu">::</span><span class="fu"><a href="https://opensource.nibr.com/RBesT/reference/lodds.html" class="external-link">logit</a></span><span class="op">(</span><span class="fl">0.18</span><span class="op">)</span><span class="op">)</span></span>
+<span>  emax        <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  doses       <span class="op">=</span> <span class="va">dose_levels</span>,</span>
+<span>  placEff     <span class="op">=</span> <span class="fu">RBesT</span><span class="fu">::</span><span class="fu"><a href="https://opensource.nibr.com/RBesT/reference/lodds.html" class="external-link">logit</a></span><span class="op">(</span><span class="fl">0.18</span><span class="op">)</span>,</span>
+<span>  maxEff      <span class="op">=</span> <span class="op">(</span><span class="fu">RBesT</span><span class="fu">::</span><span class="fu"><a href="https://opensource.nibr.com/RBesT/reference/lodds.html" class="external-link">logit</a></span><span class="op">(</span><span class="fl">0.48</span><span class="op">)</span> <span class="op">-</span> <span class="fu">RBesT</span><span class="fu">::</span><span class="fu"><a href="https://opensource.nibr.com/RBesT/reference/lodds.html" class="external-link">logit</a></span><span class="op">(</span><span class="fl">0.18</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
@@ -237,11 +243,12 @@ reduced to 100 in this example.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">7015</span><span class="op">)</span> <span class="co"># re-sets seed only for this example; remove in your analysis script</span></span>
 <span><span class="va">success_probabilities</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/assessDesign.html">assessDesign</a></span><span class="op">(</span></span>
-<span>  n_patients  <span class="op">=</span> <span class="va">n_patients</span>,</span>
-<span>  mods        <span class="op">=</span> <span class="va">models</span>,</span>
-<span>  prior_list  <span class="op">=</span> <span class="va">prior_list</span>,</span>
-<span>  n_sim       <span class="op">=</span> <span class="fl">100</span>, probability_scale<span class="op">=</span><span class="cn">TRUE</span>,delta          <span class="op">=</span> <span class="fl">0.2</span></span>
-<span>  <span class="op">)</span> </span>
+<span>  n_patients        <span class="op">=</span> <span class="va">n_patients</span>,</span>
+<span>  mods              <span class="op">=</span> <span class="va">models</span>,</span>
+<span>  prior_list        <span class="op">=</span> <span class="va">prior_list</span>,</span>
+<span>  probability_scale <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  delta             <span class="op">=</span> <span class="fl">0.2</span>,</span>
+<span>  n_sim             <span class="op">=</span> <span class="fl">100</span><span class="op">)</span> </span>
 <span><span class="va">success_probabilities</span></span></code></pre></div>
 <pre><code><span><span class="co">## $linear</span></span>
 <span><span class="co">## Bayesian Multiple Comparison Procedure</span></span>
@@ -332,10 +339,12 @@ control.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">7015</span><span class="op">)</span> <span class="co"># re-sets seed only for this example; remove in your analysis script</span></span>
 <span><span class="va">success_probabilities_uneq</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/assessDesign.html">assessDesign</a></span><span class="op">(</span></span>
-<span>  n_patients  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">40</span>, <span class="fl">30</span>, <span class="fl">30</span>, <span class="fl">30</span>, <span class="fl">50</span><span class="op">)</span>,</span>
-<span>  mods        <span class="op">=</span> <span class="va">models</span>,</span>
-<span>  prior_list  <span class="op">=</span> <span class="va">prior_list</span>,</span>
-<span>  n_sim       <span class="op">=</span> <span class="fl">100</span>,probability_scale<span class="op">=</span><span class="cn">TRUE</span>,delta          <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span> <span class="co"># speed up example run-time</span></span>
+<span>  n_patients        <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">40</span>, <span class="fl">30</span>, <span class="fl">30</span>, <span class="fl">30</span>, <span class="fl">50</span><span class="op">)</span>,</span>
+<span>  mods              <span class="op">=</span> <span class="va">models</span>,</span>
+<span>  prior_list        <span class="op">=</span> <span class="va">prior_list</span>,</span>
+<span>  probability_scale <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  delta             <span class="op">=</span> <span class="fl">0.2</span>,</span>
+<span>  n_sim             <span class="op">=</span> <span class="fl">100</span><span class="op">)</span> <span class="co"># speed up example run-time</span></span>
 <span><span class="va">success_probabilities_uneq</span></span></code></pre></div>
 <pre><code><span><span class="co">## $linear</span></span>
 <span><span class="co">## Bayesian Multiple Comparison Procedure</span></span>
@@ -424,11 +433,12 @@ control.</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">7015</span><span class="op">)</span> <span class="co"># re-sets seed only for this example; remove in your analysis script</span></span>
 <span><span class="va">success_probabilities_vague</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/assessDesign.html">assessDesign</a></span><span class="op">(</span></span>
-<span>  n_patients  <span class="op">=</span> <span class="va">n_patients</span>,</span>
-<span>  mods        <span class="op">=</span> <span class="va">models</span>,</span>
-<span>  prior_list  <span class="op">=</span> <span class="va">prior_list_vague</span>,</span>
-<span>  n_sim       <span class="op">=</span> <span class="fl">100</span>, probability_scale<span class="op">=</span><span class="cn">TRUE</span>,delta          <span class="op">=</span> <span class="fl">0.2</span></span>
-<span>  <span class="op">)</span> </span>
+<span>  n_patients        <span class="op">=</span> <span class="va">n_patients</span>,</span>
+<span>  mods              <span class="op">=</span> <span class="va">models</span>,</span>
+<span>  prior_list        <span class="op">=</span> <span class="va">prior_list_vague</span>,</span>
+<span>  probability_scale <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  delta             <span class="op">=</span> <span class="fl">0.2</span>,</span>
+<span>  n_sim             <span class="op">=</span> <span class="fl">100</span><span class="op">)</span> <span class="co"># speed up example run-time</span></span>
 <span><span class="va">success_probabilities_vague</span></span></code></pre></div>
 <pre><code><span><span class="co">## $linear</span></span>
 <span><span class="co">## Bayesian Multiple Comparison Procedure</span></span>

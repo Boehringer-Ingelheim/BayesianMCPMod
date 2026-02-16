@@ -84,17 +84,17 @@ bs_quantiles <- getBootstrapQuantiles(model_fits = model_fits,
                       
 bs_quantiles
 #> # A tibble: 72 × 5
-#>    model   dose sample_type q_prob  q_val
-#>    <chr>  <dbl> <chr>        <dbl>  <dbl>
-#>  1 avgFit     0 abs          0.025 0.0407
-#>  2 avgFit     0 abs          0.5   1.82  
-#>  3 avgFit     0 abs          0.8   2.29  
-#>  4 avgFit     0 abs          0.975 2.60  
-#>  5 avgFit     0 diff         0.025 0     
-#>  6 avgFit     0 diff         0.5   0     
-#>  7 avgFit     0 diff         0.8   0     
-#>  8 avgFit     0 diff         0.975 0     
-#>  9 avgFit     6 abs          0.025 5.00  
-#> 10 avgFit     6 abs          0.5   6.29  
+#>    model   dose sample_type q_prob   q_val
+#>    <chr>  <dbl> <chr>        <dbl>   <dbl>
+#>  1 avgFit     0 abs          0.025 -0.0692
+#>  2 avgFit     0 abs          0.5    1.68  
+#>  3 avgFit     0 abs          0.8    2.18  
+#>  4 avgFit     0 abs          0.975  3.73  
+#>  5 avgFit     0 diff         0.025  0     
+#>  6 avgFit     0 diff         0.5    0     
+#>  7 avgFit     0 diff         0.8    0     
+#>  8 avgFit     0 diff         0.975  0     
+#>  9 avgFit     6 abs          0.025  5.03  
+#> 10 avgFit     6 abs          0.5    5.82  
 #> # ℹ 62 more rows
 ```

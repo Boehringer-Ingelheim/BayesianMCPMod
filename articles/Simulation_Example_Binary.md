@@ -25,16 +25,14 @@ future::plan(future::multisession)
 
 ``` r
 suppressPackageStartupMessages({
-library(BayesianMCPMod) 
-library(RBesT)
-library(clinDR)
-library(dplyr)
-library(tibble)
-library(reactable)
-library(DoseFinding)
-library(BayesianMCPMod)
+  library(BayesianMCPMod)
+  library(RBesT)
+  library(DoseFinding)
+  library(clinDR)
+  library(dplyr)
+  library(tibble)
+  library(reactable)
 })
-
 
 set.seed(7015)
 ```
@@ -72,14 +70,23 @@ dose_levels <- c(0, 2.5, 5, 10,20)
 
 # 1) Establish MAP prior (beta mixture distribution) 
 set.seed(7015) # re-sets seed only for this example; remove in your analysis script
-map <- gMAP(cbind(hist_data$r, hist_data$n - hist_data$r) ~ 1|histcontrol$nctno, family = binomial, tau.dist = "HalfNormal",
-            tau.prior = 0.5, beta.prior = (1/sqrt(0.1*0.9)), warmup = 1000, iter = 10000, chains = 2, thin = 1)
+map <- gMAP(
+  cbind(hist_data$r, hist_data$n - hist_data$r) ~ 1 | histcontrol$nctno,
+  family     = binomial,
+  tau.dist   = "HalfNormal",
+  tau.prior  = 0.5,
+  beta.prior = (1 / sqrt(0.1 * 0.9)),
+  warmup     = 1000,
+  iter       = 10000,
+  chains     = 2,
+  thin       = 1
+)
 ```
 
     ## Assuming default prior location   for beta: 0
 
 ``` r
-map
+map 
 ```
 
     ## Generalized Meta Analytic Predictive Prior Analysis
@@ -112,24 +119,21 @@ ess(prior)
 #ess(prior)
 p<-summary(prior)[1]
 
-#ii) Robustify prior
+# 2) Robustify prior
 prior.rob<-RBesT::robustify(
       priormix = prior,
       mean     = 0.5,
       weight   = 0.2)
 
-#ess(prior.rob)
-
-#iii) Translate prior to logit scale (to approximate via normal mixture model)
-r <- rmix(prior.rob, n=1e4)
+# 3) Translate prior to logit scale (to approximate via normal mixture model)
+r <- rmix(prior.rob, n = 1e4)
 log.r <- logit(r)
-prior.ctr<- automixfit(log.r, type = "norm")
-sigma(prior.ctr)<-sqrt(1/(p*(1-p)))
-#ess(prior.ctr, sigma = sqrt(1/(p*(1-p))))
-#Specification of reference scale (this follows the idea of [@Neuenschwander2016]). 
+prior.ctr <- automixfit(log.r, type = "norm")
 
+# Specification of reference scale (this follows the idea of [@Neuenschwander2016]). 
+sigma(prior.ctr) <- sqrt(1 / (p * (1 - p)))
 
-#Specify a prior list
+# Specify a prior list
 prior_trt <- RBesT::mixnorm(
     comp1 = c(w = 1, m = logit(summary(prior)[1]), n = 1),
     sigma = sqrt(1/(p*(1-p))),
@@ -139,16 +143,18 @@ prior_trt <- RBesT::mixnorm(
                   rep(x     = list(prior_trt),
                       times = length(dose_levels[-1])))
 
-dose_names <- c("Ctr", paste0("DG_", seq_along(dose_levels[-1])))
+dose_names        <- c("Ctr", paste0("DG_", seq_along(dose_levels[-1])))
 names(prior_list) <- dose_names
 ```
 
 Kindly note that a vague prior could be implemented via
 
 ``` r
-prior_list_vague <- rep(list(RBesT::mixnorm(comp1 = c(w = 1, m = logit(p), n=1),
-                                            sigma = sqrt(1/(p*(1-p))), param = "mn")),
-                        times = length(dose_levels))
+prior_list_vague <- rep(list(RBesT::mixnorm(
+  comp1 = c(w = 1, m = logit(p), n = 1),
+  sigma = sqrt(1 / (p * (1 - p))),
+  param = "mn"
+)), times = length(dose_levels))
 names(prior_list_vague) <- c("Ctrl", "DG_1", "DG_2", "DG_3", "DG_4")
 ```
 
@@ -166,14 +172,14 @@ provided on the **logit scale**.
 n_patients <- c(30, 40, 40, 40, 40)
 
 models <- Mods(
-  linear = NULL,
-  sigEmax = c(10, 5),
-  logistic = c(11, 15),
+  linear      = NULL,
+  sigEmax     = c(10, 5),
+  logistic    = c(11, 15),
   exponential = 10,
-  emax = 2,
-  doses = dose_levels,
-  placEff = RBesT::logit(0.18),
-  maxEff = (RBesT::logit(0.48) - RBesT::logit(0.18))
+  emax        = 2,
+  doses       = dose_levels,
+  placEff     = RBesT::logit(0.18),
+  maxEff      = (RBesT::logit(0.48) - RBesT::logit(0.18))
 )
 ```
 
@@ -193,11 +199,12 @@ reduced to 100 in this example.
 ``` r
 set.seed(7015) # re-sets seed only for this example; remove in your analysis script
 success_probabilities <- assessDesign(
-  n_patients  = n_patients,
-  mods        = models,
-  prior_list  = prior_list,
-  n_sim       = 100, probability_scale=TRUE,delta          = 0.2
-  ) 
+  n_patients        = n_patients,
+  mods              = models,
+  prior_list        = prior_list,
+  probability_scale = TRUE,
+  delta             = 0.2,
+  n_sim             = 100) 
 success_probabilities
 ```
 
@@ -292,10 +299,12 @@ control.
 ``` r
 set.seed(7015) # re-sets seed only for this example; remove in your analysis script
 success_probabilities_uneq <- assessDesign(
-  n_patients  = c(40, 30, 30, 30, 50),
-  mods        = models,
-  prior_list  = prior_list,
-  n_sim       = 100,probability_scale=TRUE,delta          = 0.2) # speed up example run-time
+  n_patients        = c(40, 30, 30, 30, 50),
+  mods              = models,
+  prior_list        = prior_list,
+  probability_scale = TRUE,
+  delta             = 0.2,
+  n_sim             = 100) # speed up example run-time
 success_probabilities_uneq
 ```
 
@@ -388,11 +397,12 @@ As a second alternative we will use the vague prior:
 ``` r
 set.seed(7015) # re-sets seed only for this example; remove in your analysis script
 success_probabilities_vague <- assessDesign(
-  n_patients  = n_patients,
-  mods        = models,
-  prior_list  = prior_list_vague,
-  n_sim       = 100, probability_scale=TRUE,delta          = 0.2
-  ) 
+  n_patients        = n_patients,
+  mods              = models,
+  prior_list        = prior_list_vague,
+  probability_scale = TRUE,
+  delta             = 0.2,
+  n_sim             = 100) # speed up example run-time
 success_probabilities_vague
 ```
 

@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">BayesianMCPMod</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -62,7 +62,7 @@
 
       <h1>Binary Endpoints in Bayesian MCP-Mod</h1>
             
-            <h4 data-toc-skip class="date">2026-02-15</h4>
+            <h4 data-toc-skip class="date">2026-02-16</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/Boehringer-Ingelheim/BayesianMCPMod/blob/main/vignettes/binary_endpoint.Rmd" class="external-link"><code>vignettes/binary_endpoint.Rmd</code></a></small>
       <div class="d-none name"><code>binary_endpoint.Rmd</code></div>
@@ -108,21 +108,26 @@ working example, which contains response rates after migraine treatment.
 The prior (for the control group) will be based on historical trial
 data.</p>
 <p>This package makes use of the <a href="https://cran.r-project.org/package=future" class="external-link">future</a> framework
-for parallel processing, which can be set up as follows:</p>
+for parallel processing, which can be set up for example as follows:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="fu">future</span><span class="fu">::</span><span class="va"><a href="https://future.futureverse.org/reference/multisession.html" class="external-link">multisession</a></span><span class="op">)</span></span></code></pre></div>
+<p>Kindly note that due to overhead in many cases a reduced number of
+worker nodes is preferable and that for short calculations sequential
+execution can be faster.</p>
 <div class="section level3">
-<h3 id="scale-conventions-used-in-this-vignette">Scale conventions used in this vignette<a class="anchor" aria-label="anchor" href="#scale-conventions-used-in-this-vignette"></a>
+<h3 id="scale-conventions-used-in-this-vignette">Scale Conventions Used in this Vignette<a class="anchor" aria-label="anchor" href="#scale-conventions-used-in-this-vignette"></a>
 </h3>
 <div class="alert alert-info">
-<p><strong>Scale conventions</strong></p>
+<p><strong>Scale Conventions</strong></p>
 <ul>
 <li>Internally, <strong>BayesianMCPMod</strong> fits binary endpoints on
 the <strong>logit scale</strong>.</li>
 <li>
-<code>probability_scale = TRUE</code> controls whether outputs
-(summaries, predictions, plots) are transformed back to
+<code>probability_scale</code> controls whether outputs (summaries,
+predictions, plots) are transformed back to
 <strong>probabilities</strong>.</li>
+<li>In <code><a href="../reference/simulateData.html">simulateData()</a></code>, <code>probability_scale</code>
+controls whether data is simulated on the response scale.</li>
 <li>
 <code>delta</code> for MED is interpreted on the <strong>probability
 scale</strong> when <code>probability_scale = TRUE</code>.</li>
@@ -142,9 +147,9 @@ informative mixture prior for the control group, while for the active
 groups a non-informative prior will be specified.</p>
 <details><summary><strong>Show code</strong>
 </summary><div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">study</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"study 1"</span>, <span class="st">"study 2"</span>, <span class="st">"study 3"</span><span class="op">)</span></span>
-<span><span class="va">n</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">70</span>,  <span class="fl">115</span>, <span class="fl">147</span><span class="op">)</span> <span class="co">#sample size per study</span></span>
-<span><span class="va">r</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">6</span>,   <span class="fl">16</span>, <span class="fl">16</span><span class="op">)</span> <span class="co"># responder per study</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">study</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"study_1"</span>, <span class="st">"study_2"</span>, <span class="st">"study_3"</span><span class="op">)</span></span>
+<span><span class="va">n</span>     <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">70</span>,  <span class="fl">115</span>, <span class="fl">147</span><span class="op">)</span> <span class="co"># sample size per study</span></span>
+<span><span class="va">r</span>     <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="fl">6</span>,   <span class="fl">16</span>,  <span class="fl">16</span><span class="op">)</span>  <span class="co"># n responders per study</span></span></code></pre></div>
 </details><p>Our approach to establish a MAP prior is conducted in 3 steps. First
 the information from the historical trials is used to establish a beta
 mixture MAP prior (family=binomial).<br>
@@ -159,20 +164,18 @@ establish a reasonable informative prior in this setting.</p>
 </summary><div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dose_levels</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">2.5</span>, <span class="fl">5</span>, <span class="fl">10</span>, <span class="fl">20</span>, <span class="fl">50</span>, <span class="fl">100</span>, <span class="fl">200</span><span class="op">)</span></span>
 <span></span>
-<span></span>
 <span><span class="co">#i) Establish MAP prior (beta mixture distribution)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">7015</span><span class="op">)</span> <span class="co"># re-set seed only for this example; remove in your analysis script</span></span>
 <span><span class="va">map</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://opensource.nibr.com/RBesT/reference/gMAP.html" class="external-link">gMAP</a></span><span class="op">(</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="va">r</span>, <span class="va">n</span> <span class="op">-</span> <span class="va">r</span><span class="op">)</span> <span class="op">~</span> <span class="fl">1</span> <span class="op">|</span></span>
-<span>    <span class="va">study</span>,</span>
-<span>  family <span class="op">=</span> <span class="va">binomial</span>,</span>
-<span>  tau.dist <span class="op">=</span> <span class="st">"HalfNormal"</span>,</span>
-<span>  tau.prior <span class="op">=</span> <span class="fl">0.5</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="va">r</span>, <span class="va">n</span> <span class="op">-</span> <span class="va">r</span><span class="op">)</span> <span class="op">~</span> <span class="fl">1</span> <span class="op">|</span> <span class="va">study</span>,</span>
+<span>  family     <span class="op">=</span> <span class="va">binomial</span>,</span>
+<span>  tau.dist   <span class="op">=</span> <span class="st">"HalfNormal"</span>,</span>
+<span>  tau.prior  <span class="op">=</span> <span class="fl">0.5</span>,</span>
 <span>  beta.prior <span class="op">=</span> <span class="op">(</span><span class="fl">1</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fl">0.1</span> <span class="op">*</span> <span class="fl">0.9</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>  warmup <span class="op">=</span> <span class="fl">1000</span>,</span>
-<span>  iter <span class="op">=</span> <span class="fl">10000</span>,</span>
-<span>  chains <span class="op">=</span> <span class="fl">2</span>,</span>
-<span>  thin <span class="op">=</span> <span class="fl">1</span></span>
+<span>  warmup     <span class="op">=</span> <span class="fl">1000</span>,</span>
+<span>  iter       <span class="op">=</span> <span class="fl">10000</span>,</span>
+<span>  chains     <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  thin       <span class="op">=</span> <span class="fl">1</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; Assuming default prior location   for beta: 0</span></span>
 <span><span class="va">map</span></span>
@@ -193,24 +196,24 @@ establish a reasonable informative prior in this setting.</p>
 <span><span class="co">#&gt; MAP Prior MCMC sample</span></span>
 <span><span class="co">#&gt;   mean     sd   2.5%    50%  97.5% </span></span>
 <span><span class="co">#&gt; 0.1190 0.0494 0.0454 0.1130 0.2340</span></span>
+<span></span>
 <span><span class="va">prior</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://opensource.nibr.com/RBesT/reference/automixfit.html" class="external-link">automixfit</a></span><span class="op">(</span><span class="va">map</span><span class="op">)</span> <span class="co">#fits mixture distribution from MCMC samples from above</span></span>
+<span></span>
 <span><span class="co">#ess(prior)</span></span>
 <span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">prior</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span>
+<span></span>
 <span><span class="co">#ii) Robustify prior</span></span>
 <span><span class="va">prior.rob</span> <span class="op">&lt;-</span> <span class="fu">RBesT</span><span class="fu">::</span><span class="fu"><a href="https://opensource.nibr.com/RBesT/reference/robustify.html" class="external-link">robustify</a></span><span class="op">(</span>priormix <span class="op">=</span> <span class="va">prior</span>,</span>
 <span>                              mean     <span class="op">=</span> <span class="fl">0.5</span>,</span>
 <span>                              weight   <span class="op">=</span> <span class="fl">0.4</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co">#ess(prior.rob)</span></span>
-<span></span>
 <span><span class="co">#iii) Translate prior to logit scale (to approximate via normal mixture model)</span></span>
-<span><span class="va">r</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://opensource.nibr.com/RBesT/reference/mix.html" class="external-link">rmix</a></span><span class="op">(</span><span class="va">prior.rob</span>, n <span class="op">=</span> <span class="fl">1e4</span><span class="op">)</span></span>
-<span><span class="va">log.r</span> <span class="op">&lt;-</span> <span class="fu">RBesT</span><span class="fu">::</span><span class="fu"><a href="https://opensource.nibr.com/RBesT/reference/lodds.html" class="external-link">logit</a></span><span class="op">(</span><span class="va">r</span><span class="op">)</span></span>
-<span><span class="va">prior.ctr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://opensource.nibr.com/RBesT/reference/automixfit.html" class="external-link">automixfit</a></span><span class="op">(</span><span class="va">log.r</span>, type <span class="op">=</span> <span class="st">"norm"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/stats/sigma.html" class="external-link">sigma</a></span><span class="op">(</span><span class="va">prior.ctr</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fl">1</span> <span class="op">/</span> <span class="op">(</span><span class="va">p</span> <span class="op">*</span> <span class="op">(</span><span class="fl">1</span> <span class="op">-</span> <span class="va">p</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#ess(prior.ctr, sigma = sqrt(1/(p*(1-p))))</span></span>
-<span><span class="co">#Specification of reference scale (this follows the idea of [@Neuenschwander2016]).</span></span>
+<span><span class="va">r</span>                <span class="op">&lt;-</span> <span class="fu"><a href="https://opensource.nibr.com/RBesT/reference/mix.html" class="external-link">rmix</a></span><span class="op">(</span><span class="va">prior.rob</span>, n <span class="op">=</span> <span class="fl">1e4</span><span class="op">)</span></span>
+<span><span class="va">log.r</span>            <span class="op">&lt;-</span> <span class="fu">RBesT</span><span class="fu">::</span><span class="fu"><a href="https://opensource.nibr.com/RBesT/reference/lodds.html" class="external-link">logit</a></span><span class="op">(</span><span class="va">r</span><span class="op">)</span></span>
+<span><span class="va">prior.ctr</span>        <span class="op">&lt;-</span> <span class="fu"><a href="https://opensource.nibr.com/RBesT/reference/automixfit.html" class="external-link">automixfit</a></span><span class="op">(</span><span class="va">log.r</span>, type <span class="op">=</span> <span class="st">"norm"</span><span class="op">)</span></span>
 <span></span>
+<span><span class="co">#Specification of reference scale (this follows the idea of [@Neuenschwander2016]).</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/sigma.html" class="external-link">sigma</a></span><span class="op">(</span><span class="va">prior.ctr</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fl">1</span> <span class="op">/</span> <span class="op">(</span><span class="va">p</span> <span class="op">*</span> <span class="op">(</span><span class="fl">1</span> <span class="op">-</span> <span class="va">p</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">#Specify a prior list</span></span>
 <span><span class="va">prior_trt</span> <span class="op">&lt;-</span> <span class="fu">RBesT</span><span class="fu">::</span><span class="fu"><a href="https://opensource.nibr.com/RBesT/reference/mixnorm.html" class="external-link">mixnorm</a></span><span class="op">(</span></span>
@@ -223,9 +226,11 @@ establish a reasonable informative prior in this setting.</p>
 <span>  param <span class="op">=</span> <span class="st">"mn"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">prior_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">prior.ctr</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span>x     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">prior_trt</span><span class="op">)</span>, times <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">dose_levels</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">prior_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">prior.ctr</span><span class="op">)</span>,</span>
+<span>                <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span>x     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">prior_trt</span><span class="op">)</span>,</span>
+<span>                    times <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">dose_levels</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">dose_names</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Ctr"</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"DG_"</span>, <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">dose_levels</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">dose_names</span>        <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Ctr"</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"DG_"</span>, <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">dose_levels</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">prior_list</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">dose_names</span></span></code></pre></div>
 </details>
 </div>
@@ -239,15 +244,15 @@ models are specified on the <strong>logit scale</strong>.</p>
 <details><summary><strong>Show code</strong>
 </summary><div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">models</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://openpharma.github.io/DoseFinding/reference/Mods.html" class="external-link">Mods</a></span><span class="op">(</span></span>
-<span>  linear <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  sigEmax <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">50</span>, <span class="fl">3</span><span class="op">)</span>,</span>
-<span>  quadratic <span class="op">=</span> <span class="op">-</span><span class="fl">1</span> <span class="op">/</span> <span class="fl">250</span>,</span>
-<span>  logistic <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">110</span>, <span class="fl">15</span><span class="op">)</span>,</span>
+<span>  linear      <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  sigEmax     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">50</span>, <span class="fl">3</span><span class="op">)</span>,</span>
+<span>  quadratic   <span class="op">=</span> <span class="op">-</span><span class="fl">1</span> <span class="op">/</span> <span class="fl">250</span>,</span>
+<span>  logistic    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">110</span>, <span class="fl">15</span><span class="op">)</span>,</span>
 <span>  exponential <span class="op">=</span> <span class="fl">80</span>,</span>
-<span>  emax <span class="op">=</span> <span class="fl">10</span>,</span>
-<span>  doses <span class="op">=</span> <span class="va">dose_levels</span>,</span>
-<span>  placEff <span class="op">=</span> <span class="fu">RBesT</span><span class="fu">::</span><span class="fu"><a href="https://opensource.nibr.com/RBesT/reference/lodds.html" class="external-link">logit</a></span><span class="op">(</span><span class="fl">0.118</span><span class="op">)</span>,</span>
-<span>  maxEff <span class="op">=</span> <span class="fu">RBesT</span><span class="fu">::</span><span class="fu"><a href="https://opensource.nibr.com/RBesT/reference/lodds.html" class="external-link">logit</a></span><span class="op">(</span><span class="fl">0.3</span><span class="op">)</span> <span class="op">-</span> <span class="fu">RBesT</span><span class="fu">::</span><span class="fu"><a href="https://opensource.nibr.com/RBesT/reference/lodds.html" class="external-link">logit</a></span><span class="op">(</span><span class="fl">0.118</span><span class="op">)</span></span>
+<span>  emax        <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>  doses       <span class="op">=</span> <span class="va">dose_levels</span>,</span>
+<span>  placEff     <span class="op">=</span> <span class="fu">RBesT</span><span class="fu">::</span><span class="fu"><a href="https://opensource.nibr.com/RBesT/reference/lodds.html" class="external-link">logit</a></span><span class="op">(</span><span class="fl">0.118</span><span class="op">)</span>,</span>
+<span>  maxEff      <span class="op">=</span> <span class="fu">RBesT</span><span class="fu">::</span><span class="fu"><a href="https://opensource.nibr.com/RBesT/reference/lodds.html" class="external-link">logit</a></span><span class="op">(</span><span class="fl">0.3</span><span class="op">)</span> <span class="op">-</span> <span class="fu">RBesT</span><span class="fu">::</span><span class="fu"><a href="https://opensource.nibr.com/RBesT/reference/lodds.html" class="external-link">logit</a></span><span class="op">(</span><span class="fl">0.118</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </details><div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">models</span><span class="op">)</span></span></code></pre></div>
@@ -265,14 +270,14 @@ get estimates on the logit scale.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"migraine"</span><span class="op">)</span> <span class="co">#example data "migraine" from DoseFinding package</span></span>
 <span></span>
 <span><span class="va">dosesFact</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">dose_levels</span><span class="op">)</span></span>
-<span><span class="va">N</span> <span class="op">&lt;-</span> <span class="va">migraine</span><span class="op">$</span><span class="va">ntrt</span></span>
-<span><span class="va">RespRate</span> <span class="op">&lt;-</span> <span class="va">migraine</span><span class="op">$</span><span class="va">painfree</span><span class="op">/</span><span class="va">N</span></span>
+<span><span class="va">N</span>         <span class="op">&lt;-</span> <span class="va">migraine</span><span class="op">$</span><span class="va">ntrt</span></span>
+<span><span class="va">RespRate</span>  <span class="op">&lt;-</span> <span class="va">migraine</span><span class="op">$</span><span class="va">painfree</span><span class="op">/</span><span class="va">N</span></span>
 <span></span>
 <span><span class="co">##Execution of logistic regression and readout of parameters </span></span>
 <span><span class="co">## (please note that estimates are automatically on logit scale)</span></span>
 <span><span class="va">logfit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/glm.html" class="external-link">glm</a></span><span class="op">(</span><span class="va">RespRate</span> <span class="op">~</span> <span class="va">dosesFact</span> <span class="op">-</span> <span class="fl">1</span>, family <span class="op">=</span> <span class="va">binomial</span>, weights <span class="op">=</span> <span class="va">N</span><span class="op">)</span></span>
-<span><span class="va">muHat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">logfit</span><span class="op">)</span></span>
-<span><span class="va">S</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/vcov.html" class="external-link">vcov</a></span><span class="op">(</span><span class="va">logfit</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">muHat</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">logfit</span><span class="op">)</span></span>
+<span><span class="va">S</span>      <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/vcov.html" class="external-link">vcov</a></span><span class="op">(</span><span class="va">logfit</span><span class="op">)</span></span></code></pre></div>
 </details>
 </div>
 </div>
@@ -286,9 +291,9 @@ combining the prior information with the estimated results of the trial
 scale.</p>
 <details><summary><strong>Show code</strong>
 </summary><div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">PostLogit</span><span class="op">&lt;-</span><span class="fu"><a href="../reference/getPosterior.html">getPosterior</a></span><span class="op">(</span><span class="va">prior_list</span>,mu_hat<span class="op">=</span><span class="va">muHat</span>,S_hat<span class="op">=</span><span class="va">S</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">post_logit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getPosterior.html">getPosterior</a></span><span class="op">(</span><span class="va">prior_list</span>, mu_hat <span class="op">=</span> <span class="va">muHat</span>, S_hat  <span class="op">=</span> <span class="va">S</span><span class="op">)</span></span></code></pre></div>
 </details><div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">PostLogit</span>,probability_scale<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">post_logit</span>,probability_scale <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co">#&gt;           mean         sd       2.5%     50.0%     97.5%</span></span>
 <span><span class="co">#&gt; Ctr  0.1071168 0.02127962 0.06930686 0.1058282 0.1520040</span></span>
 <span><span class="co">#&gt; DG_1 0.1359001 0.06177459 0.04833967 0.1248126 0.2859179</span></span>
@@ -313,8 +318,7 @@ frequentist MCPMod to ensure error control when using weakly-informative
 priors.</p>
 <details><summary><strong>Show code</strong>
 </summary><div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
-<span><span class="va">contr_mat_prior</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getContr.html">getContr</a></span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="va">contr_mat_prior</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getContr.html">getContr</a></span><span class="op">(</span></span>
 <span>  mods           <span class="op">=</span> <span class="va">models</span>,</span>
 <span>  dose_levels    <span class="op">=</span> <span class="va">dose_levels</span>,</span>
 <span>  dose_weights   <span class="op">=</span> <span class="va">N</span><span class="op">)</span></span>
@@ -329,9 +333,8 @@ priors.</p>
 </details><p>The Bayesian MCP testing step is then executed:</p>
 <details><summary><strong>Show code</strong>
 </summary><div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
-<span><span class="va">BMCP_result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/performBayesianMCP.html">performBayesianMCP</a></span><span class="op">(</span></span>
-<span>  posterior_list <span class="op">=</span> <span class="va">PostLogit</span>,</span>
+<code class="sourceCode R"><span><span class="va">BMCP_result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/performBayesianMCP.html">performBayesianMCP</a></span><span class="op">(</span></span>
+<span>  posterior_list <span class="op">=</span> <span class="va">post_logit</span>,</span>
 <span>  contr          <span class="op">=</span> <span class="va">contr_mat_prior</span>, </span>
 <span>  crit_prob_adj  <span class="op">=</span> <span class="va">crit_pval</span><span class="op">)</span></span></code></pre></div>
 </details><p>Here as well it should be noted that this evaluation happens on the
@@ -368,7 +371,7 @@ corresponding weights.</p>
 <span><span class="va">model_fits</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getModelFits.html">getModelFits</a></span><span class="op">(</span></span>
 <span>  models      <span class="op">=</span> <span class="va">models</span>,</span>
 <span>  dose_levels <span class="op">=</span> <span class="va">dose_levels</span>,</span>
-<span>  posterior   <span class="op">=</span> <span class="va">PostLogit</span>,</span>
+<span>  posterior   <span class="op">=</span> <span class="va">post_logit</span>,</span>
 <span>  simple      <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  probability_scale <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 </details><p>Plots of fitted dose-response models and an AIC-based average model
@@ -381,7 +384,7 @@ and 95%).:</p>
 <p>In case models should be shown on the logit scale this can be done in
 the following way:</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">model_fits</span>,probability_scale<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">model_fits</span>, probability_scale <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <p><img src="binary_endpoint_files/figure-html/unnamed-chunk-15-1.png" class="r-plt" alt="" width="700"></p>
 <p>Estimates (also for dose levels not included in the trial) can be
 shown via:</p>
@@ -456,7 +459,6 @@ with the function <code><a href="../reference/getMED.html">getMED()</a></code>. 
 specified on the probability scale.</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">##get MED</span></span>
-<span></span>
 <span><span class="fu"><a href="../reference/getMED.html">getMED</a></span><span class="op">(</span></span>
 <span>  delta       <span class="op">=</span> <span class="fl">0.16</span>,</span>
 <span>  model_fits  <span class="op">=</span> <span class="va">model_fits</span>,</span>
@@ -472,9 +474,8 @@ specified on the probability scale.</p>
 <code><a href="../reference/performBayesianMCPMod.html">performBayesianMCPMod()</a></code>:</p>
 <details><summary><strong>Show code</strong>
 </summary><div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
-<span><span class="va">BMCPMod_result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/performBayesianMCPMod.html">performBayesianMCPMod</a></span><span class="op">(</span></span>
-<span>  posterior_list <span class="op">=</span> <span class="va">PostLogit</span>,</span>
+<code class="sourceCode R"><span><span class="va">BMCPMod_result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/performBayesianMCPMod.html">performBayesianMCPMod</a></span><span class="op">(</span></span>
+<span>  posterior_list <span class="op">=</span> <span class="va">post_logit</span>,</span>
 <span>  contr          <span class="op">=</span> <span class="va">contr_mat_prior</span>,</span>
 <span>  crit_prob_adj  <span class="op">=</span> <span class="va">crit_pval</span>,</span>
 <span>  simple         <span class="op">=</span> <span class="cn">TRUE</span>,</span>

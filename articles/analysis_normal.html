@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">BayesianMCPMod</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -63,7 +63,7 @@
 
       <h1>Analysis Example of Bayesian MCPMod for Continuous Data</h1>
             
-            <h4 data-toc-skip class="date">2026-02-15</h4>
+            <h4 data-toc-skip class="date">2026-02-16</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/Boehringer-Ingelheim/BayesianMCPMod/blob/main/vignettes/analysis_normal.Rmd" class="external-link"><code>vignettes/analysis_normal.Rmd</code></a></small>
       <div class="d-none name"><code>analysis_normal.Rmd</code></div>
@@ -103,9 +103,12 @@ trial using the Bayesian MCPMod approach.</p>
 <p>A more general overview of the R package was provided with a <a href="https://github.com/Boehringer-Ingelheim/BayesianMCPMod/blob/36763ee5325955ca5d76a6c140ea3881c74e5fda/inst/PSI_Poster_2024.pdf" class="external-link">poster</a>
 presented during the PSI 2024 Conference.</p>
 <p>This package makes use of the <a href="https://cran.r-project.org/package=future" class="external-link">future</a> framework
-for parallel processing, which can be set up as follows:</p>
+for parallel processing, which can be set up for example as follows:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="fu">future</span><span class="fu">::</span><span class="va"><a href="https://future.futureverse.org/reference/multisession.html" class="external-link">multisession</a></span><span class="op">)</span></span></code></pre></div>
+<p>Kindly note that due to overhead in many cases a reduced number of
+worker nodes is preferable and that for short calculations sequential
+execution can be faster.</p>
 </div>
 <div class="section level2">
 <h2 id="calculation-of-a-map-prior">Calculation of a MAP Prior<a class="anchor" aria-label="anchor" href="#calculation-of-a-map-prior"></a>

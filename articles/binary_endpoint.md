@@ -41,20 +41,28 @@ the control group) will be based on historical trial data.
 
 This package makes use of the
 [future](https://cran.r-project.org/package=future) framework for
-parallel processing, which can be set up as follows:
+parallel processing, which can be set up for example as follows:
 
 ``` r
 future::plan(future::multisession)
 ```
 
-### Scale conventions used in this vignette
+Kindly note that due to overhead in many cases a reduced number of
+worker nodes is preferable and that for short calculations sequential
+execution can be faster.
 
-**Scale conventions**
+### Scale Conventions Used in this Vignette
+
+**Scale Conventions**
 
 - Internally, **BayesianMCPMod** fits binary endpoints on the **logit
   scale**.
-- `probability_scale = TRUE` controls whether outputs (summaries,
-  predictions, plots) are transformed back to **probabilities**.
+- `probability_scale` controls whether outputs (summaries, predictions,
+  plots) are transformed back to **probabilities**.
+- In
+  [`simulateData()`](https://boehringer-ingelheim.github.io/BayesianMCPMod/reference/simulateData.md),
+  `probability_scale` controls whether data is simulated on the response
+  scale.
 - `delta` for MED is interpreted on the **probability scale** when
   `probability_scale = TRUE`.
 
@@ -71,9 +79,9 @@ prior will be specified.
 **Show code**
 
 ``` r
-study <- c("study 1", "study 2", "study 3")
-n <- c(70,  115, 147) #sample size per study
-r <- c(6,   16, 16) # responder per study
+study <- c("study_1", "study_2", "study_3")
+n     <- c(70,  115, 147) # sample size per study
+r     <- c( 6,   16,  16)  # n responders per study
 ```
 
 Our approach to establish a MAP prior is conducted in 3 steps. First the
@@ -92,20 +100,18 @@ establish a reasonable informative prior in this setting.
 ``` r
 dose_levels <- c(0, 2.5, 5, 10, 20, 50, 100, 200)
 
-
 #i) Establish MAP prior (beta mixture distribution)
 set.seed(7015) # re-set seed only for this example; remove in your analysis script
 map <- gMAP(
-  cbind(r, n - r) ~ 1 |
-    study,
-  family = binomial,
-  tau.dist = "HalfNormal",
-  tau.prior = 0.5,
+  cbind(r, n - r) ~ 1 | study,
+  family     = binomial,
+  tau.dist   = "HalfNormal",
+  tau.prior  = 0.5,
   beta.prior = (1 / sqrt(0.1 * 0.9)),
-  warmup = 1000,
-  iter = 10000,
-  chains = 2,
-  thin = 1
+  warmup     = 1000,
+  iter       = 10000,
+  chains     = 2,
+  thin       = 1
 )
 #> Assuming default prior location   for beta: 0
 map
@@ -126,24 +132,24 @@ map
 #> MAP Prior MCMC sample
 #>   mean     sd   2.5%    50%  97.5% 
 #> 0.1190 0.0494 0.0454 0.1130 0.2340
+
 prior <- automixfit(map) #fits mixture distribution from MCMC samples from above
+
 #ess(prior)
 p <- summary(prior)[1]
+
 #ii) Robustify prior
 prior.rob <- RBesT::robustify(priormix = prior,
                               mean     = 0.5,
                               weight   = 0.4)
 
-#ess(prior.rob)
-
 #iii) Translate prior to logit scale (to approximate via normal mixture model)
-r <- rmix(prior.rob, n = 1e4)
-log.r <- RBesT::logit(r)
-prior.ctr <- automixfit(log.r, type = "norm")
-sigma(prior.ctr) <- sqrt(1 / (p * (1 - p)))
-#ess(prior.ctr, sigma = sqrt(1/(p*(1-p))))
-#Specification of reference scale (this follows the idea of [@Neuenschwander2016]).
+r                <- rmix(prior.rob, n = 1e4)
+log.r            <- RBesT::logit(r)
+prior.ctr        <- automixfit(log.r, type = "norm")
 
+#Specification of reference scale (this follows the idea of [@Neuenschwander2016]).
+sigma(prior.ctr) <- sqrt(1 / (p * (1 - p)))
 
 #Specify a prior list
 prior_trt <- RBesT::mixnorm(
@@ -156,9 +162,11 @@ prior_trt <- RBesT::mixnorm(
   param = "mn"
 )
 
-prior_list <- c(list(prior.ctr), rep(x     = list(prior_trt), times = length(dose_levels[-1])))
+prior_list <- c(list(prior.ctr),
+                rep(x     = list(prior_trt),
+                    times = length(dose_levels[-1])))
 
-dose_names <- c("Ctr", paste0("DG_", seq_along(dose_levels[-1])))
+dose_names        <- c("Ctr", paste0("DG_", seq_along(dose_levels[-1])))
 names(prior_list) <- dose_names
 ```
 
@@ -173,15 +181,15 @@ specified on the **logit scale**.
 
 ``` r
 models <- Mods(
-  linear = NULL,
-  sigEmax = c(50, 3),
-  quadratic = -1 / 250,
-  logistic = c(110, 15),
+  linear      = NULL,
+  sigEmax     = c(50, 3),
+  quadratic   = -1 / 250,
+  logistic    = c(110, 15),
   exponential = 80,
-  emax = 10,
-  doses = dose_levels,
-  placEff = RBesT::logit(0.118),
-  maxEff = RBesT::logit(0.3) - RBesT::logit(0.118)
+  emax        = 10,
+  doses       = dose_levels,
+  placEff     = RBesT::logit(0.118),
+  maxEff      = RBesT::logit(0.3) - RBesT::logit(0.118)
 )
 ```
 
@@ -205,14 +213,14 @@ additional covariates) to get estimates on the logit scale.
 data("migraine") #example data "migraine" from DoseFinding package
 
 dosesFact <- as.factor(dose_levels)
-N <- migraine$ntrt
-RespRate <- migraine$painfree/N
+N         <- migraine$ntrt
+RespRate  <- migraine$painfree/N
 
 ##Execution of logistic regression and readout of parameters 
 ## (please note that estimates are automatically on logit scale)
 logfit <- glm(RespRate ~ dosesFact - 1, family = binomial, weights = N)
-muHat <- coef(logfit)
-S <- vcov(logfit)
+muHat  <- coef(logfit)
+S      <- vcov(logfit)
 ```
 
 ## Posterior Calculation
@@ -226,11 +234,11 @@ The summary of the posterior can be provided on the probability scale.
 **Show code**
 
 ``` r
-PostLogit<-getPosterior(prior_list,mu_hat=muHat,S_hat=S)
+post_logit <- getPosterior(prior_list, mu_hat = muHat, S_hat  = S)
 ```
 
 ``` r
-summary(PostLogit,probability_scale=TRUE)
+summary(post_logit,probability_scale = TRUE)
 #>           mean         sd       2.5%     50.0%     97.5%
 #> Ctr  0.1071168 0.02127962 0.06930686 0.1058282 0.1520040
 #> DG_1 0.1359001 0.06177459 0.04833967 0.1248126 0.2859179
@@ -259,7 +267,6 @@ priors.
 **Show code**
 
 ``` r
-
 contr_mat_prior <- getContr(
   mods           = models,
   dose_levels    = dose_levels,
@@ -279,9 +286,8 @@ The Bayesian MCP testing step is then executed:
 **Show code**
 
 ``` r
-
 BMCP_result <- performBayesianMCP(
-  posterior_list = PostLogit,
+  posterior_list = post_logit,
   contr          = contr_mat_prior, 
   crit_prob_adj  = crit_pval)
 ```
@@ -325,7 +331,7 @@ weights.
 model_fits <- getModelFits(
   models      = models,
   dose_levels = dose_levels,
-  posterior   = PostLogit,
+  posterior   = post_logit,
   simple      = TRUE,
   probability_scale = TRUE)
 ```
@@ -345,7 +351,7 @@ In case models should be shown on the logit scale this can be done in
 the following way:
 
 ``` r
-plot(model_fits,probability_scale=FALSE)
+plot(model_fits, probability_scale = FALSE)
 ```
 
 ![](binary_endpoint_files/figure-html/unnamed-chunk-15-1.png)
@@ -395,7 +401,6 @@ The effect needs to be specified on the probability scale.
 
 ``` r
 ##get MED
-
 getMED(
   delta       = 0.16,
   model_fits  = model_fits,
@@ -413,9 +418,8 @@ Testing, modeling, and MED assessment can also be combined via
 **Show code**
 
 ``` r
-
 BMCPMod_result <- performBayesianMCPMod(
-  posterior_list = PostLogit,
+  posterior_list = post_logit,
   contr          = contr_mat_prior,
   crit_prob_adj  = crit_pval,
   simple         = TRUE,

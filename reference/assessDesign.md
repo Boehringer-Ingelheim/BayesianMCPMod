@@ -37,7 +37,7 @@ assessDesign(
 
 - mods:
 
-  An object of class "Mods" as specified in the DoseFinding package.
+  An object of class `Mods` as specified in the `DoseFinding` package.
 
 - prior_list:
 
@@ -46,14 +46,15 @@ assessDesign(
 
 - sd:
 
-  A positive value, specification of assumed sd. Not required if
-  ´data_sim´ or ´estimates_sim´ is provided. Also not required in case
+  A positive value, specification of assumed sd. Not required if either
+  `data_sim` or `estimates_sim` is provided. Also not required in case
   of binary endpoint. Default NULL
 
 - contr:
 
-  An object of class 'optContr' as created by the getContr() function.
-  Allows specification of a fixed contrasts matrix. Default NULL.
+  An object of class `optContr` as created by the
+  `DoseFinding::getContr` function. Allows specification of a fixed
+  contrasts matrix. Default NULL.
 
 - dr_means:
 
@@ -63,14 +64,16 @@ assessDesign(
 - data_sim:
 
   An optional data frame for custom simulated data. Must follow the data
-  structure as provided by ´simulateData()´. Default NULL.
+  structure as provided by
+  [`simulateData()`](https://boehringer-ingelheim.github.io/BayesianMCPMod/reference/simulateData.md).
+  Default NULL.
 
 - estimates_sim:
 
   An optional named list of 1) list of vectors for the estimated means
-  per dose group (estimates_sim\$mu_hats) and 2) of list of matrices for
-  the covariance matrices specifying the (estimated) variabilities
-  (estimates_sim\$S_hats). Dimensions of entries must match the number
+  per dose group (`estimates_sim$mu_hats`) and 2) of list of matrices
+  for the covariance matrices specifying the (estimated) variabilities
+  (`estimates_sim$S_hats`). Dimensions of entries must match the number
   of dose levels. Default NULL.
 
 - n_sim:
@@ -80,7 +83,7 @@ assessDesign(
 - alpha_crit_val:
 
   (Un-adjusted) Critical value to be used for the MCP testing step.
-  Passed to the getCritProb() function for the calculation of adjusted
+  Passed to the `getCritProb` function for the calculation of adjusted
   critical values (on the probability scale). Default 0.05.
 
 - modeling:
@@ -91,8 +94,10 @@ assessDesign(
 
 - simple:
 
-  Boolean variable defining whether simplified fit will be applied.
-  Passed to the getModelFits function. Default TRUE.
+  Boolean variable defining whether simplified fit will be applied, see
+  [`?getModelFits`](https://boehringer-ingelheim.github.io/BayesianMCPMod/reference/getModelFits.md).
+  Set automatically to TRUE if argument `delta` is provided. Passed to
+  `getModelFits` Default TRUE.
 
 - avg_fit:
 
@@ -103,7 +108,7 @@ assessDesign(
 - reestimate:
 
   Boolean variable defining whether critical value should be calculated
-  with re-estimated contrasts (see getCritProb function for more
+  with re-estimated contrasts (see `getCritProb` function for more
   details). Default FALSE.
 
 - delta:
@@ -114,13 +119,14 @@ assessDesign(
 - evidence_level:
 
   A numeric value between 0 and 1 for the evidence level gamma for the
-  MED assessment. Only required for Bayesian MED assessment, see ?getMED
+  MED assessment. Only required for Bayesian MED assessment, see
+  [`?getMED`](https://boehringer-ingelheim.github.io/BayesianMCPMod/reference/getMED.md)
   for details. Default NULL.
 
 - med_selection:
 
-  A string, either "avgFit" or "bestFit", for the method of MED
-  selection. Default "avgFit".
+  A string, either `"avgFit"` or `"bestFit"`, for the method of MED
+  selection. Default `"avgFit"`.
 
 - probability_scale:
 
@@ -153,6 +159,62 @@ prior_list <- list(Ctrl = RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 12), sigma 
                    DG_4 = RBesT::mixnorm(comp1 = c(w = 1, m = 2, s = 13), sigma = 2))
 n_patients <- c(40, 60, 60, 60, 60)
 dose_levels  <- c(0, 0.5, 2, 4, 8)
+
+success_probabilities <- assessDesign(
+  n_patients  = n_patients,
+  mods        = mods,
+  prior_list  = prior_list,
+  sd          = sd,
+  n_sim       = 1e2) # speed up example run time
+
+success_probabilities
+#> $linear
+#> Bayesian Multiple Comparison Procedure
+#>   Estimated Success Rate: 0.86 
+#>   N Simulations:          100 
+#>    Model Shape:         lin emax1 emax2   exp betaM 
+#>    Significance Freq:  0.81  0.60  0.75  0.74  0.31 
+#> 
+#> $emax1
+#> Bayesian Multiple Comparison Procedure
+#>   Estimated Success Rate: 0.88 
+#>   N Simulations:          100 
+#>    Model Shape:         lin emax1 emax2   exp betaM 
+#>    Significance Freq:  0.57  0.81  0.78  0.24  0.74 
+#> 
+#> $emax2
+#> Bayesian Multiple Comparison Procedure
+#>   Estimated Success Rate: 0.9 
+#>   N Simulations:          100 
+#>    Model Shape:         lin emax1 emax2   exp betaM 
+#>    Significance Freq:  0.70  0.81  0.83  0.43  0.79 
+#> 
+#> $exponential
+#> Bayesian Multiple Comparison Procedure
+#>   Estimated Success Rate: 0.85 
+#>   N Simulations:          100 
+#>    Model Shape:         lin emax1 emax2   exp betaM 
+#>    Significance Freq:  0.81  0.33  0.54  0.83  0.04 
+#> 
+#> $betaMod
+#> Bayesian Multiple Comparison Procedure
+#>   Estimated Success Rate: 0.86 
+#>   N Simulations:          100 
+#>    Model Shape:         lin emax1 emax2   exp betaM 
+#>    Significance Freq:  0.28  0.61  0.67  0.04  0.85 
+#> 
+#> attr(,"avgSuccessRate")
+#> [1] 0.87
+#> attr(,"placEff")
+#> [1] 0
+#> attr(,"maxEff")
+#> [1] 6
+#> attr(,"sampleSize")
+#> [1] 40 60 60 60 60
+#> attr(,"priorESS")
+#> Ctrl DG_1 DG_2 DG_3 DG_4 
+#>    0    0    0    0    0 
+
 ## Analysis with custom data
 data_sim <- simulateData(
   n_patients        = n_patients,
@@ -161,53 +223,53 @@ data_sim <- simulateData(
   mods              = mods,
   n_sim             = 10)
 
-success_probabilities <- assessDesign(
+success_probabilities_cd <- assessDesign(
   n_patients  = n_patients,
   mods        = mods,
   prior_list  = prior_list,
-  data_sim = data_sim,
+  data_sim    = data_sim,
   sd          = sd,
   n_sim       = 1e2) # speed up example run time
 #> Consider to provide 'contr' for your custom simulated data or analysis results.
 
-success_probabilities
+success_probabilities_cd
 #> $linear
 #> Bayesian Multiple Comparison Procedure
 #>   Estimated Success Rate: 1 
 #>   N Simulations:          10 
 #>    Model Shape:         lin emax1 emax2   exp betaM 
-#>    Significance Freq:   0.9   0.8   0.8   0.7   0.3 
+#>    Significance Freq:   1.0   0.6   0.8   0.9   0.1 
 #> 
 #> $emax1
 #> Bayesian Multiple Comparison Procedure
-#>   Estimated Success Rate: 0.8 
+#>   Estimated Success Rate: 1 
 #>   N Simulations:          10 
 #>    Model Shape:         lin emax1 emax2   exp betaM 
-#>    Significance Freq:   0.5   0.8   0.8   0.2   0.8 
+#>    Significance Freq:   0.6   1.0   1.0   0.3   0.8 
 #> 
 #> $emax2
 #> Bayesian Multiple Comparison Procedure
-#>   Estimated Success Rate: 0.8 
+#>   Estimated Success Rate: 1 
 #>   N Simulations:          10 
 #>    Model Shape:         lin emax1 emax2   exp betaM 
-#>    Significance Freq:   0.5   0.8   0.8   0.3   0.8 
+#>    Significance Freq:   0.8   1.0   1.0   0.4   0.9 
 #> 
 #> $exponential
+#> Bayesian Multiple Comparison Procedure
+#>   Estimated Success Rate: 1 
+#>   N Simulations:          10 
+#>    Model Shape:         lin emax1 emax2   exp betaM 
+#>    Significance Freq:   1.0   0.3   0.6   1.0   0.0 
+#> 
+#> $betaMod
 #> Bayesian Multiple Comparison Procedure
 #>   Estimated Success Rate: 0.9 
 #>   N Simulations:          10 
 #>    Model Shape:         lin emax1 emax2   exp betaM 
-#>    Significance Freq:   0.9   0.3   0.6   0.9   0.0 
-#> 
-#> $betaMod
-#> Bayesian Multiple Comparison Procedure
-#>   Estimated Success Rate: 0.8 
-#>   N Simulations:          10 
-#>    Model Shape:         lin emax1 emax2   exp betaM 
-#>    Significance Freq:   0.2   0.8   0.8   0.2   0.8 
+#>    Significance Freq:   0.3   0.6   0.6   0.0   0.9 
 #> 
 #> attr(,"avgSuccessRate")
-#> [1] 0.86
+#> [1] 0.98
 #> attr(,"placEff")
 #> [1] 0
 #> attr(,"maxEff")
@@ -232,73 +294,17 @@ success_probs_custom_dr <- assessDesign(
 success_probs_custom_dr
 #> $dr_response
 #> Bayesian Multiple Comparison Procedure
-#>   Estimated Success Rate: 0.58 
+#>   Estimated Success Rate: 0.53 
 #>   N Simulations:          100 
 #>    Model Shape:         lin emax1 emax2   exp betaM 
-#>    Significance Freq:  0.47  0.41  0.48  0.32  0.28 
+#>    Significance Freq:  0.38  0.37  0.41  0.25  0.27 
 #> 
 #> attr(,"avgSuccessRate")
-#> [1] 0.58
+#> [1] 0.53
 #> attr(,"placEff")
 #> [1] 1
 #> attr(,"maxEff")
 #> [1] 4
-#> attr(,"sampleSize")
-#> [1] 40 60 60 60 60
-#> attr(,"priorESS")
-#> Ctrl DG_1 DG_2 DG_3 DG_4 
-#>    0    0    0    0    0 
-
-  
-success_probs_custom_data <- assessDesign(
-  n_patients    = n_patients,
-  mods          = mods,
-  prior_list    = prior_list,
-  data_sim      = data_sim)
-#> Consider to provide 'contr' for your custom simulated data or analysis results.
-  
-  success_probs_custom_data
-#> $linear
-#> Bayesian Multiple Comparison Procedure
-#>   Estimated Success Rate: 1 
-#>   N Simulations:          10 
-#>    Model Shape:         lin emax1 emax2   exp betaM 
-#>    Significance Freq:   0.9   0.8   0.8   0.7   0.3 
-#> 
-#> $emax1
-#> Bayesian Multiple Comparison Procedure
-#>   Estimated Success Rate: 0.8 
-#>   N Simulations:          10 
-#>    Model Shape:         lin emax1 emax2   exp betaM 
-#>    Significance Freq:   0.5   0.8   0.8   0.2   0.8 
-#> 
-#> $emax2
-#> Bayesian Multiple Comparison Procedure
-#>   Estimated Success Rate: 0.8 
-#>   N Simulations:          10 
-#>    Model Shape:         lin emax1 emax2   exp betaM 
-#>    Significance Freq:   0.5   0.8   0.8   0.3   0.8 
-#> 
-#> $exponential
-#> Bayesian Multiple Comparison Procedure
-#>   Estimated Success Rate: 0.9 
-#>   N Simulations:          10 
-#>    Model Shape:         lin emax1 emax2   exp betaM 
-#>    Significance Freq:   0.9   0.3   0.6   0.9   0.0 
-#> 
-#> $betaMod
-#> Bayesian Multiple Comparison Procedure
-#>   Estimated Success Rate: 0.8 
-#>   N Simulations:          10 
-#>    Model Shape:         lin emax1 emax2   exp betaM 
-#>    Significance Freq:   0.2   0.8   0.8   0.2   0.8 
-#> 
-#> attr(,"avgSuccessRate")
-#> [1] 0.86
-#> attr(,"placEff")
-#> [1] 0
-#> attr(,"maxEff")
-#> [1] 6
 #> attr(,"sampleSize")
 #> [1] 40 60 60 60 60
 #> attr(,"priorESS")
@@ -323,7 +329,7 @@ success_probs_custom_est
 #>   Estimated Success Rate: 0.92 
 #>   N Simulations:          100 
 #>    Model Shape:         lin emax1 emax2   exp betaM 
-#>    Significance Freq:  0.80  0.80  0.89  0.63  0.64 
+#>    Significance Freq:  0.80  0.87  0.87  0.68  0.53 
 #> 
 #> attr(,"avgSuccessRate")
 #> [1] 0.92
