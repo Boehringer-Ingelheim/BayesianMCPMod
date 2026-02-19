@@ -457,7 +457,7 @@ performBayesianMCPMod <- function (
 
       if (!is.null(model_fits)) { # model shape is significant
 
-        if (!is.null(evidence_level)) { # && abs(evidence_level - 0.5) < 1e-9
+        if (!is.null(evidence_level)) { # && abs(evidence_level - 0.5) < 1e-9 # in case MED assessment with 0.5 should result in using the modelFit
           
           bs_quantile <- ifelse(test = attr(model_fits, "direction") == "increasing",
                                 yes  = 1 - evidence_level,
