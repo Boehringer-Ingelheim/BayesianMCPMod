@@ -18,6 +18,7 @@
 #' @param reestimate Boolean variable defining whether critical value should be calculated with re-estimated contrasts (see `getCritProb` function for more details). Default FALSE.
 #' @param delta A numeric value for the threshold Delta for the MED assessment. If NULL, no MED assessment is performed. Default NULL.
 #' @param evidence_level A numeric value between 0 and 1 for the evidence level gamma for the MED assessment. Only required for Bayesian MED assessment, see `?getMED` for details. Default NULL.
+#' @param n_bs_samples Number of bootstrap samples for the MED assessment if `evidence_level` is provided. Note that more extreme quantiles (i.e., closer to 0 or 1) tend to require more bootstrap samples to maintain precision. Default 1000.
 #' @param med_selection A string, either `"avgFit"` or `"bestFit"`, for the method of MED selection. Default `"avgFit"`.
 #' @param probability_scale A boolean to specify if the trial has a continuous or a binary outcome. Setting to TRUE will transform calculations from the logit scale to the probability scale, which can be desirable for a binary outcome. Default FALSE.
 #'
@@ -149,6 +150,7 @@ assessDesign <- function (
   
   delta             = NULL,
   evidence_level    = NULL,
+  n_bs_samples      = 1000,
   med_selection     = c("avgFit", "bestFit"),
   
   probability_scale = FALSE
@@ -301,7 +303,7 @@ assessDesign <- function (
         delta             = delta,
         evidence_level    = evidence_level,
         med_selection     = med_selection,
-        n_samples         = n_sim,
+        n_samples         = n_bs_samples,
         probability_scale = probability_scale) # should this also be transferred via attribute?
       
     } else {
