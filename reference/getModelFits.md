@@ -71,10 +71,10 @@ getModelFits(
 
 - probability_scale:
 
-  A boolean variable to specify if the trial has a continuous or a
-  binary outcome. Setting to TRUE will transform predictions from the
-  logit scale to the probability scale, which can be desirable for a
-  binary outcome. Default FALSE.
+  A boolean variable to specify if the predicted dose-response should be
+  on the logit scale or the probability scale. Setting to TRUE will
+  transform predictions from the logit scale to the probability scale,
+  which can be desirable for a binary outcome. Default FALSE.
 
 ## Value
 
@@ -92,8 +92,8 @@ model averaging in dose finding studies. Stat Med; 35; 4021-4040.
 ``` r
 posterior_list <- list(Ctrl = RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 1), sigma = 2),
                        DG_1 = RBesT::mixnorm(comp1 = c(w = 1, m = 3, s = 1.2), sigma = 2),
-                       DG_2 = RBesT::mixnorm(comp1 = c(w = 1, m = 4, s = 1.5), sigma = 2) ,
-                       DG_3 = RBesT::mixnorm(comp1 = c(w = 1, m = 6, s = 1.2), sigma = 2) ,
+                       DG_2 = RBesT::mixnorm(comp1 = c(w = 1, m = 4, s = 1.5), sigma = 2),
+                       DG_3 = RBesT::mixnorm(comp1 = c(w = 1, m = 6, s = 1.2), sigma = 2),
                        DG_4 = RBesT::mixnorm(comp1 = c(w = 1, m = 6.5, s = 1.1), sigma = 2))
 models         <- c("emax", "exponential", "sigEmax", "linear")
 dose_levels    <- c(0, 1, 2, 4, 8)

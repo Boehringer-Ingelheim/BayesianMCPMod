@@ -1,4 +1,4 @@
-# Binary Endpoints in Bayesian MCP-Mod
+# Analysis Example of Bayesian MCPMod for Binary Data
 
 **Show code**
 
@@ -44,12 +44,12 @@ This package makes use of the
 parallel processing, which can be set up for example as follows:
 
 ``` r
-future::plan(future::multisession)
+future::plan(future::multisession, workers = 4L)
 ```
 
-Kindly note that due to overhead in many cases a reduced number of
-worker nodes is preferable and that for short calculations sequential
-execution can be faster.
+Kindly note that due to overhead a reduced number of worker nodes can be
+preferable and that for short calculations sequential execution can be
+faster.
 
 ### Scale Conventions Used in this Vignette
 
@@ -79,9 +79,9 @@ prior will be specified.
 **Show code**
 
 ``` r
-study <- c("study_1", "study_2", "study_3")
-n     <- c(70,  115, 147) # sample size per study
-r     <- c( 6,   16,  16)  # n responders per study
+trial <- c("trial_1", "trial_2", "trial_3")
+n     <- c(70,  115, 147) # sample size per trial
+r     <- c( 6,   16,  16) # n responders per trial
 ```
 
 Our approach to establish a MAP prior is conducted in 3 steps. First the
@@ -100,10 +100,10 @@ establish a reasonable informative prior in this setting.
 ``` r
 dose_levels <- c(0, 2.5, 5, 10, 20, 50, 100, 200)
 
-#i) Establish MAP prior (beta mixture distribution)
+# i) Establish MAP prior (beta mixture distribution)
 set.seed(7015) # re-set seed only for this example; remove in your analysis script
 map <- gMAP(
-  cbind(r, n - r) ~ 1 | study,
+  cbind(r, n - r) ~ 1 | trial,
   family     = binomial,
   tau.dist   = "HalfNormal",
   tau.prior  = 0.5,
@@ -117,7 +117,7 @@ map <- gMAP(
 map
 #> Generalized Meta Analytic Predictive Prior Analysis
 #> 
-#> Call:  gMAP(formula = cbind(r, n - r) ~ 1 | study, family = binomial, 
+#> Call:  gMAP(formula = cbind(r, n - r) ~ 1 | trial, family = binomial, 
 #>     tau.dist = "HalfNormal", tau.prior = 0.5, beta.prior = (1/sqrt(0.1 * 
 #>         0.9)), iter = 10000, warmup = 1000, thin = 1, chains = 2)
 #> 
@@ -134,24 +134,22 @@ map
 #> 0.1190 0.0494 0.0454 0.1130 0.2340
 
 prior <- automixfit(map) #fits mixture distribution from MCMC samples from above
+p     <- summary(prior)[1]
 
-#ess(prior)
-p <- summary(prior)[1]
-
-#ii) Robustify prior
-prior.rob <- RBesT::robustify(priormix = prior,
+# ii) Robustify prior
+prior_rob <- RBesT::robustify(priormix = prior,
                               mean     = 0.5,
                               weight   = 0.4)
 
-#iii) Translate prior to logit scale (to approximate via normal mixture model)
-r                <- rmix(prior.rob, n = 1e4)
-log.r            <- RBesT::logit(r)
-prior.ctr        <- automixfit(log.r, type = "norm")
+# iii) Translate prior to logit scale (to approximate via normal mixture model)
+r                <- rmix(prior_rob, n = 1e4)
+log_r            <- RBesT::logit(r)
+prior_ctr        <- automixfit(log_r, type = "norm")
 
-#Specification of reference scale (this follows the idea of [@Neuenschwander2016]).
-sigma(prior.ctr) <- sqrt(1 / (p * (1 - p)))
+# Specification of reference scale (this follows the idea of [@Neuenschwander2016]).
+sigma(prior_ctr) <- sqrt(1 / (p * (1 - p)))
 
-#Specify a prior list
+# Specify a prior list
 prior_trt <- RBesT::mixnorm(
   comp1 = c(
     w = 1,
@@ -162,7 +160,7 @@ prior_trt <- RBesT::mixnorm(
   param = "mn"
 )
 
-prior_list <- c(list(prior.ctr),
+prior_list <- c(list(prior_ctr),
                 rep(x     = list(prior_trt),
                     times = length(dose_levels[-1])))
 
@@ -212,15 +210,15 @@ additional covariates) to get estimates on the logit scale.
 
 data("migraine") #example data "migraine" from DoseFinding package
 
-dosesFact <- as.factor(dose_levels)
-N         <- migraine$ntrt
-RespRate  <- migraine$painfree/N
+doses_fact <- as.factor(dose_levels)
+n_patients <- migraine$ntrt
+resp_rate  <- migraine$painfree/n_patients
 
 ##Execution of logistic regression and readout of parameters 
 ## (please note that estimates are automatically on logit scale)
-logfit <- glm(RespRate ~ dosesFact - 1, family = binomial, weights = N)
-muHat  <- coef(logfit)
-S      <- vcov(logfit)
+log_fit <- glm(resp_rate ~ doses_fact - 1, family = binomial, weights = n_patients)
+mu_hat  <- coef(log_fit)
+S_hat   <- vcov(log_fit)
 ```
 
 ## Posterior Calculation
@@ -234,7 +232,7 @@ The summary of the posterior can be provided on the probability scale.
 **Show code**
 
 ``` r
-post_logit <- getPosterior(prior_list, mu_hat = muHat, S_hat  = S)
+post_logit <- getPosterior(prior_list, mu_hat = mu_hat, S_hat  = S_hat)
 ```
 
 ``` r
@@ -270,13 +268,13 @@ priors.
 contr_mat_prior <- getContr(
   mods           = models,
   dose_levels    = dose_levels,
-  dose_weights   = N)
+  dose_weights   = n_patients)
 
 set.seed(7015) # re-sets seed only for this example; remove in your analysis script
 crit_pval <- getCritProb(
   mods           = models,
   dose_levels    = dose_levels,
-  cov_new_trial   = S,
+  cov_new_trial  = S_hat,
   alpha_crit_val = 0.05
 )
 ```
@@ -419,11 +417,11 @@ Testing, modeling, and MED assessment can also be combined via
 
 ``` r
 BMCPMod_result <- performBayesianMCPMod(
-  posterior_list = post_logit,
-  contr          = contr_mat_prior,
-  crit_prob_adj  = crit_pval,
-  simple         = TRUE,
-  delta          = 0.16,
+  posterior_list    = post_logit,
+  contr             = contr_mat_prior,
+  crit_prob_adj     = crit_pval,
+  simple            = TRUE,
+  delta             = 0.16,
   probability_scale = TRUE
 )
 ```

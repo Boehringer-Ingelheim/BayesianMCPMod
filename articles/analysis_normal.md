@@ -40,12 +40,12 @@ This package makes use of the
 parallel processing, which can be set up for example as follows:
 
 ``` r
-future::plan(future::multisession)
+future::plan(future::multisession, workers = 4L)
 ```
 
-Kindly note that due to overhead in many cases a reduced number of
-worker nodes is preferable and that for short calculations sequential
-execution can be faster.
+Kindly note that due to overhead a reduced number of worker nodes can be
+preferable and that for short calculations sequential execution can be
+faster.
 
 ## Calculation of a MAP Prior
 

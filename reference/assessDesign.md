@@ -23,6 +23,7 @@ assessDesign(
   reestimate = FALSE,
   delta = NULL,
   evidence_level = NULL,
+  n_bs_samples = 1000,
   med_selection = c("avgFit", "bestFit"),
   probability_scale = FALSE
 )
@@ -121,7 +122,15 @@ assessDesign(
   A numeric value between 0 and 1 for the evidence level gamma for the
   MED assessment. Only required for Bayesian MED assessment, see
   [`?getMED`](https://boehringer-ingelheim.github.io/BayesianMCPMod/reference/getMED.md)
-  for details. Default NULL.
+  for details. If NULL, MED assessment will be performed on the fitted
+  model according to the argument `med_selection`. Default NULL.
+
+- n_bs_samples:
+
+  Number of bootstrap samples for the MED assessment if `evidence_level`
+  is provided. Note that more extreme quantiles (i.e., quantiles closer
+  to 0 or 1) tend to require more bootstrap samples to maintain
+  precision. Default 1000.
 
 - med_selection:
 

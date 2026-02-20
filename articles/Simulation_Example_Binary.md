@@ -1,4 +1,4 @@
-# Simulation Example of Bayesian MCPMod for binary Data
+# Simulation Example of Bayesian MCPMod for Binary Data
 
 ## Background and Data
 
