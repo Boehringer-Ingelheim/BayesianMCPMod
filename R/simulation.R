@@ -111,7 +111,7 @@ simulateData <- function(
     # simulate responders from binomial distribution
     model_response_rates <- RBesT::inv_logit(model_responses)
     simulated_responses  <- matrix(
-      rbinom(length(model_response_rates), size = 1L, prob = as.vector(model_response_rates)),
+      stats::rbinom(length(model_response_rates), size = 1L, prob = as.vector(model_response_rates)),
       nrow = nrow(model_response_rates), ncol = ncol(model_response_rates))
     colnames(simulated_responses) <- colnames(model_response_rates)
     

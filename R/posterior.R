@@ -148,7 +148,7 @@ getPosteriorI <- function(
     
     if (probability_scale) {
       
-      logit_fit <- stats::glm(data_i$response ~ factor(data_i$dose) - 1, family = binomial)
+      logit_fit <- stats::glm(data_i$response ~ factor(data_i$dose) - 1, family = stats::binomial)
       mu_hat    <- stats::coef(logit_fit)
       se_hat    <- diag(sqrt(stats::vcov(logit_fit)))
       

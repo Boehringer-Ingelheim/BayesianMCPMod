@@ -458,7 +458,7 @@ summary.postList <- function (
         
         p <- RBesT::inv_logit(x)
         
-        return (p * dnorm(x, mean = mu, sd = sigma))
+        return (p * stats::dnorm(x, mean = mu, sd = sigma))
         
       }
       
@@ -467,13 +467,13 @@ summary.postList <- function (
         
         p <- RBesT::inv_logit(x)
         
-        return (p^2 * dnorm(x, mean = mu, sd = sigma))
+        return (p^2 * stats::dnorm(x, mean = mu, sd = sigma))
         
       }
       
       # numerical integration
-      m1 <- integrate(integrand_mean,   -Inf, Inf, rel.tol = 1e-9)$value
-      m2 <- integrate(integrand_second, -Inf, Inf, rel.tol = 1e-9)$value
+      m1 <- stats::integrate(integrand_mean,   -Inf, Inf, rel.tol = 1e-9)$value
+      m2 <- stats::integrate(integrand_second, -Inf, Inf, rel.tol = 1e-9)$value
       
       # standard deviation
       sd_p <- sqrt(m2 - m1^2)
