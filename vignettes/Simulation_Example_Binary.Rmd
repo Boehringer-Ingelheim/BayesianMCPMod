@@ -1,5 +1,5 @@
 ---
-title: "Simulation Example of Bayesian MCPMod for binary Data"
+title: "Simulation Example of Bayesian MCPMod for Binary Data"
 format: 
   html:
     fig-height: 3.5
@@ -12,7 +12,7 @@ format:
     warning: false
 bibliography: references.bib
 vignette: >
-  %\VignetteIndexEntry{Simulation Example of Bayesian MCPMod for binary Data}
+  %\VignetteIndexEntry{Simulation Example of Bayesian MCPMod for Binary Data}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

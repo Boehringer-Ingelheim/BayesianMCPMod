@@ -27,7 +27,7 @@ Implemented model shapes are \code{"linear"}, \code{"exponential"}, \code{"logis
 
 \item{simple}{Boolean variable, defining whether simplified fit will be applied. Default FALSE.}
 
-\item{probability_scale}{A boolean variable to specify if the trial has a continuous or a binary outcome. Setting to TRUE will transform predictions from the logit scale to the probability scale, which can be desirable for a binary outcome. Default FALSE.}
+\item{probability_scale}{A boolean variable to specify if the predicted dose-response should be on the logit scale or the probability scale. Setting to TRUE will transform predictions from the logit scale to the probability scale, which can be desirable for a binary outcome. Default FALSE.}
 }
 \value{
 An object of class modelFits. A list containing information about the fitted model coefficients, the prediction per dose group as well as maximum effect and generalized AIC (and corresponding weight) per model.
@@ -54,8 +54,8 @@ where \eqn{Q} denotes the number of models included in the averaging procedure.
 \examples{
 posterior_list <- list(Ctrl = RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 1), sigma = 2),
                        DG_1 = RBesT::mixnorm(comp1 = c(w = 1, m = 3, s = 1.2), sigma = 2),
-                       DG_2 = RBesT::mixnorm(comp1 = c(w = 1, m = 4, s = 1.5), sigma = 2) ,
-                       DG_3 = RBesT::mixnorm(comp1 = c(w = 1, m = 6, s = 1.2), sigma = 2) ,
+                       DG_2 = RBesT::mixnorm(comp1 = c(w = 1, m = 4, s = 1.5), sigma = 2),
+                       DG_3 = RBesT::mixnorm(comp1 = c(w = 1, m = 6, s = 1.2), sigma = 2),
                        DG_4 = RBesT::mixnorm(comp1 = c(w = 1, m = 6.5, s = 1.1), sigma = 2))
 models         <- c("emax", "exponential", "sigEmax", "linear")
 dose_levels    <- c(0, 1, 2, 4, 8)

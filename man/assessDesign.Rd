@@ -21,6 +21,7 @@ assessDesign(
   reestimate = FALSE,
   delta = NULL,
   evidence_level = NULL,
+  n_bs_samples = 1000,
   med_selection = c("avgFit", "bestFit"),
   probability_scale = FALSE
 )
@@ -56,7 +57,9 @@ assessDesign(
 
 \item{delta}{A numeric value for the threshold Delta for the MED assessment. If NULL, no MED assessment is performed. Default NULL.}
 
-\item{evidence_level}{A numeric value between 0 and 1 for the evidence level gamma for the MED assessment. Only required for Bayesian MED assessment, see \code{?getMED} for details. Default NULL.}
+\item{evidence_level}{A numeric value between 0 and 1 for the evidence level gamma for the MED assessment. Only required for Bayesian MED assessment, see \code{?getMED} for details. If NULL, MED assessment will be performed on the fitted model according to the argument \code{med_selection}.  Default NULL.}
+
+\item{n_bs_samples}{Number of bootstrap samples for the MED assessment if \code{evidence_level} is provided. Note that more extreme quantiles (i.e., quantiles closer to 0 or 1) tend to require more bootstrap samples to maintain precision. Default 1000.}
 
 \item{med_selection}{A string, either \code{"avgFit"} or \code{"bestFit"}, for the method of MED selection. Default \code{"avgFit"}.}
 
