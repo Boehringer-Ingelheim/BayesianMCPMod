@@ -11,14 +11,14 @@ Maintainer: <stephan.wojciekowski@boehringer-ingelheim.com>
   - Status: OK
 - Macbuilder aarch64-apple-darwin20, macOS Ventura 13.3.1, R version 4.4.2 (2024-10-31)
   - Status: OK
-- GitHub Action Linux: R version 4.5.1 (2025-06-13), x86_64-pc-linux-gnu
+- GitHub Action Linux: using R version 4.5.2 (2025-10-31), x86_64-pc-linux-gnu
   - Status: OK
-- GitHub Action Mac: R version 4.5.1 (2025-06-13), aarch64-apple-darwin20
+- GitHub Action Mac: R version 4.5.2 (2025-10-31), aarch64-apple-darwin20
   - Status: OK
-- GitHub Action Windows: R version 4.5.1 (2025-06-13 ucrt), x86_64-w64-mingw32
+- GitHub Action Windows: R version 4.5.2 (2025-10-31 ucrt), x86_64-w64-mingw32
   - Status: 1 NOTE
     - checking for detritus in the temp directory ... NOTE
-    - Found the following files/directories: 'Rscript146886f5c' 'Rscript1c2c86f6c'
+    - Found the following files/directories: 'Rscript1230a75fa' 'Rscripta0ca75fa'
     - This seems to be a Windows github action related NOTE that I could not reproduce elsewhere.
 
 ## BayesianMCPMod 1.3.0 (XX-Feb-2026)
