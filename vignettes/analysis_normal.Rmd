@@ -31,7 +31,7 @@ set.seed(7015)
 
 <details>
 <summary><strong>Show code</strong></summary>
-```{r setup, collapse=TRUE}
+```{r table_function, collapse=TRUE}
 display_params_table <- function(named_list) {
   round_numeric <- function(x, digits = 3) if (is.numeric(x)) round(x, digits) else x
   tbl <- data.frame(
