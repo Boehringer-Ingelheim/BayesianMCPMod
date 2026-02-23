@@ -1,5 +1,5 @@
 ---
-title: "Simulation Example of Bayesian MCPMod for Continuous Data"
+title: "Trial Simulation Example of Bayesian MCPMod for Continuous Data"
 date: "`r Sys.Date()`"
 output:
   rmarkdown::html_vignette:
@@ -7,7 +7,7 @@ output:
     toc_depth: 2
     number_sections: true
 vignette: >
-  %\VignetteIndexEntry{Simulation Example of Bayesian MCPMod for Continuous Data}
+  %\VignetteIndexEntry{Trial Simulation Example of Bayesian MCPMod for Continuous Data}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 bibliography: references.bib
@@ -41,10 +41,12 @@ More specifically, trial results for BRINTELLIX will be utilized to establish an
 
 A more general overview of the R package was provided with a [poster](https://github.com/Boehringer-Ingelheim/BayesianMCPMod/blob/36763ee5325955ca5d76a6c140ea3881c74e5fda/inst/PSI_Poster_2024.pdf) presented during the PSI 2024 Conference.
 
-This package makes use of the [future](https://cran.r-project.org/package=future) framework for parallel processing, which can be set up as follows:
+This package makes use of the [future](https://cran.r-project.org/package=future) framework for parallel processing, which can be set up for example as follows:
 ```{r, eval = FALSE}
-future::plan(future::multisession)
+future::plan(future::multisession, workers = 4L)
 ```
+Kindly note that due to overhead a reduced number of worker nodes can be preferable and that for short calculations sequential execution can be faster.
+
 # Calculation of a MAP Prior
 In a first step, a meta analytic predictive prior will be calculated using historical data from 5 trials with main endpoint Change from baseline in MADRS score after 8 weeks.
 Please note that only information from the control group will be integrated leading to an informative mixture prior for the control group, while for the active groups a non-informative prior will be specified.
@@ -73,6 +75,7 @@ prior_list  <- getPriorList(
   dose_levels   = dose_levels,
   robust_weight = 0.3)
 ```
+
 ```{r Setting Prior, echo = FALSE}
 dose_levels <- c(0, 2.5, 5, 10, 20)
 

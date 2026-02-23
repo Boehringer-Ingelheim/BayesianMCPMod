@@ -1,5 +1,5 @@
 ---
-title: "Analysis Example of Bayesian MCPMod for Continuous Data"
+title: "Trial Analysis Example of Bayesian MCPMod for Continuous Data"
 date: "`r Sys.Date()`"
 output:
   rmarkdown::html_vignette:
@@ -7,14 +7,13 @@ output:
     toc_depth: 2
     number_sections: true
 vignette: >
-  %\VignetteIndexEntry{Analysis Example of Bayesian MCPMod for Continuous Data}
+  %\VignetteIndexEntry{Trial Analysis Example of Bayesian MCPMod for Continuous Data}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 bibliography: references.bib
 ---
 
-
-```{r setup, collapse=TRUE}
+```{r setup}
 #| code-summary: setup
 #| code-fold: true
 #| message: false
@@ -28,7 +27,11 @@ library(tibble)
 library(reactable)
 
 set.seed(7015)
+```
 
+<details>
+<summary><strong>Show code</strong></summary>
+```{r setup, collapse=TRUE}
 display_params_table <- function(named_list) {
   round_numeric <- function(x, digits = 3) if (is.numeric(x)) round(x, digits) else x
   tbl <- data.frame(
@@ -43,6 +46,7 @@ display_params_table <- function(named_list) {
   knitr::kable(tbl)
 }
 ```
+</details>
 
 # Introduction 
 
@@ -153,7 +157,7 @@ Candidate models are specified using the {DoseFinding} package. Models can be
 parameterized using guesstimates or by directly providing distribution parameters. 
 Note that the linear candidate model does not require parameterization.
 
-[**Note:** The LinLog model is rarely used and not currently supported by `{BayesianMCPMod}`.]{.aside}
+[**Note:** The LinLog model is rarely used and not currently supported by `BayesianMCPMod`.]{.aside}
 
 In the code below, the models are "guesstimated" using the `DoseFinding::guesst` function. 
 The `d` option usually takes a single value (a dose level), and the corresponding `p` 
@@ -237,7 +241,7 @@ knitr::kable(DoseFinding::getResp(mods, doses = dose_levels))
 ## Trial Data
 
 We will use the trial with ct.gov number NCT00735709 as our phase 2 trial data,
-available in the `{clinDR}` package [@nct00735709_2024a].
+available in the `clinDR` package [@nct00735709_2024a].
 
 ```{r}
 data("metaData")
@@ -343,7 +347,7 @@ Both simplified and full fitting are performed.
 
 For the simplified fit, the multivariate normal distribution of the control group is approximated and reduced by a one-dimensional normal distribution.
 
-The actual fit (on this approximated posterior distribution) is then performed using generalized least squares criterion. In contrast, for the full fit, the non-linear optimization problem is addressed via the Nelder-Mead algorithm [@neldermead_2024a] implemented by the `{nloptr}` package.
+The actual fit (on this approximated posterior distribution) is then performed using generalized least squares criterion. In contrast, for the full fit, the non-linear optimization problem is addressed via the Nelder-Mead algorithm [@neldermead_2024a] implemented by the `nloptr` package.
 
 The output of the fit includes information about the predicted effects for the included dose levels, the generalized AIC, and the corresponding weights.
 
@@ -431,7 +435,7 @@ getMED(
 ```
 For an optional Bayesian decision rule for the MED assessment and further details, please see `?getMED()`.
 
-# Additional Note
+## Additional Note
 
 Testing, modeling, and MED assessment can also be combined via `performBayesianMCPMod()`:
 
