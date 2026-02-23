@@ -5,12 +5,12 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Analysis Example of Bayesian MCPMod for Binary Data • BayesianMCPMod</title>
+<title>Trial Analysis Example of Bayesian MCPMod for Binary Data • BayesianMCPMod</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Analysis Example of Bayesian MCPMod for Binary Data">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Trial Analysis Example of Bayesian MCPMod for Binary Data">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -32,10 +32,10 @@
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/analysis_normal.html">Analysis Example of Bayesian MCPMod for Continuous Data</a></li>
-    <li><a class="dropdown-item" href="../articles/binary_endpoint.html">Analysis Example of Bayesian MCPMod for Binary Data</a></li>
-    <li><a class="dropdown-item" href="../articles/Simulation_Example.html">Simulation Example of Bayesian MCPMod for Continuous Data</a></li>
-    <li><a class="dropdown-item" href="../articles/Simulation_Example_Binary.html">Simulation Example of Bayesian MCPMod for Binary Data</a></li>
+<li><a class="dropdown-item" href="../articles/analysis_normal.html">Trial Analysis Example of Bayesian MCPMod for Continuous Data</a></li>
+    <li><a class="dropdown-item" href="../articles/binary_endpoint.html">Trial Analysis Example of Bayesian MCPMod for Binary Data</a></li>
+    <li><a class="dropdown-item" href="../articles/Simulation_Example.html">Trial Simulation Example of Bayesian MCPMod for Continuous Data</a></li>
+    <li><a class="dropdown-item" href="../articles/Simulation_Example_Binary.html">Trial Simulation Example of Bayesian MCPMod for Binary Data</a></li>
     <li><a class="dropdown-item" href="../articles/Simulation_Comparison.html">Comparison of Bayesian MCPMod and MCPMod</a></li>
   </ul>
 </li>
@@ -60,9 +60,9 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
 
-      <h1>Analysis Example of Bayesian MCPMod for Binary Data</h1>
+      <h1>Trial Analysis Example of Bayesian MCPMod for Binary Data</h1>
             
-            <h4 data-toc-skip class="date">2026-02-20</h4>
+            <h4 data-toc-skip class="date">2026-02-23</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/Boehringer-Ingelheim/BayesianMCPMod/blob/main/vignettes/binary_endpoint.Rmd" class="external-link"><code>vignettes/binary_endpoint.Rmd</code></a></small>
       <div class="d-none name"><code>binary_endpoint.Rmd</code></div>
@@ -115,22 +115,20 @@ for parallel processing, which can be set up for example as follows:</p>
 be preferable and that for short calculations sequential execution can
 be faster.</p>
 <div class="section level3">
-<h3 id="scale-conventions-used-in-this-vignette">Scale Conventions Used in this Vignette<a class="anchor" aria-label="anchor" href="#scale-conventions-used-in-this-vignette"></a>
+<h3 id="scale-conventions-in-bayesianmcpmod">Scale Conventions in <code>BayesianMCPMod</code><a class="anchor" aria-label="anchor" href="#scale-conventions-in-bayesianmcpmod"></a>
 </h3>
 <div class="alert alert-info">
-<p><strong>Scale Conventions</strong></p>
 <ul>
-<li>Internally, <strong>BayesianMCPMod</strong> fits binary endpoints on
-the <strong>logit scale</strong>.</li>
-<li>
-<code>probability_scale</code> controls whether outputs (summaries,
-predictions, plots) are transformed back to
+<li>Internally, <code>BayesianMCPMod</code> fits binary endpoints on the
+<strong>logit scale</strong>.</li>
+<li>The function argument <code>probability_scale</code> controls
+whether outputs (summaries, predictions, plots) are back-transformed to
 <strong>probabilities</strong>.</li>
-<li>In <code><a href="../reference/simulateData.html">simulateData()</a></code>, <code>probability_scale</code>
-controls whether data is simulated on the response scale.</li>
-<li>
-<code>delta</code> for MED is interpreted on the <strong>probability
-scale</strong> when <code>probability_scale = TRUE</code>.</li>
+<li>In <code><a href="../reference/simulateData.html">simulateData()</a></code>, outcomes are simulated on the
+response scale if <code>probability_scale = TRUE</code>.</li>
+<li>In <code><a href="../reference/getMED.html">getMED()</a></code>, <code>delta</code> is interpreted on the
+<strong>probability scale</strong> if
+<code>probability_scale = TRUE</code>.</li>
 </ul>
 </div>
 </div>
@@ -138,13 +136,14 @@ scale</strong> when <code>probability_scale = TRUE</code>.</li>
 <div class="section level2">
 <h2 id="calculation-of-a-map-prior">Calculation of a MAP Prior<a class="anchor" aria-label="anchor" href="#calculation-of-a-map-prior"></a>
 </h2>
-<p>In a first step, a meta analytic prior will be calculated. This prior
-is based on trials results for <span class="citation">(Diener et al.
-2011)</span>, <span class="citation">(Ho et al. 2008)</span> and <span class="citation">(Hewitt et al. 2011)</span>. Here we assume the
-following historical results for the control group. Please note that
-only information from the control group will be integrated leading to an
-informative mixture prior for the control group, while for the active
-groups a non-informative prior will be specified.</p>
+<p>For this example, in a first step, a meta analytic prior will be
+calculated. This prior is based on trials results for <span class="citation">Diener et al. (2011)</span>, <span class="citation">Ho
+et al. (2008)</span> and <span class="citation">Hewitt et al.
+(2011)</span>. Here, we assume the following historical results for the
+control group. Please note that only information from the control group
+will be integrated, leading to an informative mixture prior for the
+control group, while a non-informative prior will be specified for the
+active groups.</p>
 <details><summary><strong>Show code</strong>
 </summary><div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">trial</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"trial_1"</span>, <span class="st">"trial_2"</span>, <span class="st">"trial_3"</span><span class="op">)</span></span>
@@ -154,17 +153,17 @@ groups a non-informative prior will be specified.</p>
 the information from the historical trials is used to establish a beta
 mixture MAP prior (family=binomial).<br>
 In a next step this prior is robustified. Finally, since the
-BayesianMCPMod procedure for binary endpoints requires a prior on the
-logit scale, we translate this prior to this scale via sampling from the
-distribution, transitioning the individual results to the logit scale
-and approximating via fitting of normal mixtures of conjugate
-distributions. Please note that there would be various other options to
+<code>BayesianMCPMod</code> procedures for binary endpoints require a
+prior on the logit scale, we translate this prior to this scale via
+sampling from the distribution, translating the results to the logit
+scale and approximating via fitting of normal mixtures of conjugate
+distributions. Please note that there would be other options to
 establish a reasonable informative prior in this setting.</p>
 <details><summary><strong>Show code</strong>
 </summary><div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dose_levels</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">2.5</span>, <span class="fl">5</span>, <span class="fl">10</span>, <span class="fl">20</span>, <span class="fl">50</span>, <span class="fl">100</span>, <span class="fl">200</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># i) Establish MAP prior (beta mixture distribution)</span></span>
+<span><span class="co"># 1) Establish MAP prior (beta mixture distribution)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">7015</span><span class="op">)</span> <span class="co"># re-set seed only for this example; remove in your analysis script</span></span>
 <span><span class="va">map</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://opensource.nibr.com/RBesT/reference/gMAP.html" class="external-link">gMAP</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="va">r</span>, <span class="va">n</span> <span class="op">-</span> <span class="va">r</span><span class="op">)</span> <span class="op">~</span> <span class="fl">1</span> <span class="op">|</span> <span class="va">trial</span>,</span>
@@ -200,12 +199,12 @@ establish a reasonable informative prior in this setting.</p>
 <span><span class="va">prior</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://opensource.nibr.com/RBesT/reference/automixfit.html" class="external-link">automixfit</a></span><span class="op">(</span><span class="va">map</span><span class="op">)</span> <span class="co">#fits mixture distribution from MCMC samples from above</span></span>
 <span><span class="va">p</span>     <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">prior</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span>
 <span></span>
-<span><span class="co"># ii) Robustify prior</span></span>
+<span><span class="co"># 2) Robustify prior</span></span>
 <span><span class="va">prior_rob</span> <span class="op">&lt;-</span> <span class="fu">RBesT</span><span class="fu">::</span><span class="fu"><a href="https://opensource.nibr.com/RBesT/reference/robustify.html" class="external-link">robustify</a></span><span class="op">(</span>priormix <span class="op">=</span> <span class="va">prior</span>,</span>
 <span>                              mean     <span class="op">=</span> <span class="fl">0.5</span>,</span>
 <span>                              weight   <span class="op">=</span> <span class="fl">0.4</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># iii) Translate prior to logit scale (to approximate via normal mixture model)</span></span>
+<span><span class="co"># 3) Translate prior to logit scale (to approximate via normal mixture model)</span></span>
 <span><span class="va">r</span>                <span class="op">&lt;-</span> <span class="fu"><a href="https://opensource.nibr.com/RBesT/reference/mix.html" class="external-link">rmix</a></span><span class="op">(</span><span class="va">prior_rob</span>, n <span class="op">=</span> <span class="fl">1e4</span><span class="op">)</span></span>
 <span><span class="va">log_r</span>            <span class="op">&lt;-</span> <span class="fu">RBesT</span><span class="fu">::</span><span class="fu"><a href="https://opensource.nibr.com/RBesT/reference/lodds.html" class="external-link">logit</a></span><span class="op">(</span><span class="va">r</span><span class="op">)</span></span>
 <span><span class="va">prior_ctr</span>        <span class="op">&lt;-</span> <span class="fu"><a href="https://opensource.nibr.com/RBesT/reference/automixfit.html" class="external-link">automixfit</a></span><span class="op">(</span><span class="va">log_r</span>, type <span class="op">=</span> <span class="st">"norm"</span><span class="op">)</span></span>
@@ -239,8 +238,7 @@ establish a reasonable informative prior in this setting.</p>
 {DoseFinding} package. We will create a <code>Mods</code> object, which
 will be used in the remainder of the vignette. Please note that the
 models are specified on the <strong>logit scale</strong>.</p>
-<details><summary><strong>Show code</strong>
-</summary><div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">models</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://openpharma.github.io/DoseFinding/reference/Mods.html" class="external-link">Mods</a></span><span class="op">(</span></span>
 <span>  linear      <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  sigEmax     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">50</span>, <span class="fl">3</span><span class="op">)</span>,</span>
@@ -251,32 +249,29 @@ models are specified on the <strong>logit scale</strong>.</p>
 <span>  doses       <span class="op">=</span> <span class="va">dose_levels</span>,</span>
 <span>  placEff     <span class="op">=</span> <span class="fu">RBesT</span><span class="fu">::</span><span class="fu"><a href="https://opensource.nibr.com/RBesT/reference/lodds.html" class="external-link">logit</a></span><span class="op">(</span><span class="fl">0.118</span><span class="op">)</span>,</span>
 <span>  maxEff      <span class="op">=</span> <span class="fu">RBesT</span><span class="fu">::</span><span class="fu"><a href="https://opensource.nibr.com/RBesT/reference/lodds.html" class="external-link">logit</a></span><span class="op">(</span><span class="fl">0.3</span><span class="op">)</span> <span class="op">-</span> <span class="fu">RBesT</span><span class="fu">::</span><span class="fu"><a href="https://opensource.nibr.com/RBesT/reference/lodds.html" class="external-link">logit</a></span><span class="op">(</span><span class="fl">0.118</span><span class="op">)</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-</details><div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">models</span><span class="op">)</span></span></code></pre></div>
-<p><img src="binary_endpoint_files/figure-html/unnamed-chunk-6-1.png" class="r-plt" alt="" width="700"></p>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">models</span><span class="op">)</span></span></code></pre></div>
+<p><img src="binary_endpoint_files/figure-html/unnamed-chunk-5-1.png" class="r-plt" alt="" width="700"></p>
 <div class="section level3">
 <h3 id="trial-data">Trial Data<a class="anchor" aria-label="anchor" href="#trial-data"></a>
 </h3>
 <p>We will use the trial data from the migraine data set available in
-the <a href="https://github.com/openpharma/DoseFinding" class="external-link">DoseFinding</a> package as our phase 2 trial data. We
-will apply a logistic regression (without any additional covariates) to
-get estimates on the logit scale.</p>
-<details><summary><strong>Show code</strong>
-</summary><div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"migraine"</span><span class="op">)</span> <span class="co">#example data "migraine" from DoseFinding package</span></span>
+the <code>DoseFinding</code> package as our phase 2 trial data. We will
+apply a logistic regression (without any additional covariates) to get
+estimates on the logit scale.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"migraine"</span><span class="op">)</span> <span class="co"># data set from the DoseFinding package</span></span>
 <span></span>
 <span><span class="va">doses_fact</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">dose_levels</span><span class="op">)</span></span>
 <span><span class="va">n_patients</span> <span class="op">&lt;-</span> <span class="va">migraine</span><span class="op">$</span><span class="va">ntrt</span></span>
 <span><span class="va">resp_rate</span>  <span class="op">&lt;-</span> <span class="va">migraine</span><span class="op">$</span><span class="va">painfree</span><span class="op">/</span><span class="va">n_patients</span></span>
 <span></span>
-<span><span class="co">##Execution of logistic regression and readout of parameters </span></span>
-<span><span class="co">## (please note that estimates are automatically on logit scale)</span></span>
+<span><span class="co">## Execution of logistic regression and readout of parameters </span></span>
+<span><span class="co">## Note that estimates are automatically on the logit scale.</span></span>
 <span><span class="va">log_fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/glm.html" class="external-link">glm</a></span><span class="op">(</span><span class="va">resp_rate</span> <span class="op">~</span> <span class="va">doses_fact</span> <span class="op">-</span> <span class="fl">1</span>, family <span class="op">=</span> <span class="va">binomial</span>, weights <span class="op">=</span> <span class="va">n_patients</span><span class="op">)</span></span>
 <span><span class="va">mu_hat</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">log_fit</span><span class="op">)</span></span>
 <span><span class="va">S_hat</span>   <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/vcov.html" class="external-link">vcov</a></span><span class="op">(</span><span class="va">log_fit</span><span class="op">)</span></span></code></pre></div>
-</details>
 </div>
 </div>
 <div class="section level2">
@@ -285,13 +280,12 @@ get estimates on the logit scale.</p>
 <p>In the first step of Bayesian MCPMod, the posterior is calculated by
 combining the prior information with the estimated results of the trial
 <span class="citation">(Fleischer F 2022)</span>.</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">post_logit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getPosterior.html">getPosterior</a></span><span class="op">(</span><span class="va">prior_list</span>, mu_hat <span class="op">=</span> <span class="va">mu_hat</span>, S_hat  <span class="op">=</span> <span class="va">S_hat</span><span class="op">)</span></span></code></pre></div>
 <p>The summary of the posterior can be provided on the probability
 scale.</p>
-<details><summary><strong>Show code</strong>
-</summary><div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">post_logit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getPosterior.html">getPosterior</a></span><span class="op">(</span><span class="va">prior_list</span>, mu_hat <span class="op">=</span> <span class="va">mu_hat</span>, S_hat  <span class="op">=</span> <span class="va">S_hat</span><span class="op">)</span></span></code></pre></div>
-</details><div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">post_logit</span>,probability_scale <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">post_logit</span>, probability_scale <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co">#&gt;           mean         sd       2.5%     50.0%     97.5%</span></span>
 <span><span class="co">#&gt; Ctr  0.1071168 0.02127962 0.06930686 0.1058282 0.1520040</span></span>
 <span><span class="co">#&gt; DG_1 0.1359001 0.06177459 0.04833967 0.1248126 0.2859179</span></span>
@@ -308,14 +302,13 @@ scale.</p>
 <p>The testing step of Bayesian MCPMod is executed using a critical
 value on the probability scale and a pseudo-optimal contrast matrix.</p>
 <p>A contrast matrix is generated based on the number of patients per
-dose group (see <span class="citation">(Fleischer F 2022)</span> for
-more details). Please note that here also other options would be
-possible (e.g. using weight based on the observed variability).</p>
+dose group, see <span class="citation">Fleischer F (2022)</span> for
+more details. Please note that here also other options would be
+possible, e.g. using weight based on the observed variability.</p>
 <p>The critical value is calculated using (re-estimated) contrasts for
 frequentist MCPMod to ensure error control when using weakly-informative
 priors.</p>
-<details><summary><strong>Show code</strong>
-</summary><div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">contr_mat_prior</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getContr.html">getContr</a></span><span class="op">(</span></span>
 <span>  mods           <span class="op">=</span> <span class="va">models</span>,</span>
 <span>  dose_levels    <span class="op">=</span> <span class="va">dose_levels</span>,</span>
@@ -328,17 +321,15 @@ priors.</p>
 <span>  cov_new_trial  <span class="op">=</span> <span class="va">S_hat</span>,</span>
 <span>  alpha_crit_val <span class="op">=</span> <span class="fl">0.05</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-</details><p>The Bayesian MCP testing step is then executed:</p>
-<details><summary><strong>Show code</strong>
-</summary><div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<p>The Bayesian MCP testing step is then executed:</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">BMCP_result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/performBayesianMCP.html">performBayesianMCP</a></span><span class="op">(</span></span>
 <span>  posterior_list <span class="op">=</span> <span class="va">post_logit</span>,</span>
 <span>  contr          <span class="op">=</span> <span class="va">contr_mat_prior</span>, </span>
 <span>  crit_prob_adj  <span class="op">=</span> <span class="va">crit_pval</span><span class="op">)</span></span></code></pre></div>
-</details><p>Here as well it should be noted that this evaluation happens on the
+<p>Here as well it should be noted that this evaluation happens on the
 logit scale.</p>
-<p>Summary information:</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">BMCP_result</span></span>
 <span><span class="co">#&gt; Bayesian Multiple Comparison Procedure</span></span>
 <span><span class="co">#&gt;   Significant:                   1 </span></span>
@@ -349,7 +340,7 @@ logit scale.</p>
 <span><span class="co">#&gt;   Posterior Prob 0.9999900 0.9999338 0.9998325 0.9999509 0.9999644 0.9999885 </span></span>
 <span><span class="co">#&gt;   Significant            1         1         1         1         1         1</span></span></code></pre></div>
 <p>The testing step is significant, indicating a non-flat dose-response
-shape. All models are significant.</p>
+shape. All model shapes are significant.</p>
 </div>
 <div class="section level2">
 <h2 id="model-fitting-and-visualization">Model Fitting and Visualization<a class="anchor" aria-label="anchor" href="#model-fitting-and-visualization"></a>
@@ -363,30 +354,25 @@ results.</p>
 <p>The output of the fit includes information about the predicted
 effects for the included dose levels, the generalized AIC, and the
 corresponding weights.</p>
-<details><summary><strong>Show code</strong>
-</summary><div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">##Perform modelling</span></span>
-<span><span class="va">model_fits</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getModelFits.html">getModelFits</a></span><span class="op">(</span></span>
-<span>  models      <span class="op">=</span> <span class="va">models</span>,</span>
-<span>  dose_levels <span class="op">=</span> <span class="va">dose_levels</span>,</span>
-<span>  posterior   <span class="op">=</span> <span class="va">post_logit</span>,</span>
-<span>  simple      <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">model_fits</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getModelFits.html">getModelFits</a></span><span class="op">(</span></span>
+<span>  models            <span class="op">=</span> <span class="va">models</span>,</span>
+<span>  dose_levels       <span class="op">=</span> <span class="va">dose_levels</span>,</span>
+<span>  posterior         <span class="op">=</span> <span class="va">post_logit</span>,</span>
+<span>  simple            <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  probability_scale <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-</details><p>Plots of fitted dose-response models and an AIC-based average model
-including credible bands (orange shaded areas, default levels are 50%
-and 95%).:</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#Default is on probability scale</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">model_fits</span>,cr_bands <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="binary_endpoint_files/figure-html/unnamed-chunk-14-1.png" class="r-plt" alt="" width="700"></p>
+<p>Plots of fitted dose-response models and an AIC-based average model
+including 80% and 95% credible bands on the probability scale:</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">model_fits</span>, cr_bands <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<p><img src="binary_endpoint_files/figure-html/unnamed-chunk-13-1.png" class="r-plt" alt="" width="700"></p>
 <p>In case models should be shown on the logit scale this can be done in
 the following way:</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">model_fits</span>, probability_scale <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="binary_endpoint_files/figure-html/unnamed-chunk-15-1.png" class="r-plt" alt="" width="700"></p>
-<p>Estimates (also for dose levels not included in the trial) can be
-shown via:</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<p><img src="binary_endpoint_files/figure-html/unnamed-chunk-14-1.png" class="r-plt" alt="" width="700"></p>
+<p>Estimates including predictions can be shown via:</p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">display_params_table</span><span class="op">(</span><span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">model_fits</span>, doses <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">2.5</span>, <span class="fl">10</span>,<span class="fl">150</span>, <span class="fl">200</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
@@ -438,16 +424,13 @@ model fits can be bootstrapped using
 <code><a href="../reference/getBootstrapSamples.html">getBootstrapSamples()</a></code>.</p>
 <p>For this example, only 10 samples are bootstrapped for each model
 fit.</p>
-<details><summary><strong>Show code</strong>
-</summary><div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">##Bootstrap quantiles</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">7015</span><span class="op">)</span> <span class="co"># re-sets seed only for this example; remove in your analysis script</span></span>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">7015</span><span class="op">)</span> <span class="co"># re-sets seed only for this example; remove in your analysis script</span></span>
 <span><span class="va">bootstrap_quantiles</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/getBootstrapQuantiles.html">getBootstrapQuantiles</a></span><span class="op">(</span></span>
 <span>  model_fits <span class="op">=</span> <span class="va">model_fits</span>,</span>
 <span>  quantiles  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.025</span>, <span class="fl">0.5</span>, <span class="fl">0.975</span><span class="op">)</span>,</span>
 <span>  doses      <span class="op">=</span> <span class="va">dose_levels</span>,</span>
 <span>  n_samples  <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></code></pre></div>
-</details>
 </div>
 <div class="section level2">
 <h2 id="assessment-of-the-minimally-efficacious-dose">Assessment of the Minimally Efficacious Dose<a class="anchor" aria-label="anchor" href="#assessment-of-the-minimally-efficacious-dose"></a>
@@ -455,23 +438,20 @@ fit.</p>
 <p>The Minimally Efficacious Dose (MED) per model shape can be assessed
 with the function <code><a href="../reference/getMED.html">getMED()</a></code>. The effect needs to be
 specified on the probability scale.</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">##get MED</span></span>
-<span><span class="fu"><a href="../reference/getMED.html">getMED</a></span><span class="op">(</span></span>
-<span>  delta       <span class="op">=</span> <span class="fl">0.16</span>,</span>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/getMED.html">getMED</a></span><span class="op">(</span></span>
+<span>  delta       <span class="op">=</span> <span class="fl">0.16</span>, <span class="co"># on probability scale</span></span>
 <span>  model_fits  <span class="op">=</span> <span class="va">model_fits</span>,</span>
 <span>  dose_levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">dose_levels</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">dose_levels</span><span class="op">)</span>, by <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;             avgFit emax exponential linear logistic quadratic sigEmax</span></span>
 <span><span class="co">#&gt; med_reached      1    1           1      1        1         1       1</span></span>
 <span><span class="co">#&gt; med            118   59         161    153      117       121      78</span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="additional-note">Additional Note<a class="anchor" aria-label="anchor" href="#additional-note"></a>
-</h2>
+<div class="section level3">
+<h3 id="additional-note">Additional Note<a class="anchor" aria-label="anchor" href="#additional-note"></a>
+</h3>
 <p>Testing, modeling, and MED assessment can also be combined via
 <code><a href="../reference/performBayesianMCPMod.html">performBayesianMCPMod()</a></code>:</p>
-<details><summary><strong>Show code</strong>
-</summary><div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">BMCPMod_result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/performBayesianMCPMod.html">performBayesianMCPMod</a></span><span class="op">(</span></span>
 <span>  posterior_list    <span class="op">=</span> <span class="va">post_logit</span>,</span>
 <span>  contr             <span class="op">=</span> <span class="va">contr_mat_prior</span>,</span>
@@ -480,7 +460,7 @@ specified on the probability scale.</p>
 <span>  delta             <span class="op">=</span> <span class="fl">0.16</span>,</span>
 <span>  probability_scale <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-</details><div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
 <div id="ref-Diener2011" class="csl-entry">
 Diener, Hans-Christoph, Piero Barbanti, Carl Dahlöf, Uwe Reuter, Julia
 Habeck, and Jana Podhorna. 2011. <span>“BI 44370 TA, an Oral CGRP
@@ -503,6 +483,7 @@ Christopher J. Jones, Charles R. Lines, and Alan M. Rapoport. 2008.
 <span>“Randomized Controlled Trial of an Oral CGRP Receptor Antagonist,
 MK-0974, in Acute Treatment of Migraine.”</span> <em>Neurology</em> 70
 (16): 1304–12. <a href="https://doi.org/10.1212/01.WNL.0000286940.29755.61" class="external-link">https://doi.org/10.1212/01.WNL.0000286940.29755.61</a>.
+</div>
 </div>
 </div>
 </div>

@@ -1,4 +1,4 @@
-# Simulation Example of Bayesian MCPMod for Continuous Data
+# Trial Simulation Example of Bayesian MCPMod for Continuous Data
 
 ``` r
 library(BayesianMCPMod)
@@ -25,11 +25,15 @@ presented during the PSI 2024 Conference.
 
 This package makes use of the
 [future](https://cran.r-project.org/package=future) framework for
-parallel processing, which can be set up as follows:
+parallel processing, which can be set up for example as follows:
 
 ``` r
-future::plan(future::multisession)
+future::plan(future::multisession, workers = 4L)
 ```
+
+Kindly note that due to overhead a reduced number of worker nodes can be
+preferable and that for short calculations sequential execution can be
+faster.
 
 ## Calculation of a MAP Prior
 

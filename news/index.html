@@ -17,10 +17,10 @@
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto"><li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/analysis_normal.html">Analysis Example of Bayesian MCPMod for Continuous Data</a></li>
-    <li><a class="dropdown-item" href="../articles/binary_endpoint.html">Analysis Example of Bayesian MCPMod for Binary Data</a></li>
-    <li><a class="dropdown-item" href="../articles/Simulation_Example.html">Simulation Example of Bayesian MCPMod for Continuous Data</a></li>
-    <li><a class="dropdown-item" href="../articles/Simulation_Example_Binary.html">Simulation Example of Bayesian MCPMod for Binary Data</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/analysis_normal.html">Trial Analysis Example of Bayesian MCPMod for Continuous Data</a></li>
+    <li><a class="dropdown-item" href="../articles/binary_endpoint.html">Trial Analysis Example of Bayesian MCPMod for Binary Data</a></li>
+    <li><a class="dropdown-item" href="../articles/Simulation_Example.html">Trial Simulation Example of Bayesian MCPMod for Continuous Data</a></li>
+    <li><a class="dropdown-item" href="../articles/Simulation_Example_Binary.html">Trial Simulation Example of Bayesian MCPMod for Binary Data</a></li>
     <li><a class="dropdown-item" href="../articles/Simulation_Comparison.html">Comparison of Bayesian MCPMod and MCPMod</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
@@ -46,6 +46,7 @@
 <li>Fixed a bug in which the MED assessment could not be performed when specifying a negative direction of beneficial effect and an evidence level other than 0.5.</li>
 <li>Added functions and vignettes for the binary endpoint case.</li>
 <li>Added functionality to <code><a href="../reference/assessDesign.html">assessDesign()</a></code> to provide custom simulated data and custom model estimates enabling complex data simulation and analysis methods.</li>
+<li>Added argument to <code><a href="../reference/assessDesign.html">assessDesign()</a></code> for number of bootstrap samples in case <code>evidence_level</code> is provided.</li>
 <li>Added functionality to <code><a href="../reference/plot.modelFits.html">plot.modelFits()</a></code> to plot effect sizes.</li>
 <li>Added calls to <code><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed()</a></code> in vignette’s code blocks to facilitate individual code block reproducibility.</li>
 </ul></div>

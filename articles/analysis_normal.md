@@ -1,4 +1,4 @@
-# Analysis Example of Bayesian MCPMod for Continuous Data
+# Trial Analysis Example of Bayesian MCPMod for Continuous Data
 
 ``` r
 library(BayesianMCPMod)
@@ -9,7 +9,11 @@ library(tibble)
 library(reactable)
 
 set.seed(7015)
+```
 
+**Show code**
+
+``` r
 display_params_table <- function(named_list) {
   round_numeric <- function(x, digits = 3) if (is.numeric(x)) round(x, digits) else x
   tbl <- data.frame(
@@ -159,7 +163,7 @@ distribution parameters. Note that the linear candidate model does not
 require parameterization.
 
 **Note:** The LinLog model is rarely used and not currently supported by
-[BayesianMCPMod](https://boehringer-ingelheim.github.io/BayesianMCPMod/).
+`BayesianMCPMod`.
 
 In the code below, the models are “guesstimated” using the
 [`DoseFinding::guesst`](https://openpharma.github.io/DoseFinding/reference/guesst.html)
@@ -267,8 +271,7 @@ knitr::kable(DoseFinding::getResp(mods, doses = dose_levels))
 ### Trial Data
 
 We will use the trial with ct.gov number NCT00735709 as our phase 2
-trial data, available in the `{clinDR}` package (ClinicalTrials.gov
-2024).
+trial data, available in the `clinDR` package (ClinicalTrials.gov 2024).
 
 ``` r
 data("metaData")
@@ -403,8 +406,8 @@ distribution.
 The actual fit (on this approximated posterior distribution) is then
 performed using generalized least squares criterion. In contrast, for
 the full fit, the non-linear optimization problem is addressed via the
-Nelder-Mead algorithm (Wikipedia 2024) implemented by the
-[nloptr](https://github.com/astamm/nloptr) package.
+Nelder-Mead algorithm (Wikipedia 2024) implemented by the `nloptr`
+package.
 
 The output of the fit includes information about the predicted effects
 for the included dose levels, the generalized AIC, and the corresponding
@@ -527,7 +530,7 @@ getMED(
 For an optional Bayesian decision rule for the MED assessment and
 further details, please see `?getMED()`.
 
-## Additional Note
+### Additional Note
 
 Testing, modeling, and MED assessment can also be combined via
 [`performBayesianMCPMod()`](https://boehringer-ingelheim.github.io/BayesianMCPMod/reference/performBayesianMCPMod.md):

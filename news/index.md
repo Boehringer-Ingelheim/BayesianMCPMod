@@ -12,6 +12,9 @@
   [`assessDesign()`](https://boehringer-ingelheim.github.io/BayesianMCPMod/reference/assessDesign.md)
   to provide custom simulated data and custom model estimates enabling
   complex data simulation and analysis methods.
+- Added argument to
+  [`assessDesign()`](https://boehringer-ingelheim.github.io/BayesianMCPMod/reference/assessDesign.md)
+  for number of bootstrap samples in case `evidence_level` is provided.
 - Added functionality to
   [`plot.modelFits()`](https://boehringer-ingelheim.github.io/BayesianMCPMod/reference/plot.modelFits.md)
   to plot effect sizes.

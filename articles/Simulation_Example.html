@@ -5,12 +5,12 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Simulation Example of Bayesian MCPMod for Continuous Data • BayesianMCPMod</title>
+<title>Trial Simulation Example of Bayesian MCPMod for Continuous Data • BayesianMCPMod</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Simulation Example of Bayesian MCPMod for Continuous Data">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Trial Simulation Example of Bayesian MCPMod for Continuous Data">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -32,10 +32,10 @@
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/analysis_normal.html">Analysis Example of Bayesian MCPMod for Continuous Data</a></li>
-    <li><a class="dropdown-item" href="../articles/binary_endpoint.html">Analysis Example of Bayesian MCPMod for Binary Data</a></li>
-    <li><a class="dropdown-item" href="../articles/Simulation_Example.html">Simulation Example of Bayesian MCPMod for Continuous Data</a></li>
-    <li><a class="dropdown-item" href="../articles/Simulation_Example_Binary.html">Simulation Example of Bayesian MCPMod for Binary Data</a></li>
+<li><a class="dropdown-item" href="../articles/analysis_normal.html">Trial Analysis Example of Bayesian MCPMod for Continuous Data</a></li>
+    <li><a class="dropdown-item" href="../articles/binary_endpoint.html">Trial Analysis Example of Bayesian MCPMod for Binary Data</a></li>
+    <li><a class="dropdown-item" href="../articles/Simulation_Example.html">Trial Simulation Example of Bayesian MCPMod for Continuous Data</a></li>
+    <li><a class="dropdown-item" href="../articles/Simulation_Example_Binary.html">Trial Simulation Example of Bayesian MCPMod for Binary Data</a></li>
     <li><a class="dropdown-item" href="../articles/Simulation_Comparison.html">Comparison of Bayesian MCPMod and MCPMod</a></li>
   </ul>
 </li>
@@ -60,9 +60,9 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
 
-      <h1>Simulation Example of Bayesian MCPMod for Continuous Data</h1>
+      <h1>Trial Simulation Example of Bayesian MCPMod for Continuous Data</h1>
             
-            <h4 data-toc-skip class="date">2026-02-20</h4>
+            <h4 data-toc-skip class="date">2026-02-23</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/Boehringer-Ingelheim/BayesianMCPMod/blob/main/vignettes/Simulation_Example.Rmd" class="external-link"><code>vignettes/Simulation_Example.Rmd</code></a></small>
       <div class="d-none name"><code>Simulation_Example.Rmd</code></div>
@@ -88,9 +88,12 @@ be utilized to establish an informative prior for the control group.</p>
 <p>A more general overview of the R package was provided with a <a href="https://github.com/Boehringer-Ingelheim/BayesianMCPMod/blob/36763ee5325955ca5d76a6c140ea3881c74e5fda/inst/PSI_Poster_2024.pdf" class="external-link">poster</a>
 presented during the PSI 2024 Conference.</p>
 <p>This package makes use of the <a href="https://cran.r-project.org/package=future" class="external-link">future</a> framework
-for parallel processing, which can be set up as follows:</p>
+for parallel processing, which can be set up for example as follows:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="fu">future</span><span class="fu">::</span><span class="va"><a href="https://future.futureverse.org/reference/multisession.html" class="external-link">multisession</a></span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="fu">future</span><span class="fu">::</span><span class="va"><a href="https://future.futureverse.org/reference/multisession.html" class="external-link">multisession</a></span>, workers <span class="op">=</span> <span class="fl">4L</span><span class="op">)</span></span></code></pre></div>
+<p>Kindly note that due to overhead a reduced number of worker nodes can
+be preferable and that for short calculations sequential execution can
+be faster.</p>
 </div>
 <div class="section level2">
 <h2 id="calculation-of-a-map-prior">Calculation of a MAP Prior<a class="anchor" aria-label="anchor" href="#calculation-of-a-map-prior"></a>

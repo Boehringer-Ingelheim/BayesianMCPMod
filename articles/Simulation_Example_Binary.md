@@ -1,27 +1,4 @@
-# Simulation Example of Bayesian MCPMod for Binary Data
-
-## Background and Data
-
-In this vignette, we will show the use of the `BayesianMCPMod` R package
-for trial planning for binary data.
-
-For this setting the main specifications need to happen on the logit
-scale (see also add ([binary analysis example
-vignette](https://boehringer-ingelheim.github.io/BayesianMCPMod/articles/binary_endpoint.md)))
-
-As in the ([analysis example
-vignette](https://boehringer-ingelheim.github.io/BayesianMCPMod/articles/analysis_normal.md)),
-we make use of historical data that is included in the clinDR package.
-More specifically, trial results for XELJANZ will be utilized to
-establish an informative prior for the control group.
-
-This package makes use of the
-[future](https://cran.r-project.org/package=future) framework for
-parallel processing, which can be set up as follows:
-
-``` r
-future::plan(future::multisession)
-```
+# Trial Simulation Example of Bayesian MCPMod for Binary Data
 
 ``` r
 suppressPackageStartupMessages({
@@ -36,6 +13,58 @@ suppressPackageStartupMessages({
 
 set.seed(7015)
 ```
+
+## Background and Data
+
+In this vignette, we will show the use of the `BayesianMCPMod` R package
+for trial planning for binary data.
+
+For this setting the main specifications need to happen on the logit
+scale, see also the [binary analysis example
+vignette](https://boehringer-ingelheim.github.io/BayesianMCPMod/articles/binary_endpoint.md).
+
+- Internally, `BayesianMCPMod` fits binary endpoints on the **logit
+  scale**.
+- The function argument `probability_scale` controls whether outputs
+  (summaries, predictions, plots) are back-transformed to
+  **probabilities**.
+- In
+  [`simulateData()`](https://boehringer-ingelheim.github.io/BayesianMCPMod/reference/simulateData.md),
+  outcomes are simulated on the response scale if
+  `probability_scale = TRUE`.
+- In
+  [`getMED()`](https://boehringer-ingelheim.github.io/BayesianMCPMod/reference/getMED.md),
+  `delta` is interpreted on the **probability scale** if
+  `probability_scale = TRUE`.
+
+As in the [analysis example
+vignette](https://boehringer-ingelheim.github.io/BayesianMCPMod/articles/analysis_normal.md),
+we make use of historical data that is included in the clinDR package.
+More specifically, trial results for XELJANZ will be utilized to
+establish an informative prior for the control group.
+
+This package makes use of the
+[future](https://cran.r-project.org/package=future) framework for
+parallel processing, which can be set up for example as follows:
+
+``` r
+future::plan(future::multisession, workers = 4L)
+```
+
+Kindly note that due to overhead a reduced number of worker nodes can be
+preferable and that for short calculations sequential execution can be
+faster.
+
+## Calculation of a MAP Prior
+
+For this example, in a first step, a meta analytic prior will be
+calculated. The approach to establish the prior is the same as outlined
+in the [binary analysis example
+vignette](https://boehringer-ingelheim.github.io/BayesianMCPMod/articles/binary_endpoint.md).
+Please note that only information from the control group will be
+integrated leading to an informative mixture prior for the control
+group, while for the active groups a non-informative prior will be
+specified.
 
 ``` r
 data("metaData")
@@ -53,17 +82,6 @@ hist_data <- data.frame(
 
 sd_tot <- with(hist_data, sum(sd * n) / sum(n))
 ```
-
-## Calculation of a MAP Prior
-
-In a first step, a meta analytic prior will be calculated. The approach
-to establish the prior is the same as outlined in the ([binary analysis
-example
-vignette](https://boehringer-ingelheim.github.io/BayesianMCPMod/articles/binary_endpoint.md))).
-Please note that only information from the control group will be
-integrated leading to an informative mixture prior for the control
-group, while for the active groups a non-informative prior will be
-specified.
 
 ``` r
 dose_levels <- c(0, 2.5, 5, 10,20)
@@ -86,52 +104,23 @@ map <- gMAP(
     ## Assuming default prior location   for beta: 0
 
 ``` r
-map 
-```
-
-    ## Generalized Meta Analytic Predictive Prior Analysis
-    ## 
-    ## Call:  gMAP(formula = cbind(hist_data$r, hist_data$n - hist_data$r) ~ 
-    ##     1 | histcontrol$nctno, family = binomial, tau.dist = "HalfNormal", 
-    ##     tau.prior = 0.5, beta.prior = (1/sqrt(0.1 * 0.9)), iter = 10000, 
-    ##     warmup = 1000, thin = 1, chains = 2)
-    ## 
-    ## Exchangeability tau strata: 1 
-    ## Prediction tau stratum    : 1 
-    ## Maximal Rhat              : 1 
-    ## 
-    ## Between-trial heterogeneity of tau prediction stratum
-    ##   mean     sd   2.5%    50%  97.5% 
-    ## 0.3970 0.3010 0.0156 0.3340 1.1200 
-    ## 
-    ## MAP Prior MCMC sample
-    ##   mean     sd   2.5%    50%  97.5% 
-    ## 0.1780 0.1130 0.0363 0.1550 0.4900
-
-``` r
 prior <- automixfit(map) #fits mixture distribution from MCMC samples from above
-ess(prior)
-```
 
-    ## [1] 17.48444
-
-``` r
-#ess(prior)
-p<-summary(prior)[1]
+p <- summary(prior)[1]
 
 # 2) Robustify prior
-prior.rob<-RBesT::robustify(
+prior_rob <- RBesT::robustify(
       priormix = prior,
       mean     = 0.5,
       weight   = 0.2)
 
 # 3) Translate prior to logit scale (to approximate via normal mixture model)
-r <- rmix(prior.rob, n = 1e4)
-log.r <- logit(r)
-prior.ctr <- automixfit(log.r, type = "norm")
+r         <- rmix(prior_rob, n = 1e4)
+log_r     <- logit(r)
+prior_ctr <- automixfit(log_r, type = "norm")
 
 # Specification of reference scale (this follows the idea of [@Neuenschwander2016]). 
-sigma(prior.ctr) <- sqrt(1 / (p * (1 - p)))
+sigma(prior_ctr) <- sqrt(1 / (p * (1 - p)))
 
 # Specify a prior list
 prior_trt <- RBesT::mixnorm(
@@ -139,7 +128,7 @@ prior_trt <- RBesT::mixnorm(
     sigma = sqrt(1/(p*(1-p))),
     param = "mn")
   
-  prior_list <- c(list(prior.ctr),
+  prior_list <- c(list(prior_ctr),
                   rep(x     = list(prior_trt),
                       times = length(dose_levels[-1])))
 
@@ -187,14 +176,15 @@ models <- Mods(
 
 To calculate success probabilities for the different assumed
 dose-response models and the specified trial design we will apply the
-assessDesign function. We are not only interested in the success
-probability for the testing step, but also the assessment of the
-Minimally Efficacious Dose (MED). This effect delta is provided on the
-probability scale. In our case we would like to see a difference of 20%
-(compared to control) to claim efficacy.
+[`assessDesign()`](https://boehringer-ingelheim.github.io/BayesianMCPMod/reference/assessDesign.md)
+function. We are not only interested in the success probability for the
+testing step, but also the assessment of the Minimally Efficacious Dose
+(MED). This effect delta is provided on the probability scale. In our
+case we would like to see a difference of 20% compared to control to
+claim efficacy.
 
 For illustration purposes, the number of simulated trial results is
-reduced to 100 in this example.
+reduced to `100` in this example.
 
 ``` r
 set.seed(7015) # re-sets seed only for this example; remove in your analysis script
@@ -204,7 +194,7 @@ success_probabilities <- assessDesign(
   prior_list        = prior_list,
   probability_scale = TRUE,
   delta             = 0.2,
-  n_sim             = 100) 
+  n_sim             = 100) # speed up example run-time
 success_probabilities
 ```
 
