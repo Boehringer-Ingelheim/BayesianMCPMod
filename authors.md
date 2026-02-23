@@ -16,7 +16,7 @@
 ## Citation
 
 Source:
-[`inst/CITATION`](https://github.com/Boehringer-Ingelheim/BayesianMCPMod/blob/main/inst/CITATION)
+[`inst/CITATION`](https://github.com/Boehringer-Ingelheim/BayesianMCPMod/blob/v1.3.0/inst/CITATION)
 
 Wojciekowski, S, Andersen, L, Bossert, S (). BayesianMCPMod: Simulate,
 Evaluate, and Analyze Dose Finding Trials with Bayesian MCPMod. R
