@@ -9,7 +9,7 @@ Maintainer: <stephan.wojciekowski@boehringer-ingelheim.com>
   - 0 errors √ | 0 warnings √ | 0 notes √
 - Winbuilder x86_64-w64-mingw32, Windows Server, R under development (unstable) (2025-08-27 r88724 ucrt)
   - Status: OK
-- Macbuilder aarch64-apple-darwin20, macOS Ventura 13.3.1, R version 4.4.2 (2024-10-31)
+- Macbuilder r-devel-macosx-arm64, macOS 26.2 (25C56), R version 4.6.0
   - Status: OK
 - GitHub Action Linux: using R version 4.5.2 (2025-10-31), x86_64-pc-linux-gnu
   - Status: OK
