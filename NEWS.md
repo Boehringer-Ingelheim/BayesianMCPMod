@@ -4,6 +4,7 @@
 * Fixed a bug in which the MED assessment could not be performed when specifying a negative direction of beneficial effect and an evidence level other than 0.5.
 * Added functions and vignettes for the binary endpoint case.
 * Added functionality to `assessDesign()` to provide custom simulated data and custom model estimates enabling complex data simulation and analysis methods.
+* Added argument to `assessDesign()` for number of bootstrap samples in case `evidence_level` is provided.
 * Added functionality to `plot.modelFits()` to plot effect sizes.
 * Added calls to `set.seed()` in vignette's code blocks to facilitate individual code block reproducibility.
 
