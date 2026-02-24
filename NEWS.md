@@ -1,3 +1,7 @@
+## BayesianMCPMod 1.3.0.9000
+
+* Added flexibility to bootstrapped credible bands in `plot.modelFits()`
+
 ## BayesianMCPMod 1.3.0 (23-Feb-2026)
 
 * Fixed a bug that would occur when predicting from the beta model shape outside of the original dose range.
