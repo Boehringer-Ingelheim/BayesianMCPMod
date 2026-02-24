@@ -1,6 +1,6 @@
 # Changelog
 
-## BayesianMCPMod 1.3.0 (XX-Feb-2026)
+## BayesianMCPMod 1.3.0 (23-Feb-2026)
 
 CRAN release: 2026-02-23
 
