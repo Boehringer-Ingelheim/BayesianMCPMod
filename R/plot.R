@@ -12,7 +12,7 @@
 #' @param cr_intv Logical value indicating whether credible intervals are included in the plot. Default TRUE
 #' @param alpha_CrI Numerical value of the width of the credible intervals. Default is set to 0.05 (i.e 95% CI are shown).
 #' @param cr_bands Logical value indicating whether bootstrapped based credible bands are shown in the plot. Default FALSE
-#' @param alpha_CrB Numerical vector of the width of the credible bands. Default is set to 0.05 and 0.5 (i.e 95% CB and 50% CB  are shown).
+#' @param alpha_CrB Numerical vector of the width of the credible bands. Default is set to `c(0.05, 0.2, 1)`, i.e, the 95% CB, 80% CB and bootstrapped median are shown.
 #' @param n_bs_smpl Number of bootstrap samples being used. Default 1000.
 #' @param acc_color Color of the credible bands. Default "orange".
 #' @param plot_res Number of plotted doses within the range of the dose levels, i.e., the resolution of the plot. Default 100.
@@ -50,7 +50,7 @@ plot.modelFits <- function (
   cr_intv           = TRUE,
   alpha_CrI         = 0.05,
   cr_bands          = FALSE,
-  alpha_CrB         = c(0.05, 0.2),
+  alpha_CrB         = c(0.05, 0.2, 1),
   n_bs_smpl         = 1e3,
   acc_color         = "orange",
   plot_res          = 1e2,
@@ -62,11 +62,11 @@ plot.modelFits <- function (
   ## R CMD --as-cran appeasement
   .data <- q_prob <- q_val <- model <- sample_type <- NULL
 
-  checkmate::assert_logical(gAIC)
-  checkmate::assert_logical(cr_intv)
-  checkmate::assert_double(alpha_CrI, lower = 0, upper = 1)
-  checkmate::assert_logical(cr_bands)
-  checkmate::assert_double(alpha_CrB, lower = 0, upper = 1, len = 2)
+  checkmate::assert_flag(gAIC)
+  checkmate::assert_flag(cr_intv)
+  checkmate::assert_double(alpha_CrI, lower = 0, upper = 1, len = 1L)
+  checkmate::assert_flag(cr_bands)
+  checkmate::assert_double(alpha_CrB, lower = 0, upper = 1, min.len = 1L)
   checkmate::assert_integerish(n_bs_smpl, lower = 1, upper = Inf)
   checkmate::assert_string(acc_color, na.ok = TRUE)
   checkmate::assert_integerish(plot_res, lower = 1, upper = Inf)
@@ -208,11 +208,11 @@ plot.modelFits <- function (
     rm(i)
     
     ## Bootstrapped Fit
-    plts <- plts +
-      ggplot2::geom_line(
-        data    = crB_data,
-        mapping = ggplot2::aes(.data$dose, .data$`0.5`),
-        color   = acc_color)
+    # plts <- plts +
+    #   ggplot2::geom_line(
+    #     data    = crB_data,
+    #     mapping = ggplot2::aes(.data$dose, .data$`0.5`),
+    #     color   = acc_color)
 
   }
 
