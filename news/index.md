@@ -1,5 +1,10 @@
 # Changelog
 
+## BayesianMCPMod 1.3.0.9000
+
+- Added flexibility to bootstrapped credible bands in
+  [`plot.modelFits()`](https://boehringer-ingelheim.github.io/BayesianMCPMod/reference/plot.modelFits.md)
+
 ## BayesianMCPMod 1.3.0 (23-Feb-2026)
 
 CRAN release: 2026-02-23

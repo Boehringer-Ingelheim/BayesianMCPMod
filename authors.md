@@ -20,11 +20,11 @@ Source:
 
 Wojciekowski, S, Andersen, L, Bossert, S (). BayesianMCPMod: Simulate,
 Evaluate, and Analyze Dose Finding Trials with Bayesian MCPMod. R
-package version 1.3.0.
+package version 1.3.0.9000.
 
     @Manual{,
       title = {BayesianMCPMod: Simulate, Evaluate, and Analyze Dose Finding Trials with Bayesian MCPMod},
       author = {Stephan Wojciekowski and Lars Andersen and Sebastian Bossert},
-      note = {R package version 1.3.0},
+      note = {R package version 1.3.0.9000},
       url = {https://CRAN.R-project.org/package=BayesianMCPMod},
     }
