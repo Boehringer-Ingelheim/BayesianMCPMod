@@ -1,6 +1,7 @@
 ## BayesianMCPMod 1.3.0.9000
 
-* Added flexibility to bootstrapped credible bands in `plot.modelFits()`
+* Fixed a newly introduced bug that would occur if the R package `future.apply` was not installed. 
+* Added flexibility to bootstrapped credible bands in `plot.modelFits()`.
 
 ## BayesianMCPMod 1.3.0 (23-Feb-2026)
 

@@ -197,7 +197,7 @@ getBootstrapSamples <- function (
     # predictions[models, c(doses, adj_doses)]
     return (c(preds_mu_mat, preds_mu_mat_adj))
     
-  })
+  }))
   
   if (avg_fit) {
     

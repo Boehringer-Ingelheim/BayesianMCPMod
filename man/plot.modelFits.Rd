@@ -11,7 +11,7 @@
   cr_intv = TRUE,
   alpha_CrI = 0.05,
   cr_bands = FALSE,
-  alpha_CrB = c(0.05, 0.2),
+  alpha_CrB = c(0.05, 0.2, 1),
   n_bs_smpl = 1000,
   acc_color = "orange",
   plot_res = 100,
@@ -20,7 +20,7 @@
 )
 }
 \arguments{
-\item{x}{An object of type modelFits}
+\item{x}{An object of type \code{modelFits}}
 
 \item{probability_scale}{A boolean to specify if the trial has a continuous or a binary outcome. Setting to TRUE will transform the output from the logit scale to the probability scale, which can be desirable for a binary outcome. Default \code{attr(x, "probability_scale")}.}
 
@@ -32,17 +32,17 @@
 
 \item{cr_bands}{Logical value indicating whether bootstrapped based credible bands are shown in the plot. Default FALSE}
 
-\item{alpha_CrB}{Numerical vector of the width of the credible bands. Default is set to 0.05 and 0.5 (i.e 95\% CB and 50\% CB  are shown).}
+\item{alpha_CrB}{Numerical vector of the width of the credible bands. Default is set to \code{c(0.05, 0.2, 1)}, i.e, the 95\% CB, 80\% CB and bootstrapped median are shown.}
 
 \item{n_bs_smpl}{Number of bootstrap samples being used. Default 1000.}
 
-\item{acc_color}{Color of the credible bands. Default "orange".}
+\item{acc_color}{Color of the credible bands. Default \code{"orange"}.}
 
 \item{plot_res}{Number of plotted doses within the range of the dose levels, i.e., the resolution of the plot. Default 100.}
 
 \item{plot_diffs}{Logical flag. Plot differences to the control group. Default FALSE.}
 
-\item{...}{optional parameter to be passed to plot().}
+\item{...}{optional parameter to be passed to \code{plot()}.}
 }
 \value{
 A ggplot2 object
@@ -52,7 +52,7 @@ Plot function based on the ggplot2 package. Providing visualizations for each mo
 Black lines show the fitted dose response models and an AIC based average model.
 Dots indicate the posterior median and vertical lines show corresponding credible intervals (i.e. the variability of the posterior distribution of the respective dose group).
 To assess the uncertainty of the model fit one can in addition visualize credible bands (default coloring as orange shaded areas).
-The calculation of these bands is performed via the getBootstrapQuantiles() function.
+The calculation of these bands is performed via the \code{getBootstrapQuantiles()} function.
 The default setting is that these credible bands are not calculated.
 }
 \examples{
@@ -66,7 +66,7 @@ dose_levels <- c(0, 1, 2, 4, 8)
 model_fits <- getModelFits(models      = models,
                            posterior   = posterior_list,
                            dose_levels = dose_levels,
-                           simple       = TRUE)
+                           simple      = TRUE)
 
 plot(model_fits)
 

@@ -30,8 +30,8 @@ optPar_apply <- function (X, MARGIN, FUN, ...) {
       X, MARGIN, FUN,
       future.seed       = FALSE, 
       future.scheduling = 1,
-      future.packages   = c("DoseFinding", "RBesT")),
-      ...)
+      future.packages   = c("DoseFinding", "RBesT"),
+      ...))
     
   } else {
     
