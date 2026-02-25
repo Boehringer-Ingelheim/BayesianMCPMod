@@ -29,7 +29,7 @@
 #' model_fits <- getModelFits(models      = models,
 #'                            posterior   = posterior_list,
 #'                            dose_levels = dose_levels,
-#'                            simple       = TRUE)
+#'                            simple      = TRUE)
 #'
 #' plot(model_fits)
 #' 
@@ -155,7 +155,7 @@ plot.modelFits <- function (
     crB_data <- getBootstrapQuantiles(
       model_fits        = model_fits,
       n_samples         = n_bs_smpl,
-      quantiles         = sort(unique(c(0.5, as.vector(quantile_pairs)))),
+      quantiles         = sort(unique(c(as.vector(quantile_pairs)))),
       doses             = dose_seq,
       probability_scale = probability_scale) |>
       dplyr::filter(sample_type == dplyr::if_else(plot_diffs, "diff", "abs")) |>
@@ -207,12 +207,16 @@ plot.modelFits <- function (
     }
     rm(i)
     
-    ## Bootstrapped Fit
-    # plts <- plts +
-    #   ggplot2::geom_line(
-    #     data    = crB_data,
-    #     mapping = ggplot2::aes(.data$dose, .data$`0.5`),
-    #     color   = acc_color)
+    if (0.5 %in% quantile_pairs) {
+      
+      ## Bootstrapped Fit
+      plts <- plts +
+        ggplot2::geom_line(
+          data    = crB_data,
+          mapping = ggplot2::aes(.data$dose, .data$`0.5`),
+          color   = acc_color)
+      
+    }
 
   }
 
