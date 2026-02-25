@@ -224,6 +224,8 @@ success_probabilities
 #> Ctrl DG_1 DG_2 DG_3 DG_4 
 #>    0    0    0    0    0 
 
+if (interactive()) { # showcasing further functionality
+
 ## Analysis with custom data
 data_sim <- simulateData(
   n_patients        = n_patients,
@@ -239,55 +241,8 @@ success_probabilities_cd <- assessDesign(
   data_sim    = data_sim,
   sd          = sd,
   n_sim       = 1e2) # speed up example run time
-#> Consider to provide 'contr' for your custom simulated data or analysis results.
 
 success_probabilities_cd
-#> $linear
-#> Bayesian Multiple Comparison Procedure
-#>   Estimated Success Rate: 1 
-#>   N Simulations:          10 
-#>    Model Shape:         lin emax1 emax2   exp betaM 
-#>    Significance Freq:   1.0   0.6   0.8   0.9   0.1 
-#> 
-#> $emax1
-#> Bayesian Multiple Comparison Procedure
-#>   Estimated Success Rate: 1 
-#>   N Simulations:          10 
-#>    Model Shape:         lin emax1 emax2   exp betaM 
-#>    Significance Freq:   0.6   1.0   1.0   0.3   0.8 
-#> 
-#> $emax2
-#> Bayesian Multiple Comparison Procedure
-#>   Estimated Success Rate: 1 
-#>   N Simulations:          10 
-#>    Model Shape:         lin emax1 emax2   exp betaM 
-#>    Significance Freq:   0.8   1.0   1.0   0.4   0.9 
-#> 
-#> $exponential
-#> Bayesian Multiple Comparison Procedure
-#>   Estimated Success Rate: 1 
-#>   N Simulations:          10 
-#>    Model Shape:         lin emax1 emax2   exp betaM 
-#>    Significance Freq:   1.0   0.3   0.6   1.0   0.0 
-#> 
-#> $betaMod
-#> Bayesian Multiple Comparison Procedure
-#>   Estimated Success Rate: 0.9 
-#>   N Simulations:          10 
-#>    Model Shape:         lin emax1 emax2   exp betaM 
-#>    Significance Freq:   0.3   0.6   0.6   0.0   0.9 
-#> 
-#> attr(,"avgSuccessRate")
-#> [1] 0.98
-#> attr(,"placEff")
-#> [1] 0
-#> attr(,"maxEff")
-#> [1] 6
-#> attr(,"sampleSize")
-#> [1] 40 60 60 60 60
-#> attr(,"priorESS")
-#> Ctrl DG_1 DG_2 DG_3 DG_4 
-#>    0    0    0    0    0 
 
 ## Analysis with custom dose response relationship
 custom_dr_means <- c(1, 2, 3, 4, 5)
@@ -301,24 +256,6 @@ success_probs_custom_dr <- assessDesign(
   n_sim       = 1e2) # speed up example run time
 
 success_probs_custom_dr
-#> $dr_response
-#> Bayesian Multiple Comparison Procedure
-#>   Estimated Success Rate: 0.53 
-#>   N Simulations:          100 
-#>    Model Shape:         lin emax1 emax2   exp betaM 
-#>    Significance Freq:  0.38  0.37  0.41  0.25  0.27 
-#> 
-#> attr(,"avgSuccessRate")
-#> [1] 0.53
-#> attr(,"placEff")
-#> [1] 1
-#> attr(,"maxEff")
-#> [1] 4
-#> attr(,"sampleSize")
-#> [1] 40 60 60 60 60
-#> attr(,"priorESS")
-#> Ctrl DG_1 DG_2 DG_3 DG_4 
-#>    0    0    0    0    0 
 
 ## Analysis with custom estimates for means and variabilies
 ## No simulated data, only simulated model estimates
@@ -330,27 +267,10 @@ success_probs_custom_est <- assessDesign(
   mods          = mods,
   prior_list    = prior_list,
   estimates_sim = estimates_sim)
-#> Consider to provide 'contr' for your custom simulated data or analysis results.
 
 success_probs_custom_est
-#> $estimates_sim
-#> Bayesian Multiple Comparison Procedure
-#>   Estimated Success Rate: 0.92 
-#>   N Simulations:          100 
-#>    Model Shape:         lin emax1 emax2   exp betaM 
-#>    Significance Freq:  0.80  0.87  0.87  0.68  0.53 
-#> 
-#> attr(,"avgSuccessRate")
-#> [1] 0.92
-#> attr(,"placEff")
-#> [1] 0
-#> attr(,"maxEff")
-#> [1] 6
-#> attr(,"sampleSize")
-#> [1] 40 60 60 60 60
-#> attr(,"priorESS")
-#> Ctrl DG_1 DG_2 DG_3 DG_4 
-#>    0    0    0    0    0 
+
+}
 
 if (interactive()) { # takes typically > 5 seconds
 

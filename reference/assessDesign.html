@@ -228,6 +228,8 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> Ctrl DG_1 DG_2 DG_3 DG_4 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    0    0    0    0    0 </span>
 <span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span> <span class="co"># showcasing further functionality</span></span></span>
+<span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Analysis with custom data</span></span></span>
 <span class="r-in"><span><span class="va">data_sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="simulateData.html">simulateData</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  n_patients        <span class="op">=</span> <span class="va">n_patients</span>,</span></span>
@@ -243,55 +245,8 @@
 <span class="r-in"><span>  data_sim    <span class="op">=</span> <span class="va">data_sim</span>,</span></span>
 <span class="r-in"><span>  sd          <span class="op">=</span> <span class="va">sd</span>,</span></span>
 <span class="r-in"><span>  n_sim       <span class="op">=</span> <span class="fl">1e2</span><span class="op">)</span> <span class="co"># speed up example run time</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Consider to provide 'contr' for your custom simulated data or analysis results.</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">success_probabilities_cd</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $linear</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Bayesian Multiple Comparison Procedure</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   Estimated Success Rate: 1 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   N Simulations:          10 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Model Shape:         lin emax1 emax2   exp betaM </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Significance Freq:   1.0   0.6   0.8   0.9   0.1 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $emax1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Bayesian Multiple Comparison Procedure</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   Estimated Success Rate: 1 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   N Simulations:          10 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Model Shape:         lin emax1 emax2   exp betaM </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Significance Freq:   0.6   1.0   1.0   0.3   0.8 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $emax2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Bayesian Multiple Comparison Procedure</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   Estimated Success Rate: 1 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   N Simulations:          10 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Model Shape:         lin emax1 emax2   exp betaM </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Significance Freq:   0.8   1.0   1.0   0.4   0.9 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $exponential</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Bayesian Multiple Comparison Procedure</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   Estimated Success Rate: 1 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   N Simulations:          10 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Model Shape:         lin emax1 emax2   exp betaM </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Significance Freq:   1.0   0.3   0.6   1.0   0.0 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $betaMod</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Bayesian Multiple Comparison Procedure</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   Estimated Success Rate: 0.9 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   N Simulations:          10 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Model Shape:         lin emax1 emax2   exp betaM </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Significance Freq:   0.3   0.6   0.6   0.0   0.9 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"avgSuccessRate")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.98</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"placEff")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"maxEff")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 6</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"sampleSize")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 40 60 60 60 60</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"priorESS")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ctrl DG_1 DG_2 DG_3 DG_4 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    0    0    0    0    0 </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Analysis with custom dose response relationship</span></span></span>
 <span class="r-in"><span><span class="va">custom_dr_means</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">3</span>, <span class="fl">4</span>, <span class="fl">5</span><span class="op">)</span></span></span>
@@ -305,24 +260,6 @@
 <span class="r-in"><span>  n_sim       <span class="op">=</span> <span class="fl">1e2</span><span class="op">)</span> <span class="co"># speed up example run time</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">success_probs_custom_dr</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $dr_response</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Bayesian Multiple Comparison Procedure</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   Estimated Success Rate: 0.53 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   N Simulations:          100 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Model Shape:         lin emax1 emax2   exp betaM </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Significance Freq:  0.38  0.37  0.41  0.25  0.27 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"avgSuccessRate")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.53</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"placEff")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"maxEff")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"sampleSize")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 40 60 60 60 60</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"priorESS")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ctrl DG_1 DG_2 DG_3 DG_4 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    0    0    0    0    0 </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## Analysis with custom estimates for means and variabilies</span></span></span>
 <span class="r-in"><span><span class="co">## No simulated data, only simulated model estimates</span></span></span>
@@ -334,27 +271,10 @@
 <span class="r-in"><span>  mods          <span class="op">=</span> <span class="va">mods</span>,</span></span>
 <span class="r-in"><span>  prior_list    <span class="op">=</span> <span class="va">prior_list</span>,</span></span>
 <span class="r-in"><span>  estimates_sim <span class="op">=</span> <span class="va">estimates_sim</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Consider to provide 'contr' for your custom simulated data or analysis results.</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">success_probs_custom_est</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $estimates_sim</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Bayesian Multiple Comparison Procedure</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   Estimated Success Rate: 0.92 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   N Simulations:          100 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Model Shape:         lin emax1 emax2   exp betaM </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Significance Freq:  0.80  0.87  0.87  0.68  0.53 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"avgSuccessRate")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.92</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"placEff")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"maxEff")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 6</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"sampleSize")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 40 60 60 60 60</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"priorESS")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Ctrl DG_1 DG_2 DG_3 DG_4 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    0    0    0    0    0 </span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span> <span class="co"># takes typically &gt; 5 seconds</span></span></span>
 <span class="r-in"><span></span></span>
