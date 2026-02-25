@@ -97,6 +97,8 @@ success_probabilities <- assessDesign(
 
 success_probabilities
 
+if (interactive()) { # showcasing further functionality
+
 ## Analysis with custom data
 data_sim <- simulateData(
   n_patients        = n_patients,
@@ -140,6 +142,8 @@ success_probs_custom_est <- assessDesign(
   estimates_sim = estimates_sim)
 
 success_probs_custom_est
+
+}
 
 if (interactive()) { # takes typically > 5 seconds
 
