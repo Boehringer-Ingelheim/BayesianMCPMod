@@ -21,12 +21,7 @@ Maintainer: <stephan.wojciekowski@boehringer-ingelheim.com>
     - Found the following files/directories: 'Rscript1230a75fa' 'Rscripta0ca75fa'
     - This seems to be a Windows github action related NOTE that I could not reproduce elsewhere.
 
-## BayesianMCPMod 1.3.0 (XX-Feb-2026)
+## BayesianMCPMod 1.3.1 (25-Feb-2026)
 
-* Fixed a bug that would occur when predicting from the beta model shape outside of the original dose range.
-* Fixed a bug in which the MED assessment could not be performed when specifying a negative direction of beneficial effect and an evidence level other than 0.5.
-* Added functions and vignettes for the binary endpoint case.
-* Added functionality to `assessDesign()` to provide custom simulated data and custom model estimates enabling complex data simulation and analysis methods.
-* Added argument to `assessDesign()` for number of bootstrap samples in case `evidence_level` is provided.
-* Added functionality to `plot.modelFits()` to plot effect sizes.
-* Added calls to `set.seed()` in vignette's code blocks to facilitate individual code block reproducibility.
+* Fixed a newly introduced bug that would occur if the R package `future.apply` was not installed. 
+* Added flexibility to bootstrapped credible bands in `plot.modelFits()`.
