@@ -642,10 +642,7 @@ performBayesianMod <- function (
 
     }
 
-  },
-  future.seed       = FALSE,
-  future.scheduling = 1,
-  future.packages   = c("DoseFinding", "RBesT", "nloptr"))
+  })
   
   # requireNamespace("DoseFinding", quietly = TRUE)
   # requireNamespace("RBesT",       quietly = TRUE)

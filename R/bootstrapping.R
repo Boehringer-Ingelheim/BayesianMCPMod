@@ -197,10 +197,7 @@ getBootstrapSamples <- function (
     # predictions[models, c(doses, adj_doses)]
     return (c(preds_mu_mat, preds_mu_mat_adj))
     
-  },
-  future.seed       = FALSE, 
-  future.scheduling = 1,
-  future.packages   = c("DoseFinding", "RBesT")))
+  })
   
   if (avg_fit) {
     

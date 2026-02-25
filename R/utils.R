@@ -7,7 +7,12 @@ optPar_lapply <- function (X, FUN, ...) {
   
   if (useFuture()) {
     
-    return (future.apply::future_lapply(X, FUN, ...))
+    return (future.apply::future_lapply(
+      X, FUN,
+      future.seed       = FALSE,
+      future.scheduling = 1,
+      future.packages   = c("DoseFinding", "RBesT", "nloptr"),
+      ...))
     
   } else {
     
@@ -21,7 +26,12 @@ optPar_apply <- function (X, MARGIN, FUN, ...) {
   
   if (useFuture()) {
     
-    return (future.apply::future_apply(X, MARGIN, FUN, ...))
+    return (future.apply::future_apply(
+      X, MARGIN, FUN,
+      future.seed       = FALSE, 
+      future.scheduling = 1,
+      future.packages   = c("DoseFinding", "RBesT")),
+      ...)
     
   } else {
     
