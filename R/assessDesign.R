@@ -50,8 +50,6 @@
 #'
 #' success_probabilities
 #' 
-#' if (interactive()) { # showcasing further functionality
-#' 
 #' ## Analysis with custom data
 #' data_sim <- simulateData(
 #'   n_patients        = n_patients,
@@ -85,7 +83,7 @@
 #' 
 #' ## Analysis with custom estimates for means and variabilies
 #' ## No simulated data, only simulated model estimates
-#' estimates_sim <- list(mu_hats = replicate(100, list(c(1, 2, 3, 4, 5) + rnorm(5, 0, 1))),
+#' estimates_sim <- list(mu_hats = replicate(1e2, list(c(1, 2, 3, 4, 5) + rnorm(5, 0, 1))),
 #'                       S_hats  = list(diag(1, 5)))
 #' 
 #' success_probs_custom_est <- assessDesign(
@@ -95,8 +93,6 @@
 #'   estimates_sim = estimates_sim)
 #'
 #' success_probs_custom_est
-#' 
-#' }
 #'
 #' if (interactive()) { # takes typically > 5 seconds
 #'
