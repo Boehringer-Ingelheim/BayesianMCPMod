@@ -7,7 +7,8 @@ median and vertical lines show corresponding credible intervals (i.e.
 the variability of the posterior distribution of the respective dose
 group). To assess the uncertainty of the model fit one can in addition
 visualize credible bands (default coloring as orange shaded areas). The
-calculation of these bands is performed via the getBootstrapQuantiles()
+calculation of these bands is performed via the
+[`getBootstrapQuantiles()`](https://boehringer-ingelheim.github.io/BayesianMCPMod/reference/getBootstrapQuantiles.md)
 function. The default setting is that these credible bands are not
 calculated.
 
@@ -22,7 +23,7 @@ plot(
   cr_intv = TRUE,
   alpha_CrI = 0.05,
   cr_bands = FALSE,
-  alpha_CrB = c(0.05, 0.2),
+  alpha_CrB = c(0.05, 0.2, 1),
   n_bs_smpl = 1000,
   acc_color = "orange",
   plot_res = 100,
@@ -35,7 +36,7 @@ plot(
 
 - x:
 
-  An object of type modelFits
+  An object of type `modelFits`
 
 - probability_scale:
 
@@ -67,7 +68,8 @@ plot(
 - alpha_CrB:
 
   Numerical vector of the width of the credible bands. Default is set to
-  0.05 and 0.5 (i.e 95% CB and 50% CB are shown).
+  `c(0.05, 0.2, 1)`, i.e, the 95% CB, 80% CB and bootstrapped median are
+  shown.
 
 - n_bs_smpl:
 
@@ -75,7 +77,7 @@ plot(
 
 - acc_color:
 
-  Color of the credible bands. Default "orange".
+  Color of the credible bands. Default `"orange"`.
 
 - plot_res:
 
@@ -88,7 +90,8 @@ plot(
 
 - ...:
 
-  optional parameter to be passed to plot().
+  optional parameter to be passed to
+  [`plot()`](https://rdrr.io/r/graphics/plot.default.html).
 
 ## Value
 
@@ -107,7 +110,7 @@ dose_levels <- c(0, 1, 2, 4, 8)
 model_fits <- getModelFits(models      = models,
                            posterior   = posterior_list,
                            dose_levels = dose_levels,
-                           simple       = TRUE)
+                           simple      = TRUE)
 
 plot(model_fits)
 

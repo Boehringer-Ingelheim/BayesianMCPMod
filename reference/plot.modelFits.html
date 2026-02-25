@@ -56,7 +56,7 @@ The default setting is that these credible bands are not calculated."></head><bo
 Black lines show the fitted dose response models and an AIC based average model.
 Dots indicate the posterior median and vertical lines show corresponding credible intervals (i.e. the variability of the posterior distribution of the respective dose group).
 To assess the uncertainty of the model fit one can in addition visualize credible bands (default coloring as orange shaded areas).
-The calculation of these bands is performed via the getBootstrapQuantiles() function.
+The calculation of these bands is performed via the <code><a href="getBootstrapQuantiles.html">getBootstrapQuantiles()</a></code> function.
 The default setting is that these credible bands are not calculated.</p>
     </div>
 
@@ -70,7 +70,7 @@ The default setting is that these credible bands are not calculated.</p>
 <span>  cr_intv <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  alpha_CrI <span class="op">=</span> <span class="fl">0.05</span>,</span>
 <span>  cr_bands <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  alpha_CrB <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.05</span>, <span class="fl">0.2</span><span class="op">)</span>,</span>
+<span>  alpha_CrB <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.05</span>, <span class="fl">0.2</span>, <span class="fl">1</span><span class="op">)</span>,</span>
 <span>  n_bs_smpl <span class="op">=</span> <span class="fl">1000</span>,</span>
 <span>  acc_color <span class="op">=</span> <span class="st">"orange"</span>,</span>
 <span>  plot_res <span class="op">=</span> <span class="fl">100</span>,</span>
@@ -84,7 +84,7 @@ The default setting is that these credible bands are not calculated.</p>
 
 
 <dl><dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
-<dd><p>An object of type modelFits</p></dd>
+<dd><p>An object of type <code>modelFits</code></p></dd>
 
 
 <dt id="arg-probability-scale">probability_scale<a class="anchor" aria-label="anchor" href="#arg-probability-scale"></a></dt>
@@ -108,7 +108,7 @@ The default setting is that these credible bands are not calculated.</p>
 
 
 <dt id="arg-alpha-crb">alpha_CrB<a class="anchor" aria-label="anchor" href="#arg-alpha-crb"></a></dt>
-<dd><p>Numerical vector of the width of the credible bands. Default is set to 0.05 and 0.5 (i.e 95% CB and 50% CB  are shown).</p></dd>
+<dd><p>Numerical vector of the width of the credible bands. Default is set to <code>c(0.05, 0.2, 1)</code>, i.e, the 95% CB, 80% CB and bootstrapped median are shown.</p></dd>
 
 
 <dt id="arg-n-bs-smpl">n_bs_smpl<a class="anchor" aria-label="anchor" href="#arg-n-bs-smpl"></a></dt>
@@ -116,7 +116,7 @@ The default setting is that these credible bands are not calculated.</p>
 
 
 <dt id="arg-acc-color">acc_color<a class="anchor" aria-label="anchor" href="#arg-acc-color"></a></dt>
-<dd><p>Color of the credible bands. Default "orange".</p></dd>
+<dd><p>Color of the credible bands. Default <code>"orange"</code>.</p></dd>
 
 
 <dt id="arg-plot-res">plot_res<a class="anchor" aria-label="anchor" href="#arg-plot-res"></a></dt>
@@ -128,7 +128,7 @@ The default setting is that these credible bands are not calculated.</p>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>optional parameter to be passed to plot().</p></dd>
+<dd><p>optional parameter to be passed to <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -148,7 +148,7 @@ The default setting is that these credible bands are not calculated.</p>
 <span class="r-in"><span><span class="va">model_fits</span> <span class="op">&lt;-</span> <span class="fu"><a href="getModelFits.html">getModelFits</a></span><span class="op">(</span>models      <span class="op">=</span> <span class="va">models</span>,</span></span>
 <span class="r-in"><span>                           posterior   <span class="op">=</span> <span class="va">posterior_list</span>,</span></span>
 <span class="r-in"><span>                           dose_levels <span class="op">=</span> <span class="va">dose_levels</span>,</span></span>
-<span class="r-in"><span>                           simple       <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span>                           simple      <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">model_fits</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="plot.modelFits-1.png" alt="" width="700" height="433"></span>
