@@ -4,9 +4,9 @@
 #' Black lines show the fitted dose response models and an AIC based average model.
 #' Dots indicate the posterior median and vertical lines show corresponding credible intervals (i.e. the variability of the posterior distribution of the respective dose group).
 #' To assess the uncertainty of the model fit one can in addition visualize credible bands (default coloring as orange shaded areas).
-#' The calculation of these bands is performed via the getBootstrapQuantiles() function.
+#' The calculation of these bands is performed via the `getBootstrapQuantiles()` function.
 #' The default setting is that these credible bands are not calculated.
-#' @param x An object of type modelFits
+#' @param x An object of type `modelFits`
 #' @param probability_scale A boolean to specify if the trial has a continuous or a binary outcome. Setting to TRUE will transform the output from the logit scale to the probability scale, which can be desirable for a binary outcome. Default `attr(x, "probability_scale")`.
 #' @param gAIC Logical value indicating whether gAIC values are shown in the plot. Default TRUE
 #' @param cr_intv Logical value indicating whether credible intervals are included in the plot. Default TRUE
@@ -14,10 +14,10 @@
 #' @param cr_bands Logical value indicating whether bootstrapped based credible bands are shown in the plot. Default FALSE
 #' @param alpha_CrB Numerical vector of the width of the credible bands. Default is set to `c(0.05, 0.2, 1)`, i.e, the 95% CB, 80% CB and bootstrapped median are shown.
 #' @param n_bs_smpl Number of bootstrap samples being used. Default 1000.
-#' @param acc_color Color of the credible bands. Default "orange".
+#' @param acc_color Color of the credible bands. Default `"orange"`.
 #' @param plot_res Number of plotted doses within the range of the dose levels, i.e., the resolution of the plot. Default 100.
 #' @param plot_diffs Logical flag. Plot differences to the control group. Default FALSE.
-#' @param ... optional parameter to be passed to plot().
+#' @param ... optional parameter to be passed to `plot()`.
 #' @examples
 #' posterior_list <- list(Ctrl = RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 1), sigma = 2),
 #'                        DG_1 = RBesT::mixnorm(comp1 = c(w = 1, m = 3, s = 1.2), sigma = 2),
