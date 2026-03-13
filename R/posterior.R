@@ -148,7 +148,23 @@ getPosteriorI <- function(
     
     if (probability_scale) {
       
-      logit_fit <- stats::glm(data_i$response ~ factor(data_i$dose) - 1, family = stats::binomial)
+      separation <- with(data_i, any(tapply(response, dose, function(y) {
+        
+        all(y == 0) | all(y == 1)
+        
+      })))
+      
+      if (separation) {
+        
+        logit_fit <- stats::glm(response ~ factor(dose) - 1, data = data_i,
+                                family = stats::binomial)
+        
+      } else {
+        
+        logit_fit <- logistf::logistf(response ~ factor(dose) - 1, data = data_i)
+        
+      }
+      
       mu_hat    <- stats::coef(logit_fit)
       se_hat    <- diag(sqrt(stats::vcov(logit_fit)))
       
