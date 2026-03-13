@@ -35,6 +35,46 @@ test_that("getPosterior: binary mode uses binomial GLM and returns postList", {
   expect_true(is.null(attr(post, "ess")) || is.numeric(attr(post, "ess")))
 })
 
+test_that("getPosterior: binary mode uses Firth penalized regression in case of separation", {
+  skip_if_not_installed("RBesT")
+  
+  set.seed(10)
+  
+  dose_levels <- c(0, 1, 2, 4)
+  n_per_dose  <- 50
+  probs       <- c(0.10, 0.20, 0.35, 0.55)
+  
+  dat <- data.frame(
+    simulation = 1L,
+    dose       = rep(dose_levels, each = n_per_dose),
+    response   = unlist(lapply(probs, function(p) rbinom(n_per_dose, 1, p)))
+  )
+  attr(dat, "probability_scale") <- TRUE
+  
+  # hard-code separation
+  dat[1:n_per_dose, 3] <- 0
+  
+  prior_list <- setNames(
+    lapply(seq_along(dose_levels), function(i) {
+      RBesT::mixnorm(comp1 = c(w = 1, m = qlogis(probs[i]), s = 1.5), sigma = 2)
+    }),
+    c("Ctr", paste0("DG_", seq_along(dose_levels[-1])))
+  )
+  
+  post <- getPosterior(
+    prior_list        = prior_list,
+    data              = dat,
+    calc_ess          = TRUE,
+    probability_scale = TRUE
+  )
+  
+  expect_s3_class(post, "postList")
+  expect_equal(length(post), length(dose_levels))
+  expect_true(is.list(attr(post, "posteriorInfo")))
+  # ess can be numeric(0) in your current implementation depending on path
+  expect_true(is.null(attr(post, "ess")) || is.numeric(attr(post, "ess")))
+})
+
 test_that("getPosterior: binary mode rejects malformed data (still needs simulation column)", {
   skip_if_not_installed("RBesT")
   
