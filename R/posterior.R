@@ -156,12 +156,12 @@ getPosteriorI <- function(
       
       if (separation) {
         
-        logit_fit <- stats::glm(response ~ factor(dose) - 1, data = data_i,
-                                family = stats::binomial)
+        logit_fit <- logistf::logistf(response ~ factor(dose) - 1, data = data_i)
         
       } else {
         
-        logit_fit <- logistf::logistf(response ~ factor(dose) - 1, data = data_i)
+        logit_fit <- stats::glm(response ~ factor(dose) - 1, data = data_i,
+                                family = stats::binomial)
         
       }
       
