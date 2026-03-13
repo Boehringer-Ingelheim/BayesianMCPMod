@@ -86,15 +86,15 @@ bs_quantiles
 #> # A tibble: 72 × 5
 #>    model   dose sample_type q_prob q_val
 #>    <chr>  <dbl> <chr>        <dbl> <dbl>
-#>  1 avgFit     0 abs          0.025 0.320
-#>  2 avgFit     0 abs          0.5   1.34 
-#>  3 avgFit     0 abs          0.8   2.10 
-#>  4 avgFit     0 abs          0.975 2.66 
+#>  1 avgFit     0 abs          0.025 0.982
+#>  2 avgFit     0 abs          0.5   1.50 
+#>  3 avgFit     0 abs          0.8   1.73 
+#>  4 avgFit     0 abs          0.975 3.41 
 #>  5 avgFit     0 diff         0.025 0    
 #>  6 avgFit     0 diff         0.5   0    
 #>  7 avgFit     0 diff         0.8   0    
 #>  8 avgFit     0 diff         0.975 0    
-#>  9 avgFit     6 abs          0.025 4.39 
-#> 10 avgFit     6 abs          0.5   5.45 
+#>  9 avgFit     6 abs          0.025 5.09 
+#> 10 avgFit     6 abs          0.5   6.14 
 #> # ℹ 62 more rows
 ```

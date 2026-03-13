@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">BayesianMCPMod</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.1.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -37,7 +37,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>simulateData</h1>
-      <small class="dont-index">Source: <a href="https://github.com/Boehringer-Ingelheim/BayesianMCPMod/blob/v1.3.1/R/simulation.R" class="external-link"><code>R/simulation.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/Boehringer-Ingelheim/BayesianMCPMod/blob/main/R/simulation.R" class="external-link"><code>R/simulation.R</code></a></small>
       <div class="d-none name"><code>simulateData.Rd</code></div>
     </div>
 
@@ -122,13 +122,20 @@ Also providing information about simulation iteration, patient number as well as
 <span class="r-in"><span>                         mods        <span class="op">=</span> <span class="va">models</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">sim_data</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   simulation ptno dose    linear    linlog     emax1     emax2 exponential</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1          1    1    0  1.401210  1.401210  1.401210  1.401210    1.401210</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2          1    2    0 16.680388 16.680388 16.680388 16.680388   16.680388</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3          1    3    0 -7.569798 -7.569798 -7.569798 -7.569798   -7.569798</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4          1    4    0 13.271286 13.271286 13.271286 13.271286   13.271286</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5          1    5    0 -2.742171 -2.742171 -2.742171 -2.742171   -2.742171</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6          1    6    0 -1.295981 -1.295981 -1.295981 -1.295981   -1.295981</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   simulation ptno dose      linear      linlog       emax1       emax2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1          1    1    0 -13.2621761 -13.2621761 -13.2621761 -13.2621761</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2          1    2    0  -0.5481451  -0.5481451  -0.5481451  -0.5481451</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3          1    3    0  -2.4842980  -2.4842980  -2.4842980  -2.4842980</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4          1    4    0  -7.7072241  -7.7072241  -7.7072241  -7.7072241</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5          1    5    0 -10.1674908 -10.1674908 -10.1674908 -10.1674908</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6          1    6    0  -8.9146060  -8.9146060  -8.9146060  -8.9146060</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   exponential</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 -13.2621761</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2  -0.5481451</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3  -2.4842980</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4  -7.7072241</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5 -10.1674908</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6  -8.9146060</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># custom response "model" shape</span></span></span>
 <span class="r-in"><span><span class="va">custom_dose_response</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">3</span>, <span class="fl">4</span>, <span class="fl">5</span><span class="op">)</span></span></span>
@@ -138,13 +145,13 @@ Also providing information about simulation iteration, patient number as well as
 <span class="r-in"><span>                                     dr_means    <span class="op">=</span> <span class="va">custom_dose_response</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">sim_data_custom_dr</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   simulation ptno dose dr_response</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1          1    1    0    5.662975</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2          1    2    0   -1.559903</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3          1    3    0    4.799048</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4          1    4    0    2.938953</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5          1    5    0   -2.043038</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6          1    6    0  -11.401914</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   simulation ptno dose  dr_response</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1          1    1    0  -8.34065020</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2          1    2    0  -0.03767594</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3          1    3    0   7.31990133</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4          1    4    0 -10.88546421</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5          1    5    0  21.76409509</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6          1    6    0   8.14677622</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

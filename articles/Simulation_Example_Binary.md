@@ -203,7 +203,7 @@ success_probabilities
     ##   Estimated Success Rate: 0.96 
     ##   N Simulations:          100 
     ##    Model Shape:        lin sigE  log  exp emax 
-    ##    Significance Freq: 0.91 0.90 0.91 0.89 0.73 
+    ##    Significance Freq: 0.92 0.90 0.92 0.89 0.74 
     ## MED Assessment on Probability Scale
     ##   Selection Method:    avgFit 
     ##   Identification Rate: 0.88 
@@ -317,7 +317,7 @@ success_probabilities_uneq
     ##   Estimated Success Rate: 0.99 
     ##   N Simulations:          100 
     ##    Model Shape:        lin sigE  log  exp emax 
-    ##    Significance Freq: 0.99 0.97 0.99 0.98 0.79 
+    ##    Significance Freq: 0.99 0.98 0.99 0.99 0.79 
     ## MED Assessment on Probability Scale
     ##   Selection Method:    avgFit 
     ##   Identification Rate: 0.95 
@@ -398,17 +398,17 @@ success_probabilities_vague
 
     ## $linear
     ## Bayesian Multiple Comparison Procedure
-    ##   Estimated Success Rate: 0.91 
+    ##   Estimated Success Rate: 0.92 
     ##   N Simulations:          100 
     ##    Model Shape:        lin sigE  log  exp emax 
-    ##    Significance Freq: 0.89 0.85 0.88 0.86 0.56 
+    ##    Significance Freq: 0.90 0.86 0.89 0.87 0.57 
     ## MED Assessment on Probability Scale
     ##   Selection Method:    avgFit 
-    ##   Identification Rate: 0.85 
+    ##   Identification Rate: 0.86 
     ##    Dose Level:  2.5  5.0 10.0 20.0 
-    ##    MED Freq:   0.00 0.01 0.09 0.75 
+    ##    MED Freq:   0.00 0.01 0.09 0.76 
     ##   MED not reached Freq:        0.06 
-    ##   No success in MCP step Freq: 0.09 
+    ##   No success in MCP step Freq: 0.08 
     ## 
     ## $sigEmax
     ## Bayesian Multiple Comparison Procedure
@@ -467,9 +467,9 @@ success_probabilities_vague
     ##   No success in MCP step Freq: 0.13 
     ## 
     ## attr(,"avgSuccessRate")
-    ## [1] 0.94
+    ## [1] 0.942
     ## attr(,"avgMEDIdentificationRate")
-    ## [1] 0.87
+    ## [1] 0.872
     ## attr(,"placEff")
     ## [1] -1.516347
     ## attr(,"maxEff")

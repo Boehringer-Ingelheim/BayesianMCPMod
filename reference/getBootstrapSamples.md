@@ -78,15 +78,15 @@ bs_samples
 #> # A tibble: 90 × 5
 #>    sample_id model        dose   abs  diff
 #>        <int> <chr>       <dbl> <dbl> <dbl>
-#>  1         1 avgFit          0  1.56  0   
-#>  2         1 exponential     0  1.76  0   
-#>  3         1 linear          0  1.56  0   
-#>  4         1 avgFit          6  6.34  4.78
-#>  5         1 exponential     6  6.10  4.34
-#>  6         1 linear          6  6.34  4.78
-#>  7         1 avgFit          8  7.93  6.37
-#>  8         1 exponential     8  7.95  6.19
-#>  9         1 linear          8  7.93  6.37
-#> 10         2 avgFit          0  2.49  0   
+#>  1         1 avgFit          0 0.282  0   
+#>  2         1 exponential     0 0.509  0   
+#>  3         1 linear          0 0.282  0   
+#>  4         1 avgFit          6 6.24   5.95
+#>  5         1 exponential     6 5.97   5.47
+#>  6         1 linear          6 6.24   5.95
+#>  7         1 avgFit          8 8.22   7.94
+#>  8         1 exponential     8 8.30   7.79
+#>  9         1 linear          8 8.22   7.94
+#> 10         2 avgFit          0 0.901  0   
 #> # ℹ 80 more rows
 ```
