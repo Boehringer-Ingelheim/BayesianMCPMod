@@ -71,6 +71,10 @@ Returns success probabilities for the different assumed dose-response shapes, at
 \description{
 This function performs simulation based trial design evaluations for a set of specified dose-response models
 }
+\details{
+For binary endpoints, if separation occurs (for example, when one treatment arm has only responders or only non‑responders), we use penalized logistic regression with Firth’s correction to prevent convergence issues and obtain more stable estimates.
+See the references for additional details.
+}
 \examples{
 mods <- DoseFinding::Mods(linear      = NULL,
                           emax        = c(0.5, 1.2),
@@ -173,4 +177,11 @@ success_probabilities <- assessDesign(
 
 }
 
+}
+\references{
+Heinze, G. & Schemper, M. (2002). A solution to the problem of separation
+in logistic regression. \emph{Statistics in Medicine}, 21(16), 2409–2419.
+
+Liu et al. (2022). Commentary: analyzing binary data using MCPMod when zero counts are expected.
+\emph{arXiv}, 2202.08781, https://arxiv.org/abs/2202.08781
 }

@@ -22,6 +22,17 @@
 #' @param med_selection A string, either `"avgFit"` or `"bestFit"`, for the method of MED selection. Default `"avgFit"`.
 #' @param probability_scale A boolean to specify if the trial has a continuous or a binary outcome. Setting to TRUE will transform calculations from the logit scale to the probability scale, which can be desirable for a binary outcome. Default FALSE.
 #'
+#' @details
+#' For binary endpoints, if separation occurs (for example, when one treatment arm has only responders or only non‑responders), we use penalized logistic regression with Firth’s correction to prevent convergence issues and obtain more stable estimates.
+#' See the references for additional details.
+#'
+#' @references
+#' Heinze, G. & Schemper, M. (2002). A solution to the problem of separation
+#' in logistic regression. *Statistics in Medicine*, 21(16), 2409–2419.
+#' 
+#' Liu et al. (2022). Commentary: analyzing binary data using MCPMod when zero counts are expected.
+#' *arXiv*, 2202.08781, https://arxiv.org/abs/2202.08781
+#'
 #' @return Returns success probabilities for the different assumed dose-response shapes, attributes also includes information around average success rate (across all assumed models) and prior Effective sample size.
 #'
 #' @examples
