@@ -504,8 +504,9 @@ performBayesianMCPMod <- function (
 
     }))
 
-    attr(b_mcp_mod, "MED")          <- med_info
-    attr(b_mcp_mod, "MEDSelection") <- med_selection
+    attr(b_mcp_mod, "MED")            <- med_info
+    attr(b_mcp_mod, "MEDReachedFreq") <- mean(med_info[, "med_reached"])
+    attr(b_mcp_mod, "MEDSelection")   <- med_selection
 
   }
 
