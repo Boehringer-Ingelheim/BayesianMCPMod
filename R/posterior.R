@@ -131,16 +131,16 @@ getPosterior <- function(
 }
 
 getPosteriorI <- function(
-
+    
   data_i   = NULL,
   prior_list,
   mu_hat   = NULL,
   se_hat   = NULL,
   calc_ess = FALSE,
   probability_scale = attr(data_i, "probability_scale")
-
+  
 ) {
-
+  
   checkmate::check_data_frame(data_i, null.ok = TRUE)
   checkmate::check_list(prior_list, names = "named", any.missing = FALSE)
   checkmate::check_vector(mu_hat, any.missing = FALSE, null.ok = TRUE)
@@ -150,9 +150,11 @@ getPosteriorI <- function(
   checkmate::assert_flag(probability_scale, null.ok = TRUE)
   
   if (is.null(probability_scale)) probability_scale <- FALSE
-
+  
+  fit_method <- if (probability_scale) "unknown" else "lm"
+  
   if (is.null(mu_hat) && is.null(se_hat) && !is.null(data_i)) {
-
+    
     checkmate::check_data_frame(data_i, null.ok = FALSE)
     checkmate::assert_names(names(data_i), must.include = "response")
     checkmate::assert_names(names(data_i), must.include = "dose")
@@ -160,62 +162,58 @@ getPosteriorI <- function(
     if (probability_scale) {
       
       separation <- with(data_i, any(tapply(response, dose, function(y) {
-        
         all(y == 0) | all(y == 1)
-        
       })))
       
       if (separation) {
-        
+        fit_method <- "firth"
         logit_fit <- logistf::logistf(response ~ factor(dose) - 1, data = data_i)
-        
       } else {
-        
-        logit_fit <- stats::glm(response ~ factor(dose) - 1, data = data_i,
-                                family = stats::binomial)
-        
+        fit_method <- "glm"
+        logit_fit <- stats::glm(
+          response ~ factor(dose) - 1,
+          data   = data_i,
+          family = stats::binomial
+        )
       }
       
-      mu_hat    <- stats::coef(logit_fit)
-      se_hat    <- diag(sqrt(stats::vcov(logit_fit)))
+      mu_hat <- stats::coef(logit_fit)
+      se_hat <- diag(sqrt(stats::vcov(logit_fit)))
       
     } else {
       
+      fit_method <- "lm"
       anova_res <- stats::lm(data_i$response ~ factor(data_i$dose) - 1)
       mu_hat    <- summary(anova_res)$coefficients[, 1]
       se_hat    <- summary(anova_res)$coefficients[, 2]
-      
     }
-
+    
   } else if (!is.null(mu_hat) && !is.null(se_hat) && is.null(data_i)) {
-
+    
     stopifnot("m_hat length must match number of dose levels" =
                 length(prior_list) == length(mu_hat))
-
+    
   } else {
-
+    
     stop ("Both mu_hat and se_hat or data_i must be provided.")
-
+    
   }
-
+  
   post_list <- mapply(RBesT::postmix, prior_list, m = mu_hat, se = se_hat,
                       SIMPLIFY = FALSE)
-
+  
   if (is.null(names(prior_list))) {
-
     names(prior_list) <- c("Ctr", paste0("DG_", seq_along(post_list[-1])))
-
   }
   
   names(post_list) <- names(prior_list)
   class(post_list) <- "postList"
-
+  
   attr(post_list, "ess") <- if (calc_ess) getESS(post_list) else numeric(0)
-  
   attr(post_list, "posteriorInfo") <- priorList2priorMix(post_list)
+  attr(post_list, "fitMethod") <- fit_method
   
-  return (post_list)
-
+  return(post_list)
 }
 
 #' @title getESS
