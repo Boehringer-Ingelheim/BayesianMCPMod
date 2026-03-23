@@ -151,8 +151,6 @@ getPosteriorI <- function(
   
   if (is.null(probability_scale)) probability_scale <- FALSE
   
-  fit_method <- if (probability_scale) "unknown" else "lm"
-  
   if (is.null(mu_hat) && is.null(se_hat) && !is.null(data_i)) {
     
     checkmate::check_data_frame(data_i, null.ok = FALSE)
@@ -166,15 +164,20 @@ getPosteriorI <- function(
       })))
       
       if (separation) {
+        
         fit_method <- "firth"
-        logit_fit <- logistf::logistf(response ~ factor(dose) - 1, data = data_i)
+        logit_fit  <- logistf::logistf(
+          formula = response ~ factor(dose) - 1,
+          data    = data_i)
+        
       } else {
+        
         fit_method <- "glm"
-        logit_fit <- stats::glm(
-          response ~ factor(dose) - 1,
-          data   = data_i,
-          family = stats::binomial
-        )
+        logit_fit  <- stats::glm(
+          formula = response ~ factor(dose) - 1,
+          data    = data_i,
+          family  = stats::binomial)
+        
       }
       
       mu_hat <- stats::coef(logit_fit)
@@ -183,9 +186,13 @@ getPosteriorI <- function(
     } else {
       
       fit_method <- "lm"
-      anova_res <- stats::lm(data_i$response ~ factor(data_i$dose) - 1)
-      mu_hat    <- summary(anova_res)$coefficients[, 1]
-      se_hat    <- summary(anova_res)$coefficients[, 2]
+      anova_res  <- stats::lm(
+        formula = response ~ factor(dose) - 1,
+        data    = data_i)
+      
+      mu_hat     <- summary(anova_res)$coefficients[, 1]
+      se_hat     <- summary(anova_res)$coefficients[, 2]
+      
     }
     
   } else if (!is.null(mu_hat) && !is.null(se_hat) && is.null(data_i)) {
@@ -209,11 +216,12 @@ getPosteriorI <- function(
   names(post_list) <- names(prior_list)
   class(post_list) <- "postList"
   
-  attr(post_list, "ess") <- if (calc_ess) getESS(post_list) else numeric(0)
+  attr(post_list, "ess")           <- if (calc_ess) getESS(post_list) else numeric(0)
   attr(post_list, "posteriorInfo") <- priorList2priorMix(post_list)
-  attr(post_list, "fitMethod") <- fit_method
+  attr(post_list, "fitMethod")     <- fit_method
   
   return(post_list)
+  
 }
 
 #' @title getESS
