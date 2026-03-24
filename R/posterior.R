@@ -197,6 +197,8 @@ getPosteriorI <- function(
     
   } else if (!is.null(mu_hat) && !is.null(se_hat) && is.null(data_i)) {
     
+    fit_method <- "extern"
+    
     stopifnot("m_hat length must match number of dose levels" =
                 length(prior_list) == length(mu_hat))
     
