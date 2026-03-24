@@ -111,8 +111,8 @@ print.BayesianMCPMod <- function (
     
     cat("\n")
     
-    cat("  Selection Method:   ", attr(x, "MEDSelection"), "\n")
-    cat("  Identification Rate:", mean(med_info[, "med_reached"]), "\n")
+    cat("  Selection Method:           ", attr(x, "MEDSelection"), "\n")
+    cat("  MED reached Freq:           ", attr(x, "MEDReachedFreq"), "\n")
     
     if (!any(sign_indx)) {
       
@@ -147,13 +147,13 @@ print.BayesianMCPMod <- function (
   
   if (length(x$Mod) == 1) {
 
-    print (x$Mod[[1]], ...)
+    print(x$Mod[[1]], ...)
 
   } else {
     
     for (m in seq_len(n_mods)) {
       
-      print (x$Mod[[m]], ...)
+      print(x$Mod[[m]], ...)
       
     }
     

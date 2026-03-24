@@ -16,6 +16,17 @@
 #' @references BERNARDO, Jl. M., and Smith, AFM (1994). Bayesian Theory. 81.
 #' @return posterior_list, a posterior list object is returned with information about (mixture) posterior distribution per dose group (more detailed information about the conjugate posterior in case of covariance input for S_hat is provided in the attributes)
 #' @details Kindly note that one can sample from the `posterior_list` with `lapply(posterior_list, RBesT::rmix, n = 10)`.
+#' 
+#' For binary endpoints, if separation occurs (for example, when one treatment arm has only responders or only non‑responders), we use penalized logistic regression with Firth’s correction to prevent convergence issues and obtain more stable estimates.
+#' See the references for additional details.
+#' 
+#' @references
+#' Heinze, G. & Schemper, M. (2002). A solution to the problem of separation
+#' in logistic regression. *Statistics in Medicine*, 21(16), 2409–2419.
+#' 
+#' Liu et al. (2022). Commentary: analyzing binary data using MCPMod when zero counts are expected.
+#' *arXiv*, 2202.08781, https://arxiv.org/abs/2202.08781
+#' 
 #' @examples
 #' prior_list <- list(Ctrl = RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 5), sigma = 2),
 #'                    DG_1 = RBesT::mixnorm(comp1 = c(w = 1, m = 1, s = 12), sigma = 2),
@@ -120,16 +131,16 @@ getPosterior <- function(
 }
 
 getPosteriorI <- function(
-
+    
   data_i   = NULL,
   prior_list,
   mu_hat   = NULL,
   se_hat   = NULL,
   calc_ess = FALSE,
   probability_scale = attr(data_i, "probability_scale")
-
+  
 ) {
-
+  
   checkmate::check_data_frame(data_i, null.ok = TRUE)
   checkmate::check_list(prior_list, names = "named", any.missing = FALSE)
   checkmate::check_vector(mu_hat, any.missing = FALSE, null.ok = TRUE)
@@ -139,9 +150,9 @@ getPosteriorI <- function(
   checkmate::assert_flag(probability_scale, null.ok = TRUE)
   
   if (is.null(probability_scale)) probability_scale <- FALSE
-
+  
   if (is.null(mu_hat) && is.null(se_hat) && !is.null(data_i)) {
-
+    
     checkmate::check_data_frame(data_i, null.ok = FALSE)
     checkmate::assert_names(names(data_i), must.include = "response")
     checkmate::assert_names(names(data_i), must.include = "dose")
@@ -149,62 +160,70 @@ getPosteriorI <- function(
     if (probability_scale) {
       
       separation <- with(data_i, any(tapply(response, dose, function(y) {
-        
         all(y == 0) | all(y == 1)
-        
       })))
       
       if (separation) {
         
-        logit_fit <- logistf::logistf(response ~ factor(dose) - 1, data = data_i)
+        fit_method <- "firth"
+        logit_fit  <- logistf::logistf(
+          formula = response ~ factor(dose) - 1,
+          data    = data_i)
         
       } else {
         
-        logit_fit <- stats::glm(response ~ factor(dose) - 1, data = data_i,
-                                family = stats::binomial)
+        fit_method <- "glm"
+        logit_fit  <- stats::glm(
+          formula = response ~ factor(dose) - 1,
+          data    = data_i,
+          family  = stats::binomial)
         
       }
       
-      mu_hat    <- stats::coef(logit_fit)
-      se_hat    <- diag(sqrt(stats::vcov(logit_fit)))
+      mu_hat <- stats::coef(logit_fit)
+      se_hat <- diag(sqrt(stats::vcov(logit_fit)))
       
     } else {
       
-      anova_res <- stats::lm(data_i$response ~ factor(data_i$dose) - 1)
-      mu_hat    <- summary(anova_res)$coefficients[, 1]
-      se_hat    <- summary(anova_res)$coefficients[, 2]
+      fit_method <- "lm"
+      anova_res  <- stats::lm(
+        formula = response ~ factor(dose) - 1,
+        data    = data_i)
+      
+      mu_hat     <- summary(anova_res)$coefficients[, 1]
+      se_hat     <- summary(anova_res)$coefficients[, 2]
       
     }
-
+    
   } else if (!is.null(mu_hat) && !is.null(se_hat) && is.null(data_i)) {
-
+    
+    fit_method <- "extern"
+    
     stopifnot("m_hat length must match number of dose levels" =
                 length(prior_list) == length(mu_hat))
-
+    
   } else {
-
+    
     stop ("Both mu_hat and se_hat or data_i must be provided.")
-
+    
   }
-
+  
   post_list <- mapply(RBesT::postmix, prior_list, m = mu_hat, se = se_hat,
                       SIMPLIFY = FALSE)
-
+  
   if (is.null(names(prior_list))) {
-
     names(prior_list) <- c("Ctr", paste0("DG_", seq_along(post_list[-1])))
-
   }
   
   names(post_list) <- names(prior_list)
   class(post_list) <- "postList"
-
-  attr(post_list, "ess") <- if (calc_ess) getESS(post_list) else numeric(0)
   
+  attr(post_list, "ess")           <- if (calc_ess) getESS(post_list) else numeric(0)
   attr(post_list, "posteriorInfo") <- priorList2priorMix(post_list)
+  attr(post_list, "fitMethod")     <- fit_method
   
-  return (post_list)
-
+  return(post_list)
+  
 }
 
 #' @title getESS

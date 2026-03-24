@@ -38,6 +38,9 @@ In the latter case conjugate posterior mixture of multivariate normals are calcu
 }
 \details{
 Kindly note that one can sample from the \code{posterior_list} with \code{lapply(posterior_list, RBesT::rmix, n = 10)}.
+
+For binary endpoints, if separation occurs (for example, when one treatment arm has only responders or only non‑responders), we use penalized logistic regression with Firth’s correction to prevent convergence issues and obtain more stable estimates.
+See the references for additional details.
 }
 \examples{
 prior_list <- list(Ctrl = RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 5), sigma = 2),
@@ -59,4 +62,10 @@ summary(posterior_list)
 }
 \references{
 BERNARDO, Jl. M., and Smith, AFM (1994). Bayesian Theory. 81.
+
+Heinze, G. & Schemper, M. (2002). A solution to the problem of separation
+in logistic regression. \emph{Statistics in Medicine}, 21(16), 2409–2419.
+
+Liu et al. (2022). Commentary: analyzing binary data using MCPMod when zero counts are expected.
+\emph{arXiv}, 2202.08781, https://arxiv.org/abs/2202.08781
 }

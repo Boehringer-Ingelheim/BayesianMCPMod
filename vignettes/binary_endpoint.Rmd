@@ -211,7 +211,8 @@ summary(post_logit, probability_scale = TRUE)
 The testing step of Bayesian MCPMod is executed using a critical value on the probability scale and a pseudo-optimal contrast matrix. 
 
 A contrast matrix is generated based on the number of patients per dose group, see @fleischer_2022 for more details.
-Please note that here also other options would be possible, e.g. using weight based on the observed variability.
+This choice is motivated by the assessments reported in @liu2022commentaryanalyzingbinarydata, which demonstrate that this type of contrast is robust and provides good statistical power across a broad range of potential outcome scenarios.
+Please note that also other options would be possible, e.g. using weight based on the observed variability.
 
 The critical value is calculated using (re-estimated) contrasts for frequentist MCPMod to ensure error control when using weakly-informative priors.
 
