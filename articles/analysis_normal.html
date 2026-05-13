@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">BayesianMCPMod</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.1.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -63,7 +63,7 @@
 
       <h1>Trial Analysis Example of Bayesian MCPMod for Continuous Data</h1>
             
-            <h4 data-toc-skip class="date">2026-03-13</h4>
+            <h4 data-toc-skip class="date">2026-05-13</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/Boehringer-Ingelheim/BayesianMCPMod/blob/main/vignettes/analysis_normal.Rmd" class="external-link"><code>vignettes/analysis_normal.Rmd</code></a></small>
       <div class="d-none name"><code>analysis_normal.Rmd</code></div>
@@ -205,7 +205,7 @@ be constructed.</p>
 <span></span>
 <span><span class="fu"><a href="../reference/getESS.html">getESS</a></span><span class="op">(</span><span class="va">prior_list</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##  Ctr DG_1 DG_2 DG_3 </span></span>
-<span><span class="co">## 19.7  1.0  1.0  1.0</span></span></code></pre>
+<span><span class="co">## 18.5  1.0  1.0  1.0</span></span></code></pre>
 </div>
 <div class="section level2">
 <h2 id="dose-response-model-shapes">Dose-Response Model Shapes<a class="anchor" aria-label="anchor" href="#dose-response-model-shapes"></a>
@@ -446,35 +446,35 @@ combining the prior information with the estimated results of the trial
 <tbody>
 <tr class="odd">
 <td align="left">Ctr</td>
-<td align="right">-11.19915</td>
-<td align="right">0.7069568</td>
-<td align="right">-12.57034</td>
-<td align="right">-11.20131</td>
-<td align="right">-9.807192</td>
+<td align="right">-11.23854</td>
+<td align="right">0.6957444</td>
+<td align="right">-12.56205</td>
+<td align="right">-11.25389</td>
+<td align="right">-9.831438</td>
 </tr>
 <tr class="even">
 <td align="left">DG_1</td>
-<td align="right">-14.88080</td>
+<td align="right">-14.88114</td>
 <td align="right">0.7130817</td>
-<td align="right">-16.27841</td>
-<td align="right">-14.88080</td>
-<td align="right">-13.483185</td>
+<td align="right">-16.27875</td>
+<td align="right">-14.88114</td>
+<td align="right">-13.483523</td>
 </tr>
 <tr class="odd">
 <td align="left">DG_2</td>
-<td align="right">-15.07981</td>
+<td align="right">-15.08015</td>
 <td align="right">0.7101057</td>
-<td align="right">-16.47159</td>
-<td align="right">-15.07981</td>
-<td align="right">-13.688031</td>
+<td align="right">-16.47193</td>
+<td align="right">-15.08015</td>
+<td align="right">-13.688367</td>
 </tr>
 <tr class="even">
 <td align="left">DG_3</td>
-<td align="right">-15.63624</td>
+<td align="right">-15.63659</td>
 <td align="right">0.7259755</td>
-<td align="right">-17.05913</td>
-<td align="right">-15.63624</td>
-<td align="right">-14.213356</td>
+<td align="right">-17.05948</td>
+<td align="right">-15.63659</td>
+<td align="right">-14.213707</td>
 </tr>
 </tbody>
 </table>
@@ -536,14 +536,14 @@ is not executed and the contrast specification above is used.</p>
 <pre><code><span><span class="co">## Bayesian Multiple Comparison Procedure</span></span>
 <span><span class="co">##   Significant:                   1 </span></span>
 <span><span class="co">##   Critical Probability:          0.9845439 </span></span>
-<span><span class="co">##   Maximum Posterior Probability: 0.9999998 </span></span>
+<span><span class="co">##   Maximum Posterior Probability: 0.9999999 </span></span>
 <span><span class="co">## Posterior Probabilities for Model Shapes</span></span>
 <span><span class="co">##                        lin       exp      emax      sigE       log     betaM      quad</span></span>
-<span><span class="co">##   Posterior Prob 0.9999581 0.9981522 0.9999998 0.9999985 0.9953674 0.9999930 0.9883779 </span></span>
+<span><span class="co">##   Posterior Prob 0.9999651 0.9983173 0.9999999 0.9999988 0.9956910 0.9999942 0.9894574 </span></span>
 <span><span class="co">##   Significant            1         1         1         1         1         1         1 </span></span>
 <span><span class="co">## Average Posterior ESS</span></span>
 <span><span class="co">##   Dose Level:     Ctr  DG_1  DG_2  DG_3 </span></span>
-<span><span class="co">##   Avg Post ESS: 189.9 186.6 188.2 180.0</span></span></code></pre>
+<span><span class="co">##   Avg Post ESS: 197.2 186.6 188.2 180.0</span></span></code></pre>
 <p>The testing step is significant, indicating a non-flat dose-response
 shape. All models are significant, with the <code>emax</code> model
 indicating the greatest deviation from the null hypothesis.</p>
@@ -593,50 +593,50 @@ similar, so we present the full fit.</p>
 <tr class="odd">
 <td align="left">avgFit</td>
 <td align="left">avgFit</td>
-<td align="left">-11.292, -14.684, -15.134, -15.315, -15.518,
--15.530</td>
+<td align="left">-11.320, -14.682, -15.132, -15.313, -15.518,
+-15.532</td>
 </tr>
 <tr class="even">
 <td align="left">betaMod</td>
 <td align="left">betaMod</td>
-<td align="left">-11.246, -14.787, -15.099, -15.246, -15.450,
+<td align="left">-11.270, -14.787, -15.098, -15.246, -15.450,
 -15.556</td>
 </tr>
 <tr class="odd">
 <td align="left">emax</td>
 <td align="left">emax</td>
-<td align="left">-11.244, -14.805, -15.133, -15.257, -15.407,
--15.528</td>
+<td align="left">-11.268, -14.805, -15.133, -15.257, -15.408,
+-15.529</td>
 </tr>
 <tr class="even">
 <td align="left">exponential</td>
 <td align="left">exponential</td>
-<td align="left">-12.586, -13.358, -13.870, -14.233, -15.016,
--16.348</td>
+<td align="left">-12.637, -13.395, -13.898, -14.254, -15.023,
+-16.330</td>
 </tr>
 <tr class="odd">
 <td align="left">linear</td>
 <td align="left">linear</td>
-<td align="left">-12.403, -13.397, -13.994, -14.391, -15.187,
--16.380</td>
+<td align="left">-12.453, -13.431, -14.017, -14.408, -15.191,
+-16.364</td>
 </tr>
 <tr class="even">
 <td align="left">logistic</td>
 <td align="left">logistic</td>
-<td align="left">-11.245, -14.837, -15.273, -15.352, -15.390,
--15.395</td>
+<td align="left">-11.269, -14.836, -15.273, -15.352, -15.390,
+-15.396</td>
 </tr>
 <tr class="odd">
 <td align="left">quadratic</td>
 <td align="left">quadratic</td>
-<td align="left">-11.474, -14.104, -15.165, -15.658, -16.126,
--15.535</td>
+<td align="left">-11.506, -14.112, -15.164, -15.652, -16.117,
+-15.537</td>
 </tr>
 <tr class="even">
 <td align="left">sigEmax</td>
 <td align="left">sigEmax</td>
-<td align="left">-11.243, -14.810, -15.092, -15.217, -15.394,
--15.565</td>
+<td align="left">-11.268, -14.810, -15.092, -15.217, -15.394,
+-15.566</td>
 </tr>
 </tbody>
 </table>
@@ -688,7 +688,7 @@ control-adjusted) quantiles (sample_type=diff).</p>
 <span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <div class="reactable html-widget html-fill-item" id="htmlwidget-ac96cb3ee4656e2e9ec3" style="width:auto;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-ac96cb3ee4656e2e9ec3">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"model":["avgFit","avgFit","avgFit","avgFit","avgFit","avgFit","avgFit","avgFit","avgFit","avgFit","avgFit","avgFit","betaMod","betaMod","betaMod","betaMod","betaMod","betaMod","betaMod","betaMod","betaMod","betaMod","betaMod","betaMod","emax","emax","emax","emax","emax","emax","emax","emax","emax","emax","emax","emax","exponential","exponential","exponential","exponential","exponential","exponential","exponential","exponential","exponential","exponential","exponential","exponential","linear","linear","linear","linear","linear","linear","linear","linear","linear","linear","linear","linear","logistic","logistic","logistic","logistic","logistic","logistic","logistic","logistic","logistic","logistic","logistic","logistic","quadratic","quadratic","quadratic","quadratic","quadratic","quadratic","quadratic","quadratic","quadratic","quadratic","quadratic","quadratic","sigEmax","sigEmax","sigEmax","sigEmax","sigEmax","sigEmax","sigEmax","sigEmax","sigEmax","sigEmax","sigEmax","sigEmax"],"dose":[0,0,2.5,2.5,4,4,5,5,7,7,10,10,0,0,2.5,2.5,4,4,5,5,7,7,10,10,0,0,2.5,2.5,4,4,5,5,7,7,10,10,0,0,2.5,2.5,4,4,5,5,7,7,10,10,0,0,2.5,2.5,4,4,5,5,7,7,10,10,0,0,2.5,2.5,4,4,5,5,7,7,10,10,0,0,2.5,2.5,4,4,5,5,7,7,10,10,0,0,2.5,2.5,4,4,5,5,7,7,10,10],"sample_type":["abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff"],"0.025":[-11.4921200819023,0,-15.0701414807694,-4.16628896340237,-16.0647296405785,-4.93807064114316,-16.612694569065,-5.47732729798316,-16.9390377381655,-5.74736146430768,-16.8481575672607,-5.87197860295483,-11.5212970809626,0,-15.2163716089795,-4.16893497393592,-15.98963962744,-4.95200793876496,-16.3447918370482,-5.42522800389621,-16.6298696223115,-5.6760223136475,-16.8624101764806,-5.88570263930757,-11.4897484530431,0,-15.3823553202084,-4.32075994131106,-15.6676752578724,-4.67447943442445,-15.7828765394528,-4.8476384167904,-16.2337020670488,-5.24033968601105,-16.8481575672607,-5.87197860295483,-13.1303837750303,0,-13.8378682493648,-1.09264479460378,-14.3109450629196,-1.81687857352451,-14.6805778051596,-2.3307735575753,-15.6693803004571,-3.43895829448069,-17.5303715485936,-5.32354606642112,-12.9114757778687,0,-13.8404974240155,-1.3853197022307,-14.4114296892851,-2.21651152356911,-14.8432732990012,-2.77063940446139,-15.8712810075233,-3.87889516624595,-17.5109711321681,-5.54127880892278,-11.489789524218,0,-15.22368491888,-4.22064000108073,-15.9567905274236,-4.90327598519291,-15.9722278113426,-4.99804621675061,-16.4029567467069,-5.36007975127234,-16.7619095250038,-5.72906642476949,-12.1330781904287,0,-14.7617905679283,-3.60773990329882,-16.0647296405785,-4.93807064114316,-16.612694569065,-5.47732729798316,-16.9629861462208,-5.74736146430768,-16.8752931992677,-5.75021892743915,-11.489775292706,0,-15.2229060858139,-4.19329257088385,-15.9477257626352,-4.85752394960979,-15.9651225902353,-4.88797188371857,-16.2658722985538,-5.24217636572428,-16.8567426459956,-5.88570497834052],"0.5":[-11.0001954299054,0,-14.6667961670285,-3.54502881966086,-15.2503637375221,-4.38218484426612,-15.6366426878,-4.69756377874493,-16.0266643906125,-5.1308906941594,-15.743259532871,-4.41861682174639,-11.0057074746345,0,-14.6522352849275,-3.61352543266296,-15.2474234836602,-4.32843018315515,-15.6296917799534,-4.69938295418719,-16.0553340346197,-5.17228913297055,-15.7747887108704,-4.53984295558073,-11.0001954299054,0,-14.835785199067,-3.80212579928395,-15.118190315843,-4.22893507733222,-15.4036547626722,-4.49673301279219,-15.7390637790158,-4.67525665774652,-15.9951630669197,-4.82703095592331,-12.596457638889,0,-13.4118015211553,-0.779906375339706,-14.0107359562664,-1.29684888420093,-14.3671957445054,-1.66365608110123,-15.2316910649048,-2.45465453332931,-16.6868131845406,-3.79983278840587,-12.3723468432492,0,-13.4496672914684,-1.02204093326237,-14.1141137318232,-1.63526549321979,-14.5317751443137,-2.04408186652474,-15.4148922088649,-2.86171461313463,-16.7395678056918,-4.08816373304947,-11.0228933175045,0,-14.6345503975093,-3.63843253031648,-15.3321172749032,-4.34979597568046,-15.6966656033556,-4.71275095412798,-15.8356183958272,-4.81475947329164,-15.8566036877997,-4.81475947329164,-11.2119435067019,0,-14.0898262742262,-2.91917670389612,-15.3142558629886,-4.17112225388362,-15.8778062890825,-4.7976024237294,-16.4409466770933,-5.37165978606087,-15.7341025034293,-4.41861682174639,-11.0013211876137,0,-14.6527528345796,-3.65773400947358,-15.2434575167639,-4.29986919713635,-15.5734480234912,-4.58723809241907,-15.782778340732,-4.81490110439554,-15.8960934609031,-4.81493734090322],"0.975":[-10.5079688412091,0,-14.0926881910381,-2.83611858988757,-15.0396354251976,-3.64758422998583,-15.1059208124558,-3.71419258719152,-15.1165205288087,-3.72479230354443,-14.5225871912034,-3.61298742497033,-10.4938979344948,0,-14.1330576654737,-2.85992772939834,-14.9627662386759,-3.63405243670663,-15.1462746192707,-3.72223637074438,-15.1662143551302,-3.74217610660386,-14.513238211438,-3.53630421763313,-10.4925664553108,0,-14.1763369941205,-3.07058137205456,-14.8309442364997,-3.60970392927808,-14.9132627610613,-3.67607523252593,-14.9915521598621,-3.71634468591877,-15.052625328023,-3.73285758385872,-12.1095461354325,0,-13.0822648986982,-0.596737051179541,-13.5662556395935,-0.992270102480523,-13.8802705397087,-1.27292871991313,-14.5432887140257,-1.87815275550916,-15.6296275184904,-2.90740156104121,-11.8825428032827,0,-13.0877852172401,-0.769073473462944,-13.6638948109815,-1.23051755754071,-14.0153813305951,-1.53814694692589,-14.7102815044014,-2.15340572569624,-15.7201211018377,-3.07629389385177,-10.5012948813295,0,-14.0108711194708,-2.81576277040257,-15.1003712860588,-3.70282532643969,-15.1003712860603,-3.70988808979154,-15.1003712860603,-3.70988808979154,-15.1003712860603,-3.70988808979154,-10.5593569101508,0,-13.6847902951539,-1.82509075772662,-14.6890230762231,-2.62887576503806,-15.1035174780455,-3.02998081086644,-15.5952340274815,-3.47359951106539,-14.5241763929717,-3.26585113974385,-10.4881838803106,0,-14.1340026390279,-2.85992817666648,-14.9759473452671,-3.69620220436994,-15.1034885010092,-3.71293186099351,-15.1113816653081,-3.72644123317534,-15.1113913057791,-3.73881727936527]},"columns":[{"id":"model","name":"model","type":"character"},{"id":"dose","name":"dose","type":"numeric","format":{"aggregated":{"suffix":" dose"}}},{"id":"sample_type","name":"sample_type","type":"character"},{"id":"0.025","name":"0.025","type":"numeric","format":{"cell":{"digits":4}}},{"id":"0.5","name":"0.5","type":"numeric","format":{"cell":{"digits":4}}},{"id":"0.975","name":"0.975","type":"numeric","format":{"cell":{"digits":4}}}],"groupBy":["model"],"dataKey":"165df67de72f93edc59a33b6373ab686"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script><p><strong>Technical note:</strong> The median quantile of the bootstrap
+<script type="application/json" data-for="htmlwidget-ac96cb3ee4656e2e9ec3">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"model":["avgFit","avgFit","avgFit","avgFit","avgFit","avgFit","avgFit","avgFit","avgFit","avgFit","avgFit","avgFit","betaMod","betaMod","betaMod","betaMod","betaMod","betaMod","betaMod","betaMod","betaMod","betaMod","betaMod","betaMod","emax","emax","emax","emax","emax","emax","emax","emax","emax","emax","emax","emax","exponential","exponential","exponential","exponential","exponential","exponential","exponential","exponential","exponential","exponential","exponential","exponential","linear","linear","linear","linear","linear","linear","linear","linear","linear","linear","linear","linear","logistic","logistic","logistic","logistic","logistic","logistic","logistic","logistic","logistic","logistic","logistic","logistic","quadratic","quadratic","quadratic","quadratic","quadratic","quadratic","quadratic","quadratic","quadratic","quadratic","quadratic","quadratic","sigEmax","sigEmax","sigEmax","sigEmax","sigEmax","sigEmax","sigEmax","sigEmax","sigEmax","sigEmax","sigEmax","sigEmax"],"dose":[0,0,2.5,2.5,4,4,5,5,7,7,10,10,0,0,2.5,2.5,4,4,5,5,7,7,10,10,0,0,2.5,2.5,4,4,5,5,7,7,10,10,0,0,2.5,2.5,4,4,5,5,7,7,10,10,0,0,2.5,2.5,4,4,5,5,7,7,10,10,0,0,2.5,2.5,4,4,5,5,7,7,10,10,0,0,2.5,2.5,4,4,5,5,7,7,10,10,0,0,2.5,2.5,4,4,5,5,7,7,10,10],"sample_type":["abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff","abs","diff"],"0.025":[-11.7676729256423,0,-15.0706965100674,-3.87228806169626,-16.0588039009293,-4.96004917344876,-16.591927234111,-5.50190910707113,-16.9083876438371,-5.74784614262809,-16.8556838497397,-5.63559437437539,-11.8008201325618,0,-15.2169575513616,-4.01706905763504,-15.9882975150772,-4.97359362910192,-16.3451307402897,-5.44627349694623,-16.6358446595657,-5.69662287470732,-16.8635190477572,-5.64121322940067,-11.7701868065905,0,-15.3833186007544,-4.24278918863014,-15.6670774416477,-4.49628750257381,-15.7824131567844,-4.61065570977022,-16.22349173183,-5.02715637379883,-16.8556838497397,-5.63559437437539,-13.2382584180985,0,-13.8676936067299,-1.06052338260777,-14.3333367188174,-1.76346624273308,-14.6989138066001,-2.26225381714179,-15.6847181535406,-3.33786030109834,-17.4907720302602,-5.16704523712714,-13.0555439845312,0,-13.8731787403861,-1.3413011971843,-14.4358318588456,-2.14608191549488,-14.8651554777215,-2.6826023943686,-15.8791981743991,-3.75564335211604,-17.4662880538898,-5.3652047887372,-11.770387957118,0,-15.2240272581251,-4.02824388208015,-15.9571334922344,-4.80839354940019,-15.9717947466432,-4.80839396799141,-16.3850220359511,-5.10369661194293,-16.7843052828328,-5.51056610592653,-12.3730527739806,0,-14.7905024907584,-3.62364500321034,-16.0588039009293,-4.96004917344876,-16.591927234111,-5.50190910707113,-16.932156780188,-5.74784614262809,-16.8824830737802,-5.53549497298312,-11.7703714490306,0,-15.2232475825096,-4.02369805142194,-15.9479786994136,-4.79957095885902,-15.9654623817984,-4.80763331025902,-16.2685128934204,-5.00472075748949,-16.8575623520438,-5.64076192001201],"0.5":[-11.2881361419799,0,-14.6994983175519,-3.43471955514709,-15.2420288412038,-4.19246007758755,-15.6259312958474,-4.49682147006513,-16.0335930577448,-4.84682354200444,-15.7488331733762,-4.25463729277148,-11.224707261416,0,-14.6525705565081,-3.52785749635733,-15.2435699132657,-4.13370588037332,-15.6268752086719,-4.5013173121697,-16.0522874034114,-4.94182439964439,-15.7751372917571,-4.35342368934136,-11.2195699829304,0,-14.836708045711,-3.54276666795612,-15.1111253452349,-4.03090021606768,-15.4008620680683,-4.34608938376644,-15.7349186971516,-4.64849852212575,-15.9960160395634,-4.73959503192552,-12.7320892067914,0,-13.5089133298563,-0.758982460869773,-14.0836176395049,-1.26205604753303,-14.4235859272697,-1.61902226523688,-15.2500715782634,-2.38879921641869,-16.6555996456293,-3.69788801813775,-12.5238102897255,0,-13.5523014775564,-0.992900359207272,-14.1831986196161,-1.58864057473164,-14.5819723100538,-1.98580071841455,-15.4242715420316,-2.78012100578036,-16.6877203899983,-3.97160143682909,-11.22033354798,0,-14.6348157944314,-3.44196237342206,-15.30943881449,-4.14064538061617,-15.6929768174971,-4.50052982228987,-15.8375470390642,-4.77579058382015,-15.8610584074193,-4.79593191309361,-11.3902776237462,0,-14.1293250395972,-2.72004307342691,-15.3007965135501,-3.8959647976037,-15.8415852339624,-4.48986923043848,-16.373013065344,-5.13537706194621,-15.7397446624095,-4.25463729277148,-11.2205133472253,0,-14.6531174287917,-3.57050274850532,-15.2421616142609,-4.10820347502655,-15.5721151695328,-4.39297772492916,-15.7832616781661,-4.76235321912223,-15.8964416627473,-4.79649349812904],"0.975":[-10.4922364467446,0,-14.0956479378928,-2.62176378503151,-15.0350005219128,-3.36924230148896,-15.1061880999042,-3.43214485194938,-15.1167383087829,-3.4426950608281,-14.5216629304863,-3.3392910758703,-10.4750020053864,0,-14.1333974792436,-2.57612932097397,-14.9597417760196,-3.35079221005723,-15.1422149091379,-3.4369833031836,-15.1620903076571,-3.45685870170281,-14.5143718916162,-3.25982292035697,-10.4740918844499,0,-14.1876081580964,-2.80301294513296,-14.829853272944,-3.32893963049863,-14.9137169792853,-3.39452953066064,-14.9921012837564,-3.43544246404078,-15.0532249740659,-3.45073374198701,-12.1611895372437,0,-13.050737784522,-0.560759751477201,-13.5427653293355,-0.93244609994532,-13.8719697842987,-1.19618379856878,-14.5408514866881,-1.7649188538465,-15.6373134969027,-2.73211420941812,-11.940299623777,0,-13.0594204383241,-0.720513145923255,-13.6498217520259,-1.15282103347721,-14.0096976291617,-1.44102629184651,-14.7094882995588,-2.01743680858511,-15.7270377386887,-2.88205258369302,-10.4992756147153,0,-14.0291982886339,-2.54085241217499,-15.1007110783084,-3.41601514292166,-15.1007110783084,-3.42787952758178,-15.1007110783084,-3.42787952758178,-15.1007110783084,-3.42787952758178,-10.5682431478748,0,-13.7138753463146,-1.67346444921704,-14.6788942314565,-2.39226704563784,-15.0685848019686,-2.74898229437929,-15.5334646248872,-3.17279097666056,-14.5251430180237,-3.03362391806302,-10.4694559872315,0,-14.1343351107679,-2.57613590965821,-14.9746837799323,-3.41405775621026,-15.1037943311806,-3.43087944273112,-15.1117237006681,-3.4445041401414,-15.1117333115803,-3.45701434815974]},"columns":[{"id":"model","name":"model","type":"character"},{"id":"dose","name":"dose","type":"numeric","format":{"aggregated":{"suffix":" dose"}}},{"id":"sample_type","name":"sample_type","type":"character"},{"id":"0.025","name":"0.025","type":"numeric","format":{"cell":{"digits":4}}},{"id":"0.5","name":"0.5","type":"numeric","format":{"cell":{"digits":4}}},{"id":"0.975","name":"0.975","type":"numeric","format":{"cell":{"digits":4}}}],"groupBy":["model"],"dataKey":"2efe1a904ef750a4e209263c84d53012"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script><p><strong>Technical note:</strong> The median quantile of the bootstrap
 based procedure is not necessary similar to the main model fit, as they
 are derived via different procedures.</p>
 <p>The main fit (black line) minimizes residuals for the posterior
@@ -706,8 +706,8 @@ with the function <code><a href="../reference/getMED.html">getMED()</a></code>.<
 <span>  model_fits  <span class="op">=</span> <span class="va">model_fits</span>,</span>
 <span>  dose_levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">dose_levels</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">dose_levels</span><span class="op">)</span>, by <span class="op">=</span> <span class="fl">0.01</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##             avgFit betaMod emax exponential linear logistic quadratic sigEmax</span></span>
-<span><span class="co">## med_reached   1.00    1.00 1.00           0      0      1.0      1.00    1.00</span></span>
-<span><span class="co">## med           4.86    5.01 4.88          NA     NA      3.8      4.59    5.25</span></span></code></pre>
+<span><span class="co">## med_reached   1.00     1.0 1.00           0      0     1.00      1.00     1.0</span></span>
+<span><span class="co">## med           5.05     5.2 5.12          NA     NA     3.97      4.67     5.5</span></span></code></pre>
 <p>For an optional Bayesian decision rule for the MED assessment and
 further details, please see <code>?getMED()</code>.</p>
 <div class="section level3">
@@ -722,16 +722,16 @@ further details, please see <code>?getMED()</code>.</p>
 <span>  crit_prob_adj    <span class="op">=</span> <span class="va">crit_pval</span>,</span>
 <span>  delta            <span class="op">=</span> <span class="fl">4</span>,</span>
 <span>  simple           <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
-<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-nct00735709_2024a" class="csl-entry">
-ClinicalTrials.gov. 2024. <span>“NCT00735709.”</span> <a href="https://clinicaltrials.gov/study/NCT00735709?term=NCT00735709&amp;rank=1" class="external-link">https://clinicaltrials.gov/study/NCT00735709?term=NCT00735709&amp;rank=1</a>.
+ClinicalTrials.gov. 2024. <em>NCT00735709</em>. <a href="https://clinicaltrials.gov/study/NCT00735709?term=NCT00735709&amp;rank=1" class="external-link">https://clinicaltrials.gov/study/NCT00735709?term=NCT00735709&amp;rank=1</a>.
 </div>
 <div id="ref-fleischer_2022" class="csl-entry">
 Fleischer F, Deng Q, Bossert S. 2022. <span>“Bayesian MCPMod.”</span>
 <em>Pharmaceutical Statistics</em> 21 (3): 654–70.
 </div>
 <div id="ref-neldermead_2024a" class="csl-entry">
-Wikipedia. 2024. <span>“Nelder-Mead Method.”</span> <a href="https://en.wikipedia.org/wiki/Nelder-Mead_method" class="external-link">https://en.wikipedia.org/wiki/Nelder-Mead_method</a>.
+Wikipedia. 2024. <em>Nelder-Mead Method</em>. <a href="https://en.wikipedia.org/wiki/Nelder-Mead_method" class="external-link">https://en.wikipedia.org/wiki/Nelder-Mead_method</a>.
 </div>
 </div>
 </div>

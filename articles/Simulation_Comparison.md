@@ -1,6 +1,7 @@
 # Comparison of Bayesian MCPMod and MCPMod
 
 ``` r
+
 library(BayesianMCPMod)
 library(DoseFinding)
 library(MCPModPack)
@@ -38,6 +39,7 @@ MCPMod and MCPModPack success probabilities:
 - Alpha level of 5%
 
 ``` r
+
 doses_sim     <- c(0, 1, 2, 4, 8) 
 n_sample      <- c(40, 40, 40, 40, 40)
 sd_sim        <- 0.4
@@ -53,6 +55,7 @@ simulations and applying the law of large numbers, the difference in
 success probabilities should be in the range of 1% - 3%.
 
 ``` r
+
 set.seed(7015)
 n_sim <- 10000
 
@@ -63,6 +66,7 @@ registerDoFuture()
 In the following figure shows the considered candidate models.
 
 ``` r
+
 emax_guess     <- guesst(d = doses_sim[2], p = 0.6, "emax") 
 exp_guess      <- guesst(d = doses_sim[2], p = 0.05, model = "exponential", Maxd = max_dose)
 logit_guess    <- guesst(d = c(doses_sim[2], doses_sim[3]), p = c(0.1, 0.9), "logistic", Maxd = max_dose) 
@@ -89,6 +93,7 @@ The following expected effects are studied:
   0.5
 
 ``` r
+
 exp_eff <- c(0.0001, 0.05, 0.1, 0.2, 0.3, 0.5)
 ```
 
@@ -97,6 +102,7 @@ This case should mimic the null scenario (where we expect a success
 probability close to the alpha level).
 
 ``` r
+
 # Simulation parameters
 sim_parameters <- list(n            = n_sample,
                        doses        = doses_sim,
@@ -145,6 +151,7 @@ results_MCPModPack_eff <- cbind(max_eff = round(exp_eff, digits = 2),
 ```
 
 ``` r
+
 # Vague prior specification
 prior_list_vague <- rep(list(RBesT::mixnorm(comp1 = c(w = 1, m = 0, n = 1),
                                             sigma = sd_sim, param = "mn")),
@@ -204,6 +211,7 @@ the different assumed true dose-response models, which were the basis
 for simulating the data.
 
 ``` r
+
 ## pre-processing the data
 df_plot_eff <- rbind(results_MCPModPack_eff %>% 
                      mutate(package_name = "MCPModPack"),
@@ -247,6 +255,7 @@ priors match the operating characteristics of frequentist MCPMod.
 Numerical results are shown in the two tables below.
 
 ``` r
+
 kable(results_MCPModPack_eff) %>%
   kable_classic() %>%
     add_header_above(c("Power Values Across Different Expected Effects" = 7),
@@ -257,6 +266,7 @@ kable(results_MCPModPack_eff) %>%
 [TABLE]
 
 ``` r
+
 kable(results_BayesianMCPMod_eff) %>%
   kable_classic(full_width = TRUE) %>%
     add_header_above(c("Success Rates Across Different Expected Effects" = 7),
@@ -273,6 +283,7 @@ success rate values for an increasing number of simulations. For this,
 the expected maximum effect is fixed at 0.2.
 
 ``` r
+
 exp_eff_fix <- 0.2
 ```
 
@@ -281,6 +292,7 @@ number of simulations and does not allow accessing intermediate power
 values.
 
 ``` r
+
 n_sim_vec <- seq(2, 10, 1)^4
 ```
 
@@ -288,6 +300,7 @@ This is why the simulation is repeated for different values of number of
 simulations for the implementation with MCPModPack.
 
 ``` r
+
 # Updating the assumed dose - response models for the fixed expected effect (models will be added in loop)
 sim_models_part$max_effect <- exp_eff_fix
 
@@ -331,6 +344,7 @@ required to access the estimated success rate values at different
 numbers of simulations.
 
 ``` r
+
 # Model specifications with fixed expected effect
 models_BayesianMCPMod <- Mods(linear      = NULL,
                               exponential = exp_guess,
@@ -380,6 +394,7 @@ The figure below shows the convergence of the power and success rate
 values for an increasing number of simulations.
 
 ``` r
+
 df_plot_conv <- inner_join(results_BayesianMCPMod_conv,
                            results_MCPModPack_conv,
                            by = c("model_name", "n_sim")) %>%

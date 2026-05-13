@@ -130,8 +130,8 @@ performBayesianMCPMod(posterior_list = posterior_list,
 #>   Dose Level:   Ctrl DG_1 DG_2 DG_3 DG_4 
 #>   Avg Post ESS:  0.3  0.3  0.1  0.1  0.1 
 #> MED Assessment
-#>   Selection Method:    avgFit 
-#>   Identification Rate: 1 
+#>   Selection Method:            avgFit 
+#>   MED reached Freq:            1 
 #>    Dose Level: 0.5 2.0 4.0 8.0 
 #>    MED Freq:     0   0   1   0 
 #>   MED not reached Freq:        0 

@@ -3,6 +3,7 @@
 **Show code**
 
 ``` r
+
 suppressPackageStartupMessages({
   library(BayesianMCPMod)
   library(RBesT)
@@ -44,6 +45,7 @@ This package makes use of the
 parallel processing, which can be set up for example as follows:
 
 ``` r
+
 future::plan(future::multisession, workers = 4L)
 ```
 
@@ -80,6 +82,7 @@ non-informative prior will be specified for the active groups.
 **Show code**
 
 ``` r
+
 trial <- c("trial_1", "trial_2", "trial_3")
 n     <- c(70,  115, 147) # sample size per trial
 r     <- c( 6,   16,  16) # n responders per trial
@@ -99,6 +102,7 @@ informative prior in this setting.
 **Show code**
 
 ``` r
+
 dose_levels <- c(0, 2.5, 5, 10, 20, 50, 100, 200)
 
 # 1) Establish MAP prior (beta mixture distribution)
@@ -127,12 +131,12 @@ map
 #> Maximal Rhat              : 1 
 #> 
 #> Between-trial heterogeneity of tau prediction stratum
-#>   mean     sd   2.5%    50%  97.5% 
-#> 0.2710 0.2210 0.0106 0.2160 0.8290 
+#>    mean      sd    2.5%     50%   97.5% 
+#> 0.27100 0.22400 0.00958 0.21700 0.83700 
 #> 
 #> MAP Prior MCMC sample
 #>   mean     sd   2.5%    50%  97.5% 
-#> 0.1190 0.0494 0.0454 0.1130 0.2340
+#> 0.1200 0.0501 0.0468 0.1130 0.2410
 
 prior <- automixfit(map) #fits mixture distribution from MCMC samples from above
 p     <- summary(prior)[1]
@@ -177,6 +181,7 @@ used in the remainder of the vignette. Please note that the models are
 specified on the **logit scale**.
 
 ``` r
+
 models <- Mods(
   linear      = NULL,
   sigEmax     = c(50, 3),
@@ -202,6 +207,7 @@ logistic regression (without any additional covariates) to get estimates
 on the logit scale.
 
 ``` r
+
 data("migraine") # data set from the DoseFinding package
 
 doses_fact <- as.factor(dose_levels)
@@ -222,22 +228,24 @@ combining the prior information with the estimated results of the trial
 (Fleischer F 2022).
 
 ``` r
+
 post_logit <- getPosterior(prior_list, mu_hat = mu_hat, S_hat  = S_hat)
 ```
 
 The summary of the posterior can be provided on the probability scale.
 
 ``` r
+
 summary(post_logit, probability_scale = TRUE)
 #>           mean         sd       2.5%     50.0%     97.5%
-#> Ctr  0.1071168 0.02127962 0.06930686 0.1058282 0.1520040
-#> DG_1 0.1359001 0.06177459 0.04833967 0.1248126 0.2859179
-#> DG_2 0.1222136 0.05057452 0.04865093 0.1137505 0.2436500
-#> DG_3 0.2562256 0.05432101 0.16104931 0.2524449 0.3726678
-#> DG_4 0.1943149 0.04961478 0.11121906 0.1895612 0.3041997
-#> DG_5 0.2184915 0.05083942 0.13146633 0.2142515 0.3293963
-#> DG_6 0.2401204 0.05496681 0.14521827 0.2358212 0.3591977
-#> DG_7 0.3618200 0.06188555 0.24769337 0.3594987 0.4889697
+#> Ctr  0.1073879 0.02080215 0.07000671 0.1062163 0.1511844
+#> DG_1 0.1359332 0.06177887 0.04836010 0.1248470 0.2859559
+#> DG_2 0.1222403 0.05057858 0.04866771 0.1137779 0.2436832
+#> DG_3 0.2562310 0.05431974 0.16105620 0.2524505 0.3726699
+#> DG_4 0.1943253 0.04961450 0.11122884 0.1895720 0.3042085
+#> DG_5 0.2184995 0.05083870 0.13147474 0.2142599 0.3294021
+#> DG_6 0.2401274 0.05496562 0.14522644 0.2358285 0.3592014
+#> DG_7 0.3618182 0.06188342 0.24769534 0.3594971 0.4889634
 ```
 
 ## Bayesian MCPMod Test Step
@@ -246,7 +254,10 @@ The testing step of Bayesian MCPMod is executed using a critical value
 on the probability scale and a pseudo-optimal contrast matrix.
 
 A contrast matrix is generated based on the number of patients per dose
-group, see Fleischer F (2022) for more details. Please note that here
+group, see Fleischer F (2022) for more details. This choice is motivated
+by the assessments reported in Liu et al. (2022), which demonstrate that
+this type of contrast is robust and provides good statistical power
+across a broad range of potential outcome scenarios. Please note that
 also other options would be possible, e.g. using weight based on the
 observed variability.
 
@@ -255,6 +266,7 @@ frequentist MCPMod to ensure error control when using weakly-informative
 priors.
 
 ``` r
+
 contr_mat_prior <- getContr(
   mods           = models,
   dose_levels    = dose_levels,
@@ -272,6 +284,7 @@ crit_pval <- getCritProb(
 The Bayesian MCP testing step is then executed:
 
 ``` r
+
 BMCP_result <- performBayesianMCP(
   posterior_list = post_logit,
   contr          = contr_mat_prior, 
@@ -282,14 +295,15 @@ Here as well it should be noted that this evaluation happens on the
 logit scale.
 
 ``` r
+
 BMCP_result
 #> Bayesian Multiple Comparison Procedure
 #>   Significant:                   1 
 #>   Critical Probability:          0.9790239 
-#>   Maximum Posterior Probability: 0.99999 
+#>   Maximum Posterior Probability: 0.9999902 
 #> Posterior Probabilities for Model Shapes
 #>                        lin      sigE      quad       log       exp      emax
-#>   Posterior Prob 0.9999900 0.9999338 0.9998325 0.9999509 0.9999644 0.9999885 
+#>   Posterior Prob 0.9999902 0.9999348 0.9998353 0.9999512 0.9999646 0.9999876 
 #>   Significant            1         1         1         1         1         1
 ```
 
@@ -309,6 +323,7 @@ for the included dose levels, the generalized AIC, and the corresponding
 weights.
 
 ``` r
+
 model_fits <- getModelFits(
   models            = models,
   dose_levels       = dose_levels,
@@ -321,6 +336,7 @@ Plots of fitted dose-response models and an AIC-based average model
 including 80% and 95% credible bands on the probability scale:
 
 ``` r
+
 plot(model_fits, cr_bands = TRUE)
 ```
 
@@ -330,6 +346,7 @@ In case models should be shown on the logit scale this can be done in
 the following way:
 
 ``` r
+
 plot(model_fits, probability_scale = FALSE)
 ```
 
@@ -338,17 +355,18 @@ plot(model_fits, probability_scale = FALSE)
 Estimates including predictions can be shown via:
 
 ``` r
+
 display_params_table(stats::predict(model_fits, doses = c(0, 2.5, 10,150, 200)))
 ```
 
 |             | Name        | Value                             |
 |:------------|:------------|:----------------------------------|
-| avgFit      | avgFit      | 0.120, 0.140, 0.170, 0.300, 0.327 |
+| avgFit      | avgFit      | 0.120, 0.140, 0.170, 0.300, 0.326 |
 | emax        | emax        | 0.106, 0.133, 0.184, 0.288, 0.292 |
-| exponential | exponential | 0.150, 0.151, 0.156, 0.294, 0.375 |
-| linear      | linear      | 0.146, 0.148, 0.154, 0.303, 0.372 |
-| logistic    | logistic    | 0.137, 0.141, 0.151, 0.323, 0.345 |
-| quadratic   | quadratic   | 0.138, 0.141, 0.151, 0.325, 0.351 |
+| exponential | exponential | 0.149, 0.150, 0.155, 0.294, 0.376 |
+| linear      | linear      | 0.146, 0.148, 0.154, 0.303, 0.373 |
+| logistic    | logistic    | 0.136, 0.140, 0.150, 0.324, 0.344 |
+| quadratic   | quadratic   | 0.137, 0.141, 0.151, 0.326, 0.351 |
 | sigEmax     | sigEmax     | 0.107, 0.143, 0.176, 0.305, 0.322 |
 
 The bootstrap-based quantiles can also be directly calculated via the
@@ -359,6 +377,7 @@ function and a sample from the model fits can be bootstrapped using
 For this example, only 10 samples are bootstrapped for each model fit.
 
 ``` r
+
 set.seed(7015) # re-sets seed only for this example; remove in your analysis script
 bootstrap_quantiles <- getBootstrapQuantiles(
   model_fits = model_fits,
@@ -375,13 +394,14 @@ with the function
 The effect needs to be specified on the probability scale.
 
 ``` r
+
 getMED(
   delta       = 0.16, # on probability scale
   model_fits  = model_fits,
   dose_levels = seq(min(dose_levels), max(dose_levels), by = 1))
 #>             avgFit emax exponential linear logistic quadratic sigEmax
 #> med_reached      1    1           1      1        1         1       1
-#> med            118   59         161    153      117       121      78
+#> med            117   60         161    152      115       120      79
 ```
 
 ### Additional Note
@@ -390,6 +410,7 @@ Testing, modeling, and MED assessment can also be combined via
 [`performBayesianMCPMod()`](https://boehringer-ingelheim.github.io/BayesianMCPMod/reference/performBayesianMCPMod.md):
 
 ``` r
+
 BMCPMod_result <- performBayesianMCPMod(
   posterior_list    = post_logit,
   contr             = contr_mat_prior,
@@ -409,14 +430,16 @@ Study.” *Cephalalgia* 31 (5): 573–84.
 Fleischer F, Deng Q, Bossert S. 2022. “Bayesian MCPMod.” *Pharmaceutical
 Statistics* 21 (3): 654–70.
 
-Hewitt, D. J., V. Martin, R. B. Lipton, J. Brandes, P. Ceesay, R.
-Gottwald, E. Schaefer, C. Lines, and T. W. Ho. 2011. “Randomized
+Hewitt, D. J., V. Martin, R. B. Lipton, et al. 2011. “Randomized
 Controlled Study of Telcagepant Plus Ibuprofen or Acetaminophen in
 Migraine.” *Headache* 51 (4): 533–43.
 <https://doi.org/10.1111/j.1526-4610.2011.01860.x>.
 
-Ho, Tony W., Lauren K. Mannix, Xiaoyin Fan, Clara Assaid, Carol Furtek,
-Christopher J. Jones, Charles R. Lines, and Alan M. Rapoport. 2008.
-“Randomized Controlled Trial of an Oral CGRP Receptor Antagonist,
-MK-0974, in Acute Treatment of Migraine.” *Neurology* 70 (16): 1304–12.
+Ho, Tony W., Lauren K. Mannix, Xiaoyin Fan, et al. 2008. “Randomized
+Controlled Trial of an Oral CGRP Receptor Antagonist, MK-0974, in Acute
+Treatment of Migraine.” *Neurology* 70 (16): 1304–12.
 <https://doi.org/10.1212/01.WNL.0000286940.29755.61>.
+
+Liu, Yi, Sebastian Bossert, Rui Wu, Dooti Roy, Frank Fleischer, and Qiqi
+Deng. 2022. *Commentary: Analyzing Binary Data Using MCPMod When Zero
+Counts Are Expected*. <https://arxiv.org/abs/2202.08781>.

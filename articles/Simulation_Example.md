@@ -1,6 +1,7 @@
 # Trial Simulation Example of Bayesian MCPMod for Continuous Data
 
 ``` r
+
 library(BayesianMCPMod)
 library(clinDR)
 library(dplyr)
@@ -28,6 +29,7 @@ This package makes use of the
 parallel processing, which can be set up for example as follows:
 
 ``` r
+
 future::plan(future::multisession, workers = 4L)
 ```
 
@@ -45,6 +47,7 @@ mixture prior for the control group, while for the active groups a
 non-informative prior will be specified.
 
 ``` r
+
 data("metaData")
 testdata    <- as.data.frame(metaData)
 dataset     <- filter(testdata, bname == "BRINTELLIX")
@@ -66,6 +69,7 @@ vignette](https://boehringer-ingelheim.github.io/BayesianMCPMod/articles/analysi
 to create a MAP prior.
 
 ``` r
+
 dose_levels <- c(0, 2.5, 5, 10, 20)
 
 prior_list  <- getPriorList(
@@ -77,6 +81,7 @@ prior_list  <- getPriorList(
 Kindly note that a vague prior could be implemented via
 
 ``` r
+
 prior_list_vague <- rep(list(RBesT::mixnorm(comp1 = c(w = 1, m = 0, n = 1),
                                             sigma = sd_sim, param = "mn")),
                         times = length(dose_levels))
@@ -94,6 +99,7 @@ weeks by up to 15.8) and plan a trial with 80 patients for all active
 groups and 60 patients for control.
 
 ``` r
+
 exp     <- DoseFinding::guesst(
   d     = 5,
   p     = c(0.2),
@@ -135,6 +141,7 @@ assessDesign function. For illustration purposes, the number of
 simulated trial results is reduced to 100 in this example.
 
 ``` r
+
 set.seed(7015) # re-sets seed only for this example; remove in your analysis script
 success_probabilities <- assessDesign(
   n_patients  = n_patients,
@@ -197,6 +204,7 @@ sample size but allocating more patients on the highest dose group and
 control.
 
 ``` r
+
 set.seed(7015) # re-sets seed only for this example; remove in your analysis script
 success_probabilities_uneq <- assessDesign(
   n_patients  = c(80, 60, 60, 60, 120),
@@ -263,6 +271,7 @@ via the dr_means input. This allows e.g. also the simulation of
 scenarios with a prior-data conflict.
 
 ``` r
+
 set.seed(7015) # re-sets seed only for this example; remove in your analysis script
 success_probabilities_dr <- assessDesign(
   n_patients  = c(60, 80, 80, 80, 80),
@@ -301,7 +310,9 @@ function via the arguments `delta` and `evidence_level`. If only the
 argument `delta` is provided, the estimated model shapes will be used to
 assess the MED. If both the arguments `delta` and `evidence_level` are
 provided, a Bayesian decision rule of the form
-$$\widehat{\text{MED}} = \text{arg min}_{d \in \{ d_{1},\ldots,d_{k}\}}\left\{ \text{Pr}\left( f\left( d,\widehat{\theta} \right) - f\left( d_{1},\widehat{\theta} \right) > \Delta \right) > \gamma \right\}$$
+``` math
+\widehat{\text{MED}} = \text{arg min}_{d\in\{d_1, \dots, d_k\}} \left\{ \text{Pr}\left(f(d, \hat\theta) - f(d_1, \hat\theta) > \Delta\right) > \gamma \right\}
+```
 will be applied, see also `?getMED()`. The computational cost for the
 Bayesian decision rule within the
 [`assessDesign()`](https://boehringer-ingelheim.github.io/BayesianMCPMod/reference/assessDesign.md)
@@ -312,6 +323,7 @@ decision rule when assessing the trial’s design is only recommended when
 using parallel computing.
 
 ``` r
+
 set.seed(7015) # re-sets seed only for this example; remove in your analysis script
 success_probabilities_med <- assessDesign(
   n_patients  = c(60, 80, 80, 80, 80),
@@ -328,8 +340,8 @@ success_probabilities_med
 #>    Model Shape:         lin  emax   exp sigE1 sigE2 
 #>    Significance Freq:  0.59  0.21  0.59  0.48  0.36 
 #> MED Assessment
-#>   Selection Method:    avgFit 
-#>   Identification Rate: 0.68 
+#>   Selection Method:            avgFit 
+#>   MED reached Freq:            0.68 
 #>    Dose Level:  2.5  5.0 10.0 20.0 
 #>    MED Freq:   0.00 0.03 0.19 0.46 
 #>   MED not reached Freq:        0 
@@ -342,8 +354,8 @@ success_probabilities_med
 #>    Model Shape:         lin  emax   exp sigE1 sigE2 
 #>    Significance Freq:  0.26  0.78  0.23  0.36  0.65 
 #> MED Assessment
-#>   Selection Method:    avgFit 
-#>   Identification Rate: 0.8 
+#>   Selection Method:            avgFit 
+#>   MED reached Freq:            0.8 
 #>    Dose Level:  2.5  5.0 10.0 20.0 
 #>    MED Freq:   0.51 0.09 0.14 0.06 
 #>   MED not reached Freq:        0.02 
@@ -356,8 +368,8 @@ success_probabilities_med
 #>    Model Shape:         lin  emax   exp sigE1 sigE2 
 #>    Significance Freq:  0.61  0.16  0.60  0.42  0.30 
 #> MED Assessment
-#>   Selection Method:    avgFit 
-#>   Identification Rate: 0.63 
+#>   Selection Method:            avgFit 
+#>   MED reached Freq:            0.63 
 #>    Dose Level:  2.5  5.0 10.0 20.0 
 #>    MED Freq:   0.00 0.02 0.16 0.45 
 #>   MED not reached Freq:        0 
@@ -370,8 +382,8 @@ success_probabilities_med
 #>    Model Shape:         lin  emax   exp sigE1 sigE2 
 #>    Significance Freq:  0.63  0.52  0.58  0.73  0.76 
 #> MED Assessment
-#>   Selection Method:    avgFit 
-#>   Identification Rate: 0.82 
+#>   Selection Method:            avgFit 
+#>   MED reached Freq:            0.82 
 #>    Dose Level:  2.5  5.0 10.0 20.0 
 #>    MED Freq:   0.02 0.17 0.37 0.26 
 #>   MED not reached Freq:        0 
@@ -384,8 +396,8 @@ success_probabilities_med
 #>    Model Shape:         lin  emax   exp sigE1 sigE2 
 #>    Significance Freq:  0.43  0.73  0.37  0.61  0.77 
 #> MED Assessment
-#>   Selection Method:    avgFit 
-#>   Identification Rate: 0.83 
+#>   Selection Method:            avgFit 
+#>   MED reached Freq:            0.83 
 #>    Dose Level:  2.5  5.0 10.0 20.0 
 #>    MED Freq:   0.25 0.17 0.22 0.19 
 #>   MED not reached Freq:        0.01 

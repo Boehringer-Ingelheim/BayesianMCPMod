@@ -1,6 +1,7 @@
 # Trial Analysis Example of Bayesian MCPMod for Continuous Data
 
 ``` r
+
 library(BayesianMCPMod)
 library(RBesT)
 library(clinDR)
@@ -14,6 +15,7 @@ set.seed(7015)
 **Show code**
 
 ``` r
+
 display_params_table <- function(named_list) {
   round_numeric <- function(x, digits = 3) if (is.numeric(x)) round(x, digits) else x
   tbl <- data.frame(
@@ -44,6 +46,7 @@ This package makes use of the
 parallel processing, which can be set up for example as follows:
 
 ``` r
+
 future::plan(future::multisession, workers = 4L)
 ```
 
@@ -61,6 +64,7 @@ for the control group, while for the active groups a non-informative
 prior will be specified.
 
 ``` r
+
 data("metaData")
 dataset     <- filter(as.data.frame(metaData), bname == "BRINTELLIX")
 histcontrol <- filter(
@@ -84,6 +88,7 @@ this example. Other applications may need a different way to construct
 prior distributions.
 
 ``` r
+
 getPriorList <- function (
   
   hist_data,
@@ -141,6 +146,7 @@ With the dose levels to be investigated, the prior distribution can be
 constructed.
 
 ``` r
+
 dose_levels <- c(0, 2.5, 5, 10)
 
 set.seed(7015) # re-sets seed only for this example; remove in your analysis script
@@ -153,7 +159,7 @@ getESS(prior_list)
 ```
 
     ##  Ctr DG_1 DG_2 DG_3 
-    ## 19.7  1.0  1.0  1.0
+    ## 18.5  1.0  1.0  1.0
 
 ## Dose-Response Model Shapes
 
@@ -171,6 +177,7 @@ function. The `d` option usually takes a single value (a dose level),
 and the corresponding `p` for the maximum effect achieved at `d`.
 
 ``` r
+
 # Guesstimate estimation
 exp_guesst  <- DoseFinding::guesst(
   model = "exponential", 
@@ -207,6 +214,7 @@ For example, you can get a betaMod model by specifying `delta1` and
 dose), or a quadratic model with the `delta2` parameter.
 
 ``` r
+
 betaMod_params   <- c(delta1 = 1, delta2 = 1)
 quadratic_params <- c(delta2 = -0.1)
 ```
@@ -215,6 +223,7 @@ Now, we can go ahead and create a `Mods` object, which will be used in
 the remainder of the vignette.
 
 ``` r
+
 mods <- DoseFinding::Mods(
   linear      = NULL,
   # guesstimate scale
@@ -241,23 +250,25 @@ parameters, which can be helpful for understanding how the guesstimates
 are translated onto the parameter scale.
 
 ``` r
+
 display_params_table(mods)
 ```
 
-|             | Name        | Value                                                                                         |
-|:------------|:------------|:----------------------------------------------------------------------------------------------|
-| linear      | linear      | {e0=-12.8, delta=-0.1}                                                                        |
-| exponential | exponential | {e0=-12.8, e1=-0.0666665802154335, delta=3.60673602074522}                                    |
-| emax        | emax        | {e0=-12.8, eMax=-1.02777777777778, ed50=0.277777777777778}                                    |
-| sigEmax     | sigEmax     | {e0=-12.8, eMax=-1.00277008310249, ed50=2.5, h=4.24792751344358}                              |
-| logistic    | logistic    | {e0=-12.7974358974359, eMax=-1.17948717948718, ed50=7.79415312704722, delta=1.27167389072021} |
-| betaMod     | betaMod     | {e0=-12.8, eMax=-1, delta1=1, delta2=1}                                                       |
-| quadratic   | quadratic   | {e0=-12.8, b1=-0.4, b2=0.04}                                                                  |
+|  | Name | Value |
+|:---|:---|:---|
+| linear | linear | {e0=-12.8, delta=-0.1} |
+| exponential | exponential | {e0=-12.8, e1=-0.0666665802154335, delta=3.60673602074522} |
+| emax | emax | {e0=-12.8, eMax=-1.02777777777778, ed50=0.277777777777778} |
+| sigEmax | sigEmax | {e0=-12.8, eMax=-1.00277008310249, ed50=2.5, h=4.24792751344358} |
+| logistic | logistic | {e0=-12.7974358974359, eMax=-1.17948717948718, ed50=7.79415312704722, delta=1.27167389072021} |
+| betaMod | betaMod | {e0=-12.8, eMax=-1, delta1=1, delta2=1} |
+| quadratic | quadratic | {e0=-12.8, b1=-0.4, b2=0.04} |
 
 And we can see the assumed treatment effects for the specified dose
 groups below:
 
 ``` r
+
 knitr::kable(DoseFinding::getResp(mods, doses = dose_levels))
 ```
 
@@ -274,6 +285,7 @@ We will use the trial with ct.gov number NCT00735709 as our phase 2
 trial data, available in the `clinDR` package (ClinicalTrials.gov 2024).
 
 ``` r
+
 data("metaData")
 
 trial_data <- dplyr::filter(
@@ -293,6 +305,7 @@ combining the prior information with the estimated results of the trial
 (Fleischer F 2022).
 
 ``` r
+
 posterior <- getPosterior(
   prior_list = prior_list,
   mu_hat     = trial_data$rslt,
@@ -305,10 +318,10 @@ knitr::kable(summary(posterior))
 
 |      |      mean |        sd |      2.5% |     50.0% |      97.5% |
 |:-----|----------:|----------:|----------:|----------:|-----------:|
-| Ctr  | -11.19915 | 0.7069568 | -12.57034 | -11.20131 |  -9.807192 |
-| DG_1 | -14.88080 | 0.7130817 | -16.27841 | -14.88080 | -13.483185 |
-| DG_2 | -15.07981 | 0.7101057 | -16.47159 | -15.07981 | -13.688031 |
-| DG_3 | -15.63624 | 0.7259755 | -17.05913 | -15.63624 | -14.213356 |
+| Ctr  | -11.23854 | 0.6957444 | -12.56205 | -11.25389 |  -9.831438 |
+| DG_1 | -14.88114 | 0.7130817 | -16.27875 | -14.88114 | -13.483523 |
+| DG_2 | -15.08015 | 0.7101057 | -16.47193 | -15.08015 | -13.688367 |
+| DG_3 | -15.63659 | 0.7259755 | -17.05948 | -15.63659 | -14.213707 |
 
 ## Bayesian MCPMod Test Step
 
@@ -323,6 +336,7 @@ A pseudo-optimal contrast matrix is generated based on the variability
 of the posterior distribution (see (Fleischer F 2022) for more details).
 
 ``` r
+
 set.seed(7015) # re-sets seed only for this example; remove in your analysis script
 crit_pval <- getCritProb(
   mods           = mods,
@@ -343,6 +357,7 @@ following code shows the implementation of some of these ways but it is
 not executed and the contrast specification above is used.
 
 ``` r
+
 # i) the frequentist contrast
 contr_mat_prior <- getContr(
   mods           = mods,
@@ -365,6 +380,7 @@ contr_mat_prior <- getContr(
 The Bayesian MCP testing step is then executed:
 
 ``` r
+
 BMCP_result <- performBayesianMCP(
   posterior_list = posterior,
   contr          = contr_mat, 
@@ -374,20 +390,21 @@ BMCP_result <- performBayesianMCP(
 Summary information:
 
 ``` r
+
 BMCP_result
 ```
 
     ## Bayesian Multiple Comparison Procedure
     ##   Significant:                   1 
     ##   Critical Probability:          0.9845439 
-    ##   Maximum Posterior Probability: 0.9999998 
+    ##   Maximum Posterior Probability: 0.9999999 
     ## Posterior Probabilities for Model Shapes
     ##                        lin       exp      emax      sigE       log     betaM      quad
-    ##   Posterior Prob 0.9999581 0.9981522 0.9999998 0.9999985 0.9953674 0.9999930 0.9883779 
+    ##   Posterior Prob 0.9999651 0.9983173 0.9999999 0.9999988 0.9956910 0.9999942 0.9894574 
     ##   Significant            1         1         1         1         1         1         1 
     ## Average Posterior ESS
     ##   Dose Level:     Ctr  DG_1  DG_2  DG_3 
-    ##   Avg Post ESS: 189.9 186.6 188.2 180.0
+    ##   Avg Post ESS: 197.2 186.6 188.2 180.0
 
 The testing step is significant, indicating a non-flat dose-response
 shape. All models are significant, with the `emax` model indicating the
@@ -417,6 +434,7 @@ For the considered case, the simplified and the full fit are very
 similar, so we present the full fit.
 
 ``` r
+
 # If simple = TRUE, uses approx posterior
 # Here we use complete posterior distribution
 model_fits <- getModelFits(
@@ -429,23 +447,25 @@ model_fits <- getModelFits(
 Estimates for dose levels not included in the trial:
 
 ``` r
+
 display_params_table(stats::predict(model_fits, doses = c(0, 2.5, 4, 5, 7, 10)))
 ```
 
-|             | Name        | Value                                                |
-|:------------|:------------|:-----------------------------------------------------|
-| avgFit      | avgFit      | -11.292, -14.684, -15.134, -15.315, -15.518, -15.530 |
-| betaMod     | betaMod     | -11.246, -14.787, -15.099, -15.246, -15.450, -15.556 |
-| emax        | emax        | -11.244, -14.805, -15.133, -15.257, -15.407, -15.528 |
-| exponential | exponential | -12.586, -13.358, -13.870, -14.233, -15.016, -16.348 |
-| linear      | linear      | -12.403, -13.397, -13.994, -14.391, -15.187, -16.380 |
-| logistic    | logistic    | -11.245, -14.837, -15.273, -15.352, -15.390, -15.395 |
-| quadratic   | quadratic   | -11.474, -14.104, -15.165, -15.658, -16.126, -15.535 |
-| sigEmax     | sigEmax     | -11.243, -14.810, -15.092, -15.217, -15.394, -15.565 |
+|  | Name | Value |
+|:---|:---|:---|
+| avgFit | avgFit | -11.320, -14.682, -15.132, -15.313, -15.518, -15.532 |
+| betaMod | betaMod | -11.270, -14.787, -15.098, -15.246, -15.450, -15.556 |
+| emax | emax | -11.268, -14.805, -15.133, -15.257, -15.408, -15.529 |
+| exponential | exponential | -12.637, -13.395, -13.898, -14.254, -15.023, -16.330 |
+| linear | linear | -12.453, -13.431, -14.017, -14.408, -15.191, -16.364 |
+| logistic | logistic | -11.269, -14.836, -15.273, -15.352, -15.390, -15.396 |
+| quadratic | quadratic | -11.506, -14.112, -15.164, -15.652, -16.117, -15.537 |
+| sigEmax | sigEmax | -11.268, -14.810, -15.092, -15.217, -15.394, -15.566 |
 
 Plots of fitted dose-response models and an AIC-based average model:
 
 ``` r
+
 plot(model_fits)
 ```
 
@@ -463,6 +483,7 @@ These credible bands are calculated with a bootstrap method as follows:
   specified quantiles.
 
 ``` r
+
 plot(model_fits, cr_bands = TRUE)
 ```
 
@@ -476,6 +497,7 @@ function and a sample from the model fits can bootstrapped using
 For this example, only 10 samples are bootstrapped for each model fit.
 
 ``` r
+
 set.seed(7015) # re-sets seed only for this example; remove in your analysis script
 bootstrap_quantiles <- getBootstrapQuantiles(
   model_fits = model_fits,
@@ -489,6 +511,7 @@ The bootstrap quantiles include information about the absolute quantiles
 control-adjusted) quantiles (sample_type=diff).
 
 ``` r
+
 reactable::reactable(
   data = bootstrap_quantiles |>
     tidyr::pivot_wider(names_from = q_prob, values_from = q_val),
@@ -517,6 +540,7 @@ with the function
 [`getMED()`](https://boehringer-ingelheim.github.io/BayesianMCPMod/reference/getMED.md).
 
 ``` r
+
 getMED(
   delta       = 4,
   model_fits  = model_fits,
@@ -524,8 +548,8 @@ getMED(
 ```
 
     ##             avgFit betaMod emax exponential linear logistic quadratic sigEmax
-    ## med_reached   1.00    1.00 1.00           0      0      1.0      1.00    1.00
-    ## med           4.86    5.01 4.88          NA     NA      3.8      4.59    5.25
+    ## med_reached   1.00     1.0 1.00           0      0     1.00      1.00     1.0
+    ## med           5.05     5.2 5.12          NA     NA     3.97      4.67     5.5
 
 For an optional Bayesian decision rule for the MED assessment and
 further details, please see `?getMED()`.
@@ -536,6 +560,7 @@ Testing, modeling, and MED assessment can also be combined via
 [`performBayesianMCPMod()`](https://boehringer-ingelheim.github.io/BayesianMCPMod/reference/performBayesianMCPMod.md):
 
 ``` r
+
 performBayesianMCPMod(
   posterior_list   = posterior,
   contr            = contr_mat,
@@ -544,11 +569,11 @@ performBayesianMCPMod(
   simple           = FALSE)
 ```
 
-ClinicalTrials.gov. 2024. “NCT00735709.”
+ClinicalTrials.gov. 2024. *NCT00735709*.
 <https://clinicaltrials.gov/study/NCT00735709?term=NCT00735709&rank=1>.
 
 Fleischer F, Deng Q, Bossert S. 2022. “Bayesian MCPMod.” *Pharmaceutical
 Statistics* 21 (3): 654–70.
 
-Wikipedia. 2024. “Nelder-Mead Method.”
+Wikipedia. 2024. *Nelder-Mead Method*.
 <https://en.wikipedia.org/wiki/Nelder-Mead_method>.

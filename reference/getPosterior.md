@@ -69,9 +69,23 @@ for S_hat is provided in the attributes)
 Kindly note that one can sample from the `posterior_list` with
 `lapply(posterior_list, RBesT::rmix, n = 10)`.
 
+For binary endpoints, if separation occurs (for example, when one
+treatment arm has only responders or only non‑responders), we use
+penalized logistic regression with Firth’s correction to prevent
+convergence issues and obtain more stable estimates. See the references
+for additional details.
+
 ## References
 
 BERNARDO, Jl. M., and Smith, AFM (1994). Bayesian Theory. 81.
+
+Heinze, G. & Schemper, M. (2002). A solution to the problem of
+separation in logistic regression. *Statistics in Medicine*, 21(16),
+2409–2419.
+
+Liu et al. (2022). Commentary: analyzing binary data using MCPMod when
+zero counts are expected. *arXiv*, 2202.08781,
+https://arxiv.org/abs/2202.08781
 
 ## Examples
 

@@ -150,14 +150,35 @@ Returns success probabilities for the different assumed dose-response
 shapes, attributes also includes information around average success rate
 (across all assumed models) and prior Effective sample size.
 
+## Details
+
+For binary endpoints, if separation occurs (for example, when one
+treatment arm has only responders or only non‑responders), we use
+penalized logistic regression with Firth’s correction to prevent
+convergence issues and obtain more stable estimates. See the references
+for additional details.
+
+## References
+
+Heinze, G. & Schemper, M. (2002). A solution to the problem of
+separation in logistic regression. *Statistics in Medicine*, 21(16),
+2409–2419.
+
+Liu et al. (2022). Commentary: analyzing binary data using MCPMod when
+zero counts are expected. *arXiv*, 2202.08781,
+https://arxiv.org/abs/2202.08781
+
 ## Examples
 
 ``` r
+n_patients  <- c(40, 60, 60, 60, 60)
+dose_levels <- c(0, 0.5, 2, 4, 8)
+ 
 mods <- DoseFinding::Mods(linear      = NULL,
                           emax        = c(0.5, 1.2),
                           exponential = 2,
                           betaMod     = c(1, 1),
-                          doses       = c(0, 0.5, 2,4, 8),
+                          doses       = dose_levels,
                           maxEff      = 6)
                           
 sd <- 12
@@ -166,8 +187,6 @@ prior_list <- list(Ctrl = RBesT::mixnorm(comp1 = c(w = 1, m = 0, s = 12), sigma 
                    DG_2 = RBesT::mixnorm(comp1 = c(w = 1, m = 1.2, s = 11), sigma = 2) ,
                    DG_3 = RBesT::mixnorm(comp1 = c(w = 1, m = 1.3, s = 11), sigma = 2) ,
                    DG_4 = RBesT::mixnorm(comp1 = c(w = 1, m = 2, s = 13), sigma = 2))
-n_patients <- c(40, 60, 60, 60, 60)
-dose_levels  <- c(0, 0.5, 2, 4, 8)
 
 success_probabilities <- assessDesign(
   n_patients  = n_patients,
@@ -364,7 +383,7 @@ success_probabilities <- assessDesign(
   sd             = sd,
   modeling       = TRUE,
   n_sim          = 10, # speed up example run time
-  delta          = 7)
+  delta          = 3)
 
   success_probabilities
 
@@ -377,7 +396,7 @@ success_probabilities <- assessDesign(
   sd             = sd,
   modeling       = TRUE,
   n_sim          = 10, # speed up example run time
-  delta          = 7,
+  delta          = 3,
   evidence_level = 0.8)
 
   success_probabilities
