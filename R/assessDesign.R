@@ -62,6 +62,8 @@
 #'
 #' success_probabilities
 #' 
+#' if (interactive()) { # takes typically > 5 seconds
+#' 
 #' ## Analysis with custom data
 #' data_sim <- simulateData(
 #'   n_patients        = n_patients,
@@ -106,7 +108,6 @@
 #'
 #' success_probs_custom_est
 #'
-#' if (interactive()) { # takes typically > 5 seconds
 #'
 #' # with MED estimation without bootstrapping
 #' # see ?getMED for details
