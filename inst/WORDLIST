@@ -12,10 +12,12 @@ DoseFinding
 GLS
 Gierse
 HalfNormal
+Heinze
 Iasonos
 Jl
 Kunzmann
 LinLog
+Liu
 Loley
 MADRS
 MCP
@@ -29,6 +31,7 @@ O'Quigley
 Pinheiro
 RBesT
 Robustify
+Schemper
 Schmidli
 Schorning
 Thomann
@@ -37,6 +40,7 @@ XELJANZ
 Yao
 al
 arg
+arxiv
 assessDesign
 automixfit
 avgFit
@@ -66,6 +70,7 @@ getMED
 getModelFits
 getPosterior
 ggplot
+https
 iter
 kable
 knitr
@@ -85,6 +90,7 @@ postList
 postmix
 priormix
 pst
+responders
 rmix
 robustified
 robustify
