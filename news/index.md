@@ -2,6 +2,8 @@
 
 ## BayesianMCPMod 1.3.2 (23-Mar-2026)
 
+CRAN release: 2026-05-14
+
 - Included Firth’s penalized regression model for binary endpoints in
   case of separation.
 
